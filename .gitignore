@@ -1,0 +1,6 @@
+.vs/
+out/
+vcpkg_installed/
+External.zip
+*.user
+*.suo
