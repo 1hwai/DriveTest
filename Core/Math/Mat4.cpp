@@ -36,6 +36,19 @@ Mat4 Mat4::Scale(const Vec3& scale) {
     return result;
 }
 
+Mat4 Mat4::FromMat3(const Mat3& matrix) {
+    Mat4 result = Identity();
+
+    for (int row = 0; row < 3; ++row) {
+        for (int column = 0; column < 3; ++column) {
+            result.m[row][column] =
+                matrix.m[row][column];
+        }
+    }
+
+    return result;
+}
+
 Mat4 Mat4::RotationX(float angle) {
     Mat4 result = Identity();
 

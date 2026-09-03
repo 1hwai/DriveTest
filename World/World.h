@@ -7,13 +7,17 @@
 #include "../Input/InputManager.h"
 #include "../Core/Object.h"
 #include "../Rendering/MeshManager.h"
+#include "../Physics/PhysicsWorld.h"
 
 class World {
 public:
     World();
     ~World();
 
-    bool Initialize(MeshManager& meshManager);
+    bool Initialize(
+        MeshManager& meshManager,
+        PhysicsWorld& physicsWorld
+    );
 
     void Update(
         float deltaTime,
@@ -33,4 +37,6 @@ public:
 private:
     Camera m_camera;
     std::vector<std::unique_ptr<Object>> m_objects;
+
+    PhysicsWorld* m_physicsWorld;
 };

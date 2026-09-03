@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Vec3.h"
+#include "Mat3.h"
 
 class Mat4 {
 public:
@@ -11,6 +12,7 @@ public:
     static Mat4 Identity();
     static Mat4 Translation(const Vec3& position);
     static Mat4 Scale(const Vec3& scale);
+    static Mat4 FromMat3(const Mat3& matrix);
 
     static Mat4 RotationX(float angle);
     static Mat4 RotationY(float angle);

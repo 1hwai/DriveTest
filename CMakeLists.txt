@@ -38,12 +38,15 @@ add_executable(DriveTest
     Core/Math/Vec3.cpp
     Core/Math/Mat4.cpp
     Core/Math/Transform.cpp
+    Core/Math/Mat3.cpp
+
+    Core/Debug/Logger.cpp
 
     World/World.cpp
 
 
     External/glad-generated/src/gl.c
-)
+ "Core/Math/Quaternion.cpp")
 
 add_custom_command(TARGET DriveTest POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory

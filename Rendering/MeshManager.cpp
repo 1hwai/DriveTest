@@ -2,6 +2,8 @@
 
 #include "Mesh.h"
 
+MeshManager::~MeshManager() = default;
+
 bool MeshManager::CreateCube(const std::string& name)
 {
     if (m_meshes.find(name) != m_meshes.end())

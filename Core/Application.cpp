@@ -8,13 +8,17 @@ Application::~Application() {
 }
 
 bool Application::Initialize() {
+    Logger::Initialize("DriveTest.log");
     if (!m_renderer.Initialize())
         return false;
 
     if (!m_meshManager.CreateCube("cube"))
         return false;
 
-    if (!m_world.Initialize(m_meshManager))
+    if (!m_world.Initialize(
+        m_meshManager,
+        m_physicsWorld
+    ))
         return false;
 
     m_time.Reset();
@@ -45,6 +49,8 @@ void Application::Update() {
     const float deltaTime =
         m_time.GetDeltaTime();
 
+    m_physicsWorld.Step(deltaTime);
+
     m_world.Update(
         deltaTime,
         m_input
@@ -68,8 +74,10 @@ void Application::Shutdown() {
         return;
 
     m_world.Shutdown();
+    m_physicsWorld.Clear();
     m_meshManager.Clear();
     m_renderer.Shutdown();
+    Logger::Shutdown();
 
     m_running = false;
 }

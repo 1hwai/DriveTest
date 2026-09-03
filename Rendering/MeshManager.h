@@ -9,7 +9,7 @@ class Mesh;
 class MeshManager {
 public:
     MeshManager() = default;
-    ~MeshManager() = default;
+    ~MeshManager();
 
     bool CreateCube(const std::string& name);
     bool CreateTriangle(const std::string& name);

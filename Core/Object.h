@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Math/Transform.h"
+#include "../Rendering/Mesh.h"
 
-class Mesh;
+class RigidBody;
 
-class Object
-{
+class Object {
 public:
     Object();
     ~Object() = default;
@@ -18,7 +18,13 @@ public:
     Mesh* GetMesh();
     const Mesh* GetMesh() const;
 
+    void SetRigidBody(RigidBody* rigidBody);
+
+    RigidBody* GetRigidBody();
+    const RigidBody* GetRigidBody() const;
+
 private:
     Transform m_transform;
     Mesh* m_mesh;
+    RigidBody* m_rigidBody;
 };
