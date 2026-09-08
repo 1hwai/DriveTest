@@ -9,6 +9,7 @@ public:
     Mat3();
 
     static Mat3 Identity();
+    static Mat3 Diagonal(const Vec3& diagonal);
 
     Vec3 operator*(const Vec3& vector) const;
     Mat3 operator*(const Mat3& other) const;

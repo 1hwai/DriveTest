@@ -1,0 +1,1685 @@
+﻿============================================================
+===== Physics\RigidBody.h =====
+============================================================
+#pragma once
+
+#include "../Core/Math/Vec3.h"
+#include "../Core/Math/Quaternion.h"
+#include "../Core/Math/Mat3.h"
+
+class RigidBody {
+public:
+    RigidBody();
+    ~RigidBody() = default;
+
+    void SetMass(float mass);
+    float GetMass() const;
+    float GetInverseMass() const;
+
+    void SetBoxInertia(const Vec3& size);
+
+    void SetPosition(const Vec3& position);
+    const Vec3& GetPosition() const;
+
+    void SetOrientation(const Quaternion& orientation);
+    const Quaternion& GetOrientation() const;
+
+    void SetLinearVelocity(const Vec3& velocity);
+    const Vec3& GetLinearVelocity() const;
+
+    void SetAngularVelocity(const Vec3& velocity);
+    const Vec3& GetAngularVelocity() const;
+
+    void AddForce(const Vec3& force);
+    void AddTorque(const Vec3& torque);
+
+    const Vec3& GetForce() const;
+    const Vec3& GetTorque() const;
+
+    void ClearForces();
+
+    void SetInertiaTensor(const Mat3& inertiaTensor);
+    const Mat3& GetInertiaTensor() const;
+
+    void SetInverseInertiaTensor(const Mat3& inverseInertiaTensor);
+    const Mat3& GetInverseInertiaTensor() const;
+
+    Mat3 GetWorldInverseInertiaTensor() const;
+
+    void Integrate(float deltaTime, const Vec3& gravity);
+
+private:
+    Vec3 m_position;
+    Quaternion m_orientation;
+    Vec3 m_linearVelocity;
+    Vec3 m_angularVelocity;
+    Vec3 m_force;
+    Vec3 m_torque;
+    float m_mass;
+    float m_inverseMass;
+    Mat3 m_inertiaTensor;
+    Mat3 m_inverseInertiaTensor;
+};
+
+============================================================
+===== Physics\RigidBody.cpp =====
+============================================================
+#include "RigidBody.h"
+#include <cmath>
+
+RigidBody::RigidBody()
+    : m_position(0.0f, 0.0f, 0.0f),
+    m_orientation(Quaternion::Identity()),
+    m_linearVelocity(0.0f, 0.0f, 0.0f),
+    m_angularVelocity(0.0f, 0.0f, 0.0f),
+    m_force(0.0f, 0.0f, 0.0f),
+    m_torque(0.0f, 0.0f, 0.0f),
+    m_mass(1.0f),
+    m_inverseMass(1.0f),
+    m_inertiaTensor(Mat3::Identity()),
+    m_inverseInertiaTensor(Mat3::Identity()) {}
+
+void RigidBody::SetMass(float mass) {
+    if (mass <= 0.0f) {
+        m_mass = 0.0f;
+        m_inverseMass = 0.0f;
+        return;
+    }
+
+    m_mass = mass;
+    m_inverseMass = 1.0f / mass;
+}
+
+float RigidBody::GetMass() const {
+    return m_mass;
+}
+
+float RigidBody::GetInverseMass() const {
+    return m_inverseMass;
+}
+
+void RigidBody::SetBoxInertia(const Vec3& size) {
+    float x2 = size.x * size.x;
+    float y2 = size.y * size.y;
+    float z2 = size.z * size.z;
+
+    float factor = m_mass / 12.0f;
+
+    float ix = factor * (y2 + z2);
+    float iy = factor * (x2 + z2);
+    float iz = factor * (x2 + y2);
+
+    m_inertiaTensor = Mat3::Diagonal(Vec3(ix, iy, iz));
+
+    constexpr float epsilon = 0.000001f;
+
+    float iix = ix > epsilon ? 1.0f / ix : 0.0f;
+    float iiy = iy > epsilon ? 1.0f / iy : 0.0f;
+    float iiz = iz > epsilon ? 1.0f / iz : 0.0f;
+
+    m_inverseInertiaTensor = Mat3::Diagonal(Vec3(iix, iiy, iiz));
+}
+
+void RigidBody::SetPosition(const Vec3& position) {
+    m_position = position;
+}
+
+const Vec3& RigidBody::GetPosition() const {
+    return m_position;
+}
+
+void RigidBody::SetOrientation(const Quaternion& orientation) {
+    m_orientation = orientation;
+    m_orientation.Normalize();
+}
+
+const Quaternion& RigidBody::GetOrientation() const {
+    return m_orientation;
+}
+
+void RigidBody::SetLinearVelocity(const Vec3& velocity) {
+    m_linearVelocity = velocity;
+}
+
+const Vec3& RigidBody::GetLinearVelocity() const {
+    return m_linearVelocity;
+}
+
+void RigidBody::SetAngularVelocity(const Vec3& velocity) {
+    m_angularVelocity = velocity;
+}
+
+const Vec3& RigidBody::GetAngularVelocity() const {
+    return m_angularVelocity;
+}
+
+void RigidBody::AddForce(const Vec3& force) {
+    m_force += force;
+}
+
+void RigidBody::AddTorque(const Vec3& torque) {
+    m_torque += torque;
+}
+
+const Vec3& RigidBody::GetForce() const {
+    return m_force;
+}
+
+const Vec3& RigidBody::GetTorque() const {
+    return m_torque;
+}
+
+void RigidBody::ClearForces() {
+    m_force = Vec3(0.0f, 0.0f, 0.0f);
+    m_torque = Vec3(0.0f, 0.0f, 0.0f);
+}
+
+void RigidBody::SetInertiaTensor(const Mat3& inertiaTensor) {
+    m_inertiaTensor = inertiaTensor;
+}
+
+const Mat3& RigidBody::GetInertiaTensor() const {
+    return m_inertiaTensor;
+}
+
+void RigidBody::SetInverseInertiaTensor(const Mat3& inverseInertiaTensor) {
+    m_inverseInertiaTensor = inverseInertiaTensor;
+}
+
+const Mat3& RigidBody::GetInverseInertiaTensor() const {
+    return m_inverseInertiaTensor;
+}
+
+Mat3 RigidBody::GetWorldInverseInertiaTensor() const {
+    Mat3 rotation = m_orientation.ToMat3();
+    return rotation * m_inverseInertiaTensor * rotation.Transposed();
+}
+
+void RigidBody::Integrate(float deltaTime, const Vec3& gravity) {
+    if (deltaTime <= 0.0f)
+        return;
+
+    if (m_inverseMass <= 0.0f) {
+        ClearForces();
+        return;
+    }
+
+    Vec3 acceleration = gravity + m_force * m_inverseMass;
+
+    m_linearVelocity += acceleration * deltaTime;
+    m_position += m_linearVelocity * deltaTime;
+
+    Mat3 worldInverseInertia = GetWorldInverseInertiaTensor();
+
+    Vec3 angularAcceleration = worldInverseInertia * m_torque;
+    m_angularVelocity += angularAcceleration * deltaTime;
+
+    // Snap numerically negligible angular velocity to zero.
+    // Solver-side float residue (even from perfectly symmetric contacts)
+    // otherwise gets integrated into orientation every frame and drifts.
+    constexpr float AngularVelocitySleepEpsilonSq = 1e-8f; // (1e-4)^2
+    if (m_angularVelocity.LengthSquared() < AngularVelocitySleepEpsilonSq)
+        m_angularVelocity = Vec3(0.0f, 0.0f, 0.0f);
+
+    Quaternion angularVelocityQuat(
+        0.0f,
+        m_angularVelocity.x,
+        m_angularVelocity.y,
+        m_angularVelocity.z
+    );
+
+    Quaternion orientationDerivative = angularVelocityQuat * m_orientation;
+
+    m_orientation.w += 0.5f * orientationDerivative.w * deltaTime;
+    m_orientation.x += 0.5f * orientationDerivative.x * deltaTime;
+    m_orientation.y += 0.5f * orientationDerivative.y * deltaTime;
+    m_orientation.z += 0.5f * orientationDerivative.z * deltaTime;
+
+    m_orientation.Normalize();
+
+    ClearForces();
+}
+
+============================================================
+===== Physics\Collision.h =====
+============================================================
+#pragma once
+
+#include "../Core/Math/Vec3.h"
+#include "../Core/Math/Mat3.h"
+#include "../Core/Math/Transform.h"
+
+class Contact;
+class RigidBody;
+
+class Collision {
+public:
+    static bool CheckBoxBox(
+        const Transform& transformA,
+        const Vec3& halfExtentsA,
+        RigidBody* bodyA,
+        const Transform& transformB,
+        const Vec3& halfExtentsB,
+        RigidBody* bodyB,
+        Contact& contact
+    );
+
+private:
+    struct BoxAxes {
+        Vec3 axes[3];
+    };
+
+    struct Face {
+        Vec3 center;
+        Vec3 normal;
+        Vec3 tangent1;
+        Vec3 tangent2;
+        float extent1;
+        float extent2;
+    };
+
+    static bool OverlapOnAxis(
+        const Vec3& axis,
+        const Vec3& centerDifference,
+        const Vec3 axesA[3],
+        const Vec3& halfExtentsA,
+        const Vec3 axesB[3],
+        const Vec3& halfExtentsB,
+        float& overlap
+    );
+
+    static Face GetFace(
+        const Transform& transform,
+        const Vec3& halfExtents,
+        int axisIndex,
+        const Vec3& normal
+    );
+
+    static void GetFaceVertices(
+        const Face& face,
+        Vec3 vertices[4]
+    );
+
+    static int ClipPolygonAgainstPlane(
+        const Vec3* input,
+        int inputCount,
+        Vec3* output,
+        const Vec3& planeNormal,
+        float planeOffset
+    );
+
+    static bool BuildFaceManifold(
+        const Transform& referenceTransform,
+        const Vec3& referenceHalfExtents,
+        int referenceAxisIndex,
+        const Vec3& referenceNormal,
+        const Transform& incidentTransform,
+        const Vec3& incidentHalfExtents,
+        Contact& contact,
+        float penetration
+    );
+
+    static bool BuildEdgeContact(
+        const Transform& transformA,
+        const Vec3& halfExtentsA,
+        const Transform& transformB,
+        const Vec3& halfExtentsB,
+        int edgeAxisA,
+        int edgeAxisB,
+        const Vec3& normal,
+        Contact& contact,
+        float penetration
+    );
+
+    static void GetEdge(
+        const Transform& transform,
+        const Vec3& halfExtents,
+        int edgeAxis,
+        const Vec3& direction,
+        Vec3& start,
+        Vec3& end
+    );
+
+    static void ClosestPointsOnSegments(
+        const Vec3& p1,
+        const Vec3& q1,
+        const Vec3& p2,
+        const Vec3& q2,
+        Vec3& point1,
+        Vec3& point2
+    );
+};
+
+============================================================
+===== Physics\Collision.cpp =====
+============================================================
+#include "Collision.h"
+
+#include "Contact.h"
+#include "RigidBody.h"
+
+#include <cmath>
+#include <algorithm>
+
+namespace {
+    constexpr float Epsilon = 0.000001f;
+    constexpr float AxisTieEpsilon = 0.0001f;
+}
+
+bool Collision::CheckBoxBox(
+    const Transform& transformA,
+    const Vec3& halfExtentsA,
+    RigidBody* bodyA,
+    const Transform& transformB,
+    const Vec3& halfExtentsB,
+    RigidBody* bodyB,
+    Contact& contact
+) {
+    const Mat3 rotationA =
+        transformA.rotation.ToMat3();
+
+    const Mat3 rotationB =
+        transformB.rotation.ToMat3();
+
+    const Vec3 axesA[3] = {
+        Vec3(
+            rotationA.m[0][0],
+            rotationA.m[1][0],
+            rotationA.m[2][0]
+        ).Normalized(),
+
+        Vec3(
+            rotationA.m[0][1],
+            rotationA.m[1][1],
+            rotationA.m[2][1]
+        ).Normalized(),
+
+        Vec3(
+            rotationA.m[0][2],
+            rotationA.m[1][2],
+            rotationA.m[2][2]
+        ).Normalized()
+    };
+
+    const Vec3 axesB[3] = {
+        Vec3(
+            rotationB.m[0][0],
+            rotationB.m[1][0],
+            rotationB.m[2][0]
+        ).Normalized(),
+
+        Vec3(
+            rotationB.m[0][1],
+            rotationB.m[1][1],
+            rotationB.m[2][1]
+        ).Normalized(),
+
+        Vec3(
+            rotationB.m[0][2],
+            rotationB.m[1][2],
+            rotationB.m[2][2]
+        ).Normalized()
+    };
+
+    const Vec3 centerDifference =
+        transformB.position -
+        transformA.position;
+
+    float minimumPenetration = INFINITY;
+
+    Vec3 collisionNormal(
+        0.0f,
+        1.0f,
+        0.0f
+    );
+
+    int bestType = -1;
+    int bestIndexA = -1;
+    int bestIndexB = -1;
+
+    auto TestAxis =
+        [&](const Vec3& axis, int type, int indexA, int indexB) -> bool {
+        if (axis.LengthSquared() <= Epsilon)
+            return true;
+
+        const Vec3 normalizedAxis =
+            axis.Normalized();
+
+        float overlap = 0.0f;
+
+        if (!OverlapOnAxis(
+            normalizedAxis,
+            centerDifference,
+            axesA,
+            halfExtentsA,
+            axesB,
+            halfExtentsB,
+            overlap
+        )) {
+            return false;
+        }
+
+        if (overlap < minimumPenetration - AxisTieEpsilon) {
+            minimumPenetration = overlap;
+            collisionNormal = normalizedAxis;
+
+            if (collisionNormal.Dot(centerDifference) < 0.0f)
+                collisionNormal = -collisionNormal;
+
+            bestType = type;
+            bestIndexA = indexA;
+            bestIndexB = indexB;
+        }
+
+        return true;
+        };
+
+    // A face normals
+    for (int i = 0; i < 3; ++i) {
+        if (!TestAxis(axesA[i], 0, i, -1))
+            return false;
+    }
+
+    // B face normals
+    for (int i = 0; i < 3; ++i) {
+        if (!TestAxis(axesB[i], 1, -1, i))
+            return false;
+    }
+
+    // Edge cross products
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            const Vec3 axis =
+                axesA[i].Cross(axesB[j]);
+
+            if (!TestAxis(axis, 2, i, j))
+                return false;
+        }
+    }
+
+    contact.SetBodies(bodyA, bodyB);
+    contact.SetNormal(collisionNormal);
+    contact.ClearPoints();
+
+    // Face-face contact.
+    if (bestType == 0) {
+        BuildFaceManifold(
+            transformA,
+            halfExtentsA,
+            bestIndexA,
+            collisionNormal,
+            transformB,
+            halfExtentsB,
+            contact,
+            minimumPenetration
+        );
+    }
+    else if (bestType == 1) {
+        // Reference face is on B.
+        // Its outward normal must point from B toward A.
+        BuildFaceManifold(
+            transformB,
+            halfExtentsB,
+            bestIndexB,
+            -collisionNormal,
+            transformA,
+            halfExtentsA,
+            contact,
+            minimumPenetration
+        );
+    }
+    else {
+        BuildEdgeContact(
+            transformA,
+            halfExtentsA,
+            transformB,
+            halfExtentsB,
+            bestIndexA,
+            bestIndexB,
+            collisionNormal,
+            contact,
+            minimumPenetration
+        );
+    }
+
+    return contact.GetPointCount() > 0;
+}
+
+bool Collision::OverlapOnAxis(
+    const Vec3& axis,
+    const Vec3& centerDifference,
+    const Vec3 axesA[3],
+    const Vec3& halfExtentsA,
+    const Vec3 axesB[3],
+    const Vec3& halfExtentsB,
+    float& overlap
+) {
+    const float distance =
+        std::fabs(centerDifference.Dot(axis));
+
+    const float radiusA =
+        halfExtentsA.x * std::fabs(axesA[0].Dot(axis)) +
+        halfExtentsA.y * std::fabs(axesA[1].Dot(axis)) +
+        halfExtentsA.z * std::fabs(axesA[2].Dot(axis));
+
+    const float radiusB =
+        halfExtentsB.x * std::fabs(axesB[0].Dot(axis)) +
+        halfExtentsB.y * std::fabs(axesB[1].Dot(axis)) +
+        halfExtentsB.z * std::fabs(axesB[2].Dot(axis));
+
+    overlap =
+        radiusA +
+        radiusB -
+        distance;
+
+    return overlap >= -Epsilon;
+}
+
+Collision::Face Collision::GetFace(
+    const Transform& transform,
+    const Vec3& halfExtents,
+    int axisIndex,
+    const Vec3& normal
+) {
+    const Mat3 rotation =
+        transform.rotation.ToMat3();
+
+    const Vec3 axes[3] = {
+        Vec3(
+            rotation.m[0][0],
+            rotation.m[1][0],
+            rotation.m[2][0]
+        ).Normalized(),
+
+        Vec3(
+            rotation.m[0][1],
+            rotation.m[1][1],
+            rotation.m[2][1]
+        ).Normalized(),
+
+        Vec3(
+            rotation.m[0][2],
+            rotation.m[1][2],
+            rotation.m[2][2]
+        ).Normalized()
+    };
+
+    Face face;
+
+    face.normal = normal;
+
+    const float extent =
+        axisIndex == 0 ? halfExtents.x :
+        axisIndex == 1 ? halfExtents.y :
+        halfExtents.z;
+
+    const float sign =
+        axes[axisIndex].Dot(normal) >= 0.0f
+        ? 1.0f
+        : -1.0f;
+
+    face.center =
+        transform.position +
+        axes[axisIndex] * extent * sign;
+
+    int tangentIndex1 = (axisIndex + 1) % 3;
+    int tangentIndex2 = (axisIndex + 2) % 3;
+
+    face.tangent1 = axes[tangentIndex1];
+    face.tangent2 = axes[tangentIndex2];
+
+    face.extent1 =
+        tangentIndex1 == 0 ? halfExtents.x :
+        tangentIndex1 == 1 ? halfExtents.y :
+        halfExtents.z;
+
+    face.extent2 =
+        tangentIndex2 == 0 ? halfExtents.x :
+        tangentIndex2 == 1 ? halfExtents.y :
+        halfExtents.z;
+
+    return face;
+}
+
+void Collision::GetFaceVertices(
+    const Face& face,
+    Vec3 vertices[4]
+) {
+    const Vec3 tangent1 =
+        face.tangent1 * face.extent1;
+
+    const Vec3 tangent2 =
+        face.tangent2 * face.extent2;
+
+    vertices[0] =
+        face.center + tangent1 + tangent2;
+
+    vertices[1] =
+        face.center - tangent1 + tangent2;
+
+    vertices[2] =
+        face.center - tangent1 - tangent2;
+
+    vertices[3] =
+        face.center + tangent1 - tangent2;
+}
+
+int Collision::ClipPolygonAgainstPlane(
+    const Vec3* input,
+    int inputCount,
+    Vec3* output,
+    const Vec3& planeNormal,
+    float planeOffset
+) {
+    if (inputCount == 0)
+        return 0;
+
+    int outputCount = 0;
+
+    for (int i = 0; i < inputCount; ++i) {
+        const Vec3& current = input[i];
+        const Vec3& previous =
+            input[(i + inputCount - 1) % inputCount];
+
+        const float currentDistance =
+            current.Dot(planeNormal) - planeOffset;
+
+        const float previousDistance =
+            previous.Dot(planeNormal) - planeOffset;
+
+        const bool currentInside =
+            currentDistance <= Epsilon;
+
+        const bool previousInside =
+            previousDistance <= Epsilon;
+
+        if (currentInside != previousInside) {
+            const float denominator =
+                previousDistance - currentDistance;
+
+            if (std::fabs(denominator) > Epsilon) {
+                const float t =
+                    previousDistance / denominator;
+
+                output[outputCount++] =
+                    previous +
+                    (current - previous) * t;
+            }
+        }
+
+        if (currentInside)
+            output[outputCount++] = current;
+    }
+
+    return outputCount;
+}
+
+bool Collision::BuildFaceManifold(
+    const Transform& referenceTransform,
+    const Vec3& referenceHalfExtents,
+    int referenceAxisIndex,
+    const Vec3& referenceNormal,
+    const Transform& incidentTransform,
+    const Vec3& incidentHalfExtents,
+    Contact& contact,
+    float penetration
+) {
+    const Mat3 referenceRotation =
+        referenceTransform.rotation.ToMat3();
+
+    const Mat3 incidentRotation =
+        incidentTransform.rotation.ToMat3();
+
+    const Vec3 referenceAxes[3] = {
+        Vec3(
+            referenceRotation.m[0][0],
+            referenceRotation.m[1][0],
+            referenceRotation.m[2][0]
+        ).Normalized(),
+
+        Vec3(
+            referenceRotation.m[0][1],
+            referenceRotation.m[1][1],
+            referenceRotation.m[2][1]
+        ).Normalized(),
+
+        Vec3(
+            referenceRotation.m[0][2],
+            referenceRotation.m[1][2],
+            referenceRotation.m[2][2]
+        ).Normalized()
+    };
+
+    const Vec3 incidentAxes[3] = {
+        Vec3(
+            incidentRotation.m[0][0],
+            incidentRotation.m[1][0],
+            incidentRotation.m[2][0]
+        ).Normalized(),
+
+        Vec3(
+            incidentRotation.m[0][1],
+            incidentRotation.m[1][1],
+            incidentRotation.m[2][1]
+        ).Normalized(),
+
+        Vec3(
+            incidentRotation.m[0][2],
+            incidentRotation.m[1][2],
+            incidentRotation.m[2][2]
+        ).Normalized()
+    };
+
+    const Face referenceFace =
+        GetFace(
+            referenceTransform,
+            referenceHalfExtents,
+            referenceAxisIndex,
+            referenceNormal
+        );
+
+    // Pick the incident face whose normal is most opposite
+    // to the reference face normal.
+    int incidentAxisIndex = 0;
+    float minimumDot =
+        std::fabs(
+            incidentAxes[0].Dot(referenceNormal)
+        );
+
+    for (int i = 1; i < 3; ++i) {
+        const float dot =
+            std::fabs(
+                incidentAxes[i].Dot(referenceNormal)
+            );
+
+        if (dot > minimumDot) {
+            minimumDot = dot;
+            incidentAxisIndex = i;
+        }
+    }
+
+    Vec3 incidentNormal =
+        incidentAxes[incidentAxisIndex];
+
+    if (incidentNormal.Dot(referenceNormal) > 0.0f)
+        incidentNormal = -incidentNormal;
+
+    const Face incidentFace =
+        GetFace(
+            incidentTransform,
+            incidentHalfExtents,
+            incidentAxisIndex,
+            incidentNormal
+        );
+
+    Vec3 polygonA[8];
+    Vec3 polygonB[8];
+
+    GetFaceVertices(
+        incidentFace,
+        polygonA
+    );
+
+    int polygonCount = 4;
+
+    const Vec3 tangent1 =
+        referenceFace.tangent1;
+
+    const Vec3 tangent2 =
+        referenceFace.tangent2;
+
+    const float plane1 =
+        (referenceFace.center +
+            tangent1 * referenceFace.extent1).Dot(tangent1);
+
+    const float plane2 =
+        (referenceFace.center -
+            tangent1 * referenceFace.extent1).Dot(-tangent1);
+
+    const float plane3 =
+        (referenceFace.center +
+            tangent2 * referenceFace.extent2).Dot(tangent2);
+
+    const float plane4 =
+        (referenceFace.center -
+            tangent2 * referenceFace.extent2).Dot(-tangent2);
+
+    polygonCount =
+        ClipPolygonAgainstPlane(
+            polygonA,
+            polygonCount,
+            polygonB,
+            tangent1,
+            plane1
+        );
+
+    if (polygonCount == 0)
+        return false;
+
+    polygonCount =
+        ClipPolygonAgainstPlane(
+            polygonB,
+            polygonCount,
+            polygonA,
+            -tangent1,
+            plane2
+        );
+
+    if (polygonCount == 0)
+        return false;
+
+    polygonCount =
+        ClipPolygonAgainstPlane(
+            polygonA,
+            polygonCount,
+            polygonB,
+            tangent2,
+            plane3
+        );
+
+    if (polygonCount == 0)
+        return false;
+
+    polygonCount =
+        ClipPolygonAgainstPlane(
+            polygonB,
+            polygonCount,
+            polygonA,
+            -tangent2,
+            plane4
+        );
+
+    if (polygonCount == 0)
+        return false;
+
+    const float referencePlane =
+        referenceFace.center.Dot(referenceNormal);
+
+    for (int i = 0; i < polygonCount; ++i) {
+        const Vec3& point =
+            polygonA[i];
+
+        const float distance =
+            point.Dot(referenceNormal) -
+            referencePlane;
+
+        if (distance <= Epsilon) {
+            const float pointPenetration =
+                -distance;
+
+            const Vec3 contactPosition =
+                point -
+                referenceNormal * distance;
+
+            contact.AddPoint(
+                contactPosition,
+                std::min(
+                    pointPenetration,
+                    penetration
+                )
+            );
+        }
+
+        if (contact.GetPointCount() >= Contact::MaxPoints)
+            break;
+    }
+
+    return contact.GetPointCount() > 0;
+}
+
+void Collision::GetEdge(
+    const Transform& transform,
+    const Vec3& halfExtents,
+    int edgeAxis,
+    const Vec3& direction,
+    Vec3& start,
+    Vec3& end
+) {
+    const Mat3 rotation =
+        transform.rotation.ToMat3();
+
+    const Vec3 axes[3] = {
+        Vec3(
+            rotation.m[0][0],
+            rotation.m[1][0],
+            rotation.m[2][0]
+        ).Normalized(),
+
+        Vec3(
+            rotation.m[0][1],
+            rotation.m[1][1],
+            rotation.m[2][1]
+        ).Normalized(),
+
+        Vec3(
+            rotation.m[0][2],
+            rotation.m[1][2],
+            rotation.m[2][2]
+        ).Normalized()
+    };
+
+    Vec3 center =
+        transform.position;
+
+    for (int i = 0; i < 3; ++i) {
+        if (i == edgeAxis)
+            continue;
+
+        const float extent =
+            i == 0 ? halfExtents.x :
+            i == 1 ? halfExtents.y :
+            halfExtents.z;
+
+        const float sign =
+            axes[i].Dot(direction) >= 0.0f
+            ? 1.0f
+            : -1.0f;
+
+        center += axes[i] * extent * sign;
+    }
+
+    const float edgeExtent =
+        edgeAxis == 0 ? halfExtents.x :
+        edgeAxis == 1 ? halfExtents.y :
+        halfExtents.z;
+
+    start =
+        center -
+        axes[edgeAxis] * edgeExtent;
+
+    end =
+        center +
+        axes[edgeAxis] * edgeExtent;
+}
+
+void Collision::ClosestPointsOnSegments(
+    const Vec3& p1,
+    const Vec3& q1,
+    const Vec3& p2,
+    const Vec3& q2,
+    Vec3& point1,
+    Vec3& point2
+) {
+    const Vec3 d1 = q1 - p1;
+    const Vec3 d2 = q2 - p2;
+    const Vec3 r = p1 - p2;
+
+    const float a = d1.Dot(d1);
+    const float e = d2.Dot(d2);
+    const float f = d2.Dot(r);
+
+    float s = 0.0f;
+    float t = 0.0f;
+
+    if (a <= Epsilon && e <= Epsilon) {
+        point1 = p1;
+        point2 = p2;
+        return;
+    }
+
+    if (a <= Epsilon) {
+        s = 0.0f;
+        t = f / e;
+        t = std::max(0.0f, std::min(1.0f, t));
+    }
+    else {
+        const float c = d1.Dot(r);
+
+        if (e <= Epsilon) {
+            t = 0.0f;
+            s = -c / a;
+            s = std::max(0.0f, std::min(1.0f, s));
+        }
+        else {
+            const float b = d1.Dot(d2);
+            const float denominator =
+                a * e - b * b;
+
+            if (denominator > Epsilon)
+                s = (b * f - c * e) / denominator;
+            else
+                s = 0.0f;
+
+            s = std::max(0.0f, std::min(1.0f, s));
+
+            t = (b * s + f) / e;
+
+            if (t < 0.0f) {
+                t = 0.0f;
+                s = -c / a;
+                s = std::max(0.0f, std::min(1.0f, s));
+            }
+            else if (t > 1.0f) {
+                t = 1.0f;
+                s = (b - c) / a;
+                s = std::max(0.0f, std::min(1.0f, s));
+            }
+        }
+    }
+
+    point1 =
+        p1 + d1 * s;
+
+    point2 =
+        p2 + d2 * t;
+}
+
+bool Collision::BuildEdgeContact(
+    const Transform& transformA,
+    const Vec3& halfExtentsA,
+    const Transform& transformB,
+    const Vec3& halfExtentsB,
+    int edgeAxisA,
+    int edgeAxisB,
+    const Vec3& normal,
+    Contact& contact,
+    float penetration
+) {
+    Vec3 startA;
+    Vec3 endA;
+    Vec3 startB;
+    Vec3 endB;
+
+    GetEdge(
+        transformA,
+        halfExtentsA,
+        edgeAxisA,
+        -normal,
+        startA,
+        endA
+    );
+
+    GetEdge(
+        transformB,
+        halfExtentsB,
+        edgeAxisB,
+        normal,
+        startB,
+        endB
+    );
+
+    Vec3 pointA;
+    Vec3 pointB;
+
+    ClosestPointsOnSegments(
+        startA,
+        endA,
+        startB,
+        endB,
+        pointA,
+        pointB
+    );
+
+    const Vec3 contactPosition =
+        (pointA + pointB) * 0.5f;
+
+    contact.AddPoint(
+        contactPosition,
+        penetration
+    );
+
+    return true;
+}
+
+============================================================
+===== Physics\Contact.h =====
+============================================================
+#pragma once
+
+#include "../Core/Math/Vec3.h"
+
+class RigidBody;
+
+struct ContactPoint {
+    Vec3 position;
+    float penetration;
+
+    float normalImpulse;
+    float tangentImpulse;
+
+    ContactPoint()
+        : position(0.0f, 0.0f, 0.0f),
+        penetration(0.0f),
+        normalImpulse(0.0f),
+        tangentImpulse(0.0f) {}
+};
+
+class Contact {
+public:
+    static constexpr int MaxPoints = 4;
+
+    Contact();
+
+    void SetBodies(RigidBody* bodyA, RigidBody* bodyB);
+
+    RigidBody* GetBodyA();
+    const RigidBody* GetBodyA() const;
+
+    RigidBody* GetBodyB();
+    const RigidBody* GetBodyB() const;
+
+    void SetNormal(const Vec3& normal);
+    const Vec3& GetNormal() const;
+
+    void SetRestitution(float restitution);
+    float GetRestitution() const;
+
+    void SetFriction(float friction);
+    float GetFriction() const;
+
+    void AddPoint(
+        const Vec3& position,
+        float penetration
+    );
+
+    int GetPointCount() const;
+
+    ContactPoint& GetPoint(int index);
+    const ContactPoint& GetPoint(int index) const;
+
+    void ClearPoints();
+
+private:
+    RigidBody* m_bodyA;
+    RigidBody* m_bodyB;
+
+    Vec3 m_normal;
+
+    ContactPoint m_points[MaxPoints];
+    int m_pointCount;
+
+    float m_restitution;
+    float m_friction;
+};
+
+============================================================
+===== Physics\Contact.cpp =====
+============================================================
+#include "Contact.h"
+
+Contact::Contact()
+    : m_bodyA(nullptr),
+    m_bodyB(nullptr),
+    m_normal(0.0f, 1.0f, 0.0f),
+    m_pointCount(0),
+    m_restitution(0.0f),
+    m_friction(0.5f) {}
+
+void Contact::SetBodies(
+    RigidBody* bodyA,
+    RigidBody* bodyB
+) {
+    m_bodyA = bodyA;
+    m_bodyB = bodyB;
+}
+
+RigidBody* Contact::GetBodyA() {
+    return m_bodyA;
+}
+
+const RigidBody* Contact::GetBodyA() const {
+    return m_bodyA;
+}
+
+RigidBody* Contact::GetBodyB() {
+    return m_bodyB;
+}
+
+const RigidBody* Contact::GetBodyB() const {
+    return m_bodyB;
+}
+
+void Contact::SetNormal(const Vec3& normal) {
+    m_normal = normal.Normalized();
+}
+
+const Vec3& Contact::GetNormal() const {
+    return m_normal;
+}
+
+void Contact::SetRestitution(float restitution) {
+    if (restitution < 0.0f)
+        restitution = 0.0f;
+    else if (restitution > 1.0f)
+        restitution = 1.0f;
+
+    m_restitution = restitution;
+}
+
+float Contact::GetRestitution() const {
+    return m_restitution;
+}
+
+void Contact::SetFriction(float friction) {
+    m_friction = friction > 0.0f ? friction : 0.0f;
+}
+
+float Contact::GetFriction() const {
+    return m_friction;
+}
+
+void Contact::AddPoint(
+    const Vec3& position,
+    float penetration
+) {
+    if (m_pointCount >= MaxPoints)
+        return;
+
+    ContactPoint& point = m_points[m_pointCount];
+
+    point.position = position;
+    point.penetration = penetration > 0.0f ? penetration : 0.0f;
+    point.normalImpulse = 0.0f;
+    point.tangentImpulse = 0.0f;
+
+    ++m_pointCount;
+}
+
+int Contact::GetPointCount() const {
+    return m_pointCount;
+}
+
+ContactPoint& Contact::GetPoint(int index) {
+    return m_points[index];
+}
+
+const ContactPoint& Contact::GetPoint(int index) const {
+    return m_points[index];
+}
+
+void Contact::ClearPoints() {
+    m_pointCount = 0;
+}
+
+============================================================
+===== Physics\Solver.h =====
+============================================================
+#pragma once
+
+#include "Contact.h"
+
+class Solver {
+public:
+    Solver();
+    ~Solver() = default;
+
+    void SetPenetrationSlop(float slop);
+    float GetPenetrationSlop() const;
+
+    void SetCorrectionPercent(float percent);
+    float GetCorrectionPercent() const;
+
+    void SetVelocityIterations(int iterations);
+    int GetVelocityIterations() const;
+
+    void SetRestitutionThreshold(float threshold);
+    float GetRestitutionThreshold() const;
+
+    void SolvePosition(Contact& contact);
+    void SolveVelocity(Contact& contact);
+    void SolveFriction(Contact& contact);
+
+private:
+    float m_penetrationSlop;
+    float m_correctionPercent;
+    int m_velocityIterations;
+    float m_restitutionThreshold;
+};
+
+============================================================
+===== Physics\Solver.cpp =====
+============================================================
+#include "Solver.h"
+#include "RigidBody.h"
+#include <algorithm>
+#include <cmath>
+#include <string>
+#include "../Core/Debug/Logger.h"
+
+Solver::Solver()
+    : m_penetrationSlop(0.001f),
+    m_correctionPercent(0.2f),
+    m_velocityIterations(8),
+    m_restitutionThreshold(1.0f) {}
+
+void Solver::SetPenetrationSlop(float slop) {
+    m_penetrationSlop = std::max(0.0f, slop);
+}
+
+float Solver::GetPenetrationSlop() const {
+    return m_penetrationSlop;
+}
+
+void Solver::SetCorrectionPercent(float percent) {
+    m_correctionPercent = percent;
+
+    if (m_correctionPercent < 0.0f)
+        m_correctionPercent = 0.0f;
+    else if (m_correctionPercent > 1.0f)
+        m_correctionPercent = 1.0f;
+}
+
+float Solver::GetCorrectionPercent() const {
+	return m_correctionPercent;
+}
+
+void Solver::SetVelocityIterations(int iterations) {
+    m_velocityIterations = std::max(1, iterations);
+}
+
+int Solver::GetVelocityIterations() const {
+    return m_velocityIterations;
+}
+
+void Solver::SetRestitutionThreshold(float threshold) {
+    m_restitutionThreshold = std::max(0.0f, threshold);
+}
+
+float Solver::GetRestitutionThreshold() const {
+    return m_restitutionThreshold;
+}
+
+void Solver::SolvePosition(Contact& contact) {
+    RigidBody* bodyA = contact.GetBodyA();
+    RigidBody* bodyB = contact.GetBodyB();
+
+    if (!bodyA || !bodyB)
+        return;
+
+    float inverseMassA = bodyA->GetInverseMass();
+    float inverseMassB = bodyB->GetInverseMass();
+    float totalInverseMass = inverseMassA + inverseMassB;
+
+    if (totalInverseMass <= 0.0f)
+        return;
+
+    float maxPenetration = 0.0f;
+
+    for (int i = 0; i < contact.GetPointCount(); ++i)
+        maxPenetration = std::max(maxPenetration, contact.GetPoint(i).penetration);
+
+    float correctionDepth = maxPenetration - m_penetrationSlop;
+
+    if (correctionDepth <= 0.0f)
+        return;
+
+    float correctionPercent = m_correctionPercent;
+
+    if (correctionDepth > 0.5f)
+        correctionPercent = 0.8f;
+    else if (correctionDepth > 0.2f)
+        correctionPercent = 0.5f;
+    else if (correctionDepth > 0.05f)
+        correctionPercent = 0.3f;
+
+    if (correctionPercent < 0.0f)
+        correctionPercent = 0.0f;
+    else if (correctionPercent > 1.0f)
+        correctionPercent = 1.0f;
+
+    float correctionMagnitude =
+        correctionDepth * correctionPercent / totalInverseMass;
+
+    Vec3 correction = contact.GetNormal() * correctionMagnitude;
+
+    bodyA->SetPosition(bodyA->GetPosition() - correction * inverseMassA);
+    bodyB->SetPosition(bodyB->GetPosition() + correction * inverseMassB);
+}
+
+void Solver::SolveVelocity(Contact& contact) {
+    RigidBody* bodyA = contact.GetBodyA();
+    RigidBody* bodyB = contact.GetBodyB();
+
+    if (!bodyA || !bodyB)
+        return;
+
+    Vec3 normal = contact.GetNormal();
+
+    float inverseMassA = bodyA->GetInverseMass();
+    float inverseMassB = bodyB->GetInverseMass();
+
+    Mat3 inverseInertiaA = bodyA->GetWorldInverseInertiaTensor();
+    Mat3 inverseInertiaB = bodyB->GetWorldInverseInertiaTensor();
+
+    Vec3 initialVelocityA = bodyA->GetLinearVelocity();
+    Vec3 initialAngularVelocityA = bodyA->GetAngularVelocity();
+
+    float totalImpulse = 0.0f;
+    float maxImpulse = 0.0f;
+    float minNormalVelocity = INFINITY;
+    float maxNormalVelocity = -INFINITY;
+    int appliedImpulseCount = 0;
+
+    for (int i = 0; i < contact.GetPointCount(); ++i) {
+        ContactPoint& point = contact.GetPoint(i);
+
+        Vec3 rA = point.position - bodyA->GetPosition();
+        Vec3 rB = point.position - bodyB->GetPosition();
+
+        Vec3 velocityA =
+            bodyA->GetLinearVelocity() +
+            bodyA->GetAngularVelocity().Cross(rA);
+
+        Vec3 velocityB =
+            bodyB->GetLinearVelocity() +
+            bodyB->GetAngularVelocity().Cross(rB);
+
+        Vec3 relativeVelocity = velocityB - velocityA;
+        float normalVelocity = relativeVelocity.Dot(normal);
+
+        minNormalVelocity = std::min(minNormalVelocity, normalVelocity);
+        maxNormalVelocity = std::max(maxNormalVelocity, normalVelocity);
+
+        if (point.normalImpulse == 0.0f &&
+            normalVelocity < -m_restitutionThreshold)
+            point.tangentImpulse = 0.0f;
+
+        float targetVelocity = 0.0f;
+
+        if (normalVelocity < -m_restitutionThreshold)
+            targetVelocity = -contact.GetRestitution() * normalVelocity;
+
+        Vec3 angularTermA =
+            inverseInertiaA * rA.Cross(normal);
+
+        Vec3 angularTermB =
+            inverseInertiaB * rB.Cross(normal);
+
+        float denominator =
+            inverseMassA +
+            inverseMassB +
+            normal.Dot(angularTermA.Cross(rA)) +
+            normal.Dot(angularTermB.Cross(rB));
+
+        if (denominator <= 0.000001f)
+            continue;
+
+        float impulseMagnitude =
+            -(normalVelocity - targetVelocity) / denominator;
+
+        float oldImpulse = point.normalImpulse;
+        float newImpulse =
+            std::max(0.0f, oldImpulse + impulseMagnitude);
+
+        float deltaImpulse =
+            newImpulse - oldImpulse;
+
+        if (std::abs(deltaImpulse) <= 0.000001f)
+            continue;
+
+        Vec3 impulse = normal * deltaImpulse;
+
+        bodyA->SetLinearVelocity(
+            bodyA->GetLinearVelocity() -
+            impulse * inverseMassA
+        );
+
+        bodyB->SetLinearVelocity(
+            bodyB->GetLinearVelocity() +
+            impulse * inverseMassB
+        );
+
+        bodyA->SetAngularVelocity(
+            bodyA->GetAngularVelocity() -
+            inverseInertiaA * rA.Cross(impulse)
+        );
+
+        bodyB->SetAngularVelocity(
+            bodyB->GetAngularVelocity() +
+            inverseInertiaB * rB.Cross(impulse)
+        );
+
+        point.normalImpulse = newImpulse;
+
+        totalImpulse += std::fabs(deltaImpulse);
+        maxImpulse = std::max(maxImpulse, std::fabs(deltaImpulse));
+        ++appliedImpulseCount;
+    }
+
+    Vec3 finalVelocityA = bodyA->GetLinearVelocity();
+    Vec3 finalAngularVelocityA = bodyA->GetAngularVelocity();
+
+    Logger::Debug(
+        "[SOLVER] "
+        "N=(" +
+        std::to_string(normal.x) + "," +
+        std::to_string(normal.y) + "," +
+        std::to_string(normal.z) + ") "
+        "NV=(" +
+        std::to_string(minNormalVelocity) + "," +
+        std::to_string(maxNormalVelocity) + ") "
+        "IMP=" +
+        std::to_string(totalImpulse) +
+        " MAX=" +
+        std::to_string(maxImpulse) +
+        " CNT=" +
+        std::to_string(appliedImpulseCount) +
+        " V=(" +
+        std::to_string(initialVelocityA.x) + "," +
+        std::to_string(initialVelocityA.y) + "," +
+        std::to_string(initialVelocityA.z) +
+        ")->(" +
+        std::to_string(finalVelocityA.x) + "," +
+        std::to_string(finalVelocityA.y) + "," +
+        std::to_string(finalVelocityA.z) +
+        ") "
+        "W=(" +
+        std::to_string(initialAngularVelocityA.x) + "," +
+        std::to_string(initialAngularVelocityA.y) + "," +
+        std::to_string(initialAngularVelocityA.z) +
+        ")->(" +
+        std::to_string(finalAngularVelocityA.x) + "," +
+        std::to_string(finalAngularVelocityA.y) + "," +
+        std::to_string(finalAngularVelocityA.z) +
+        ")"
+    );
+}
+
+void Solver::SolveFriction(Contact& contact) {
+    RigidBody* bodyA = contact.GetBodyA();
+    RigidBody* bodyB = contact.GetBodyB();
+
+    if (!bodyA || !bodyB)
+        return;
+
+    Vec3 normal = contact.GetNormal();
+
+    float inverseMassA = bodyA->GetInverseMass();
+    float inverseMassB = bodyB->GetInverseMass();
+
+    Mat3 inverseInertiaA = bodyA->GetWorldInverseInertiaTensor();
+    Mat3 inverseInertiaB = bodyB->GetWorldInverseInertiaTensor();
+
+    for (int i = 0; i < contact.GetPointCount(); ++i) {
+        ContactPoint& point = contact.GetPoint(i);
+
+        if (point.normalImpulse <= 0.0f)
+            continue;
+
+        Vec3 rA = point.position - bodyA->GetPosition();
+        Vec3 rB = point.position - bodyB->GetPosition();
+
+        Vec3 velocityA =
+            bodyA->GetLinearVelocity() +
+            bodyA->GetAngularVelocity().Cross(rA);
+
+        Vec3 velocityB =
+            bodyB->GetLinearVelocity() +
+            bodyB->GetAngularVelocity().Cross(rB);
+
+        Vec3 relativeVelocity = velocityB - velocityA;
+
+        Vec3 tangentVelocity =
+            relativeVelocity -
+            normal * relativeVelocity.Dot(normal);
+
+        float tangentLength = tangentVelocity.Length();
+
+        if (tangentLength <= 0.000001f)
+            continue;
+
+        Vec3 tangent = tangentVelocity / tangentLength;
+
+        Vec3 angularTermA =
+            inverseInertiaA * rA.Cross(tangent);
+
+        Vec3 angularTermB =
+            inverseInertiaB * rB.Cross(tangent);
+
+        float denominator =
+            inverseMassA +
+            inverseMassB +
+            tangent.Dot(angularTermA.Cross(rA)) +
+            tangent.Dot(angularTermB.Cross(rB));
+
+        if (denominator <= 0.000001f)
+            continue;
+
+        float impulseMagnitude =
+            -relativeVelocity.Dot(tangent) / denominator;
+
+        float oldImpulse = point.tangentImpulse;
+
+        float maxFrictionImpulse =
+            contact.GetFriction() * point.normalImpulse;
+
+        float newImpulse =
+            oldImpulse + impulseMagnitude;
+
+        if (newImpulse > maxFrictionImpulse)
+            newImpulse = maxFrictionImpulse;
+        else if (newImpulse < -maxFrictionImpulse)
+            newImpulse = -maxFrictionImpulse;
+
+        float deltaImpulse =
+            newImpulse - oldImpulse;
+
+        if (std::abs(deltaImpulse) <= 0.000001f)
+            continue;
+
+        Vec3 impulse = tangent * deltaImpulse;
+
+        bodyA->SetLinearVelocity(
+            bodyA->GetLinearVelocity() -
+            impulse * inverseMassA
+        );
+
+        bodyB->SetLinearVelocity(
+            bodyB->GetLinearVelocity() +
+            impulse * inverseMassB
+        );
+
+        bodyA->SetAngularVelocity(
+            bodyA->GetAngularVelocity() -
+            inverseInertiaA * rA.Cross(impulse)
+        );
+
+        bodyB->SetAngularVelocity(
+            bodyB->GetAngularVelocity() +
+            inverseInertiaB * rB.Cross(impulse)
+        );
+
+        point.tangentImpulse = newImpulse;
+    }
+}
+

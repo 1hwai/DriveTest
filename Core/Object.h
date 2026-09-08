@@ -4,6 +4,7 @@
 #include "../Rendering/Mesh.h"
 
 class RigidBody;
+class Collider;
 
 class Object {
 public:
@@ -23,8 +24,14 @@ public:
     RigidBody* GetRigidBody();
     const RigidBody* GetRigidBody() const;
 
+    void SetCollider(Collider* collider);
+
+    Collider* GetCollider();
+    const Collider* GetCollider() const;
+
 private:
     Transform m_transform;
     Mesh* m_mesh;
     RigidBody* m_rigidBody;
+	Collider* m_collider;
 };

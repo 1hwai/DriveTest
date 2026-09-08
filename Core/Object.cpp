@@ -3,7 +3,9 @@
 Object::Object()
     : m_transform(),
     m_mesh(nullptr),
-    m_rigidBody(nullptr) {}
+    m_rigidBody(nullptr),
+	m_collider(nullptr)
+{}
 
 Transform& Object::GetTransform() {
     return m_transform;
@@ -35,4 +37,16 @@ RigidBody* Object::GetRigidBody() {
 
 const RigidBody* Object::GetRigidBody() const {
     return m_rigidBody;
+}
+
+void Object::SetCollider(Collider* collider) {
+	m_collider = collider;
+}
+
+Collider* Object::GetCollider() {
+    return m_collider;
+}
+
+const Collider* Object::GetCollider() const {
+    return m_collider;
 }

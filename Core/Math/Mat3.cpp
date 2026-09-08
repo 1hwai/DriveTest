@@ -15,6 +15,16 @@ Mat3 Mat3::Identity() {
     return result;
 }
 
+Mat3 Mat3::Diagonal(const Vec3& diagonal) {
+    Mat3 result;
+
+    result.m[0][0] = diagonal.x;
+    result.m[1][1] = diagonal.y;
+    result.m[2][2] = diagonal.z;
+
+    return result;
+}
+
 Vec3 Mat3::operator*(const Vec3& vector) const {
     return Vec3(
         m[0][0] * vector.x +

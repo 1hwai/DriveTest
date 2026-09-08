@@ -10,12 +10,15 @@ add_executable(DriveTest
     Core/Application.cpp
     Core/Time.cpp
     Core/Object.cpp
+    Core/Debug/Logger.cpp
 
     Physics/RigidBody.cpp
     Physics/Collision.cpp
+    Physics/Collider.cpp
     Physics/Contact.cpp
     Physics/Solver.cpp
     Physics/PhysicsWorld.cpp
+    Physics/Material.cpp
 
     Vehicle/Car.cpp
     Vehicle/Wheel.cpp
@@ -39,6 +42,7 @@ add_executable(DriveTest
     Core/Math/Mat4.cpp
     Core/Math/Transform.cpp
     Core/Math/Mat3.cpp
+    Core/Math/Quaternion.cpp
 
     Core/Debug/Logger.cpp
 
@@ -46,7 +50,7 @@ add_executable(DriveTest
 
 
     External/glad-generated/src/gl.c
- "Core/Math/Quaternion.cpp")
+)
 
 add_custom_command(TARGET DriveTest POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory

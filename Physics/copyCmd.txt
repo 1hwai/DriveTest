@@ -1,0 +1,51 @@
+@(
+    "Physics\RigidBody.h",
+    "Physics\RigidBody.cpp",
+    "Physics\Collision.h",
+    "Physics\Collision.cpp",
+    "Physics\Contact.h",
+    "Physics\Contact.cpp",
+    "Physics\Solver.h",
+    "Physics\Solver.cpp",
+    "Physics\PhysicsWorld.h",
+    "Physics\PhysicsWorld.cpp"
+) | ForEach-Object {
+    "============================================================"
+    "===== $_ ====="
+    "============================================================"
+    Get-Content $_
+    ""
+} | Set-Content "Physics\Physics_sources.txt" -Encoding UTF8
+
+@(
+    "Physics\RigidBody.h",
+    "Physics\RigidBody.cpp",
+    "Physics\Collision.h",
+    "Physics\Collision.cpp",
+    "Physics\Contact.h",
+    "Physics\Contact.cpp",
+    "Physics\Solver.h",
+    "Physics\Solver.cpp"
+) | ForEach-Object {
+    "============================================================"
+    "===== $_ ====="
+    "============================================================"
+    Get-Content $_
+    ""
+} | Set-Content "Physics\Physics_sources.txt" -Encoding UTF8
+
+//프로젝트 구조
+
+Get-ChildItem -Recurse -Force |
+    Where-Object {
+        $_.FullName -notmatch '\\(\.vs|vcpkg_installed|External|Assets|\.git|out)(\\|$)'
+    } |
+    ForEach-Object {
+        $_.FullName.Substring((Get-Location).Path.Length + 1)
+    }
+// 뭔뭔 구조
+Get-ChildItem Physics, Core\Math -Recurse -File -Include *.h,*.cpp |
+    ForEach-Object {
+        "`n===== $($_.FullName) ====="
+        Get-Content $_.FullName
+    } > Physics\Physics_full.txt

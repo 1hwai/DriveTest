@@ -13,6 +13,8 @@ public:
     float GetMass() const;
     float GetInverseMass() const;
 
+    void SetBoxInertia(const Vec3& size);
+
     void SetPosition(const Vec3& position);
     const Vec3& GetPosition() const;
 
@@ -39,24 +41,33 @@ public:
     void SetInverseInertiaTensor(const Mat3& inverseInertiaTensor);
     const Mat3& GetInverseInertiaTensor() const;
 
-    void Integrate(
-        float deltaTime,
-        const Vec3& gravity
-    );
+    Mat3 GetWorldInverseInertiaTensor() const;
+
+    void Integrate(float deltaTime, const Vec3& gravity);
+
+    void UpdateSleep(float deltaTime);
+
+    void Wake();
+    void Sleep();
+
+    bool IsSleeping() const;
 
 private:
     Vec3 m_position;
     Quaternion m_orientation;
-
     Vec3 m_linearVelocity;
     Vec3 m_angularVelocity;
-
     Vec3 m_force;
     Vec3 m_torque;
-
     float m_mass;
     float m_inverseMass;
-
     Mat3 m_inertiaTensor;
     Mat3 m_inverseInertiaTensor;
+
+    bool m_isSleeping;
+    float m_sleepTimer;
+
+    static constexpr float SleepLinearVelocityThreshold = 0.05f;
+    static constexpr float SleepAngularVelocityThreshold = 0.05f;
+    static constexpr float SleepTimeThreshold = 0.5f;
 };
