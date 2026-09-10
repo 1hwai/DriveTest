@@ -1,376 +1,3 @@
-﻿============================================================
-===== Physics\RigidBody.h =====
-============================================================
-#pragma once
-
-#include "../Core/Math/Vec3.h"
-#include "../Core/Math/Quaternion.h"
-#include "../Core/Math/Mat3.h"
-
-class RigidBody {
-public:
-    RigidBody();
-    ~RigidBody() = default;
-
-    void SetMass(float mass);
-    float GetMass() const;
-    float GetInverseMass() const;
-
-    void SetBoxInertia(const Vec3& size);
-
-    void SetPosition(const Vec3& position);
-    const Vec3& GetPosition() const;
-
-    void SetOrientation(const Quaternion& orientation);
-    const Quaternion& GetOrientation() const;
-
-    void SetLinearVelocity(const Vec3& velocity);
-    const Vec3& GetLinearVelocity() const;
-
-    void SetAngularVelocity(const Vec3& velocity);
-    const Vec3& GetAngularVelocity() const;
-
-    void AddForce(const Vec3& force);
-    void AddTorque(const Vec3& torque);
-
-    const Vec3& GetForce() const;
-    const Vec3& GetTorque() const;
-
-    void ClearForces();
-
-    void SetInertiaTensor(const Mat3& inertiaTensor);
-    const Mat3& GetInertiaTensor() const;
-
-    void SetInverseInertiaTensor(const Mat3& inverseInertiaTensor);
-    const Mat3& GetInverseInertiaTensor() const;
-
-    Mat3 GetWorldInverseInertiaTensor() const;
-
-    void Integrate(float deltaTime, const Vec3& gravity);
-
-    void UpdateSleep(float deltaTime);
-
-    void Wake();
-    void Sleep();
-
-    bool IsSleeping() const;
-
-private:
-    Vec3 m_position;
-    Quaternion m_orientation;
-    Vec3 m_linearVelocity;
-    Vec3 m_angularVelocity;
-    Vec3 m_force;
-    Vec3 m_torque;
-    float m_mass;
-    float m_inverseMass;
-    Mat3 m_inertiaTensor;
-    Mat3 m_inverseInertiaTensor;
-
-    bool m_isSleeping;
-    float m_sleepTimer;
-
-    static constexpr float SleepLinearVelocityThreshold = 0.05f;
-    static constexpr float SleepAngularVelocityThreshold = 0.05f;
-    static constexpr float SleepTimeThreshold = 0.5f;
-};
-
-============================================================
-===== Physics\RigidBody.cpp =====
-============================================================
-#include "RigidBody.h"
-#include "../Core/Debug/Logger.h"
-
-#include <cmath>
-
-RigidBody::RigidBody()
-    : m_position(0.0f, 0.0f, 0.0f),
-    m_orientation(Quaternion::Identity()),
-    m_linearVelocity(0.0f, 0.0f, 0.0f),
-    m_angularVelocity(0.0f, 0.0f, 0.0f),
-    m_force(0.0f, 0.0f, 0.0f),
-    m_torque(0.0f, 0.0f, 0.0f),
-    m_mass(1.0f),
-    m_inverseMass(1.0f),
-    m_inertiaTensor(Mat3::Identity()),
-    m_inverseInertiaTensor(Mat3::Identity()),
-    m_isSleeping(false),
-    m_sleepTimer(0.0f) {}
-
-void RigidBody::SetMass(float mass) {
-    if (mass <= 0.0f) {
-        m_mass = 0.0f;
-        m_inverseMass = 0.0f;
-        m_isSleeping = false;
-        m_sleepTimer = 0.0f;
-        return;
-    }
-
-    m_mass = mass;
-    m_inverseMass = 1.0f / mass;
-
-    Wake();
-}
-
-float RigidBody::GetMass() const {
-    return m_mass;
-}
-
-float RigidBody::GetInverseMass() const {
-    return m_inverseMass;
-}
-
-void RigidBody::SetBoxInertia(const Vec3& size) {
-    float x2 = size.x * size.x;
-    float y2 = size.y * size.y;
-    float z2 = size.z * size.z;
-
-    float factor = m_mass / 12.0f;
-
-    float ix = factor * (y2 + z2);
-    float iy = factor * (x2 + z2);
-    float iz = factor * (x2 + y2);
-
-    m_inertiaTensor =
-        Mat3::Diagonal(Vec3(ix, iy, iz));
-
-    constexpr float epsilon = 0.000001f;
-
-    float iix = ix > epsilon ? 1.0f / ix : 0.0f;
-    float iiy = iy > epsilon ? 1.0f / iy : 0.0f;
-    float iiz = iz > epsilon ? 1.0f / iz : 0.0f;
-
-    m_inverseInertiaTensor =
-        Mat3::Diagonal(Vec3(iix, iiy, iiz));
-}
-
-void RigidBody::SetPosition(const Vec3& position) {
-    m_position = position;
-}
-
-const Vec3& RigidBody::GetPosition() const {
-    return m_position;
-}
-
-void RigidBody::SetOrientation(const Quaternion& orientation) {
-    m_orientation = orientation;
-    m_orientation.Normalize();
-}
-
-const Quaternion& RigidBody::GetOrientation() const {
-    return m_orientation;
-}
-
-void RigidBody::SetLinearVelocity(const Vec3& velocity) {
-    m_linearVelocity = velocity;
-    Wake();
-}
-
-const Vec3& RigidBody::GetLinearVelocity() const {
-    return m_linearVelocity;
-}
-
-void RigidBody::SetAngularVelocity(const Vec3& velocity) {
-    m_angularVelocity = velocity;
-    Wake();
-}
-
-const Vec3& RigidBody::GetAngularVelocity() const {
-    return m_angularVelocity;
-}
-
-void RigidBody::AddForce(const Vec3& force) {
-    m_force += force;
-    Wake();
-}
-
-void RigidBody::AddTorque(const Vec3& torque) {
-    m_torque += torque;
-    Wake();
-}
-
-const Vec3& RigidBody::GetForce() const {
-    return m_force;
-}
-
-const Vec3& RigidBody::GetTorque() const {
-    return m_torque;
-}
-
-void RigidBody::ClearForces() {
-    m_force = Vec3(0.0f, 0.0f, 0.0f);
-    m_torque = Vec3(0.0f, 0.0f, 0.0f);
-}
-
-void RigidBody::SetInertiaTensor(
-    const Mat3& inertiaTensor
-) {
-    m_inertiaTensor = inertiaTensor;
-}
-
-const Mat3& RigidBody::GetInertiaTensor() const {
-    return m_inertiaTensor;
-}
-
-void RigidBody::SetInverseInertiaTensor(
-    const Mat3& inverseInertiaTensor
-) {
-    m_inverseInertiaTensor = inverseInertiaTensor;
-}
-
-const Mat3& RigidBody::GetInverseInertiaTensor() const {
-    return m_inverseInertiaTensor;
-}
-
-Mat3 RigidBody::GetWorldInverseInertiaTensor() const {
-    Mat3 rotation =
-        m_orientation.ToMat3();
-
-    return rotation *
-        m_inverseInertiaTensor *
-        rotation.Transposed();
-}
-
-void RigidBody::Integrate(
-    float deltaTime,
-    const Vec3& gravity
-) {
-    if (deltaTime <= 0.0f)
-        return;
-
-    if (m_inverseMass <= 0.0f)
-        return;
-
-    if (m_isSleeping)
-        return;
-
-    Vec3 acceleration =
-        gravity +
-        m_force * m_inverseMass;
-
-    m_linearVelocity +=
-        acceleration * deltaTime;
-
-    m_position +=
-        m_linearVelocity * deltaTime;
-
-    Mat3 worldInverseInertia =
-        GetWorldInverseInertiaTensor();
-
-    Vec3 angularAcceleration =
-        worldInverseInertia * m_torque;
-
-    m_angularVelocity +=
-        angularAcceleration * deltaTime;
-
-    constexpr float AngularVelocitySleepEpsilonSq =
-        1e-8f;
-
-    if (m_angularVelocity.LengthSquared() <
-        AngularVelocitySleepEpsilonSq) {
-        m_angularVelocity =
-            Vec3(0.0f, 0.0f, 0.0f);
-    }
-
-    Quaternion angularVelocityQuat(
-        0.0f,
-        m_angularVelocity.x,
-        m_angularVelocity.y,
-        m_angularVelocity.z
-    );
-
-    Quaternion orientationDerivative =
-        angularVelocityQuat *
-        m_orientation;
-
-    m_orientation.w +=
-        0.5f *
-        orientationDerivative.w *
-        deltaTime;
-
-    m_orientation.x +=
-        0.5f *
-        orientationDerivative.x *
-        deltaTime;
-
-    m_orientation.y +=
-        0.5f *
-        orientationDerivative.y *
-        deltaTime;
-
-    m_orientation.z +=
-        0.5f *
-        orientationDerivative.z *
-        deltaTime;
-
-    m_orientation.Normalize();
-
-    ClearForces();
-}
-
-void RigidBody::UpdateSleep(float deltaTime) {
-    if (m_inverseMass <= 0.0f)
-        return;
-
-    if (m_isSleeping)
-        return;
-
-    constexpr float LinearThresholdSq =
-        SleepLinearVelocityThreshold *
-        SleepLinearVelocityThreshold;
-
-    constexpr float AngularThresholdSq =
-        SleepAngularVelocityThreshold *
-        SleepAngularVelocityThreshold;
-
-    if (m_linearVelocity.LengthSquared() <
-        LinearThresholdSq &&
-        m_angularVelocity.LengthSquared() <
-        AngularThresholdSq) {
-
-        m_sleepTimer += deltaTime;
-
-        if (m_sleepTimer >= SleepTimeThreshold)
-            Sleep();
-    }
-    else {
-        m_sleepTimer = 0.0f;
-    }
-}
-
-void RigidBody::Wake() {
-    if (m_inverseMass <= 0.0f)
-        return;
-
-    m_isSleeping = false;
-    m_sleepTimer = 0.0f;
-}
-
-void RigidBody::Sleep() {
-    if (m_inverseMass <= 0.0f)
-        return;
-
-    Logger::Debug("[RB] Sleeping");
-
-    m_isSleeping = true;
-    m_sleepTimer = SleepTimeThreshold;
-
-    m_linearVelocity =
-        Vec3(0.0f, 0.0f, 0.0f);
-
-    m_angularVelocity =
-        Vec3(0.0f, 0.0f, 0.0f);
-
-    ClearForces();
-}
-
-bool RigidBody::IsSleeping() const {
-    return m_isSleeping;
-}
-
-============================================================
-===== Physics\Collision.h =====
-============================================================
 #pragma once
 
 #include "../Core/Math/Vec3.h"
@@ -477,10 +104,6 @@ private:
         Vec3& point2
     );
 };
-
-============================================================
-===== Physics\Collision.cpp =====
-============================================================
 #include "Collision.h"
 
 #include "Contact.h"
@@ -1274,10 +897,6 @@ bool Collision::BuildEdgeContact(
 
     return true;
 }
-
-============================================================
-===== Physics\Contact.h =====
-============================================================
 #pragma once
 
 #include "../Core/Math/Vec3.h"
@@ -1333,6 +952,8 @@ public:
 
     void ClearPoints();
 
+    void WarmStartFrom(const Contact& previous);
+
 private:
     RigidBody* m_bodyA;
     RigidBody* m_bodyB;
@@ -1345,11 +966,9 @@ private:
     float m_restitution;
     float m_friction;
 };
-
-============================================================
-===== Physics\Contact.cpp =====
-============================================================
 #include "Contact.h"
+
+#include <cmath>
 
 Contact::Contact()
     : m_bodyA(nullptr),
@@ -1422,7 +1041,9 @@ void Contact::AddPoint(
     ContactPoint& point = m_points[m_pointCount];
 
     point.position = position;
-    point.penetration = penetration > 0.0f ? penetration : 0.0f;
+    point.penetration =
+        penetration > 0.0f ? penetration : 0.0f;
+
     point.normalImpulse = 0.0f;
     point.tangentImpulse = 0.0f;
 
@@ -1445,9 +1066,67 @@ void Contact::ClearPoints() {
     m_pointCount = 0;
 }
 
-============================================================
-===== Physics\Solver.h =====
-============================================================
+void Contact::WarmStartFrom(const Contact& previous) {
+    if (m_bodyA != previous.m_bodyA ||
+        m_bodyB != previous.m_bodyB) {
+        return;
+    }
+
+    if (m_normal.Dot(previous.m_normal) < 0.95f)
+        return;
+
+    constexpr float MatchDistanceSq = 0.05f * 0.05f;
+
+    bool used[MaxPoints] = {
+        false,
+        false,
+        false,
+        false
+    };
+
+    for (int i = 0; i < m_pointCount; ++i) {
+        ContactPoint& current =
+            m_points[i];
+
+        int bestIndex = -1;
+        float bestDistanceSq =
+            MatchDistanceSq;
+
+        for (int j = 0;
+            j < previous.m_pointCount;
+            ++j) {
+
+            if (used[j])
+                continue;
+
+            const ContactPoint& old =
+                previous.m_points[j];
+
+            Vec3 difference =
+                current.position -
+                old.position;
+
+            float distanceSq =
+                difference.LengthSquared();
+
+            if (distanceSq < bestDistanceSq) {
+                bestDistanceSq = distanceSq;
+                bestIndex = j;
+            }
+        }
+
+        if (bestIndex < 0)
+            continue;
+
+        const ContactPoint& old =
+            previous.m_points[bestIndex];
+
+        current.normalImpulse =
+            old.normalImpulse;
+
+        used[bestIndex] = true;
+    }
+}
 #pragma once
 
 #include "Contact.h"
@@ -1469,6 +1148,8 @@ public:
     void SetRestitutionThreshold(float threshold);
     float GetRestitutionThreshold() const;
 
+    void WarmStart(Contact& contact);
+
     void SolvePosition(Contact& contact);
     void SolveVelocity(Contact& contact);
     void SolveFriction(Contact& contact);
@@ -1479,16 +1160,11 @@ private:
     int m_velocityIterations;
     float m_restitutionThreshold;
 };
-
-============================================================
-===== Physics\Solver.cpp =====
-============================================================
 #include "Solver.h"
 #include "RigidBody.h"
+
 #include <algorithm>
 #include <cmath>
-#include <string>
-#include "../Core/Debug/Logger.h"
 
 Solver::Solver()
     : m_penetrationSlop(0.001f),
@@ -1497,7 +1173,8 @@ Solver::Solver()
     m_restitutionThreshold(1.0f) {}
 
 void Solver::SetPenetrationSlop(float slop) {
-    m_penetrationSlop = std::max(0.0f, slop);
+    m_penetrationSlop =
+        std::max(0.0f, slop);
 }
 
 float Solver::GetPenetrationSlop() const {
@@ -1514,11 +1191,12 @@ void Solver::SetCorrectionPercent(float percent) {
 }
 
 float Solver::GetCorrectionPercent() const {
-	return m_correctionPercent;
+    return m_correctionPercent;
 }
 
 void Solver::SetVelocityIterations(int iterations) {
-    m_velocityIterations = std::max(1, iterations);
+    m_velocityIterations =
+        std::max(1, iterations);
 }
 
 int Solver::GetVelocityIterations() const {
@@ -1526,38 +1204,133 @@ int Solver::GetVelocityIterations() const {
 }
 
 void Solver::SetRestitutionThreshold(float threshold) {
-    m_restitutionThreshold = std::max(0.0f, threshold);
+    m_restitutionThreshold =
+        std::max(0.0f, threshold);
 }
 
 float Solver::GetRestitutionThreshold() const {
     return m_restitutionThreshold;
 }
 
-void Solver::SolvePosition(Contact& contact) {
-    RigidBody* bodyA = contact.GetBodyA();
-    RigidBody* bodyB = contact.GetBodyB();
+void Solver::WarmStart(Contact& contact) {
+    RigidBody* bodyA =
+        contact.GetBodyA();
+
+    RigidBody* bodyB =
+        contact.GetBodyB();
 
     if (!bodyA || !bodyB)
         return;
 
-    float inverseMassA = bodyA->GetInverseMass();
-    float inverseMassB = bodyB->GetInverseMass();
-    float totalInverseMass = inverseMassA + inverseMassB;
+    Vec3 normal =
+        contact.GetNormal();
+
+    float inverseMassA =
+        bodyA->GetInverseMass();
+
+    float inverseMassB =
+        bodyB->GetInverseMass();
+
+    Mat3 inverseInertiaA =
+        bodyA->GetWorldInverseInertiaTensor();
+
+    Mat3 inverseInertiaB =
+        bodyB->GetWorldInverseInertiaTensor();
+
+    for (int i = 0;
+        i < contact.GetPointCount();
+        ++i) {
+
+        ContactPoint& point =
+            contact.GetPoint(i);
+
+        if (point.normalImpulse <= 0.0f)
+            continue;
+
+        Vec3 rA =
+            point.position -
+            bodyA->GetPosition();
+
+        Vec3 rB =
+            point.position -
+            bodyB->GetPosition();
+
+        Vec3 impulse =
+            normal * point.normalImpulse;
+
+        bodyA->SetLinearVelocity(
+            bodyA->GetLinearVelocity() -
+            impulse * inverseMassA,
+            false
+        );
+
+        bodyB->SetLinearVelocity(
+            bodyB->GetLinearVelocity() +
+            impulse * inverseMassB,
+            false
+        );
+
+        bodyA->SetAngularVelocity(
+            bodyA->GetAngularVelocity() -
+            inverseInertiaA *
+            rA.Cross(impulse),
+            false
+        );
+
+        bodyB->SetAngularVelocity(
+            bodyB->GetAngularVelocity() +
+            inverseInertiaB *
+            rB.Cross(impulse),
+            false
+        );
+    }
+}
+
+void Solver::SolvePosition(Contact& contact) {
+    RigidBody* bodyA =
+        contact.GetBodyA();
+
+    RigidBody* bodyB =
+        contact.GetBodyB();
+
+    if (!bodyA || !bodyB)
+        return;
+
+    float inverseMassA =
+        bodyA->GetInverseMass();
+
+    float inverseMassB =
+        bodyB->GetInverseMass();
+
+    float totalInverseMass =
+        inverseMassA +
+        inverseMassB;
 
     if (totalInverseMass <= 0.0f)
         return;
 
     float maxPenetration = 0.0f;
 
-    for (int i = 0; i < contact.GetPointCount(); ++i)
-        maxPenetration = std::max(maxPenetration, contact.GetPoint(i).penetration);
+    for (int i = 0;
+        i < contact.GetPointCount();
+        ++i) {
 
-    float correctionDepth = maxPenetration - m_penetrationSlop;
+        maxPenetration =
+            std::max(
+                maxPenetration,
+                contact.GetPoint(i).penetration
+            );
+    }
+
+    float correctionDepth =
+        maxPenetration -
+        m_penetrationSlop;
 
     if (correctionDepth <= 0.0f)
         return;
 
-    float correctionPercent = m_correctionPercent;
+    float correctionPercent =
+        m_correctionPercent;
 
     if (correctionDepth > 0.5f)
         correctionPercent = 0.8f;
@@ -1572,42 +1345,64 @@ void Solver::SolvePosition(Contact& contact) {
         correctionPercent = 1.0f;
 
     float correctionMagnitude =
-        correctionDepth * correctionPercent / totalInverseMass;
+        correctionDepth *
+        correctionPercent /
+        totalInverseMass;
 
-    Vec3 correction = contact.GetNormal() * correctionMagnitude;
+    Vec3 correction =
+        contact.GetNormal() *
+        correctionMagnitude;
 
-    bodyA->SetPosition(bodyA->GetPosition() - correction * inverseMassA);
-    bodyB->SetPosition(bodyB->GetPosition() + correction * inverseMassB);
+    bodyA->SetPosition(
+        bodyA->GetPosition() -
+        correction * inverseMassA
+    );
+
+    bodyB->SetPosition(
+        bodyB->GetPosition() +
+        correction * inverseMassB
+    );
 }
 
 void Solver::SolveVelocity(Contact& contact) {
-    RigidBody* bodyA = contact.GetBodyA();
-    RigidBody* bodyB = contact.GetBodyB();
+    RigidBody* bodyA =
+        contact.GetBodyA();
+
+    RigidBody* bodyB =
+        contact.GetBodyB();
 
     if (!bodyA || !bodyB)
         return;
 
-    Vec3 normal = contact.GetNormal();
+    Vec3 normal =
+        contact.GetNormal();
 
-    float inverseMassA = bodyA->GetInverseMass();
-    float inverseMassB = bodyB->GetInverseMass();
+    float inverseMassA =
+        bodyA->GetInverseMass();
 
-    Mat3 inverseInertiaA = bodyA->GetWorldInverseInertiaTensor();
-    Mat3 inverseInertiaB = bodyB->GetWorldInverseInertiaTensor();
+    float inverseMassB =
+        bodyB->GetInverseMass();
 
-    Vec3 initialVelocityA = bodyA->GetLinearVelocity();
-    Vec3 initialAngularVelocityA = bodyA->GetAngularVelocity();
+    Mat3 inverseInertiaA =
+        bodyA->GetWorldInverseInertiaTensor();
 
-    float totalImpulse = 0.0f;
-    float maxImpulse = 0.0f;
-    float minNormalVelocity = INFINITY;
-    float maxNormalVelocity = -INFINITY;
-    int appliedImpulseCount = 0;
+    Mat3 inverseInertiaB =
+        bodyB->GetWorldInverseInertiaTensor();
 
-    for (int i = 0; i < contact.GetPointCount(); ++i) {
-        ContactPoint& point = contact.GetPoint(i);
-        Vec3 rA = point.position - bodyA->GetPosition();
-        Vec3 rB = point.position - bodyB->GetPosition();
+    for (int i = 0;
+        i < contact.GetPointCount();
+        ++i) {
+
+        ContactPoint& point =
+            contact.GetPoint(i);
+
+        Vec3 rA =
+            point.position -
+            bodyA->GetPosition();
+
+        Vec3 rB =
+            point.position -
+            bodyB->GetPosition();
 
         Vec3 velocityA =
             bodyA->GetLinearVelocity() +
@@ -1617,140 +1412,149 @@ void Solver::SolveVelocity(Contact& contact) {
             bodyB->GetLinearVelocity() +
             bodyB->GetAngularVelocity().Cross(rB);
 
-        Vec3 relativeVelocity = velocityB - velocityA;
-        float normalVelocity = relativeVelocity.Dot(normal);
+        Vec3 relativeVelocity =
+            velocityB -
+            velocityA;
 
-        minNormalVelocity = std::min(minNormalVelocity, normalVelocity);
-        maxNormalVelocity = std::max(maxNormalVelocity, normalVelocity);
+        float normalVelocity =
+            relativeVelocity.Dot(normal);
 
         if (point.normalImpulse == 0.0f &&
-            normalVelocity < -m_restitutionThreshold)
+            normalVelocity < -m_restitutionThreshold) {
             point.tangentImpulse = 0.0f;
+        }
 
         float targetVelocity = 0.0f;
 
-        if (normalVelocity < -m_restitutionThreshold)
-            targetVelocity = -contact.GetRestitution() * normalVelocity;
+        if (normalVelocity <
+            -m_restitutionThreshold) {
+            targetVelocity =
+                -contact.GetRestitution() *
+                normalVelocity;
+        }
 
         Vec3 angularTermA =
-            inverseInertiaA * rA.Cross(normal);
+            inverseInertiaA *
+            rA.Cross(normal);
 
         Vec3 angularTermB =
-            inverseInertiaB * rB.Cross(normal);
+            inverseInertiaB *
+            rB.Cross(normal);
 
         float denominator =
             inverseMassA +
             inverseMassB +
-            normal.Dot(angularTermA.Cross(rA)) +
-            normal.Dot(angularTermB.Cross(rB));
+            normal.Dot(
+                angularTermA.Cross(rA)
+            ) +
+            normal.Dot(
+                angularTermB.Cross(rB)
+            );
 
         if (denominator <= 0.000001f)
             continue;
 
         float impulseMagnitude =
-            -(normalVelocity - targetVelocity) / denominator;
+            -(normalVelocity -
+                targetVelocity) /
+            denominator;
 
-        float oldImpulse = point.normalImpulse;
+        float oldImpulse =
+            point.normalImpulse;
+
         float newImpulse =
-            std::max(0.0f, oldImpulse + impulseMagnitude);
+            std::max(
+                0.0f,
+                oldImpulse +
+                impulseMagnitude
+            );
 
         float deltaImpulse =
-            newImpulse - oldImpulse;
+            newImpulse -
+            oldImpulse;
 
-        if (std::abs(deltaImpulse) <= 0.000001f)
+        if (std::abs(deltaImpulse) <=
+            0.000001f) {
             continue;
+        }
 
-        Vec3 impulse = normal * deltaImpulse;
+        Vec3 impulse =
+            normal *
+            deltaImpulse;
 
         bodyA->SetLinearVelocity(
             bodyA->GetLinearVelocity() -
-            impulse * inverseMassA
+            impulse * inverseMassA,
+            false
         );
 
         bodyB->SetLinearVelocity(
             bodyB->GetLinearVelocity() +
-            impulse * inverseMassB
+            impulse * inverseMassB,
+            false
         );
 
         bodyA->SetAngularVelocity(
             bodyA->GetAngularVelocity() -
-            inverseInertiaA * rA.Cross(impulse)
+            inverseInertiaA *
+            rA.Cross(impulse),
+            false
         );
 
         bodyB->SetAngularVelocity(
             bodyB->GetAngularVelocity() +
-            inverseInertiaB * rB.Cross(impulse)
+            inverseInertiaB *
+            rB.Cross(impulse),
+            false
         );
 
-        point.normalImpulse = newImpulse;
-
-        totalImpulse += std::fabs(deltaImpulse);
-        maxImpulse = std::max(maxImpulse, std::fabs(deltaImpulse));
-        ++appliedImpulseCount;
+        point.normalImpulse =
+            newImpulse;
     }
-
-    Vec3 finalVelocityA = bodyA->GetLinearVelocity();
-    Vec3 finalAngularVelocityA = bodyA->GetAngularVelocity();
-
-    //Logger::Debug(
-    //    "[SOLVER] "
-    //    "N=(" +
-    //    std::to_string(normal.x) + "," +
-    //    std::to_string(normal.y) + "," +
-    //    std::to_string(normal.z) + ") "
-    //    "NV=(" +
-    //    std::to_string(minNormalVelocity) + "," +
-    //    std::to_string(maxNormalVelocity) + ") "
-    //    "IMP=" +
-    //    std::to_string(totalImpulse) +
-    //    " MAX=" +
-    //    std::to_string(maxImpulse) +
-    //    " CNT=" +
-    //    std::to_string(appliedImpulseCount) +
-    //    " V=(" +
-    //    std::to_string(initialVelocityA.x) + "," +
-    //    std::to_string(initialVelocityA.y) + "," +
-    //    std::to_string(initialVelocityA.z) +
-    //    ")->(" +
-    //    std::to_string(finalVelocityA.x) + "," +
-    //    std::to_string(finalVelocityA.y) + "," +
-    //    std::to_string(finalVelocityA.z) +
-    //    ") "
-    //    "W=(" +
-    //    std::to_string(initialAngularVelocityA.x) + "," +
-    //    std::to_string(initialAngularVelocityA.y) + "," +
-    //    std::to_string(initialAngularVelocityA.z) +
-    //    ")->(" +
-    //    std::to_string(finalAngularVelocityA.x) + "," +
-    //    std::to_string(finalAngularVelocityA.y) + "," +
-    //    std::to_string(finalAngularVelocityA.z) +
-    //    ")"
-    //);
 }
 
 void Solver::SolveFriction(Contact& contact) {
-    RigidBody* bodyA = contact.GetBodyA();
-    RigidBody* bodyB = contact.GetBodyB();
+    RigidBody* bodyA =
+        contact.GetBodyA();
+
+    RigidBody* bodyB =
+        contact.GetBodyB();
 
     if (!bodyA || !bodyB)
         return;
 
-    Vec3 normal = contact.GetNormal();
+    Vec3 normal =
+        contact.GetNormal();
 
-    float inverseMassA = bodyA->GetInverseMass();
-    float inverseMassB = bodyB->GetInverseMass();
+    float inverseMassA =
+        bodyA->GetInverseMass();
 
-    Mat3 inverseInertiaA = bodyA->GetWorldInverseInertiaTensor();
-    Mat3 inverseInertiaB = bodyB->GetWorldInverseInertiaTensor();
+    float inverseMassB =
+        bodyB->GetInverseMass();
 
-    for (int i = 0; i < contact.GetPointCount(); ++i) {
-        ContactPoint& point = contact.GetPoint(i);
+    Mat3 inverseInertiaA =
+        bodyA->GetWorldInverseInertiaTensor();
+
+    Mat3 inverseInertiaB =
+        bodyB->GetWorldInverseInertiaTensor();
+
+    for (int i = 0;
+        i < contact.GetPointCount();
+        ++i) {
+
+        ContactPoint& point =
+            contact.GetPoint(i);
 
         if (point.normalImpulse <= 0.0f)
             continue;
 
-        Vec3 rA = point.position - bodyA->GetPosition();
-        Vec3 rB = point.position - bodyB->GetPosition();
+        Vec3 rA =
+            point.position -
+            bodyA->GetPosition();
+
+        Vec3 rB =
+            point.position -
+            bodyB->GetPosition();
 
         Vec3 velocityA =
             bodyA->GetLinearVelocity() +
@@ -1760,380 +1564,737 @@ void Solver::SolveFriction(Contact& contact) {
             bodyB->GetLinearVelocity() +
             bodyB->GetAngularVelocity().Cross(rB);
 
-        Vec3 relativeVelocity = velocityB - velocityA;
+        Vec3 relativeVelocity =
+            velocityB -
+            velocityA;
 
         Vec3 tangentVelocity =
             relativeVelocity -
-            normal * relativeVelocity.Dot(normal);
+            normal *
+            relativeVelocity.Dot(normal);
 
-        float tangentLength = tangentVelocity.Length();
+        float tangentLength =
+            tangentVelocity.Length();
 
         if (tangentLength <= 0.000001f)
             continue;
 
-        Vec3 tangent = tangentVelocity / tangentLength;
+        Vec3 tangent =
+            tangentVelocity /
+            tangentLength;
 
         Vec3 angularTermA =
-            inverseInertiaA * rA.Cross(tangent);
+            inverseInertiaA *
+            rA.Cross(tangent);
 
         Vec3 angularTermB =
-            inverseInertiaB * rB.Cross(tangent);
+            inverseInertiaB *
+            rB.Cross(tangent);
 
         float denominator =
             inverseMassA +
             inverseMassB +
-            tangent.Dot(angularTermA.Cross(rA)) +
-            tangent.Dot(angularTermB.Cross(rB));
+            tangent.Dot(
+                angularTermA.Cross(rA)
+            ) +
+            tangent.Dot(
+                angularTermB.Cross(rB)
+            );
 
         if (denominator <= 0.000001f)
             continue;
 
         float impulseMagnitude =
-            -relativeVelocity.Dot(tangent) / denominator;
+            -relativeVelocity.Dot(tangent) /
+            denominator;
 
-        float oldImpulse = point.tangentImpulse;
+        float oldImpulse =
+            point.tangentImpulse;
 
         float maxFrictionImpulse =
-            contact.GetFriction() * point.normalImpulse;
+            contact.GetFriction() *
+            point.normalImpulse;
 
         float newImpulse =
-            oldImpulse + impulseMagnitude;
+            oldImpulse +
+            impulseMagnitude;
 
-        if (newImpulse > maxFrictionImpulse)
-            newImpulse = maxFrictionImpulse;
-        else if (newImpulse < -maxFrictionImpulse)
+        if (newImpulse < -maxFrictionImpulse)
             newImpulse = -maxFrictionImpulse;
+        else if (newImpulse > maxFrictionImpulse)
+            newImpulse = maxFrictionImpulse;
 
         float deltaImpulse =
-            newImpulse - oldImpulse;
+            newImpulse -
+            oldImpulse;
 
-        Logger::Debug(
-            "[IMPULSE] "
-            "P" + std::to_string(i) +
-            " NV=" + std::to_string(relativeVelocity.Dot(normal)) +
-            " DEN=" + std::to_string(denominator) +
-            " CALC=" + std::to_string(impulseMagnitude) +
-            " OLD=" + std::to_string(oldImpulse) +
-            " NEW=" + std::to_string(newImpulse) +
-            " DELTA=" + std::to_string(deltaImpulse)
-        );
-
-        if (std::abs(deltaImpulse) <= 0.000001f)
+        if (std::abs(deltaImpulse) <=
+            0.000001f) {
             continue;
+        }
 
-        Vec3 impulse = tangent * deltaImpulse;
+        Vec3 impulse =
+            tangent *
+            deltaImpulse;
 
         bodyA->SetLinearVelocity(
             bodyA->GetLinearVelocity() -
-            impulse * inverseMassA
+            impulse * inverseMassA,
+            false
         );
 
         bodyB->SetLinearVelocity(
             bodyB->GetLinearVelocity() +
-            impulse * inverseMassB
+            impulse * inverseMassB,
+            false
         );
 
         bodyA->SetAngularVelocity(
             bodyA->GetAngularVelocity() -
-            inverseInertiaA * rA.Cross(impulse)
+            inverseInertiaA *
+            rA.Cross(impulse),
+            false
         );
 
         bodyB->SetAngularVelocity(
             bodyB->GetAngularVelocity() +
-            inverseInertiaB * rB.Cross(impulse)
+            inverseInertiaB *
+            rB.Cross(impulse),
+            false
         );
 
-        point.tangentImpulse = newImpulse;
+        point.tangentImpulse =
+            newImpulse;
     }
 }
-
-============================================================
-===== Physics\PhysicsWorld.h =====
-============================================================
 #pragma once
 
-#include <memory>
-#include <vector>
+#include "Vec3.h"
+#include "Mat3.h"
 
-#include "RigidBody.h"
-#include "Collider.h"
-#include "Contact.h"
-#include "Collision.h"
-#include "../Core/Math/Transform.h"
-#include "Solver.h"
-
-class PhysicsWorld {
+class Quaternion {
 public:
-    PhysicsWorld();
-    ~PhysicsWorld() = default;
+    float w;
+    float x;
+    float y;
+    float z;
 
-    void SetGravity(const Vec3& gravity);
-    const Vec3& GetGravity() const;
+    Quaternion();
+    Quaternion(float w, float x, float y, float z);
 
-    RigidBody* CreateRigidBody();
-    void AddRigidBody(std::unique_ptr<RigidBody> body);
+    static Quaternion Identity();
+    static Quaternion FromAxisAngle(
+        const Vec3& axis,
+        float angle
+    );
 
-    Collider* CreateCollider();
-    void AddCollider(std::unique_ptr<Collider> collider);
+    float LengthSquared() const;
+    float Length() const;
 
-    void Step(float deltaTime);
+    Quaternion Normalized() const;
+    void Normalize();
 
-    const std::vector<std::unique_ptr<RigidBody>>& GetRigidBodies() const;
-    const std::vector<std::unique_ptr<Collider>>& GetColliders() const;
-    const std::vector<Contact>& GetContacts() const;
+    Quaternion Conjugate() const;
 
-    void Clear();
+    Quaternion operator*(const Quaternion& other) const;
+    Vec3 operator*(const Vec3& vector) const;
 
-private:
-    Vec3 m_gravity;
-    Solver m_solver;
-    std::vector<std::unique_ptr<RigidBody>> m_rigidBodies;
-    std::vector<std::unique_ptr<Collider>> m_colliders;
-    std::vector<Contact> m_contacts;
-    float m_debugTimer;
+    Quaternion& operator*=(const Quaternion& other);
+
+    Mat3 ToMat3() const;
+
+    static Quaternion FromMat3(const Mat3& matrix);
 };
+#include "Quaternion.h"
 
-============================================================
-===== Physics\PhysicsWorld.cpp =====
-============================================================
-#include "PhysicsWorld.h"
-#include "../Core/Debug/Logger.h"
+#include <cmath>
 
-PhysicsWorld::PhysicsWorld()
-    : m_gravity(0.0f, -9.81f, 0.0f),
-    m_debugTimer(0.0f) {}
+Quaternion::Quaternion()
+    : w(1.0f),
+    x(0.0f),
+    y(0.0f),
+    z(0.0f) {}
 
-void PhysicsWorld::SetGravity(const Vec3& gravity) {
-    m_gravity = gravity;
+Quaternion::Quaternion(
+    float w,
+    float x,
+    float y,
+    float z
+)
+    : w(w),
+    x(x),
+    y(y),
+    z(z) {}
+
+Quaternion Quaternion::Identity() {
+    return Quaternion(
+        1.0f,
+        0.0f,
+        0.0f,
+        0.0f
+    );
 }
 
-const Vec3& PhysicsWorld::GetGravity() const {
-    return m_gravity;
+Quaternion Quaternion::FromAxisAngle(
+    const Vec3& axis,
+    float angle
+) {
+    const Vec3 normalizedAxis =
+        axis.Normalized();
+
+    const float halfAngle =
+        angle * 0.5f;
+
+    const float sinHalf =
+        std::sin(halfAngle);
+
+    const float cosHalf =
+        std::cos(halfAngle);
+
+    return Quaternion(
+        cosHalf,
+        normalizedAxis.x * sinHalf,
+        normalizedAxis.y * sinHalf,
+        normalizedAxis.z * sinHalf
+    );
 }
 
-RigidBody* PhysicsWorld::CreateRigidBody() {
-    auto body = std::make_unique<RigidBody>();
-    RigidBody* result = body.get();
-
-    m_rigidBodies.push_back(std::move(body));
-
-    return result;
+float Quaternion::LengthSquared() const {
+    return
+        w * w +
+        x * x +
+        y * y +
+        z * z;
 }
 
-void PhysicsWorld::AddRigidBody(std::unique_ptr<RigidBody> body) {
-    if (body)
-        m_rigidBodies.push_back(std::move(body));
+float Quaternion::Length() const {
+    return std::sqrt(LengthSquared());
 }
 
-Collider* PhysicsWorld::CreateCollider() {
-    auto collider = std::make_unique<Collider>();
-    Collider* result = collider.get();
+Quaternion Quaternion::Normalized() const {
+    const float length = Length();
 
-    m_colliders.push_back(std::move(collider));
+    constexpr float epsilon = 0.000001f;
 
-    return result;
+    if (length <= epsilon)
+        return Identity();
+
+    return Quaternion(
+        w / length,
+        x / length,
+        y / length,
+        z / length
+    );
 }
 
-void PhysicsWorld::AddCollider(std::unique_ptr<Collider> collider) {
-    if (collider)
-        m_colliders.push_back(std::move(collider));
-}
+void Quaternion::Normalize() {
+    const float length = Length();
 
-void PhysicsWorld::Step(float deltaTime) {
-    if (deltaTime <= 0.0f)
+    constexpr float epsilon = 0.000001f;
+
+    if (length <= epsilon) {
+        *this = Identity();
         return;
+    }
 
-    m_contacts.clear();
+    w /= length;
+    x /= length;
+    y /= length;
+    z /= length;
+}
 
-    // 1. Integrate
-    for (auto& body : m_rigidBodies)
-        body->Integrate(deltaTime, m_gravity);
+Quaternion Quaternion::Conjugate() const {
+    return Quaternion(
+        w,
+        -x,
+        -y,
+        -z
+    );
+}
 
-    // 2. Collision detection
-    for (size_t i = 0; i < m_colliders.size(); ++i) {
-        Collider* colliderA =
-            m_colliders[i].get();
+Quaternion Quaternion::operator*(
+    const Quaternion& other
+    ) const {
+    return Quaternion(
+        w * other.w -
+        x * other.x -
+        y * other.y -
+        z * other.z,
 
-        RigidBody* bodyA =
-            colliderA->GetRigidBody();
+        w * other.x +
+        x * other.w +
+        y * other.z -
+        z * other.y,
 
-        if (!bodyA)
-            continue;
+        w * other.y -
+        x * other.z +
+        y * other.w +
+        z * other.x,
 
-        for (size_t j = i + 1;
-            j < m_colliders.size();
-            ++j) {
+        w * other.z +
+        x * other.y -
+        y * other.x +
+        z * other.w
+    );
+}
 
-            Collider* colliderB =
-                m_colliders[j].get();
+Quaternion& Quaternion::operator*=(
+    const Quaternion& other
+    ) {
+    *this = *this * other;
+    return *this;
+}
 
-            RigidBody* bodyB =
-                colliderB->GetRigidBody();
+Vec3 Quaternion::operator*(
+    const Vec3& vector
+    ) const {
+    const Vec3 qVector(x, y, z);
 
-            if (!bodyB)
-                continue;
+    const Vec3 t =
+        qVector.Cross(vector) * 2.0f;
 
-            if (bodyA == bodyB)
-                continue;
+    return vector +
+        t * w +
+        qVector.Cross(t);
+}
 
-            // Both bodies are sleeping.
-            // Nothing can change their state, so there
-            // is no reason to solve this contact.
-            if (bodyA->IsSleeping() &&
-                bodyB->IsSleeping()) {
-                continue;
+Mat3 Quaternion::ToMat3() const {
+    const Quaternion q = Normalized();
+
+    const float xx = q.x * q.x;
+    const float yy = q.y * q.y;
+    const float zz = q.z * q.z;
+
+    const float xy = q.x * q.y;
+    const float xz = q.x * q.z;
+    const float yz = q.y * q.z;
+
+    const float wx = q.w * q.x;
+    const float wy = q.w * q.y;
+    const float wz = q.w * q.z;
+
+    Mat3 result;
+
+    result.m[0][0] = 1.0f - 2.0f * (yy + zz);
+    result.m[0][1] = 2.0f * (xy - wz);
+    result.m[0][2] = 2.0f * (xz + wy);
+
+    result.m[1][0] = 2.0f * (xy + wz);
+    result.m[1][1] = 1.0f - 2.0f * (xx + zz);
+    result.m[1][2] = 2.0f * (yz - wx);
+
+    result.m[2][0] = 2.0f * (xz - wy);
+    result.m[2][1] = 2.0f * (yz + wx);
+    result.m[2][2] = 1.0f - 2.0f * (xx + yy);
+
+    return result;
+}
+
+Quaternion Quaternion::FromMat3(
+    const Mat3& matrix
+) {
+    const float trace =
+        matrix.m[0][0] +
+        matrix.m[1][1] +
+        matrix.m[2][2];
+
+    Quaternion result;
+
+    if (trace > 0.0f) {
+        const float s =
+            std::sqrt(trace + 1.0f) * 2.0f;
+
+        result.w = 0.25f * s;
+        result.x =
+            (matrix.m[2][1] - matrix.m[1][2]) / s;
+        result.y =
+            (matrix.m[0][2] - matrix.m[2][0]) / s;
+        result.z =
+            (matrix.m[1][0] - matrix.m[0][1]) / s;
+    }
+    else if (
+        matrix.m[0][0] >
+        matrix.m[1][1] &&
+        matrix.m[0][0] >
+        matrix.m[2][2]
+        ) {
+        const float s =
+            std::sqrt(
+                1.0f +
+                matrix.m[0][0] -
+                matrix.m[1][1] -
+                matrix.m[2][2]
+            ) * 2.0f;
+
+        result.w =
+            (matrix.m[2][1] - matrix.m[1][2]) / s;
+
+        result.x = 0.25f * s;
+
+        result.y =
+            (matrix.m[0][1] + matrix.m[1][0]) / s;
+
+        result.z =
+            (matrix.m[0][2] + matrix.m[2][0]) / s;
+    }
+    else if (
+        matrix.m[1][1] >
+        matrix.m[2][2]
+        ) {
+        const float s =
+            std::sqrt(
+                1.0f +
+                matrix.m[1][1] -
+                matrix.m[0][0] -
+                matrix.m[2][2]
+            ) * 2.0f;
+
+        result.w =
+            (matrix.m[0][2] - matrix.m[2][0]) / s;
+
+        result.x =
+            (matrix.m[0][1] + matrix.m[1][0]) / s;
+
+        result.y = 0.25f * s;
+
+        result.z =
+            (matrix.m[1][2] + matrix.m[2][1]) / s;
+    }
+    else {
+        const float s =
+            std::sqrt(
+                1.0f +
+                matrix.m[2][2] -
+                matrix.m[0][0] -
+                matrix.m[1][1]
+            ) * 2.0f;
+
+        result.w =
+            (matrix.m[1][0] - matrix.m[0][1]) / s;
+
+        result.x =
+            (matrix.m[0][2] + matrix.m[2][0]) / s;
+
+        result.y =
+            (matrix.m[1][2] + matrix.m[2][1]) / s;
+
+        result.z = 0.25f * s;
+    }
+
+    return result.Normalized();
+}
+#pragma once
+
+#include "Vec3.h"
+
+class Mat3 {
+public:
+    float m[3][3];
+
+    Mat3();
+
+    static Mat3 Identity();
+    static Mat3 Diagonal(const Vec3& diagonal);
+
+    Vec3 operator*(const Vec3& vector) const;
+    Mat3 operator*(const Mat3& other) const;
+    Mat3 operator*(float scalar) const;
+
+    Mat3 Transposed() const;
+
+    float Determinant() const;
+    Mat3 Inversed() const;
+};
+#include "Mat3.h"
+
+#include <cmath>
+
+Mat3::Mat3()
+    : m{} {}
+
+Mat3 Mat3::Identity() {
+    Mat3 result;
+
+    result.m[0][0] = 1.0f;
+    result.m[1][1] = 1.0f;
+    result.m[2][2] = 1.0f;
+
+    return result;
+}
+
+Mat3 Mat3::Diagonal(const Vec3& diagonal) {
+    Mat3 result;
+
+    result.m[0][0] = diagonal.x;
+    result.m[1][1] = diagonal.y;
+    result.m[2][2] = diagonal.z;
+
+    return result;
+}
+
+Vec3 Mat3::operator*(const Vec3& vector) const {
+    return Vec3(
+        m[0][0] * vector.x +
+        m[0][1] * vector.y +
+        m[0][2] * vector.z,
+
+        m[1][0] * vector.x +
+        m[1][1] * vector.y +
+        m[1][2] * vector.z,
+
+        m[2][0] * vector.x +
+        m[2][1] * vector.y +
+        m[2][2] * vector.z
+    );
+}
+
+Mat3 Mat3::operator*(const Mat3& other) const {
+    Mat3 result;
+
+    for (int row = 0; row < 3; ++row) {
+        for (int column = 0; column < 3; ++column) {
+            for (int k = 0; k < 3; ++k) {
+                result.m[row][column] +=
+                    m[row][k] * other.m[k][column];
             }
-
-            // An awake dynamic body touching a sleeping
-            // dynamic body wakes the sleeping body.
-            if (bodyA->IsSleeping() &&
-                bodyB->GetInverseMass() > 0.0f &&
-                !bodyB->IsSleeping()) {
-                bodyA->Wake();
-            }
-
-            if (bodyB->IsSleeping() &&
-                bodyA->GetInverseMass() > 0.0f &&
-                !bodyA->IsSleeping()) {
-                bodyB->Wake();
-            }
-
-            Transform transformA;
-            transformA.position =
-                bodyA->GetPosition();
-
-            transformA.rotation =
-                bodyA->GetOrientation();
-
-            Transform transformB;
-            transformB.position =
-                bodyB->GetPosition();
-
-            transformB.rotation =
-                bodyB->GetOrientation();
-
-            Contact contact;
-
-            bool collided =
-                Collision::CheckBoxBox(
-                    transformA,
-                    colliderA->GetHalfExtents(),
-                    bodyA,
-                    transformB,
-                    colliderB->GetHalfExtents(),
-                    bodyB,
-                    contact
-                );
-
-            if (!collided)
-                continue;
-
-            float restitution =
-                std::max(
-                    colliderA->GetMaterial()
-                    .GetRestitution(),
-                    colliderB->GetMaterial()
-                    .GetRestitution()
-                );
-
-            float friction =
-                std::max(
-                    colliderA->GetMaterial()
-                    .GetFriction(),
-                    colliderB->GetMaterial()
-                    .GetFriction()
-                );
-
-            contact.SetRestitution(restitution);
-            contact.SetFriction(friction);
-
-            Logger::Info(
-                "Contact normal: (" +
-                std::to_string(
-                    contact.GetNormal().x
-                ) + ", " +
-                std::to_string(
-                    contact.GetNormal().y
-                ) + ", " +
-                std::to_string(
-                    contact.GetNormal().z
-                ) + ")"
-            );
-
-            for (int k = 0;
-                k < contact.GetPointCount();
-                ++k) {
-
-                const ContactPoint& point =
-                    contact.GetPoint(k);
-
-                Logger::Info(
-                    "Contact point: (" +
-                    std::to_string(
-                        point.position.x
-                    ) + ", " +
-                    std::to_string(
-                        point.position.y
-                    ) + ", " +
-                    std::to_string(
-                        point.position.z
-                    ) +
-                    "), penetration: " +
-                    std::to_string(
-                        point.penetration
-                    )
-                );
-            }
-
-            m_contacts.push_back(contact);
         }
     }
 
-    // 3. Position correction
-    for (Contact& contact : m_contacts)
-        m_solver.SolvePosition(contact);
+    return result;
+}
 
-    // 4. Iterative velocity solver
-    for (int iteration = 0;
-        iteration < m_solver.GetVelocityIterations();
-        ++iteration) {
+Mat3 Mat3::operator*(float scalar) const {
+    Mat3 result;
 
-        for (Contact& contact : m_contacts)
-            m_solver.SolveVelocity(contact);
-
-        for (Contact& contact : m_contacts)
-            m_solver.SolveFriction(contact);
+    for (int row = 0; row < 3; ++row) {
+        for (int column = 0; column < 3; ++column) {
+            result.m[row][column] =
+                m[row][column] * scalar;
+        }
     }
 
-    // 5. Sleep stable bodies
-    for (auto& body : m_rigidBodies) {
-        body->UpdateSleep(deltaTime);
+    return result;
+}
 
+Mat3 Mat3::Transposed() const {
+    Mat3 result;
+
+    for (int row = 0; row < 3; ++row) {
+        for (int column = 0; column < 3; ++column) {
+            result.m[row][column] =
+                m[column][row];
+        }
     }
 
-    // 6. Debug
-    m_debugTimer += deltaTime;
-
-    if (m_debugTimer >= 1.0f) {
-        m_debugTimer = 0.0f;
-    }
+    return result;
 }
 
-const std::vector<std::unique_ptr<RigidBody>>& PhysicsWorld::GetRigidBodies() const {
-    return m_rigidBodies;
+float Mat3::Determinant() const {
+    return
+        m[0][0] * (
+            m[1][1] * m[2][2] -
+            m[1][2] * m[2][1]
+            )
+        - m[0][1] * (
+            m[1][0] * m[2][2] -
+            m[1][2] * m[2][0]
+            )
+        + m[0][2] * (
+            m[1][0] * m[2][1] -
+            m[1][1] * m[2][0]
+            );
 }
 
-const std::vector<std::unique_ptr<Collider>>& PhysicsWorld::GetColliders() const {
-    return m_colliders;
+Mat3 Mat3::Inversed() const {
+    const float determinant = Determinant();
+
+    constexpr float epsilon = 0.000001f;
+
+    if (std::abs(determinant) <= epsilon)
+        return Mat3();
+
+    Mat3 result;
+
+    result.m[0][0] =
+        m[1][1] * m[2][2] -
+        m[1][2] * m[2][1];
+
+    result.m[0][1] =
+        -(m[0][1] * m[2][2] -
+            m[0][2] * m[2][1]);
+
+    result.m[0][2] =
+        m[0][1] * m[1][2] -
+        m[0][2] * m[1][1];
+
+    result.m[1][0] =
+        -(m[1][0] * m[2][2] -
+            m[1][2] * m[2][0]);
+
+    result.m[1][1] =
+        m[0][0] * m[2][2] -
+        m[0][2] * m[2][0];
+
+    result.m[1][2] =
+        -(m[0][0] * m[1][2] -
+            m[0][2] * m[1][0]);
+
+    result.m[2][0] =
+        m[1][0] * m[2][1] -
+        m[1][1] * m[2][0];
+
+    result.m[2][1] =
+        -(m[0][0] * m[2][1] -
+            m[0][1] * m[2][0]);
+
+    result.m[2][2] =
+        m[0][0] * m[1][1] -
+        m[0][1] * m[1][0];
+
+    return result * (1.0f / determinant);
+}
+#pragma once
+
+class Vec3 {
+public:
+    float x;
+    float y;
+    float z;
+
+    Vec3();
+    Vec3(float x, float y, float z);
+
+    Vec3 operator+(const Vec3& other) const;
+    Vec3 operator-(const Vec3& other) const;
+    Vec3 operator-() const;
+
+    Vec3 operator*(float scalar) const;
+    Vec3 operator/(float scalar) const;
+
+    Vec3& operator+=(const Vec3& other);
+    Vec3& operator-=(const Vec3& other);
+
+    Vec3& operator*=(float scalar);
+    Vec3& operator/=(float scalar);
+
+    float Length() const;
+    float LengthSquared() const;
+
+    Vec3 Normalized() const;
+
+    float Dot(const Vec3& other) const;
+    Vec3 Cross(const Vec3& other) const;
+};
+#include "Vec3.h"
+
+#include <cmath>
+
+Vec3::Vec3()
+    : x(0.0f),
+    y(0.0f),
+    z(0.0f) {}
+
+Vec3::Vec3(float x, float y, float z)
+    : x(x),
+    y(y),
+    z(z) {}
+
+Vec3 Vec3::operator+(const Vec3& other) const {
+    return Vec3(
+        x + other.x,
+        y + other.y,
+        z + other.z
+    );
 }
 
-const std::vector<Contact>& PhysicsWorld::GetContacts() const {
-    return m_contacts;
+Vec3 Vec3::operator-(const Vec3& other) const {
+    return Vec3(
+        x - other.x,
+        y - other.y,
+        z - other.z
+    );
 }
 
-void PhysicsWorld::Clear() {
-    m_contacts.clear();
-    m_colliders.clear();
-    m_rigidBodies.clear();
+Vec3 Vec3::operator-() const {
+    return Vec3(-x, -y, -z);
 }
 
+Vec3 Vec3::operator*(float scalar) const {
+    return Vec3(
+        x * scalar,
+        y * scalar,
+        z * scalar
+    );
+}
+
+Vec3 Vec3::operator/(float scalar) const {
+    return Vec3(
+        x / scalar,
+        y / scalar,
+        z / scalar
+    );
+}
+
+Vec3& Vec3::operator+=(const Vec3& other) {
+    x += other.x;
+    y += other.y;
+    z += other.z;
+
+    return *this;
+}
+
+Vec3& Vec3::operator-=(const Vec3& other) {
+    x -= other.x;
+    y -= other.y;
+    z -= other.z;
+
+    return *this;
+}
+
+Vec3& Vec3::operator*=(float scalar) {
+    x *= scalar;
+    y *= scalar;
+    z *= scalar;
+
+    return *this;
+}
+
+Vec3& Vec3::operator/=(float scalar) {
+    x /= scalar;
+    y /= scalar;
+    z /= scalar;
+
+    return *this;
+}
+
+float Vec3::LengthSquared() const {
+    return x * x + y * y + z * z;
+}
+
+float Vec3::Length() const {
+    return std::sqrt(LengthSquared());
+}
+
+Vec3 Vec3::Normalized() const {
+    const float length = Length();
+
+    if (length <= 0.000001f)
+        return Vec3();
+
+    return *this / length;
+}
+
+float Vec3::Dot(const Vec3& other) const {
+    return
+        x * other.x +
+        y * other.y +
+        z * other.z;
+}
+
+Vec3 Vec3::Cross(const Vec3& other) const {
+    return Vec3(
+        y * other.z - z * other.y,
+        z * other.x - x * other.z,
+        x * other.y - y * other.x
+    );
+}

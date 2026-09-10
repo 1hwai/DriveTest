@@ -35,8 +35,12 @@ public:
 private:
     Vec3 m_gravity;
     Solver m_solver;
+
     std::vector<std::unique_ptr<RigidBody>> m_rigidBodies;
     std::vector<std::unique_ptr<Collider>> m_colliders;
+
     std::vector<Contact> m_contacts;
+    std::vector<Contact> m_previousContacts;
+
     float m_debugTimer;
 };

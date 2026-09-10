@@ -53,6 +53,8 @@ public:
 
     void ClearPoints();
 
+    void WarmStartFrom(const Contact& previous);
+
 private:
     RigidBody* m_bodyA;
     RigidBody* m_bodyB;

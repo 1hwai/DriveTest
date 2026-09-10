@@ -19,6 +19,8 @@ public:
     void SetRestitutionThreshold(float threshold);
     float GetRestitutionThreshold() const;
 
+    void WarmStart(Contact& contact);
+
     void SolvePosition(Contact& contact);
     void SolveVelocity(Contact& contact);
     void SolveFriction(Contact& contact);

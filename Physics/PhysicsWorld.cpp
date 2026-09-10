@@ -1,5 +1,8 @@
 #include "PhysicsWorld.h"
+
 #include "../Core/Debug/Logger.h"
+
+#include <algorithm>
 
 PhysicsWorld::PhysicsWorld()
     : m_gravity(0.0f, -9.81f, 0.0f),
@@ -14,31 +17,49 @@ const Vec3& PhysicsWorld::GetGravity() const {
 }
 
 RigidBody* PhysicsWorld::CreateRigidBody() {
-    auto body = std::make_unique<RigidBody>();
-    RigidBody* result = body.get();
+    auto body =
+        std::make_unique<RigidBody>();
 
-    m_rigidBodies.push_back(std::move(body));
+    RigidBody* result =
+        body.get();
+
+    m_rigidBodies.push_back(
+        std::move(body)
+    );
 
     return result;
 }
 
-void PhysicsWorld::AddRigidBody(std::unique_ptr<RigidBody> body) {
+void PhysicsWorld::AddRigidBody(
+    std::unique_ptr<RigidBody> body
+) {
     if (body)
-        m_rigidBodies.push_back(std::move(body));
+        m_rigidBodies.push_back(
+            std::move(body)
+        );
 }
 
 Collider* PhysicsWorld::CreateCollider() {
-    auto collider = std::make_unique<Collider>();
-    Collider* result = collider.get();
+    auto collider =
+        std::make_unique<Collider>();
 
-    m_colliders.push_back(std::move(collider));
+    Collider* result =
+        collider.get();
+
+    m_colliders.push_back(
+        std::move(collider)
+    );
 
     return result;
 }
 
-void PhysicsWorld::AddCollider(std::unique_ptr<Collider> collider) {
+void PhysicsWorld::AddCollider(
+    std::unique_ptr<Collider> collider
+) {
     if (collider)
-        m_colliders.push_back(std::move(collider));
+        m_colliders.push_back(
+            std::move(collider)
+        );
 }
 
 void PhysicsWorld::Step(float deltaTime) {
@@ -49,10 +70,16 @@ void PhysicsWorld::Step(float deltaTime) {
 
     // 1. Integrate
     for (auto& body : m_rigidBodies)
-        body->Integrate(deltaTime, m_gravity);
+        body->Integrate(
+            deltaTime,
+            m_gravity
+        );
 
     // 2. Collision detection
-    for (size_t i = 0; i < m_colliders.size(); ++i) {
+    for (size_t i = 0;
+        i < m_colliders.size();
+        ++i) {
+
         Collider* colliderA =
             m_colliders[i].get();
 
@@ -78,41 +105,32 @@ void PhysicsWorld::Step(float deltaTime) {
             if (bodyA == bodyB)
                 continue;
 
-            // Both bodies are sleeping.
-            // Nothing can change their state, so there
-            // is no reason to solve this contact.
             if (bodyA->IsSleeping() &&
                 bodyB->IsSleeping()) {
                 continue;
             }
 
-            // An awake dynamic body touching a sleeping
-            // dynamic body wakes the sleeping body.
             if (bodyA->IsSleeping() &&
                 bodyB->GetInverseMass() > 0.0f &&
                 !bodyB->IsSleeping()) {
+
                 bodyA->Wake();
             }
 
             if (bodyB->IsSleeping() &&
                 bodyA->GetInverseMass() > 0.0f &&
                 !bodyA->IsSleeping()) {
+
                 bodyB->Wake();
             }
 
             Transform transformA;
-            transformA.position =
-                bodyA->GetPosition();
-
-            transformA.rotation =
-                bodyA->GetOrientation();
+            transformA.position = bodyA->GetPosition();
+            transformA.rotation = bodyA->GetOrientation();
 
             Transform transformB;
-            transformB.position =
-                bodyB->GetPosition();
-
-            transformB.rotation =
-                bodyB->GetOrientation();
+            transformB.position = bodyB->GetPosition();
+            transformB.rotation = bodyB->GetOrientation();
 
             Contact contact;
 
@@ -146,108 +164,114 @@ void PhysicsWorld::Step(float deltaTime) {
                     .GetFriction()
                 );
 
-            contact.SetRestitution(restitution);
-            contact.SetFriction(friction);
-
-            Logger::Info(
-                "Contact normal: (" +
-                std::to_string(
-                    contact.GetNormal().x
-                ) + ", " +
-                std::to_string(
-                    contact.GetNormal().y
-                ) + ", " +
-                std::to_string(
-                    contact.GetNormal().z
-                ) + ")"
+            contact.SetRestitution(
+                restitution
             );
 
-            for (int k = 0;
-                k < contact.GetPointCount();
-                ++k) {
+            contact.SetFriction(
+                friction
+            );
 
-                const ContactPoint& point =
-                    contact.GetPoint(k);
+            for (const Contact& previous :
+                m_previousContacts) {
 
-                Logger::Info(
-                    "Contact point: (" +
-                    std::to_string(
-                        point.position.x
-                    ) + ", " +
-                    std::to_string(
-                        point.position.y
-                    ) + ", " +
-                    std::to_string(
-                        point.position.z
-                    ) +
-                    "), penetration: " +
-                    std::to_string(
-                        point.penetration
-                    )
+                if (previous.GetBodyA() != bodyA ||
+                    previous.GetBodyB() != bodyB) {
+                    continue;
+                }
+
+                contact.WarmStartFrom(
+                    previous
                 );
+
+                break;
             }
 
-            m_contacts.push_back(contact);
+            m_contacts.push_back(
+                contact
+            );
         }
     }
 
     // 3. Position correction
-    for (Contact& contact : m_contacts)
-        m_solver.SolvePosition(contact);
+    for (Contact& contact :
+        m_contacts) {
 
-    // 4. Iterative velocity solver
+        m_solver.SolvePosition(
+            contact
+        );
+    }
+
+    // 4. Warm start
+    for (Contact& contact :
+        m_contacts) {
+
+        m_solver.WarmStart(
+            contact
+        );
+    }
+
+    // 5. Iterative velocity solver
     for (int iteration = 0;
         iteration < m_solver.GetVelocityIterations();
         ++iteration) {
 
-        for (Contact& contact : m_contacts)
-            m_solver.SolveVelocity(contact);
+        for (Contact& contact :
+            m_contacts) {
 
-        for (Contact& contact : m_contacts)
-            m_solver.SolveFriction(contact);
+            m_solver.SolveVelocity(
+                contact
+            );
+        }
+
+        for (Contact& contact :
+            m_contacts) {
+
+            m_solver.SolveFriction(
+                contact
+            );
+        }
     }
 
-    // 5. Sleep stable bodies
-    for (auto& body : m_rigidBodies)
-        body->UpdateSleep(deltaTime);
+    // 6. Sleep
+    for (auto& body :
+        m_rigidBodies) {
 
-    // 6. Debug
+        body->UpdateSleep(
+            deltaTime
+        );
+    }
+
+    // 7. Preserve contact impulses
+    m_previousContacts =
+        m_contacts;
+
+    // 8. Debug timer
     m_debugTimer += deltaTime;
 
     if (m_debugTimer >= 1.0f) {
         m_debugTimer = 0.0f;
-
-        Logger::Info(
-            "Physics bodies: " +
-            std::to_string(
-                m_rigidBodies.size()
-            ) +
-            ", colliders: " +
-            std::to_string(
-                m_colliders.size()
-            ) +
-            ", contacts: " +
-            std::to_string(
-                m_contacts.size()
-            )
-        );
     }
 }
 
-const std::vector<std::unique_ptr<RigidBody>>& PhysicsWorld::GetRigidBodies() const {
+const std::vector<std::unique_ptr<RigidBody>>&
+PhysicsWorld::GetRigidBodies() const {
     return m_rigidBodies;
 }
 
-const std::vector<std::unique_ptr<Collider>>& PhysicsWorld::GetColliders() const {
+const std::vector<std::unique_ptr<Collider>>&
+PhysicsWorld::GetColliders() const {
     return m_colliders;
 }
 
-const std::vector<Contact>& PhysicsWorld::GetContacts() const {
+const std::vector<Contact>&
+PhysicsWorld::GetContacts() const {
     return m_contacts;
 }
 
 void PhysicsWorld::Clear() {
     m_contacts.clear();
+    m_previousContacts.clear();
     m_colliders.clear();
     m_rigidBodies.clear();
 }

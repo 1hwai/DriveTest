@@ -1,4 +1,5 @@
 #include "RigidBody.h"
+#include "../Core/Debug/Logger.h"
 
 #include <cmath>
 
@@ -80,18 +81,28 @@ const Quaternion& RigidBody::GetOrientation() const {
     return m_orientation;
 }
 
-void RigidBody::SetLinearVelocity(const Vec3& velocity) {
+void RigidBody::SetLinearVelocity(
+    const Vec3& velocity,
+    bool wake
+) {
     m_linearVelocity = velocity;
-    Wake();
+
+    if (wake)
+        Wake();
 }
 
 const Vec3& RigidBody::GetLinearVelocity() const {
     return m_linearVelocity;
 }
 
-void RigidBody::SetAngularVelocity(const Vec3& velocity) {
+void RigidBody::SetAngularVelocity(
+    const Vec3& velocity,
+    bool wake
+) {
     m_angularVelocity = velocity;
-    Wake();
+
+    if (wake)
+        Wake();
 }
 
 const Vec3& RigidBody::GetAngularVelocity() const {
@@ -268,6 +279,8 @@ void RigidBody::Wake() {
 void RigidBody::Sleep() {
     if (m_inverseMass <= 0.0f)
         return;
+
+    Logger::Debug("[RB] Sleeping");
 
     m_isSleeping = true;
     m_sleepTimer = SleepTimeThreshold;

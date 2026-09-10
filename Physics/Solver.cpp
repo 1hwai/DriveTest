@@ -1,14 +1,14 @@
 #include "Solver.h"
 #include "RigidBody.h"
+#include "../Core/Debug/Logger.h"
+
 #include <algorithm>
 #include <cmath>
-#include <string>
-#include "../Core/Debug/Logger.h"
 
 Solver::Solver()
     : m_penetrationSlop(0.001f),
     m_correctionPercent(0.2f),
-    m_velocityIterations(8),
+    m_velocityIterations(16),
     m_restitutionThreshold(1.0f) {}
 
 void Solver::SetPenetrationSlop(float slop) {
@@ -29,7 +29,7 @@ void Solver::SetCorrectionPercent(float percent) {
 }
 
 float Solver::GetCorrectionPercent() const {
-	return m_correctionPercent;
+    return m_correctionPercent;
 }
 
 void Solver::SetVelocityIterations(int iterations) {
@@ -48,6 +48,47 @@ float Solver::GetRestitutionThreshold() const {
     return m_restitutionThreshold;
 }
 
+void Solver::WarmStart(Contact& contact) {
+    RigidBody* bodyA = contact.GetBodyA();
+    RigidBody* bodyB = contact.GetBodyB();
+
+    if (!bodyA || !bodyB)
+        return;
+
+    Vec3 normal = contact.GetNormal();
+    float inverseMassA = bodyA->GetInverseMass();
+    float inverseMassB = bodyB->GetInverseMass();
+    Mat3 inverseInertiaA = bodyA->GetWorldInverseInertiaTensor();
+    Mat3 inverseInertiaB = bodyB->GetWorldInverseInertiaTensor();
+
+    for (int i = 0; i < contact.GetPointCount(); ++i) {
+        ContactPoint& point = contact.GetPoint(i);
+
+        if (point.normalImpulse <= 0.0f)
+            continue;
+
+        Vec3 rA = point.position - bodyA->GetPosition();
+        Vec3 rB = point.position - bodyB->GetPosition();
+        Vec3 impulse = normal * point.normalImpulse;
+
+        bodyA->SetLinearVelocity(
+            bodyA->GetLinearVelocity() - impulse * inverseMassA, false
+        );
+
+        bodyB->SetLinearVelocity(
+            bodyB->GetLinearVelocity() + impulse * inverseMassB, false
+        );
+
+        bodyA->SetAngularVelocity(
+            bodyA->GetAngularVelocity() - inverseInertiaA * rA.Cross(impulse), false
+        );
+
+        bodyB->SetAngularVelocity(
+            bodyB->GetAngularVelocity() + inverseInertiaB * rB.Cross(impulse), false
+        );
+    }
+}
+
 void Solver::SolvePosition(Contact& contact) {
     RigidBody* bodyA = contact.GetBodyA();
     RigidBody* bodyB = contact.GetBodyB();
@@ -64,8 +105,12 @@ void Solver::SolvePosition(Contact& contact) {
 
     float maxPenetration = 0.0f;
 
-    for (int i = 0; i < contact.GetPointCount(); ++i)
-        maxPenetration = std::max(maxPenetration, contact.GetPoint(i).penetration);
+    for (int i = 0; i < contact.GetPointCount(); ++i) {
+        maxPenetration = std::max(
+            maxPenetration,
+            contact.GetPoint(i).penetration
+        );
+    }
 
     float correctionDepth = maxPenetration - m_penetrationSlop;
 
@@ -91,8 +136,13 @@ void Solver::SolvePosition(Contact& contact) {
 
     Vec3 correction = contact.GetNormal() * correctionMagnitude;
 
-    bodyA->SetPosition(bodyA->GetPosition() - correction * inverseMassA);
-    bodyB->SetPosition(bodyB->GetPosition() + correction * inverseMassB);
+    bodyA->SetPosition(
+        bodyA->GetPosition() - correction * inverseMassA
+    );
+
+    bodyB->SetPosition(
+        bodyB->GetPosition() + correction * inverseMassB
+    );
 }
 
 void Solver::SolveVelocity(Contact& contact) {
@@ -103,30 +153,14 @@ void Solver::SolveVelocity(Contact& contact) {
         return;
 
     Vec3 normal = contact.GetNormal();
-
     float inverseMassA = bodyA->GetInverseMass();
     float inverseMassB = bodyB->GetInverseMass();
-
     Mat3 inverseInertiaA = bodyA->GetWorldInverseInertiaTensor();
     Mat3 inverseInertiaB = bodyB->GetWorldInverseInertiaTensor();
 
-    Vec3 initialVelocityA = bodyA->GetLinearVelocity();
-    Vec3 initialAngularVelocityA = bodyA->GetAngularVelocity();
-
-    float totalImpulse = 0.0f;
-    float maxImpulse = 0.0f;
-    float minNormalVelocity = INFINITY;
-    float maxNormalVelocity = -INFINITY;
-    int appliedImpulseCount = 0;
-
+    // Solve normal impulse for each contact point.
     for (int i = 0; i < contact.GetPointCount(); ++i) {
         ContactPoint& point = contact.GetPoint(i);
-        Logger::Debug(
-            "[SOLVER] " "Point" + std::to_string(i) + ": " + "(" +
-            std::to_string(point.position.x) + "," +
-            std::to_string(point.position.y) + "," +
-            std::to_string(point.position.z) + ")"
-        );
 
         Vec3 rA = point.position - bodyA->GetPosition();
         Vec3 rB = point.position - bodyB->GetPosition();
@@ -142,12 +176,10 @@ void Solver::SolveVelocity(Contact& contact) {
         Vec3 relativeVelocity = velocityB - velocityA;
         float normalVelocity = relativeVelocity.Dot(normal);
 
-        minNormalVelocity = std::min(minNormalVelocity, normalVelocity);
-        maxNormalVelocity = std::max(maxNormalVelocity, normalVelocity);
-
         if (point.normalImpulse == 0.0f &&
-            normalVelocity < -m_restitutionThreshold)
+            normalVelocity < -m_restitutionThreshold) {
             point.tangentImpulse = 0.0f;
+        }
 
         float targetVelocity = 0.0f;
 
@@ -173,11 +205,13 @@ void Solver::SolveVelocity(Contact& contact) {
             -(normalVelocity - targetVelocity) / denominator;
 
         float oldImpulse = point.normalImpulse;
-        float newImpulse =
-            std::max(0.0f, oldImpulse + impulseMagnitude);
 
-        float deltaImpulse =
-            newImpulse - oldImpulse;
+        float newImpulse = std::max(
+            0.0f,
+            oldImpulse + impulseMagnitude
+        );
+
+        float deltaImpulse = newImpulse - oldImpulse;
 
         if (std::abs(deltaImpulse) <= 0.000001f)
             continue;
@@ -185,69 +219,42 @@ void Solver::SolveVelocity(Contact& contact) {
         Vec3 impulse = normal * deltaImpulse;
 
         bodyA->SetLinearVelocity(
-            bodyA->GetLinearVelocity() -
-            impulse * inverseMassA
+            bodyA->GetLinearVelocity() - impulse * inverseMassA, false
         );
 
         bodyB->SetLinearVelocity(
-            bodyB->GetLinearVelocity() +
-            impulse * inverseMassB
+            bodyB->GetLinearVelocity() + impulse * inverseMassB, false
         );
 
         bodyA->SetAngularVelocity(
             bodyA->GetAngularVelocity() -
-            inverseInertiaA * rA.Cross(impulse)
+            inverseInertiaA * rA.Cross(impulse), false
         );
 
         bodyB->SetAngularVelocity(
             bodyB->GetAngularVelocity() +
-            inverseInertiaB * rB.Cross(impulse)
+            inverseInertiaB * rB.Cross(impulse), false
+        );
+
+        Logger::Debug(
+            "rA.Cross(normal): " +
+            std::to_string(rA.Cross(normal).x) + ',' +
+            std::to_string(rA.Cross(normal).y) + ',' +
+            std::to_string(rA.Cross(normal).z) +
+            ", Normal Velocity: " + std::to_string(normalVelocity) +
+            ", Target Velocity: " + std::to_string(targetVelocity) +
+            ", Angular Velocity A: " +
+            std::to_string(bodyA->GetAngularVelocity().x) + ',' +
+            std::to_string(bodyA->GetAngularVelocity().y) + ',' +
+            std::to_string(bodyA->GetAngularVelocity().z) +
+            ", Linear Velocity A: " +
+            std::to_string(bodyA->GetLinearVelocity().x) + ',' +
+            std::to_string(bodyA->GetLinearVelocity().y) + ',' +
+            std::to_string(bodyA->GetLinearVelocity().z)
         );
 
         point.normalImpulse = newImpulse;
-
-        totalImpulse += std::fabs(deltaImpulse);
-        maxImpulse = std::max(maxImpulse, std::fabs(deltaImpulse));
-        ++appliedImpulseCount;
     }
-
-    Vec3 finalVelocityA = bodyA->GetLinearVelocity();
-    Vec3 finalAngularVelocityA = bodyA->GetAngularVelocity();
-
-    Logger::Debug(
-        "[SOLVER] "
-        "N=(" +
-        std::to_string(normal.x) + "," +
-        std::to_string(normal.y) + "," +
-        std::to_string(normal.z) + ") "
-        "NV=(" +
-        std::to_string(minNormalVelocity) + "," +
-        std::to_string(maxNormalVelocity) + ") "
-        "IMP=" +
-        std::to_string(totalImpulse) +
-        " MAX=" +
-        std::to_string(maxImpulse) +
-        " CNT=" +
-        std::to_string(appliedImpulseCount) +
-        " V=(" +
-        std::to_string(initialVelocityA.x) + "," +
-        std::to_string(initialVelocityA.y) + "," +
-        std::to_string(initialVelocityA.z) +
-        ")->(" +
-        std::to_string(finalVelocityA.x) + "," +
-        std::to_string(finalVelocityA.y) + "," +
-        std::to_string(finalVelocityA.z) +
-        ") "
-        "W=(" +
-        std::to_string(initialAngularVelocityA.x) + "," +
-        std::to_string(initialAngularVelocityA.y) + "," +
-        std::to_string(initialAngularVelocityA.z) +
-        ")->(" +
-        std::to_string(finalAngularVelocityA.x) + "," +
-        std::to_string(finalAngularVelocityA.y) + "," +
-        std::to_string(finalAngularVelocityA.z) +
-        ")"
-    );
 }
 
 void Solver::SolveFriction(Contact& contact) {
@@ -258,10 +265,8 @@ void Solver::SolveFriction(Contact& contact) {
         return;
 
     Vec3 normal = contact.GetNormal();
-
     float inverseMassA = bodyA->GetInverseMass();
     float inverseMassB = bodyB->GetInverseMass();
-
     Mat3 inverseInertiaA = bodyA->GetWorldInverseInertiaTensor();
     Mat3 inverseInertiaB = bodyB->GetWorldInverseInertiaTensor();
 
@@ -314,31 +319,17 @@ void Solver::SolveFriction(Contact& contact) {
             -relativeVelocity.Dot(tangent) / denominator;
 
         float oldImpulse = point.tangentImpulse;
-
         float maxFrictionImpulse =
             contact.GetFriction() * point.normalImpulse;
 
-        float newImpulse =
-            oldImpulse + impulseMagnitude;
+        float newImpulse = oldImpulse + impulseMagnitude;
 
-        if (newImpulse > maxFrictionImpulse)
-            newImpulse = maxFrictionImpulse;
-        else if (newImpulse < -maxFrictionImpulse)
+        if (newImpulse < -maxFrictionImpulse)
             newImpulse = -maxFrictionImpulse;
+        else if (newImpulse > maxFrictionImpulse)
+            newImpulse = maxFrictionImpulse;
 
-        float deltaImpulse =
-            newImpulse - oldImpulse;
-
-        Logger::Debug(
-            "[IMPULSE] "
-            "P" + std::to_string(i) +
-            " NV=" + std::to_string(relativeVelocity.Dot(normal)) +
-            " DEN=" + std::to_string(denominator) +
-            " CALC=" + std::to_string(impulseMagnitude) +
-            " OLD=" + std::to_string(oldImpulse) +
-            " NEW=" + std::to_string(newImpulse) +
-            " DELTA=" + std::to_string(deltaImpulse)
-        );
+        float deltaImpulse = newImpulse - oldImpulse;
 
         if (std::abs(deltaImpulse) <= 0.000001f)
             continue;
@@ -346,23 +337,21 @@ void Solver::SolveFriction(Contact& contact) {
         Vec3 impulse = tangent * deltaImpulse;
 
         bodyA->SetLinearVelocity(
-            bodyA->GetLinearVelocity() -
-            impulse * inverseMassA
+            bodyA->GetLinearVelocity() - impulse * inverseMassA, false
         );
 
         bodyB->SetLinearVelocity(
-            bodyB->GetLinearVelocity() +
-            impulse * inverseMassB
+            bodyB->GetLinearVelocity() + impulse * inverseMassB, false
         );
 
         bodyA->SetAngularVelocity(
             bodyA->GetAngularVelocity() -
-            inverseInertiaA * rA.Cross(impulse)
+            inverseInertiaA * rA.Cross(impulse), false
         );
 
         bodyB->SetAngularVelocity(
             bodyB->GetAngularVelocity() +
-            inverseInertiaB * rB.Cross(impulse)
+            inverseInertiaB * rB.Cross(impulse), false
         );
 
         point.tangentImpulse = newImpulse;

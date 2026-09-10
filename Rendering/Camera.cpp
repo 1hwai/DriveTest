@@ -7,7 +7,7 @@ namespace {
 }
 
 Camera::Camera()
-    : m_position(0.0f, 0.0f, 3.0f),
+    : m_position(0.0f, 0.0f, 10.0f),
     m_rotation(0.0f, 0.0f, 0.0f),
     m_fovY(60.0f * PI / 180.0f),
     m_aspectRatio(16.0f / 9.0f),

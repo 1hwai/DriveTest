@@ -1,5 +1,7 @@
 #include "Contact.h"
 
+#include <cmath>
+
 Contact::Contact()
     : m_bodyA(nullptr),
     m_bodyB(nullptr),
@@ -71,7 +73,9 @@ void Contact::AddPoint(
     ContactPoint& point = m_points[m_pointCount];
 
     point.position = position;
-    point.penetration = penetration > 0.0f ? penetration : 0.0f;
+    point.penetration =
+        penetration > 0.0f ? penetration : 0.0f;
+
     point.normalImpulse = 0.0f;
     point.tangentImpulse = 0.0f;
 
@@ -92,4 +96,66 @@ const ContactPoint& Contact::GetPoint(int index) const {
 
 void Contact::ClearPoints() {
     m_pointCount = 0;
+}
+
+void Contact::WarmStartFrom(const Contact& previous) {
+    if (m_bodyA != previous.m_bodyA ||
+        m_bodyB != previous.m_bodyB) {
+        return;
+    }
+
+    if (m_normal.Dot(previous.m_normal) < 0.95f)
+        return;
+
+    constexpr float MatchDistanceSq = 0.05f * 0.05f;
+
+    bool used[MaxPoints] = {
+        false,
+        false,
+        false,
+        false
+    };
+
+    for (int i = 0; i < m_pointCount; ++i) {
+        ContactPoint& current =
+            m_points[i];
+
+        int bestIndex = -1;
+        float bestDistanceSq =
+            MatchDistanceSq;
+
+        for (int j = 0;
+            j < previous.m_pointCount;
+            ++j) {
+
+            if (used[j])
+                continue;
+
+            const ContactPoint& old =
+                previous.m_points[j];
+
+            Vec3 difference =
+                current.position -
+                old.position;
+
+            float distanceSq =
+                difference.LengthSquared();
+
+            if (distanceSq < bestDistanceSq) {
+                bestDistanceSq = distanceSq;
+                bestIndex = j;
+            }
+        }
+
+        if (bestIndex < 0)
+            continue;
+
+        const ContactPoint& old =
+            previous.m_points[bestIndex];
+
+        current.normalImpulse =
+            old.normalImpulse;
+
+        used[bestIndex] = true;
+    }
 }

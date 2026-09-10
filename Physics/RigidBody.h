@@ -21,10 +21,10 @@ public:
     void SetOrientation(const Quaternion& orientation);
     const Quaternion& GetOrientation() const;
 
-    void SetLinearVelocity(const Vec3& velocity);
+    void SetLinearVelocity(const Vec3& velocity, bool wake = true);
     const Vec3& GetLinearVelocity() const;
 
-    void SetAngularVelocity(const Vec3& velocity);
+    void SetAngularVelocity(const Vec3& velocity, bool wake = true);
     const Vec3& GetAngularVelocity() const;
 
     void AddForce(const Vec3& force);

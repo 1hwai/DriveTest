@@ -14,38 +14,48 @@ bool World::Initialize(
     m_physicsWorld = &physicsWorld;
 
     // Zero gravity for testing purposes
-    //m_physicsWorld->SetGravity(Vec3(0.0f, 0.0f, 0.0f));
+    // m_physicsWorld->SetGravity(Vec3(0.0f, 0.0f, 0.0f));
 
     Mesh* cubeMesh = meshManager.Get("cube");
 
     // Object 1 - Dynamic
-    auto object = std::make_unique<Object>();
-    object->SetMesh(cubeMesh);
+    //auto object1 = std::make_unique<Object>();
+    //object1->SetMesh(cubeMesh);
 
-    RigidBody* body = m_physicsWorld->CreateRigidBody();
+    //RigidBody* body1 =
+    //    m_physicsWorld->CreateRigidBody();
 
-    body->SetPosition(Vec3(0.3f, 1.0f, 0.0f));
-    body->SetMass(1.0f);
-    body->SetBoxInertia(Vec3(1.0f, 1.0f, 1.0f));
-    body->SetLinearVelocity(Vec3(0.0f, 0.0f, 0.0f));
+    //body1->SetPosition(
+    //    Vec3(0.0f, 3.0f, 0.0f)
+    //);
 
-    Collider* collider = m_physicsWorld->CreateCollider();
-    collider->SetHalfExtents(Vec3(0.5f, 0.5f, 0.5f));
-    collider->SetRigidBody(body);
+    //body1->SetMass(1.0f);
+    //body1->SetBoxInertia(
+    //    Vec3(1.0f, 1.0f, 1.0f)
+    //);
 
-    collider->GetMaterial().SetRestitution(0.0f);
-    collider->GetMaterial().SetFriction(0.0f);
+    //Collider* collider1 =
+    //    m_physicsWorld->CreateCollider();
 
-    object->SetRigidBody(body);
-    object->SetCollider(collider);
+    //collider1->SetHalfExtents(
+    //    Vec3(0.5f, 0.5f, 0.5f)
+    //);
 
-    object->GetTransform().position =
-        body->GetPosition();
+    //collider1->SetRigidBody(body1);
 
-    AddObject(std::move(object));
+    //collider1->GetMaterial().SetRestitution(0.0f);
+    //collider1->GetMaterial().SetFriction(0.0f);
+
+    //object1->SetRigidBody(body1);
+    //object1->SetCollider(collider1);
+
+    //object1->GetTransform().position =
+    //    body1->GetPosition();
+
+    //AddObject(std::move(object1));
 
 
-    // Object 2 - Static Ground
+    // Object 2 - Dynamic
     auto object2 = std::make_unique<Object>();
     object2->SetMesh(cubeMesh);
 
@@ -53,11 +63,10 @@ bool World::Initialize(
         m_physicsWorld->CreateRigidBody();
 
     body2->SetPosition(
-        Vec3(0.0f, 0.0f, 0.0f)
+        Vec3(0.7f, 1.0f, 0.0f)
     );
 
-    body2->SetMass(0.0f);
-
+    body2->SetMass(1.0f);
     body2->SetBoxInertia(
         Vec3(1.0f, 1.0f, 1.0f)
     );
@@ -81,6 +90,40 @@ bool World::Initialize(
         body2->GetPosition();
 
     AddObject(std::move(object2));
+
+
+    // Object 3 - Static Ground
+    auto object3 = std::make_unique<Object>();
+    object3->SetMesh(cubeMesh);
+
+    RigidBody* body3 =
+        m_physicsWorld->CreateRigidBody();
+
+    body3->SetPosition(
+        Vec3(0.0f, 0.0f, 0.0f)
+    );
+
+    body3->SetMass(0.0f);
+
+    Collider* collider3 =
+        m_physicsWorld->CreateCollider();
+
+    collider3->SetHalfExtents(
+        Vec3(0.5f, 0.5f, 0.5f)
+    );
+
+    collider3->SetRigidBody(body3);
+
+    collider3->GetMaterial().SetRestitution(0.0f);
+    collider3->GetMaterial().SetFriction(0.0f);
+
+    object3->SetRigidBody(body3);
+    object3->SetCollider(collider3);
+
+    object3->GetTransform().position =
+        body3->GetPosition();
+
+    AddObject(std::move(object3));
 
     return true;
 }
