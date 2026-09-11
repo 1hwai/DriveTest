@@ -1,0 +1,385 @@
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.000000 N=(-0.000000,-1.000000,-0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.200000,0.500000,0.500000) PEN=-0.000000
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.500000,0.500000,0.500000) PEN=-0.000000
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.500000,0.500000,-0.500000) PEN=-0.000000
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.200000,0.500000,-0.500000) PEN=-0.000000
+[DEBUG] rA.Cross(normal): 0.500000,-0.000000,0.500000, Normal Velocity: -0.000018, Target Velocity: 0.000000, Angular Velocity A: -0.000013,0.000000,-0.000013, Linear Velocity A: 0.000000,-0.000014,0.000000
+[DEBUG] rA.Cross(normal): 0.500000,-0.000000,0.200000, Normal Velocity: -0.000004, Target Velocity: 0.000000, Angular Velocity A: -0.000016,0.000000,-0.000014, Linear Velocity A: 0.000000,-0.000013,0.000000
+[DEBUG] rA.Cross(normal): -0.500000,0.000000,0.200000, Normal Velocity: -0.000019, Target Velocity: 0.000000, Angular Velocity A: 0.000001,0.000000,-0.000021, Linear Velocity A: 0.000000,-0.000007,0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.000310 N=(-0.000000,-1.000000,-0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.200000,0.499690,0.500000) PEN=0.000310
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.500000,0.499690,0.500000) PEN=0.000310
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.500000,0.499690,-0.500000) PEN=0.000310
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.200000,0.499690,-0.500000) PEN=0.000310
+[DEBUG] rA.Cross(normal): 0.500000,-0.000000,0.500000, Normal Velocity: -0.055155, Target Velocity: 0.000000, Angular Velocity A: -0.038569,0.000000,-0.038591, Linear Velocity A: 0.000000,-0.042310,0.000000
+[DEBUG] rA.Cross(normal): 0.500000,-0.000000,0.200000, Normal Velocity: -0.010803, Target Velocity: 0.000000, Angular Velocity A: -0.048572,0.000000,-0.042592, Linear Velocity A: 0.000000,-0.038975,0.000000
+[DEBUG] rA.Cross(normal): -0.500000,0.000000,0.200000, Normal Velocity: -0.056667, Target Velocity: 0.000000, Angular Velocity A: 0.003898,0.000000,-0.063580, Linear Velocity A: 0.000000,-0.021486,0.000000
+[DEBUG] rA.Cross(normal): 0.500000,-0.000000,0.500000, Normal Velocity: 0.010629, Target Velocity: 0.000000, Angular Velocity A: 0.011330,0.000000,-0.056147, Linear Velocity A: 0.000000,-0.023963,0.000000
+[DEBUG] rA.Cross(normal): 0.500000,-0.000000,0.200000, Normal Velocity: -0.013095, Target Velocity: 0.000000, Angular Velocity A: -0.000795,0.000000,-0.060997, Linear Velocity A: 0.000000,-0.019922,0.000000
+[DEBUG] rA.Cross(normal): -0.500000,0.000000,0.200000, Normal Velocity: -0.000927, Target Velocity: 0.000000, Angular Velocity A: 0.000064,0.000000,-0.061340, Linear Velocity A: 0.000000,-0.019636,0.000000
+[DEBUG] rA.Cross(normal): 0.500000,-0.000000,0.500000, Normal Velocity: 0.013930, Target Velocity: 0.000000, Angular Velocity A: 0.009805,0.000000,-0.051599, Linear Velocity A: 0.000000,-0.022883,0.000000
+[DEBUG] rA.Cross(normal): 0.500000,-0.000000,0.200000, Normal Velocity: -0.011277, Target Velocity: 0.000000, Angular Velocity A: -0.000637,0.000000,-0.055776, Linear Velocity A: 0.000000,-0.019402,0.000000
+[DEBUG] rA.Cross(normal): -0.500000,0.000000,0.200000, Normal Velocity: -0.000743, Target Velocity: 0.000000, Angular Velocity A: 0.000051,0.000000,-0.056051, Linear Velocity A: 0.000000,-0.019173,0.000000
+[DEBUG] rA.Cross(normal): 0.500000,-0.000000,0.500000, Normal Velocity: 0.011996, Target Velocity: 0.000000, Angular Velocity A: 0.008440,0.000000,-0.047662, Linear Velocity A: 0.000000,-0.021969,0.000000
+[DEBUG] rA.Cross(normal): 0.500000,-0.000000,0.200000, Normal Velocity: -0.009707, Target Velocity: 0.000000, Angular Velocity A: -0.000548,0.000000,-0.051257, Linear Velocity A: 0.000000,-0.018973,0.000000
+[DEBUG] rA.Cross(normal): -0.500000,0.000000,0.200000, Normal Velocity: -0.000639, Target Velocity: 0.000000, Angular Velocity A: 0.000044,0.000000,-0.051494, Linear Velocity A: 0.000000,-0.018776,0.000000
+[DEBUG] rA.Cross(normal): 0.500000,-0.000000,0.500000, Normal Velocity: 0.010326, Target Velocity: 0.000000, Angular Velocity A: 0.007265,0.000000,-0.044273, Linear Velocity A: 0.000000,-0.021183,0.000000
+[DEBUG] rA.Cross(normal): 0.500000,-0.000000,0.200000, Normal Velocity: -0.008355, Target Velocity: 0.000000, Angular Velocity A: -0.000472,0.000000,-0.047368, Linear Velocity A: 0.000000,-0.018604,0.000000
+[DEBUG] rA.Cross(normal): -0.500000,0.000000,0.200000, Normal Velocity: -0.000550, Target Velocity: 0.000000, Angular Velocity A: 0.000038,0.000000,-0.047571, Linear Velocity A: 0.000000,-0.018434,0.000000
+[DEBUG] rA.Cross(normal): 0.500000,-0.000000,0.500000, Normal Velocity: 0.008888, Target Velocity: 0.000000, Angular Velocity A: 0.005837,0.000000,-0.041772, Linear Velocity A: 0.000000,-0.020367,0.000000
+[DEBUG] rA.Cross(normal): 0.500000,-0.000000,0.200000, Normal Velocity: -0.006713, Target Velocity: 0.000000, Angular Velocity A: -0.000379,0.000000,-0.044259, Linear Velocity A: 0.000000,-0.018295,0.000000
+[DEBUG] rA.Cross(normal): -0.500000,0.000000,0.200000, Normal Velocity: -0.000442, Target Velocity: 0.000000, Angular Velocity A: 0.000030,0.000000,-0.044422, Linear Velocity A: 0.000000,-0.018159,0.000000
+[DEBUG] rA.Cross(normal): 0.500000,-0.000000,0.200000, Normal Velocity: -0.000035, Target Velocity: 0.000000, Angular Velocity A: -0.000003,0.000000,-0.044435, Linear Velocity A: 0.000000,-0.018148,0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.004313 N=(-0.000877,-1.000000,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.199562,0.495951,0.500000) PEN=0.004049
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.499996,0.495687,0.500000) PEN=0.004313
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.499996,0.495687,-0.500000) PEN=0.004313
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.199562,0.495951,-0.500000) PEN=0.004049
+[DEBUG] rA.Cross(normal): 0.500000,-0.000438,0.500000, Normal Velocity: -0.122922, Target Velocity: 0.000000, Angular Velocity A: -0.085972,0.000075,-0.174741, Linear Velocity A: 0.000058,-0.146028,-0.000000
+[DEBUG] rA.Cross(normal): 0.500000,-0.000438,0.199565, Normal Velocity: -0.039663, Target Velocity: 0.000000, Angular Velocity A: -0.122713,0.000108,-0.189406, Linear Velocity A: 0.000068,-0.133781,-0.000000
+[DEBUG] rA.Cross(normal): -0.500000,0.000438,0.199565, Normal Velocity: -0.143165, Target Velocity: 0.000000, Angular Velocity A: 0.009908,-0.000009,-0.242339, Linear Velocity A: 0.000107,-0.089574,-0.000000
+[DEBUG] rA.Cross(normal): 0.500000,-0.000438,0.500000, Normal Velocity: 0.039939, Target Velocity: 0.000000, Angular Velocity A: 0.037839,-0.000033,-0.214407, Linear Velocity A: 0.000099,-0.098885,-0.000000
+[DEBUG] rA.Cross(normal): 0.500000,-0.000438,0.199565, Normal Velocity: -0.043664, Target Velocity: 0.000000, Angular Velocity A: -0.002608,0.000002,-0.230551, Linear Velocity A: 0.000111,-0.085402,-0.000000
+[DEBUG] rA.Cross(normal): -0.500000,0.000438,0.199565, Normal Velocity: -0.003043, Target Velocity: 0.000000, Angular Velocity A: 0.000210,-0.000000,-0.231676, Linear Velocity A: 0.000112,-0.084463,-0.000000
+[DEBUG] rA.Cross(normal): 0.500000,-0.000438,0.500000, Normal Velocity: 0.046442, Target Velocity: 0.000000, Angular Velocity A: 0.032690,-0.000029,-0.199197, Linear Velocity A: 0.000102,-0.095289,-0.000000
+[DEBUG] rA.Cross(normal): 0.500000,-0.000438,0.199565, Normal Velocity: -0.037577, Target Velocity: 0.000000, Angular Velocity A: -0.002120,0.000002,-0.213090, Linear Velocity A: 0.000112,-0.083686,-0.000000
+[DEBUG] rA.Cross(normal): -0.500000,0.000438,0.199565, Normal Velocity: -0.002473, Target Velocity: 0.000000, Angular Velocity A: 0.000171,-0.000000,-0.214005, Linear Velocity A: 0.000113,-0.082922,-0.000000
+[DEBUG] rA.Cross(normal): 0.500000,-0.000438,0.500000, Normal Velocity: 0.039970, Target Velocity: 0.000000, Angular Velocity A: 0.025727,-0.000023,-0.188449, Linear Velocity A: 0.000105,-0.091441,-0.000000
+[DEBUG] rA.Cross(normal): 0.500000,-0.000438,0.199565, Normal Velocity: -0.029573, Target Velocity: 0.000000, Angular Velocity A: -0.001668,0.000001,-0.199383, Linear Velocity A: 0.000113,-0.082309,-0.000000
+[DEBUG] rA.Cross(normal): -0.500000,0.000438,0.199565, Normal Velocity: -0.001946, Target Velocity: 0.000000, Angular Velocity A: 0.000135,-0.000000,-0.200103, Linear Velocity A: 0.000114,-0.081708,-0.000000
+[DEBUG] rA.Cross(normal): 0.500000,-0.000438,0.199565, Normal Velocity: -0.000157, Target Velocity: 0.000000, Angular Velocity A: -0.000011,-0.000000,-0.200161, Linear Velocity A: 0.000114,-0.081660,-0.000000
+[DEBUG] rA.Cross(normal): -0.500000,0.000438,0.199565, Normal Velocity: -0.000013, Target Velocity: 0.000000, Angular Velocity A: 0.000001,-0.000000,-0.200166, Linear Velocity A: 0.000114,-0.081656,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.007095 N=(-0.004225,-0.999991,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.197895,0.494181,0.500000) PEN=0.005819
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.499970,0.492905,0.500000) PEN=0.007095
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.499970,0.492905,-0.500000) PEN=0.007095
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.197895,0.494181,-0.500000) PEN=0.005819
+[DEBUG] rA.Cross(normal): 0.499996,-0.002112,0.197922, Normal Velocity: 0.028312, Target Velocity: 0.000000, Angular Velocity A: 0.026276,-0.000111,-0.344213, Linear Velocity A: 0.000626,-0.124441,-0.000000
+[DEBUG] rA.Cross(normal): -0.499996,0.002112,0.197922, Normal Velocity: 0.030656, Target Velocity: 0.000000, Angular Velocity A: -0.002171,0.000009,-0.332953, Linear Velocity A: 0.000586,-0.133923,-0.000000
+[DEBUG] rA.Cross(normal): 0.499996,-0.002112,0.197922, Normal Velocity: 0.002533, Target Velocity: 0.000000, Angular Velocity A: 0.000179,-0.000001,-0.332023, Linear Velocity A: 0.000583,-0.134706,-0.000000
+[DEBUG] rA.Cross(normal): -0.499996,0.002112,0.197922, Normal Velocity: 0.000209, Target Velocity: 0.000000, Angular Velocity A: -0.000015,0.000000,-0.331946, Linear Velocity A: 0.000583,-0.134771,-0.000000
+[DEBUG] rA.Cross(normal): 0.499996,-0.002112,0.197922, Normal Velocity: 0.000017, Target Velocity: 0.000000, Angular Velocity A: 0.000001,-0.000000,-0.331939, Linear Velocity A: 0.000583,-0.134776,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.007021 N=(-0.006825,-0.999977,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.196611,0.495050,0.500000) PEN=0.004950
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.499952,0.492980,0.500000) PEN=0.007021
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.499952,0.492980,-0.500000) PEN=0.007021
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.196611,0.495050,-0.500000) PEN=0.004950
+[DEBUG] rA.Cross(normal): 0.499988,-0.003412,0.196652, Normal Velocity: 0.086632, Target Velocity: 0.000000, Angular Velocity A: 0.080497,-0.000549,-0.431208, Linear Velocity A: 0.001157,-0.127491,-0.000000
+[DEBUG] rA.Cross(normal): -0.499988,0.003412,0.196652, Normal Velocity: 0.093915, Target Velocity: 0.000000, Angular Velocity A: -0.006766,0.000046,-0.396886, Linear Velocity A: 0.000959,-0.156579,-0.000000
+[DEBUG] rA.Cross(normal): 0.499988,-0.003412,0.196652, Normal Velocity: 0.007894, Target Velocity: 0.000000, Angular Velocity A: 0.000569,-0.000004,-0.394001, Linear Velocity A: 0.000942,-0.159024,-0.000000
+[DEBUG] rA.Cross(normal): -0.499988,0.003412,0.196652, Normal Velocity: 0.000664, Target Velocity: 0.000000, Angular Velocity A: -0.000048,0.000000,-0.393759, Linear Velocity A: 0.000940,-0.159229,-0.000000
+[DEBUG] rA.Cross(normal): 0.499988,-0.003412,0.196652, Normal Velocity: 0.000056, Target Velocity: 0.000000, Angular Velocity A: 0.000004,-0.000000,-0.393738, Linear Velocity A: 0.000940,-0.159247,-0.000000
+[DEBUG] rA.Cross(normal): -0.499988,0.003412,0.196652, Normal Velocity: 0.000005, Target Velocity: 0.000000, Angular Velocity A: -0.000001,-0.000000,-0.393737, Linear Velocity A: 0.000940,-0.159248,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.024337 N=(-0.022343,-0.999750,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.189011,0.482607,0.500000) PEN=0.017397
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.499456,0.475669,0.500000) PEN=0.024337
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.499456,0.475669,-0.500000) PEN=0.024337
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.189011,0.482607,-0.500000) PEN=0.017397
+[DEBUG] rA.Cross(normal): 0.499875,-0.011171,0.500000, Normal Velocity: -0.232842, Target Velocity: 0.000000, Angular Velocity A: -0.163102,0.003645,-0.616420, Linear Velocity A: 0.003325,-0.439202,-0.000000
+[DEBUG] rA.Cross(normal): 0.499875,-0.011171,0.189477, Normal Velocity: -0.129298, Target Velocity: 0.000000, Angular Velocity A: -0.284128,0.006350,-0.662295, Linear Velocity A: 0.004227,-0.398860,-0.000000
+[DEBUG] rA.Cross(normal): -0.499875,0.011171,0.189477, Normal Velocity: -0.331565, Target Velocity: 0.000000, Angular Velocity A: 0.026226,-0.000586,-0.779934, Linear Velocity A: 0.006539,-0.295409,-0.000000
+[DEBUG] rA.Cross(normal): 0.499875,-0.011171,0.500000, Normal Velocity: 0.127642, Target Velocity: 0.000000, Angular Velocity A: 0.115635,-0.002584,-0.690502, Linear Velocity A: 0.005873,-0.325212,-0.000000
+[DEBUG] rA.Cross(normal): 0.499875,-0.011171,0.189477, Normal Velocity: -0.132125, Target Velocity: 0.000000, Angular Velocity A: -0.008037,0.000180,-0.737379, Linear Velocity A: 0.006794,-0.283988,-0.000000
+[DEBUG] rA.Cross(normal): -0.499875,0.011171,0.189477, Normal Velocity: -0.009379, Target Velocity: 0.000000, Angular Velocity A: 0.000742,-0.000017,-0.740707, Linear Velocity A: 0.006860,-0.281062,-0.000000
+[DEBUG] rA.Cross(normal): 0.499875,-0.011171,0.500000, Normal Velocity: 0.140148, Target Velocity: 0.000000, Angular Velocity A: 0.074431,-0.001663,-0.666999, Linear Velocity A: 0.006311,-0.305625,-0.000000
+[DEBUG] rA.Cross(normal): 0.499875,-0.011171,0.189477, Normal Velocity: -0.084537, Target Velocity: 0.000000, Angular Velocity A: -0.004697,0.000105,-0.696992, Linear Velocity A: 0.006900,-0.279249,-0.000000
+[DEBUG] rA.Cross(normal): -0.499875,0.011171,0.189477, Normal Velocity: -0.005481, Target Velocity: 0.000000, Angular Velocity A: 0.000433,-0.000010,-0.698937, Linear Velocity A: 0.006938,-0.277538,-0.000000
+[DEBUG] rA.Cross(normal): 0.499875,-0.011171,0.189477, Normal Velocity: -0.000506, Target Velocity: 0.000000, Angular Velocity A: -0.000040,0.000001,-0.699117, Linear Velocity A: 0.006942,-0.277380,-0.000000
+[DEBUG] rA.Cross(normal): -0.499875,0.011171,0.189477, Normal Velocity: -0.000047, Target Velocity: 0.000000, Angular Velocity A: 0.000004,-0.000000,-0.699133, Linear Velocity A: 0.006942,-0.277366,-0.000000
+[DEBUG] rA.Cross(normal): 0.499875,-0.011171,0.189477, Normal Velocity: -0.000004, Target Velocity: 0.000000, Angular Velocity A: -0.000000,-0.000000,-0.699135, Linear Velocity A: 0.006942,-0.277365,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.021152 N=(-0.027196,-0.999630,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.186797,0.487361,0.500000) PEN=0.012644
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.499425,0.478856,0.500000) PEN=0.021152
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.499425,0.478856,-0.500000) PEN=0.021152
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.186797,0.487361,-0.500000) PEN=0.012644
+[DEBUG] rA.Cross(normal): 0.499815,-0.013598,0.187257, Normal Velocity: 0.318343, Target Velocity: 0.000000, Angular Velocity A: 0.298635,-0.008125,-0.889070, Linear Velocity A: 0.011540,-0.176494,-0.000000
+[DEBUG] rA.Cross(normal): -0.499815,0.013598,0.187257, Normal Velocity: 0.348536, Target Velocity: 0.000000, Angular Velocity A: -0.028324,0.000771,-0.766574, Linear Velocity A: 0.008575,-0.285480,-0.000000
+[DEBUG] rA.Cross(normal): 0.499815,-0.013598,0.187257, Normal Velocity: 0.033057, Target Velocity: 0.000000, Angular Velocity A: 0.002686,-0.000073,-0.754956, Linear Velocity A: 0.008293,-0.295817,-0.000000
+[DEBUG] rA.Cross(normal): -0.499815,0.013598,0.187257, Normal Velocity: 0.003135, Target Velocity: 0.000000, Angular Velocity A: -0.000255,0.000007,-0.753854, Linear Velocity A: 0.008267,-0.296797,-0.000000
+[DEBUG] rA.Cross(normal): 0.499815,-0.013598,0.187257, Normal Velocity: 0.000297, Target Velocity: 0.000000, Angular Velocity A: 0.000024,-0.000001,-0.753749, Linear Velocity A: 0.008264,-0.296890,-0.000000
+[DEBUG] rA.Cross(normal): -0.499815,0.013598,0.187257, Normal Velocity: 0.000028, Target Velocity: 0.000000, Angular Velocity A: -0.000002,0.000000,-0.753739, Linear Velocity A: 0.008264,-0.296899,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.022377 N=(-0.039607,-0.999215,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.181045,0.490249,0.500000) PEN=0.009759
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.499114,0.477641,0.500000) PEN=0.022377
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.499114,0.477641,-0.500000) PEN=0.022377
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.181045,0.490248,-0.500000) PEN=0.009759
+[DEBUG] rA.Cross(normal): 0.499608,-0.019804,0.181681, Normal Velocity: -0.098110, Target Velocity: 0.000000, Angular Velocity A: -0.092539,0.003668,-0.840368, Linear Velocity A: 0.011412,-0.379120,-0.000000
+[DEBUG] rA.Cross(normal): -0.499608,0.019804,0.181681, Normal Velocity: -0.108047, Target Velocity: 0.000000, Angular Velocity A: 0.009368,-0.000371,-0.877426, Linear Velocity A: 0.012758,-0.345151,-0.000000
+[DEBUG] rA.Cross(normal): 0.499608,-0.019804,0.181681, Normal Velocity: -0.010938, Target Velocity: 0.000000, Angular Velocity A: -0.000948,0.000038,-0.881178, Linear Velocity A: 0.012894,-0.341712,-0.000000
+[DEBUG] rA.Cross(normal): -0.499608,0.019804,0.181681, Normal Velocity: -0.001107, Target Velocity: 0.000000, Angular Velocity A: 0.000096,-0.000004,-0.881557, Linear Velocity A: 0.012908,-0.341364,-0.000000
+[DEBUG] rA.Cross(normal): 0.499608,-0.019804,0.181681, Normal Velocity: -0.000112, Target Velocity: 0.000000, Angular Velocity A: -0.000010,0.000000,-0.881596, Linear Velocity A: 0.012910,-0.341329,-0.000000
+[DEBUG] rA.Cross(normal): -0.499608,0.019804,0.181681, Normal Velocity: -0.000011, Target Velocity: 0.000000, Angular Velocity A: 0.000001,-0.000000,-0.881600, Linear Velocity A: 0.012910,-0.341325,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.023890 N=(-0.054311,-0.998524,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.174423,0.493784,0.500000) PEN=0.006225
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.498703,0.476146,0.500000) PEN=0.023890
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.498703,0.476146,-0.500000) PEN=0.023890
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.174423,0.493784,-0.500000) PEN=0.006226
+[DEBUG] rA.Cross(normal): 0.499262,-0.027156,0.175241, Normal Velocity: -0.006661, Target Velocity: 0.000000, Angular Velocity A: -0.006316,0.000343,-1.007146, Linear Velocity A: 0.019395,-0.385901,-0.000000
+[DEBUG] rA.Cross(normal): -0.499262,0.027156,0.175241, Normal Velocity: -0.007380, Target Velocity: 0.000000, Angular Velocity A: 0.000686,-0.000037,-1.009604, Linear Velocity A: 0.019522,-0.383567,-0.000000
+[DEBUG] rA.Cross(normal): 0.499262,-0.027156,0.175241, Normal Velocity: -0.000801, Target Velocity: 0.000000, Angular Velocity A: -0.000075,0.000004,-1.009871, Linear Velocity A: 0.019535,-0.383314,-0.000000
+[DEBUG] rA.Cross(normal): -0.499262,0.027156,0.175241, Normal Velocity: -0.000087, Target Velocity: 0.000000, Angular Velocity A: 0.000008,-0.000001,-1.009900, Linear Velocity A: 0.019537,-0.383286,-0.000000
+[DEBUG] rA.Cross(normal): 0.499262,-0.027156,0.175241, Normal Velocity: -0.000009, Target Velocity: 0.000000, Angular Velocity A: -0.000001,-0.000000,-1.009903, Linear Velocity A: 0.019537,-0.383283,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.025062 N=(-0.070280,-0.997527,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.167495,0.498303,0.500000) PEN=0.001702
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.498239,0.475001,0.500000) PEN=0.025061
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.498239,0.475000,-0.500000) PEN=0.025062
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.167495,0.498303,-0.500000) PEN=0.001702
+[DEBUG] rA.Cross(normal): 0.498764,-0.035140,0.168437, Normal Velocity: 0.004133, Target Velocity: 0.000000, Angular Velocity A: 0.003942,-0.000278,-1.131892, Linear Velocity A: 0.028020,-0.418298,-0.000000
+[DEBUG] rA.Cross(normal): -0.498764,0.035140,0.168437, Normal Velocity: 0.004611, Target Velocity: 0.000000, Angular Velocity A: -0.000459,0.000032,-1.130406, Linear Velocity A: 0.027917,-0.419765,-0.000000
+[DEBUG] rA.Cross(normal): 0.498764,-0.035140,0.168437, Normal Velocity: 0.000537, Target Velocity: 0.000000, Angular Velocity A: 0.000053,-0.000004,-1.130233, Linear Velocity A: 0.027905,-0.419936,-0.000000
+[DEBUG] rA.Cross(normal): -0.498764,0.035140,0.168437, Normal Velocity: 0.000062, Target Velocity: 0.000000, Angular Velocity A: -0.000006,0.000000,-1.130213, Linear Velocity A: 0.027903,-0.419956,-0.000000
+[DEBUG] rA.Cross(normal): 0.498764,-0.035140,0.168437, Normal Velocity: 0.000007, Target Velocity: 0.000000, Angular Velocity A: 0.000001,-0.000000,-1.130210, Linear Velocity A: 0.027903,-0.419958,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.026753 N=(-0.088950,-0.996036,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.497620,0.473353,0.500000) PEN=0.026753
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.497620,0.473353,-0.500000) PEN=0.026753
+[DEBUG] rA.Cross(normal): 0.498018,-0.044475,0.160741, Normal Velocity: -0.012423, Target Velocity: 0.000000, Angular Velocity A: -0.011931,0.001065,-1.248873, Linear Velocity A: 0.038847,-0.459984,-0.000000
+[DEBUG] rA.Cross(normal): -0.498018,0.044475,0.160741, Normal Velocity: -0.013975, Target Velocity: 0.000000, Angular Velocity A: 0.001493,-0.000133,-1.253205, Linear Velocity A: 0.039247,-0.455509,-0.000000
+[DEBUG] rA.Cross(normal): 0.498018,-0.044475,0.160741, Normal Velocity: -0.001749, Target Velocity: 0.000000, Angular Velocity A: -0.000187,0.000017,-1.253748, Linear Velocity A: 0.039297,-0.454949,-0.000000
+[DEBUG] rA.Cross(normal): -0.498018,0.044475,0.160741, Normal Velocity: -0.000219, Target Velocity: 0.000000, Angular Velocity A: 0.000023,-0.000002,-1.253815, Linear Velocity A: 0.039303,-0.454879,-0.000000
+[DEBUG] rA.Cross(normal): 0.498018,-0.044475,0.160741, Normal Velocity: -0.000027, Target Velocity: 0.000000, Angular Velocity A: -0.000003,0.000000,-1.253824, Linear Velocity A: 0.039304,-0.454870,-0.000000
+[DEBUG] rA.Cross(normal): -0.498018,0.044475,0.160741, Normal Velocity: -0.000003, Target Velocity: 0.000000, Angular Velocity A: 0.000000,-0.000000,-1.253825, Linear Velocity A: 0.039304,-0.454869,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.028928 N=(-0.110605,-0.993864,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.496800,0.471250,0.500000) PEN=0.028928
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.496800,0.471250,-0.500000) PEN=0.028928
+[DEBUG] rA.Cross(normal): 0.496932,-0.055302,0.152171, Normal Velocity: -0.013692, Target Velocity: 0.000000, Angular Velocity A: -0.013237,0.001473,-1.374902, Linear Velocity A: 0.053972,-0.493363,-0.000000
+[DEBUG] rA.Cross(normal): -0.496932,0.055302,0.152171, Normal Velocity: -0.015539, Target Velocity: 0.000000, Angular Velocity A: 0.001786,-0.000199,-1.379503, Linear Velocity A: 0.054529,-0.488355,-0.000000
+[DEBUG] rA.Cross(normal): 0.496932,-0.055302,0.152171, Normal Velocity: -0.002096, Target Velocity: 0.000000, Angular Velocity A: -0.000241,0.000027,-1.380123, Linear Velocity A: 0.054604,-0.487680,-0.000000
+[DEBUG] rA.Cross(normal): -0.496932,0.055302,0.152171, Normal Velocity: -0.000283, Target Velocity: 0.000000, Angular Velocity A: 0.000032,-0.000004,-1.380207, Linear Velocity A: 0.054614,-0.487589,-0.000000
+[DEBUG] rA.Cross(normal): 0.496932,-0.055302,0.152171, Normal Velocity: -0.000038, Target Velocity: 0.000000, Angular Velocity A: -0.000005,0.000000,-1.380218, Linear Velocity A: 0.054616,-0.487576,-0.000000
+[DEBUG] rA.Cross(normal): -0.496932,0.055302,0.152171, Normal Velocity: -0.000005, Target Velocity: 0.000000, Angular Velocity A: 0.000000,-0.000000,-1.380220, Linear Velocity A: 0.054616,-0.487575,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.030202 N=(-0.132517,-0.991181,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.495998,0.470065,0.500000) PEN=0.030201
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.495998,0.470065,-0.500000) PEN=0.030202
+[DEBUG] rA.Cross(normal): 0.495590,-0.066259,0.143844, Normal Velocity: 0.009141, Target Velocity: 0.000000, Angular Velocity A: 0.008888,-0.001188,-1.497119, Linear Velocity A: 0.072565,-0.510238,-0.000000
+[DEBUG] rA.Cross(normal): -0.495590,0.066259,0.143844, Normal Velocity: 0.010462, Target Velocity: 0.000000, Angular Velocity A: -0.001283,0.000171,-1.494166, Linear Velocity A: 0.072111,-0.513629,-0.000000
+[DEBUG] rA.Cross(normal): 0.495590,-0.066259,0.143844, Normal Velocity: 0.001510, Target Velocity: 0.000000, Angular Velocity A: 0.000185,-0.000025,-1.493740, Linear Velocity A: 0.072046,-0.514118,-0.000000
+[DEBUG] rA.Cross(normal): -0.495590,0.066259,0.143844, Normal Velocity: 0.000218, Target Velocity: 0.000000, Angular Velocity A: -0.000027,0.000003,-1.493679, Linear Velocity A: 0.072037,-0.514189,-0.000000
+[DEBUG] rA.Cross(normal): 0.495590,-0.066259,0.143844, Normal Velocity: 0.000031, Target Velocity: 0.000000, Angular Velocity A: 0.000004,-0.000001,-1.493670, Linear Velocity A: 0.072035,-0.514199,-0.000000
+[DEBUG] rA.Cross(normal): -0.495590,0.066259,0.143844, Normal Velocity: 0.000004, Target Velocity: 0.000000, Angular Velocity A: -0.000001,-0.000000,-1.493669, Linear Velocity A: 0.072035,-0.514200,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.032018 N=(-0.157442,-0.987528,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.494959,0.468381,0.500000) PEN=0.032018
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.494959,0.468381,-0.500000) PEN=0.032018
+[DEBUG] rA.Cross(normal): 0.493764,-0.078721,0.134822, Normal Velocity: -0.014261, Target Velocity: 0.000000, Angular Velocity A: -0.013940,0.002222,-1.603808, Linear Velocity A: 0.093471,-0.545204,-0.000000
+[DEBUG] rA.Cross(normal): -0.493764,0.078721,0.134822, Normal Velocity: -0.016468, Target Velocity: 0.000000, Angular Velocity A: 0.002155,-0.000344,-1.608202, Linear Velocity A: 0.094327,-0.539839,-0.000000
+[DEBUG] rA.Cross(normal): 0.493764,-0.078721,0.134822, Normal Velocity: -0.002546, Target Velocity: 0.000000, Angular Velocity A: -0.000333,0.000053,-1.608882, Linear Velocity A: 0.094459,-0.539009,-0.000000
+[DEBUG] rA.Cross(normal): -0.493764,0.078721,0.134822, Normal Velocity: -0.000394, Target Velocity: 0.000000, Angular Velocity A: 0.000051,-0.000008,-1.608987, Linear Velocity A: 0.094479,-0.538881,-0.000000
+[DEBUG] rA.Cross(normal): 0.493764,-0.078721,0.134822, Normal Velocity: -0.000061, Target Velocity: 0.000000, Angular Velocity A: -0.000008,0.000001,-1.609003, Linear Velocity A: 0.094483,-0.538861,-0.000000
+[DEBUG] rA.Cross(normal): -0.493764,0.078721,0.134822, Normal Velocity: -0.000009, Target Velocity: 0.000000, Angular Velocity A: 0.000001,-0.000000,-1.609006, Linear Velocity A: 0.094483,-0.538858,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.033566 N=(-0.183809,-0.982962,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.493830,0.467006,0.500000) PEN=0.033565
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.493830,0.467006,-0.500000) PEN=0.033566
+[DEBUG] rA.Cross(normal): 0.491481,-0.091904,0.125777, Normal Velocity: -0.002306, Target Velocity: 0.000000, Angular Velocity A: -0.002260,0.000423,-1.717184, Linear Velocity A: 0.120831,-0.561120,-0.000000
+[DEBUG] rA.Cross(normal): -0.491481,0.091904,0.125777, Normal Velocity: -0.002682, Target Velocity: 0.000000, Angular Velocity A: 0.000373,-0.000070,-1.717857, Linear Velocity A: 0.120996,-0.560243,-0.000000
+[DEBUG] rA.Cross(normal): 0.491481,-0.091904,0.125777, Normal Velocity: -0.000442, Target Velocity: 0.000000, Angular Velocity A: -0.000061,0.000011,-1.717969, Linear Velocity A: 0.121023,-0.560098,-0.000000
+[DEBUG] rA.Cross(normal): -0.491481,0.091904,0.125777, Normal Velocity: -0.000073, Target Velocity: 0.000000, Angular Velocity A: 0.000010,-0.000002,-1.717987, Linear Velocity A: 0.121027,-0.560074,-0.000000
+[DEBUG] rA.Cross(normal): 0.491481,-0.091904,0.125777, Normal Velocity: -0.000012, Target Velocity: 0.000000, Angular Velocity A: -0.000002,0.000000,-1.717990, Linear Velocity A: 0.121028,-0.560070,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.035019 N=(-0.211913,-0.977289,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.492579,0.465776,0.500000) PEN=0.035019
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.492579,0.465776,-0.500000) PEN=0.035019
+[DEBUG] rA.Cross(normal): 0.488644,-0.105956,0.116701, Normal Velocity: -0.004853, Target Velocity: 0.000000, Angular Velocity A: -0.004783,0.001037,-1.820251, Linear Velocity A: 0.151977,-0.581073,-0.000000
+[DEBUG] rA.Cross(normal): -0.488644,0.105956,0.116701, Normal Velocity: -0.005709, Target Velocity: 0.000000, Angular Velocity A: 0.000838,-0.000182,-1.821594, Linear Velocity A: 0.152383,-0.579199,-0.000000
+[DEBUG] rA.Cross(normal): 0.488644,-0.105956,0.116701, Normal Velocity: -0.001000, Target Velocity: 0.000000, Angular Velocity A: -0.000147,0.000032,-1.821829, Linear Velocity A: 0.152454,-0.578871,-0.000000
+[DEBUG] rA.Cross(normal): -0.488644,0.105956,0.116701, Normal Velocity: -0.000175, Target Velocity: 0.000000, Angular Velocity A: 0.000026,-0.000006,-1.821870, Linear Velocity A: 0.152466,-0.578813,-0.000000
+[DEBUG] rA.Cross(normal): 0.488644,-0.105956,0.116701, Normal Velocity: -0.000031, Target Velocity: 0.000000, Angular Velocity A: -0.000005,0.000001,-1.821877, Linear Velocity A: 0.152469,-0.578803,-0.000000
+[DEBUG] rA.Cross(normal): -0.488644,0.105956,0.116701, Normal Velocity: -0.000005, Target Velocity: 0.000000, Angular Velocity A: 0.000001,-0.000000,-1.821879, Linear Velocity A: 0.152469,-0.578802,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.036123 N=(-0.241047,-0.970513,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.491293,0.464942,0.500000) PEN=0.036123
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.491293,0.464942,-0.500000) PEN=0.036123
+[DEBUG] rA.Cross(normal): 0.485257,-0.120524,0.107896, Normal Velocity: -0.000589, Target Velocity: 0.000000, Angular Velocity A: -0.000578,0.000143,-1.918058, Linear Velocity A: 0.188281,-0.595695,-0.000000
+[DEBUG] rA.Cross(normal): -0.485257,0.120524,0.107896, Normal Velocity: -0.000694, Target Velocity: 0.000000, Angular Velocity A: 0.000107,-0.000027,-1.918211, Linear Velocity A: 0.188338,-0.595467,-0.000000
+[DEBUG] rA.Cross(normal): 0.485257,-0.120524,0.107896, Normal Velocity: -0.000129, Target Velocity: 0.000000, Angular Velocity A: -0.000020,0.000005,-1.918239, Linear Velocity A: 0.188348,-0.595425,-0.000000
+[DEBUG] rA.Cross(normal): -0.485257,0.120524,0.107896, Normal Velocity: -0.000024, Target Velocity: 0.000000, Angular Velocity A: 0.000004,-0.000001,-1.918244, Linear Velocity A: 0.188350,-0.595417,-0.000000
+[DEBUG] rA.Cross(normal): 0.485257,-0.120524,0.107896, Normal Velocity: -0.000004, Target Velocity: 0.000000, Angular Velocity A: -0.000001,0.000000,-1.918245, Linear Velocity A: 0.188351,-0.595415,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.037240 N=(-0.272032,-0.962288,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.489870,0.464165,0.500000) PEN=0.037240
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.489870,0.464165,-0.500000) PEN=0.037240
+[DEBUG] rA.Cross(normal): 0.481144,-0.136016,0.099229, Normal Velocity: -0.005792, Target Velocity: 0.000000, Angular Velocity A: -0.005712,0.001615,-2.008048, Linear Velocity A: 0.229382,-0.614238,-0.000000
+[DEBUG] rA.Cross(normal): -0.481144,0.136016,0.099229, Normal Velocity: -0.006925, Target Velocity: 0.000000, Angular Velocity A: 0.001115,-0.000315,-2.009456, Linear Velocity A: 0.230026,-0.611962,-0.000000
+[DEBUG] rA.Cross(normal): 0.481144,-0.136016,0.099229, Normal Velocity: -0.001352, Target Velocity: 0.000000, Angular Velocity A: -0.000218,0.000061,-2.009731, Linear Velocity A: 0.230151,-0.611518,-0.000000
+[DEBUG] rA.Cross(normal): -0.481144,0.136016,0.099229, Normal Velocity: -0.000264, Target Velocity: 0.000000, Angular Velocity A: 0.000042,-0.000012,-2.009784, Linear Velocity A: 0.230176,-0.611431,-0.000000
+[DEBUG] rA.Cross(normal): 0.481144,-0.136016,0.099229, Normal Velocity: -0.000052, Target Velocity: 0.000000, Angular Velocity A: -0.000008,0.000002,-2.009795, Linear Velocity A: 0.230181,-0.611414,-0.000000
+[DEBUG] rA.Cross(normal): -0.481144,0.136016,0.099229, Normal Velocity: -0.000010, Target Velocity: 0.000000, Angular Velocity A: 0.000002,-0.000001,-2.009797, Linear Velocity A: 0.230182,-0.611411,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.038587 N=(-0.305632,-0.952150,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.488207,0.463259,0.500000) PEN=0.038587
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.488207,0.463259,-0.500000) PEN=0.038587
+[DEBUG] rA.Cross(normal): 0.476075,-0.152816,0.090681, Normal Velocity: -0.009633, Target Velocity: 0.000000, Angular Velocity A: -0.009472,0.003040,-2.095267, Linear Velocity A: 0.278193,-0.633171,-0.000000
+[DEBUG] rA.Cross(normal): -0.476075,0.152816,0.090681, Normal Velocity: -0.011606, Target Velocity: 0.000000, Angular Velocity A: 0.001945,-0.000624,-2.097442, Linear Velocity A: 0.279415,-0.629365,-0.000000
+[DEBUG] rA.Cross(normal): 0.476075,-0.152816,0.090681, Normal Velocity: -0.002383, Target Velocity: 0.000000, Angular Velocity A: -0.000399,0.000128,-2.097888, Linear Velocity A: 0.279666,-0.628584,-0.000000
+[DEBUG] rA.Cross(normal): -0.476075,0.152816,0.090681, Normal Velocity: -0.000489, Target Velocity: 0.000000, Angular Velocity A: 0.000082,-0.000026,-2.097980, Linear Velocity A: 0.279717,-0.628424,-0.000000
+[DEBUG] rA.Cross(normal): 0.476075,-0.152816,0.090681, Normal Velocity: -0.000100, Target Velocity: 0.000000, Angular Velocity A: -0.000017,0.000005,-2.097999, Linear Velocity A: 0.279728,-0.628391,-0.000000
+[DEBUG] rA.Cross(normal): -0.476075,0.152816,0.090681, Normal Velocity: -0.000021, Target Velocity: 0.000000, Angular Velocity A: 0.000004,-0.000001,-2.098003, Linear Velocity A: 0.279730,-0.628384,-0.000000
+[DEBUG] rA.Cross(normal): 0.476075,-0.152816,0.090681, Normal Velocity: -0.000004, Target Velocity: 0.000000, Angular Velocity A: -0.000001,0.000000,-2.098003, Linear Velocity A: 0.279730,-0.628382,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.038535 N=(-0.337177,-0.941441,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.487007,0.463721,0.500000) PEN=0.038535
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.487007,0.463721,-0.500000) PEN=0.038535
+[DEBUG] rA.Cross(normal): 0.470721,-0.168588,0.083392, Normal Velocity: 0.016199, Target Velocity: 0.000000, Angular Velocity A: 0.015866,-0.005683,-2.176309, Linear Velocity A: 0.332499,-0.636834,-0.000000
+[DEBUG] rA.Cross(normal): -0.470721,0.168588,0.083392, Normal Velocity: 0.019662, Target Velocity: 0.000000, Angular Velocity A: -0.003396,0.001216,-2.172896, Linear Velocity A: 0.330199,-0.643255,-0.000000
+[DEBUG] rA.Cross(normal): 0.470721,-0.168588,0.083392, Normal Velocity: 0.004208, Target Velocity: 0.000000, Angular Velocity A: 0.000727,-0.000260,-2.172166, Linear Velocity A: 0.329707,-0.644629,-0.000000
+[DEBUG] rA.Cross(normal): -0.470721,0.168588,0.083392, Normal Velocity: 0.000900, Target Velocity: 0.000000, Angular Velocity A: -0.000156,0.000056,-2.172010, Linear Velocity A: 0.329602,-0.644923,-0.000000
+[DEBUG] rA.Cross(normal): 0.470721,-0.168588,0.083392, Normal Velocity: 0.000193, Target Velocity: 0.000000, Angular Velocity A: 0.000033,-0.000012,-2.171976, Linear Velocity A: 0.329579,-0.644986,-0.000000
+[DEBUG] rA.Cross(normal): -0.470721,0.168588,0.083392, Normal Velocity: 0.000041, Target Velocity: 0.000000, Angular Velocity A: -0.000007,0.000002,-2.171969, Linear Velocity A: 0.329574,-0.644999,-0.000000
+[DEBUG] rA.Cross(normal): 0.470721,-0.168588,0.083392, Normal Velocity: 0.000009, Target Velocity: 0.000000, Angular Velocity A: 0.000002,-0.000001,-2.171968, Linear Velocity A: 0.329573,-0.645002,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.039146 N=(-0.372173,-0.928163,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.485431,0.463666,0.500000) PEN=0.039146
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.485431,0.463666,-0.500000) PEN=0.039146
+[DEBUG] rA.Cross(normal): 0.464082,-0.186087,0.076278, Normal Velocity: -0.013052, Target Velocity: 0.000000, Angular Velocity A: -0.012694,0.005090,-2.241709, Linear Velocity A: 0.386287,-0.672654,-0.000000
+[DEBUG] rA.Cross(normal): -0.464082,0.186087,0.076278, Normal Velocity: -0.015956, Target Velocity: 0.000000, Angular Velocity A: 0.002829,-0.001134,-2.244261, Linear Velocity A: 0.388362,-0.667480,-0.000000
+[DEBUG] rA.Cross(normal): 0.464082,-0.186087,0.076278, Normal Velocity: -0.003556, Target Velocity: 0.000000, Angular Velocity A: -0.000630,0.000253,-2.244829, Linear Velocity A: 0.388824,-0.666327,-0.000000
+[DEBUG] rA.Cross(normal): -0.464082,0.186087,0.076278, Normal Velocity: -0.000792, Target Velocity: 0.000000, Angular Velocity A: 0.000140,-0.000056,-2.244956, Linear Velocity A: 0.388927,-0.666070,-0.000000
+[DEBUG] rA.Cross(normal): 0.464082,-0.186087,0.076278, Normal Velocity: -0.000177, Target Velocity: 0.000000, Angular Velocity A: -0.000031,0.000012,-2.244984, Linear Velocity A: 0.388950,-0.666012,-0.000000
+[DEBUG] rA.Cross(normal): -0.464082,0.186087,0.076278, Normal Velocity: -0.000039, Target Velocity: 0.000000, Angular Velocity A: 0.000007,-0.000003,-2.244990, Linear Velocity A: 0.388955,-0.665999,-0.000000
+[DEBUG] rA.Cross(normal): 0.464082,-0.186087,0.076278, Normal Velocity: -0.000009, Target Velocity: 0.000000, Angular Velocity A: -0.000002,0.000000,-2.244992, Linear Velocity A: 0.388956,-0.665997,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.038632 N=(-0.405391,-0.914144,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.484339,0.464685,0.500000) PEN=0.038632
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.484339,0.464685,-0.500000) PEN=0.038632
+[DEBUG] rA.Cross(normal): 0.457072,-0.202695,0.070414, Normal Velocity: 0.014004, Target Velocity: 0.000000, Angular Velocity A: 0.013498,-0.005986,-2.310322, Linear Velocity A: 0.451643,-0.682216,-0.000000
+[DEBUG] rA.Cross(normal): -0.457072,0.202695,0.070414, Normal Velocity: 0.017226, Target Velocity: 0.000000, Angular Velocity A: -0.003111,0.001379,-2.307764, Linear Velocity A: 0.449188,-0.687752,-0.000000
+[DEBUG] rA.Cross(normal): 0.457072,-0.202695,0.070414, Normal Velocity: 0.003970, Target Velocity: 0.000000, Angular Velocity A: 0.000717,-0.000318,-2.307174, Linear Velocity A: 0.448622,-0.689028,-0.000000
+[DEBUG] rA.Cross(normal): -0.457072,0.202695,0.070414, Normal Velocity: 0.000915, Target Velocity: 0.000000, Angular Velocity A: -0.000165,0.000073,-2.307038, Linear Velocity A: 0.448492,-0.689322,-0.000000
+[DEBUG] rA.Cross(normal): 0.457072,-0.202695,0.070414, Normal Velocity: 0.000211, Target Velocity: 0.000000, Angular Velocity A: 0.000038,-0.000017,-2.307007, Linear Velocity A: 0.448462,-0.689390,-0.000000
+[DEBUG] rA.Cross(normal): -0.457072,0.202695,0.070414, Normal Velocity: 0.000049, Target Velocity: 0.000000, Angular Velocity A: -0.000009,0.000004,-2.307000, Linear Velocity A: 0.448455,-0.689406,-0.000000
+[DEBUG] rA.Cross(normal): 0.457072,-0.202695,0.070414, Normal Velocity: 0.000011, Target Velocity: 0.000000, Angular Velocity A: 0.000002,-0.000001,-2.306998, Linear Velocity A: 0.448453,-0.689409,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.038171 N=(-0.440052,-0.897972,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.483203,0.465724,0.500000) PEN=0.038171
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.483203,0.465724,-0.500000) PEN=0.038171
+[DEBUG] rA.Cross(normal): 0.448986,-0.220026,0.065327, Normal Velocity: -0.001476, Target Velocity: 0.000000, Angular Velocity A: -0.001401,0.000686,-2.364729, Linear Velocity A: 0.513267,-0.719820,-0.000000
+[DEBUG] rA.Cross(normal): -0.448986,0.220026,0.065327, Normal Velocity: -0.001820, Target Velocity: 0.000000, Angular Velocity A: 0.000333,-0.000163,-2.364981, Linear Velocity A: 0.513550,-0.719242,-0.000000
+[DEBUG] rA.Cross(normal): 0.448986,-0.220026,0.065327, Normal Velocity: -0.000432, Target Velocity: 0.000000, Angular Velocity A: -0.000079,0.000039,-2.365041, Linear Velocity A: 0.513618,-0.719105,-0.000000
+[DEBUG] rA.Cross(normal): -0.448986,0.220026,0.065327, Normal Velocity: -0.000103, Target Velocity: 0.000000, Angular Velocity A: 0.000019,-0.000009,-2.365055, Linear Velocity A: 0.513634,-0.719072,-0.000000
+[DEBUG] rA.Cross(normal): 0.448986,-0.220026,0.065327, Normal Velocity: -0.000024, Target Velocity: 0.000000, Angular Velocity A: -0.000005,0.000002,-2.365058, Linear Velocity A: 0.513637,-0.719064,-0.000000
+[DEBUG] rA.Cross(normal): -0.448986,0.220026,0.065327, Normal Velocity: -0.000006, Target Velocity: 0.000000, Angular Velocity A: 0.000001,-0.000001,-2.365059, Linear Velocity A: 0.513638,-0.719062,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.037397 N=(-0.475067,-0.879950,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.482234,0.467093,0.500000) PEN=0.037397
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.482234,0.467093,-0.500000) PEN=0.037397
+[DEBUG] rA.Cross(normal): 0.439975,-0.237533,0.061309, Normal Velocity: 0.004505, Target Velocity: 0.000000, Angular Velocity A: 0.004227,-0.002282,-2.418961, Linear Velocity A: 0.583249,-0.753503,-0.000000
+[DEBUG] rA.Cross(normal): -0.439975,0.237533,0.061309, Normal Velocity: 0.005604, Target Velocity: 0.000000, Angular Velocity A: -0.001031,0.000557,-2.418228, Linear Velocity A: 0.582303,-0.755256,-0.000000
+[DEBUG] rA.Cross(normal): 0.439975,-0.237533,0.061309, Normal Velocity: 0.001368, Target Velocity: 0.000000, Angular Velocity A: 0.000252,-0.000136,-2.418049, Linear Velocity A: 0.582072,-0.755684,-0.000000
+[DEBUG] rA.Cross(normal): -0.439975,0.237533,0.061309, Normal Velocity: 0.000334, Target Velocity: 0.000000, Angular Velocity A: -0.000061,0.000033,-2.418005, Linear Velocity A: 0.582016,-0.755788,-0.000000
+[DEBUG] rA.Cross(normal): 0.439975,-0.237533,0.061309, Normal Velocity: 0.000081, Target Velocity: 0.000000, Angular Velocity A: 0.000015,-0.000008,-2.417995, Linear Velocity A: 0.582002,-0.755814,-0.000000
+[DEBUG] rA.Cross(normal): -0.439975,0.237533,0.061309, Normal Velocity: 0.000020, Target Velocity: 0.000000, Angular Velocity A: -0.000004,0.000002,-2.417992, Linear Velocity A: 0.581999,-0.755820,-0.000000
+[DEBUG] rA.Cross(normal): 0.439975,-0.237533,0.061309, Normal Velocity: 0.000005, Target Velocity: 0.000000, Angular Velocity A: 0.000001,-0.000001,-2.417991, Linear Velocity A: 0.581998,-0.755821,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.036198 N=(-0.509871,-0.860251,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.481543,0.468860,0.500000) PEN=0.036198
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.481543,0.468860,-0.500000) PEN=0.036198
+[DEBUG] rA.Cross(normal): 0.430125,-0.254936,0.058498, Normal Velocity: 0.007652, Target Velocity: 0.000000, Angular Velocity A: 0.007051,-0.004179,-2.467538, Linear Velocity A: 0.653973,-0.796672,-0.000000
+[DEBUG] rA.Cross(normal): -0.430125,0.254936,0.058498, Normal Velocity: 0.009562, Target Velocity: 0.000000, Angular Velocity A: -0.001759,0.001042,-2.466340, Linear Velocity A: 0.652232,-0.799609,-0.000000
+[DEBUG] rA.Cross(normal): 0.430125,-0.254936,0.058498, Normal Velocity: 0.002385, Target Velocity: 0.000000, Angular Velocity A: 0.000439,-0.000260,-2.466041, Linear Velocity A: 0.651798,-0.800341,-0.000000
+[DEBUG] rA.Cross(normal): -0.430125,0.254936,0.058498, Normal Velocity: 0.000595, Target Velocity: 0.000000, Angular Velocity A: -0.000109,0.000065,-2.465966, Linear Velocity A: 0.651690,-0.800524,-0.000000
+[DEBUG] rA.Cross(normal): 0.430125,-0.254936,0.058498, Normal Velocity: 0.000148, Target Velocity: 0.000000, Angular Velocity A: 0.000027,-0.000016,-2.465948, Linear Velocity A: 0.651663,-0.800570,-0.000000
+[DEBUG] rA.Cross(normal): -0.430125,0.254936,0.058498, Normal Velocity: 0.000037, Target Velocity: 0.000000, Angular Velocity A: -0.000007,0.000004,-2.465943, Linear Velocity A: 0.651656,-0.800581,-0.000000
+[DEBUG] rA.Cross(normal): 0.430125,-0.254936,0.058498, Normal Velocity: 0.000009, Target Velocity: 0.000000, Angular Velocity A: 0.000002,-0.000001,-2.465942, Linear Velocity A: 0.651655,-0.800584,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.034648 N=(-0.544495,-0.838764,-0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.481134,0.470938,0.500000) PEN=0.034648
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.481134,0.470938,-0.500000) PEN=0.034648
+[DEBUG] rA.Cross(normal): 0.419382,-0.272248,0.056966, Normal Velocity: 0.008240, Target Velocity: 0.000000, Angular Velocity A: 0.007431,-0.004824,-2.511628, Linear Velocity A: 0.724434,-0.850612,-0.000000
+[DEBUG] rA.Cross(normal): -0.419382,0.272247,0.056966, Normal Velocity: 0.010336, Target Velocity: 0.000000, Angular Velocity A: -0.001887,0.001225,-2.510362, Linear Velocity A: 0.722418,-0.853718,-0.000000
+[DEBUG] rA.Cross(normal): 0.419382,-0.272248,0.056966, Normal Velocity: 0.002625, Target Velocity: 0.000000, Angular Velocity A: 0.000479,-0.000311,-2.510041, Linear Velocity A: 0.721905,-0.854507,-0.000000
+[DEBUG] rA.Cross(normal): -0.419382,0.272247,0.056966, Normal Velocity: 0.000667, Target Velocity: 0.000000, Angular Velocity A: -0.000122,0.000079,-2.509959, Linear Velocity A: 0.721775,-0.854707,-0.000000
+[DEBUG] rA.Cross(normal): 0.419382,-0.272248,0.056966, Normal Velocity: 0.000169, Target Velocity: 0.000000, Angular Velocity A: 0.000031,-0.000020,-2.509938, Linear Velocity A: 0.721742,-0.854758,-0.000000
+[DEBUG] rA.Cross(normal): -0.419382,0.272247,0.056966, Normal Velocity: 0.000043, Target Velocity: 0.000000, Angular Velocity A: -0.000008,0.000005,-2.509933, Linear Velocity A: 0.721734,-0.854771,-0.000000
+[DEBUG] rA.Cross(normal): 0.419382,-0.272248,0.056966, Normal Velocity: 0.000011, Target Velocity: 0.000000, Angular Velocity A: 0.000002,-0.000001,-2.509932, Linear Velocity A: 0.721732,-0.854774,-0.000000
+[DEBUG] rA.Cross(normal): -0.419382,0.272247,0.056966, Normal Velocity: 0.000003, Target Velocity: 0.000000, Angular Velocity A: -0.000001,0.000000,-2.509931, Linear Velocity A: 0.721731,-0.854775,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.032862 N=(-0.579305,-0.815111,-0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.480963,0.473214,0.500000) PEN=0.032862
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.480963,0.473214,-0.500000) PEN=0.032862
+[DEBUG] rA.Cross(normal): 0.407555,-0.289653,0.056821, Normal Velocity: 0.007896, Target Velocity: 0.000000, Angular Velocity A: 0.006935,-0.004929,-2.552842, Linear Velocity A: 0.794645,-0.916712,-0.000000
+[DEBUG] rA.Cross(normal): -0.407555,0.289653,0.056821, Normal Velocity: 0.009926, Target Velocity: 0.000000, Angular Velocity A: -0.001786,0.001269,-2.551626, Linear Velocity A: 0.792579,-0.919619,-0.000000
+[DEBUG] rA.Cross(normal): 0.407555,-0.289653,0.056821, Normal Velocity: 0.002556, Target Velocity: 0.000000, Angular Velocity A: 0.000460,-0.000327,-2.551313, Linear Velocity A: 0.792047,-0.920367,-0.000000
+[DEBUG] rA.Cross(normal): -0.407555,0.289653,0.056821, Normal Velocity: 0.000658, Target Velocity: 0.000000, Angular Velocity A: -0.000118,0.000084,-2.551232, Linear Velocity A: 0.791910,-0.920560,-0.000000
+[DEBUG] rA.Cross(normal): 0.407555,-0.289653,0.056821, Normal Velocity: 0.000170, Target Velocity: 0.000000, Angular Velocity A: 0.000031,-0.000022,-2.551211, Linear Velocity A: 0.791875,-0.920610,-0.000000
+[DEBUG] rA.Cross(normal): -0.407555,0.289653,0.056821, Normal Velocity: 0.000044, Target Velocity: 0.000000, Angular Velocity A: -0.000008,0.000006,-2.551206, Linear Velocity A: 0.791865,-0.920622,-0.000000
+[DEBUG] rA.Cross(normal): 0.407555,-0.289653,0.056821, Normal Velocity: 0.000011, Target Velocity: 0.000000, Angular Velocity A: 0.000002,-0.000001,-2.551205, Linear Velocity A: 0.791863,-0.920626,-0.000000
+[DEBUG] rA.Cross(normal): -0.407555,0.289653,0.056821, Normal Velocity: 0.000003, Target Velocity: 0.000000, Angular Velocity A: -0.000000,0.000000,-2.551204, Linear Velocity A: 0.791863,-0.920627,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.030675 N=(-0.613415,-0.789761,-0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.481184,0.475774,0.500000) PEN=0.030675
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.481184,0.475774,-0.500000) PEN=0.030675
+[DEBUG] rA.Cross(normal): 0.394881,-0.306707,0.058151, Normal Velocity: 0.012117, Target Velocity: 0.000000, Angular Velocity A: 0.010333,-0.008026,-2.591922, Linear Velocity A: 0.863447,-0.991912,-0.000000
+[DEBUG] rA.Cross(normal): -0.394880,0.306707,0.058151, Normal Velocity: 0.015265, Target Velocity: 0.000000, Angular Velocity A: -0.002685,0.002086,-2.590004, Linear Velocity A: 0.860077,-0.996252,-0.000000
+[DEBUG] rA.Cross(normal): 0.394881,-0.306707,0.058151, Normal Velocity: 0.003967, Target Velocity: 0.000000, Angular Velocity A: 0.000698,-0.000542,-2.589506, Linear Velocity A: 0.859201,-0.997379,-0.000000
+[DEBUG] rA.Cross(normal): -0.394880,0.306707,0.058151, Normal Velocity: 0.001031, Target Velocity: 0.000000, Angular Velocity A: -0.000181,0.000141,-2.589377, Linear Velocity A: 0.858973,-0.997672,-0.000000
+[DEBUG] rA.Cross(normal): 0.394881,-0.306707,0.058151, Normal Velocity: 0.000268, Target Velocity: 0.000000, Angular Velocity A: 0.000047,-0.000037,-2.589343, Linear Velocity A: 0.858914,-0.997749,-0.000000
+[DEBUG] rA.Cross(normal): -0.394880,0.306707,0.058151, Normal Velocity: 0.000070, Target Velocity: 0.000000, Angular Velocity A: -0.000012,0.000010,-2.589334, Linear Velocity A: 0.858899,-0.997768,-0.000000
+[DEBUG] rA.Cross(normal): 0.394881,-0.306707,0.058151, Normal Velocity: 0.000018, Target Velocity: 0.000000, Angular Velocity A: 0.000003,-0.000002,-2.589332, Linear Velocity A: 0.858895,-0.997773,-0.000000
+[DEBUG] rA.Cross(normal): -0.394880,0.306707,0.058151, Normal Velocity: 0.000005, Target Velocity: 0.000000, Angular Velocity A: -0.000001,0.000001,-2.589332, Linear Velocity A: 0.858894,-0.997775,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.028196 N=(-0.647065,-0.762435,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.481756,0.478503,0.500000) PEN=0.028196
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.481756,0.478503,-0.500000) PEN=0.028196
+[DEBUG] rA.Cross(normal): 0.381218,-0.323532,0.061056, Normal Velocity: 0.012297, Target Velocity: 0.000000, Angular Velocity A: 0.010133,-0.008599,-2.627740, Linear Velocity A: 0.926735,-1.082103,-0.000000
+[DEBUG] rA.Cross(normal): -0.381218,0.323532,0.061056, Normal Velocity: 0.015505, Target Velocity: 0.000000, Angular Velocity A: -0.002644,0.002244,-2.625694, Linear Velocity A: 0.923121,-1.086362,-0.000000
+[DEBUG] rA.Cross(normal): 0.381218,-0.323532,0.061056, Normal Velocity: 0.004046, Target Velocity: 0.000000, Angular Velocity A: 0.000690,-0.000586,-2.625160, Linear Velocity A: 0.922178,-1.087474,-0.000000
+[DEBUG] rA.Cross(normal): -0.381218,0.323532,0.061056, Normal Velocity: 0.001056, Target Velocity: 0.000000, Angular Velocity A: -0.000180,0.000153,-2.625021, Linear Velocity A: 0.921932,-1.087764,-0.000000
+[DEBUG] rA.Cross(normal): 0.381218,-0.323532,0.061056, Normal Velocity: 0.000276, Target Velocity: 0.000000, Angular Velocity A: 0.000047,-0.000040,-2.624984, Linear Velocity A: 0.921867,-1.087839,-0.000000
+[DEBUG] rA.Cross(normal): -0.381218,0.323532,0.061056, Normal Velocity: 0.000072, Target Velocity: 0.000000, Angular Velocity A: -0.000012,0.000010,-2.624975, Linear Velocity A: 0.921851,-1.087859,-0.000000
+[DEBUG] rA.Cross(normal): 0.381218,-0.323532,0.061056, Normal Velocity: 0.000019, Target Velocity: 0.000000, Angular Velocity A: 0.000003,-0.000003,-2.624972, Linear Velocity A: 0.921846,-1.087864,-0.000000
+[DEBUG] rA.Cross(normal): -0.381218,0.323532,0.061056, Normal Velocity: 0.000005, Target Velocity: 0.000000, Angular Velocity A: -0.000001,0.000001,-2.624972, Linear Velocity A: 0.921845,-1.087866,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.025371 N=(-0.679592,-0.733590,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.482758,0.481388,0.500000) PEN=0.025371
+[DEBUG] [MANIFOLD] REF=1 INC=1 POINT=(0.482758,0.481388,-0.500000) PEN=0.025371
+[DEBUG] rA.Cross(normal): 0.366795,-0.339796,0.065535, Normal Velocity: 0.015118, Target Velocity: 0.000000, Angular Velocity A: 0.011982,-0.011100,-2.661085, Linear Velocity A: 0.984261,-1.183002,-0.000000
+[DEBUG] rA.Cross(normal): -0.366795,0.339796,0.065535, Normal Velocity: 0.019055, Target Velocity: 0.000000, Angular Velocity A: -0.003122,0.002892,-2.658386, Linear Velocity A: 0.979597,-1.188036,-0.000000
+[DEBUG] rA.Cross(normal): 0.366795,-0.339796,0.065535, Normal Velocity: 0.004966, Target Velocity: 0.000000, Angular Velocity A: 0.000814,-0.000754,-2.657683, Linear Velocity A: 0.978381,-1.189348,-0.000000
+[DEBUG] rA.Cross(normal): -0.366795,0.339796,0.065535, Normal Velocity: 0.001294, Target Velocity: 0.000000, Angular Velocity A: -0.000212,0.000196,-2.657500, Linear Velocity A: 0.978065,-1.189690,-0.000000
+[DEBUG] rA.Cross(normal): 0.366795,-0.339796,0.065535, Normal Velocity: 0.000337, Target Velocity: 0.000000, Angular Velocity A: 0.000055,-0.000051,-2.657452, Linear Velocity A: 0.977982,-1.189779,-0.000000
+[DEBUG] rA.Cross(normal): -0.366795,0.339796,0.065535, Normal Velocity: 0.000088, Target Velocity: 0.000000, Angular Velocity A: -0.000014,0.000013,-2.657439, Linear Velocity A: 0.977961,-1.189802,-0.000000
+[DEBUG] rA.Cross(normal): 0.366795,-0.339796,0.065535, Normal Velocity: 0.000023, Target Velocity: 0.000000, Angular Velocity A: 0.000004,-0.000004,-2.657436, Linear Velocity A: 0.977955,-1.189808,-0.000000
+[DEBUG] rA.Cross(normal): -0.366795,0.339796,0.065535, Normal Velocity: 0.000006, Target Velocity: 0.000000, Angular Velocity A: -0.000001,0.000001,-2.657435, Linear Velocity A: 0.977954,-1.189810,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.022322 N=(-0.711398,-0.702789,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=0 POINT=(0.484120,0.484313,0.500000) PEN=0.022322
+[DEBUG] [MANIFOLD] REF=1 INC=0 POINT=(0.484120,0.484313,-0.500000) PEN=0.022322
+[DEBUG] rA.Cross(normal): 0.351395,-0.355699,0.071743, Normal Velocity: 0.014969, Target Velocity: 0.000000, Angular Velocity A: 0.011348,-0.011487,-2.690658, Linear Velocity A: 1.032859,-1.299054,-0.000000
+[DEBUG] rA.Cross(normal): -0.351395,0.355699,0.071743, Normal Velocity: 0.018838, Target Velocity: 0.000000, Angular Velocity A: -0.002935,0.002970,-2.687742, Linear Velocity A: 1.028040,-1.303815,-0.000000
+[DEBUG] rA.Cross(normal): 0.351395,-0.355699,0.071743, Normal Velocity: 0.004871, Target Velocity: 0.000000, Angular Velocity A: 0.000759,-0.000768,-2.686988, Linear Velocity A: 1.026794,-1.305046,-0.000000
+[DEBUG] rA.Cross(normal): -0.351395,0.355699,0.071743, Normal Velocity: 0.001260, Target Velocity: 0.000000, Angular Velocity A: -0.000196,0.000198,-2.686793, Linear Velocity A: 1.026471,-1.305364,-0.000000
+[DEBUG] rA.Cross(normal): 0.351395,-0.355699,0.071743, Normal Velocity: 0.000326, Target Velocity: 0.000000, Angular Velocity A: 0.000051,-0.000051,-2.686743, Linear Velocity A: 1.026388,-1.305446,-0.000000
+[DEBUG] rA.Cross(normal): -0.351395,0.355699,0.071743, Normal Velocity: 0.000084, Target Velocity: 0.000000, Angular Velocity A: -0.000013,0.000013,-2.686730, Linear Velocity A: 1.026366,-1.305468,-0.000000
+[DEBUG] rA.Cross(normal): 0.351395,-0.355699,0.071743, Normal Velocity: 0.000022, Target Velocity: 0.000000, Angular Velocity A: 0.000003,-0.000003,-2.686726, Linear Velocity A: 1.026361,-1.305473,-0.000000
+[DEBUG] rA.Cross(normal): -0.351395,0.355699,0.071743, Normal Velocity: 0.000006, Target Velocity: 0.000000, Angular Velocity A: -0.000001,0.000001,-2.686725, Linear Velocity A: 1.026359,-1.305475,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.019048 N=(-0.742208,-0.670170,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=0 POINT=(0.485862,0.487235,0.500000) PEN=0.019048
+[DEBUG] [MANIFOLD] REF=1 INC=0 POINT=(0.485862,0.487234,-0.500000) PEN=0.019048
+[DEBUG] rA.Cross(normal): 0.335085,-0.371104,0.079760, Normal Velocity: 0.016639, Target Velocity: 0.000000, Angular Velocity A: 0.011992,-0.013281,-2.716434, Linear Velocity A: 1.072434,-1.427745,-0.000000
+[DEBUG] rA.Cross(normal): -0.335085,0.371104,0.079760, Normal Velocity: 0.020876, Target Velocity: 0.000000, Angular Velocity A: -0.003055,0.003383,-2.712852, Linear Velocity A: 1.066880,-1.432760,-0.000000
+[DEBUG] rA.Cross(normal): 0.335085,-0.371104,0.079760, Normal Velocity: 0.005318, Target Velocity: 0.000000, Angular Velocity A: 0.000778,-0.000862,-2.711940, Linear Velocity A: 1.065465,-1.434038,-0.000000
+[DEBUG] rA.Cross(normal): -0.335085,0.371104,0.079760, Normal Velocity: 0.001354, Target Velocity: 0.000000, Angular Velocity A: -0.000198,0.000219,-2.711707, Linear Velocity A: 1.065104,-1.434363,-0.000000
+[DEBUG] rA.Cross(normal): 0.335085,-0.371104,0.079760, Normal Velocity: 0.000345, Target Velocity: 0.000000, Angular Velocity A: 0.000050,-0.000056,-2.711648, Linear Velocity A: 1.065012,-1.434446,-0.000000
+[DEBUG] rA.Cross(normal): -0.335085,0.371104,0.079760, Normal Velocity: 0.000088, Target Velocity: 0.000000, Angular Velocity A: -0.000013,0.000014,-2.711633, Linear Velocity A: 1.064989,-1.434467,-0.000000
+[DEBUG] rA.Cross(normal): 0.335085,-0.371104,0.079760, Normal Velocity: 0.000022, Target Velocity: 0.000000, Angular Velocity A: 0.000003,-0.000004,-2.711629, Linear Velocity A: 1.064983,-1.434473,-0.000000
+[DEBUG] rA.Cross(normal): -0.335085,0.371104,0.079760, Normal Velocity: 0.000006, Target Velocity: 0.000000, Angular Velocity A: -0.000001,0.000001,-2.711628, Linear Velocity A: 1.064982,-1.434474,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.015608 N=(-0.772863,-0.634573,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=0 POINT=(0.487937,0.490096,0.500000) PEN=0.015608
+[DEBUG] [MANIFOLD] REF=1 INC=0 POINT=(0.487937,0.490096,-0.500000) PEN=0.015608
+[DEBUG] rA.Cross(normal): 0.317287,-0.386431,0.090114, Normal Velocity: 0.017005, Target Velocity: 0.000000, Angular Velocity A: 0.011546,-0.014063,-2.736485, Linear Velocity A: 1.100511,-1.575300,-0.000000
+[DEBUG] rA.Cross(normal): -0.317287,0.386431,0.090114, Normal Velocity: 0.021228, Target Velocity: 0.000000, Angular Velocity A: -0.002869,0.003494,-2.732391, Linear Velocity A: 1.094659,-1.580105,-0.000000
+[DEBUG] rA.Cross(normal): 0.317287,-0.386431,0.090114, Normal Velocity: 0.005274, Target Velocity: 0.000000, Angular Velocity A: 0.000713,-0.000868,-2.731374, Linear Velocity A: 1.093205,-1.581298,-0.000000
+[DEBUG] rA.Cross(normal): -0.317287,0.386431,0.090114, Normal Velocity: 0.001310, Target Velocity: 0.000000, Angular Velocity A: -0.000177,0.000216,-2.731121, Linear Velocity A: 1.092844,-1.581595,-0.000000
+[DEBUG] rA.Cross(normal): 0.317287,-0.386431,0.090114, Normal Velocity: 0.000326, Target Velocity: 0.000000, Angular Velocity A: 0.000044,-0.000054,-2.731058, Linear Velocity A: 1.092754,-1.581669,-0.000000
+[DEBUG] rA.Cross(normal): -0.317287,0.386431,0.090114, Normal Velocity: 0.000081, Target Velocity: 0.000000, Angular Velocity A: -0.000011,0.000013,-2.731042, Linear Velocity A: 1.092732,-1.581687,-0.000000
+[DEBUG] rA.Cross(normal): 0.317287,-0.386431,0.090114, Normal Velocity: 0.000020, Target Velocity: 0.000000, Angular Velocity A: 0.000003,-0.000003,-2.731039, Linear Velocity A: 1.092726,-1.581692,-0.000000
+[DEBUG] rA.Cross(normal): -0.317287,0.386431,0.090114, Normal Velocity: 0.000005, Target Velocity: 0.000000, Angular Velocity A: -0.000001,0.000001,-2.731038, Linear Velocity A: 1.092725,-1.581693,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.011928 N=(-0.799904,-0.600129,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=0 POINT=(0.490459,0.492842,0.500000) PEN=0.011928
+[DEBUG] [MANIFOLD] REF=1 INC=0 POINT=(0.490459,0.492842,-0.500000) PEN=0.011928
+[DEBUG] rA.Cross(normal): 0.300064,-0.399952,0.101521, Normal Velocity: 0.020584, Target Velocity: 0.000000, Angular Velocity A: 0.013132,-0.017504,-2.748460, Linear Velocity A: 1.115604,-1.721865,-0.000000
+[DEBUG] rA.Cross(normal): -0.300064,0.399952,0.101521, Normal Velocity: 0.025530, Target Velocity: 0.000000, Angular Velocity A: -0.003156,0.004207,-2.742949, Linear Velocity A: 1.108367,-1.727295,-0.000000
+[DEBUG] rA.Cross(normal): 0.300064,-0.399952,0.101521, Normal Velocity: 0.006136, Target Velocity: 0.000000, Angular Velocity A: 0.000758,-0.001011,-2.741625, Linear Velocity A: 1.106628,-1.728600,-0.000000
+[DEBUG] rA.Cross(normal): -0.300064,0.399952,0.101521, Normal Velocity: 0.001475, Target Velocity: 0.000000, Angular Velocity A: -0.000183,0.000243,-2.741307, Linear Velocity A: 1.106210,-1.728913,-0.000000
+[DEBUG] rA.Cross(normal): 0.300064,-0.399952,0.101521, Normal Velocity: 0.000354, Target Velocity: 0.000000, Angular Velocity A: 0.000044,-0.000059,-2.741230, Linear Velocity A: 1.106109,-1.728989,-0.000000
+[DEBUG] rA.Cross(normal): -0.300064,0.399952,0.101521, Normal Velocity: 0.000085, Target Velocity: 0.000000, Angular Velocity A: -0.000011,0.000014,-2.741212, Linear Velocity A: 1.106085,-1.729007,-0.000000
+[DEBUG] rA.Cross(normal): 0.300064,-0.399952,0.101521, Normal Velocity: 0.000020, Target Velocity: 0.000000, Angular Velocity A: 0.000002,-0.000003,-2.741207, Linear Velocity A: 1.106079,-1.729011,-0.000000
+[DEBUG] rA.Cross(normal): -0.300064,0.399952,0.101521, Normal Velocity: 0.000005, Target Velocity: 0.000000, Angular Velocity A: -0.000001,0.000001,-2.741206, Linear Velocity A: 1.106078,-1.729012,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.008137 N=(-0.826529,-0.562895,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=0 POINT=(0.493275,0.495420,0.500000) PEN=0.008137
+[DEBUG] [MANIFOLD] REF=1 INC=0 POINT=(0.493275,0.495420,-0.500000) PEN=0.008137
+[DEBUG] rA.Cross(normal): 0.281447,-0.413264,0.115511, Normal Velocity: 0.018173, Target Velocity: 0.000000, Angular Velocity A: 0.010777,-0.015825,-2.748353, Linear Velocity A: 1.114600,-1.887063,-0.000000
+[DEBUG] rA.Cross(normal): -0.281447,0.413264,0.115511, Normal Velocity: 0.022337, Target Velocity: 0.000000, Angular Velocity A: -0.002470,0.003627,-2.742916, Linear Velocity A: 1.108116,-1.891479,-0.000000
+[DEBUG] rA.Cross(normal): 0.281447,-0.413264,0.115511, Normal Velocity: 0.005119, Target Velocity: 0.000000, Angular Velocity A: 0.000566,-0.000831,-2.741670, Linear Velocity A: 1.106630,-1.892491,-0.000000
+[DEBUG] rA.Cross(normal): -0.281447,0.413264,0.115511, Normal Velocity: 0.001173, Target Velocity: 0.000000, Angular Velocity A: -0.000130,0.000190,-2.741384, Linear Velocity A: 1.106290,-1.892722,-0.000000
+[DEBUG] rA.Cross(normal): 0.281447,-0.413264,0.115511, Normal Velocity: 0.000269, Target Velocity: 0.000000, Angular Velocity A: 0.000030,-0.000044,-2.741318, Linear Velocity A: 1.106212,-1.892776,-0.000000
+[DEBUG] rA.Cross(normal): -0.281447,0.413264,0.115511, Normal Velocity: 0.000062, Target Velocity: 0.000000, Angular Velocity A: -0.000007,0.000010,-2.741303, Linear Velocity A: 1.106194,-1.892788,-0.000000
+[DEBUG] rA.Cross(normal): 0.281447,-0.413264,0.115511, Normal Velocity: 0.000014, Target Velocity: 0.000000, Angular Velocity A: 0.000001,-0.000003,-2.741300, Linear Velocity A: 1.106190,-1.892791,-0.000000
+[DEBUG] rA.Cross(normal): -0.281447,0.413264,0.115511, Normal Velocity: 0.000003, Target Velocity: 0.000000, Angular Velocity A: -0.000001,0.000000,-2.741299, Linear Velocity A: 1.106189,-1.892791,-0.000000
+[DEBUG] [COLLISION] TYPE=0 AXIS_A=1 AXIS_B=-1 PEN=0.004249 N=(-0.851183,-0.524868,0.000000)
+[DEBUG] [MANIFOLD] REF=1 INC=0 POINT=(0.496384,0.497770,0.500000) PEN=0.004249
+[DEBUG] [MANIFOLD] REF=1 INC=0 POINT=(0.496384,0.497770,-0.500000) PEN=0.004249
+[DEBUG] rA.Cross(normal): 0.262434,-0.425592,0.131568, Normal Velocity: 0.018925, Target Velocity: 0.000000, Angular Velocity A: 0.000105,-0.000171,-2.741352, Linear Velocity A: 1.106246,-2.054977,-0.000000
+[DEBUG] rA.Cross(normal): -0.262434,0.425592,0.131568, Normal Velocity: 0.018966, Target Velocity: 0.000000, Angular Velocity A: -0.000001,0.000000,-2.741299, Linear Velocity A: 1.106189,-2.055012,-0.000000

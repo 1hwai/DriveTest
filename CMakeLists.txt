@@ -62,7 +62,14 @@ target_include_directories(DriveTest PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/External/glad-generated/include"
 )
 
-target_link_libraries(DriveTest PRIVATE
-    SDL3::SDL3
-    opengl32
-)
+if(WIN32)
+	target_link_libraries(DriveTest PRIVATE
+		SDL3::SDL3
+	    	opengl32
+	)
+elseif(UNIX)
+	target_link_libraries(DriveTest PRIVATE
+		SDL3::SDL3
+		GL
+	)
+endif()
