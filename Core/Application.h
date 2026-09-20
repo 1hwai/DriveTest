@@ -33,4 +33,11 @@ private:
     World m_world;
     PhysicsWorld m_physicsWorld;
 
+    float m_physicsAccumulator;
+    float m_fpsTimer;
+    int m_frameCount;
+    int m_physicsStepCount;
+
+    static constexpr float PhysicsFixedDeltaTime = 1.0f / 120.0f;
+    static constexpr int MaxPhysicsStepsPerFrame = 8;
 };
