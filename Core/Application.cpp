@@ -1,7 +1,13 @@
 #include "Application.h"
 
+#include <sstream>
+
 Application::Application()
-    : m_running(false) {}
+    : m_running(false),
+    m_physicsAccumulator(0.0f),
+    m_fpsTimer(0.0f),
+    m_frameCount(0),
+    m_physicsStepCount(0) {}
 
 Application::~Application() {
     Shutdown();
@@ -20,7 +26,41 @@ bool Application::Initialize() {
     ))
         return false;
 
+    Raycast raycast;
+    raycast.origin = Vec3(0.0f, 5.0f, 0.0f);
+    raycast.direction = Vec3(0.0f, -1.0f, 0.0f);
+
+    RaycastResult result;
+
+    if (m_physicsWorld.Raycast(
+        raycast,
+        result
+    )) {
+        std::ostringstream message;
+        message << "[Raycast Test] HIT distance="
+            << result.distance
+            << " point=("
+            << result.point.x << ", "
+            << result.point.y << ", "
+            << result.point.z << ") normal=("
+            << result.normal.x << ", "
+            << result.normal.y << ", "
+            << result.normal.z << ")";
+
+        Logger::Info(message.str());
+    }
+    else {
+        Logger::Error(
+            "[Raycast Test] MISS"
+        );
+    }
+
     m_time.Reset();
+
+    m_physicsAccumulator = 0.0f;
+    m_fpsTimer = 0.0f;
+    m_frameCount = 0;
+    m_physicsStepCount = 0;
 
     m_running = true;
 
@@ -48,12 +88,51 @@ void Application::Update() {
     const float deltaTime =
         m_time.GetDeltaTime();
 
-    m_physicsWorld.Step(deltaTime);
+    m_physicsAccumulator += deltaTime;
+
+    int physicsStepsThisFrame = 0;
+
+    while (m_physicsAccumulator >= PhysicsFixedDeltaTime &&
+        physicsStepsThisFrame < MaxPhysicsStepsPerFrame) {
+
+        m_physicsWorld.Step(
+            PhysicsFixedDeltaTime
+        );
+
+        m_physicsAccumulator -=
+            PhysicsFixedDeltaTime;
+
+        ++physicsStepsThisFrame;
+        ++m_physicsStepCount;
+    }
+
+    if (physicsStepsThisFrame >= MaxPhysicsStepsPerFrame &&
+        m_physicsAccumulator >= PhysicsFixedDeltaTime) {
+
+        m_physicsAccumulator = 0.0f;
+    }
 
     m_world.Update(
         deltaTime,
         m_input
     );
+
+    ++m_frameCount;
+    m_fpsTimer += deltaTime;
+
+    if (m_fpsTimer >= 1.0f) {
+        std::ostringstream message;
+        message << "[Performance] FPS="
+            << m_frameCount
+            << " PhysicsHz="
+            << m_physicsStepCount;
+
+        Logger::Debug(message.str());
+
+        m_fpsTimer = 0.0f;
+        m_frameCount = 0;
+        m_physicsStepCount = 0;
+    }
 }
 
 void Application::ProcessEvents() {
