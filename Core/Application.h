@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Time.h"
+#include "Debug/Performance.h"
 #include "../Input/InputManager.h"
 #include "../Rendering/Renderer.h"
 #include "../World/World.h"
 #include "../Rendering/MeshManager.h"
-#include "../Core/Debug/Logger.h"
 #include "../Physics/PhysicsWorld.h"
 
 class Application {
@@ -26,6 +26,7 @@ private:
     bool m_running;
 
     Time m_time;
+    Performance m_performance;
     InputManager m_input;
 
     Renderer m_renderer;
@@ -34,9 +35,6 @@ private:
     PhysicsWorld m_physicsWorld;
 
     float m_physicsAccumulator;
-    float m_fpsTimer;
-    int m_frameCount;
-    int m_physicsStepCount;
 
     static constexpr float PhysicsFixedDeltaTime = 1.0f / 120.0f;
     static constexpr int MaxPhysicsStepsPerFrame = 8;
