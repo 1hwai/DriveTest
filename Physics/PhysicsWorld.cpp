@@ -348,3 +348,287 @@ void PhysicsWorld::Clear() {
     m_colliders.clear();
     m_rigidBodies.clear();
 }
+
+bool PhysicsWorld::Raycast(
+    const Raycast& ray,
+    RaycastResult& result,
+    float maxDistance
+) const {
+    result = RaycastResult();
+
+    const float directionLength = ray.direction.Length();
+
+    if (directionLength <= 0.000001f ||
+        maxDistance < 0.0f) {
+        return false;
+    }
+
+    Raycast normalizedRay = ray;
+    normalizedRay.direction =
+        ray.direction / directionLength;
+
+    bool hit = false;
+    float closestDistance = maxDistance;
+
+    for (const auto& collider : m_colliders) {
+        if (!collider)
+            continue;
+
+        const RigidBody* body =
+            collider->GetRigidBody();
+
+        if (!body)
+            continue;
+
+        RaycastResult candidate;
+
+        bool candidateHit = false;
+
+        if (collider->GetShape() ==
+            ColliderShape::Box) {
+
+            candidateHit =
+                RaycastBox(
+                    normalizedRay,
+                    *collider,
+                    *body,
+                    closestDistance,
+                    candidate
+                );
+        }
+        else if (collider->GetShape() ==
+            ColliderShape::Sphere) {
+
+            candidateHit =
+                RaycastSphere(
+                    normalizedRay,
+                    *collider,
+                    *body,
+                    closestDistance,
+                    candidate
+                );
+        }
+
+        if (!candidateHit)
+            continue;
+
+        if (!hit ||
+            candidate.distance < closestDistance) {
+
+            hit = true;
+            closestDistance = candidate.distance;
+            result = candidate;
+        }
+    }
+
+    return hit;
+}
+
+bool PhysicsWorld::RaycastBox(
+    const Raycast& ray,
+    const Collider& collider,
+    const RigidBody& body,
+    float maxDistance,
+    RaycastResult& result
+) const {
+    const Quaternion rotation =
+        body.GetOrientation();
+
+    const Quaternion inverseRotation =
+        rotation.Conjugate();
+
+    const Vec3 localOrigin =
+        inverseRotation *
+        (ray.origin - body.GetPosition());
+
+    const Vec3 localDirection =
+        inverseRotation *
+        ray.direction;
+
+    const Vec3& halfExtents =
+        collider.GetHalfExtents();
+
+    float tMin = 0.0f;
+    float tMax = maxDistance;
+    int hitAxis = -1;
+    float hitSign = 0.0f;
+
+    constexpr float Epsilon = 0.000001f;
+
+    for (int axis = 0; axis < 3; ++axis) {
+        const float origin =
+            axis == 0 ? localOrigin.x :
+            axis == 1 ? localOrigin.y :
+            localOrigin.z;
+
+        const float direction =
+            axis == 0 ? localDirection.x :
+            axis == 1 ? localDirection.y :
+            localDirection.z;
+
+        const float extent =
+            axis == 0 ? halfExtents.x :
+            axis == 1 ? halfExtents.y :
+            halfExtents.z;
+
+        if (std::fabs(direction) <= Epsilon) {
+            if (origin < -extent ||
+                origin > extent) {
+                return false;
+            }
+
+            continue;
+        }
+
+        float t1 =
+            (-extent - origin) / direction;
+
+        float t2 =
+            (extent - origin) / direction;
+
+        float nearSign = -1.0f;
+
+        if (t1 > t2) {
+            std::swap(t1, t2);
+            nearSign = 1.0f;
+        }
+
+        if (t1 > tMin) {
+            tMin = t1;
+            hitAxis = axis;
+            hitSign = nearSign;
+        }
+
+        tMax = std::min(tMax, t2);
+
+        if (tMin > tMax)
+            return false;
+    }
+
+    float distance = tMin;
+
+    if (distance < 0.0f) {
+        distance = tMax;
+
+        if (distance < 0.0f)
+            return false;
+
+        const Vec3 localPoint =
+            localOrigin +
+            localDirection * distance;
+
+        const float distances[3] = {
+            std::fabs(std::fabs(localPoint.x) - halfExtents.x),
+            std::fabs(std::fabs(localPoint.y) - halfExtents.y),
+            std::fabs(std::fabs(localPoint.z) - halfExtents.z)
+        };
+
+        hitAxis = 0;
+
+        if (distances[1] < distances[hitAxis])
+            hitAxis = 1;
+
+        if (distances[2] < distances[hitAxis])
+            hitAxis = 2;
+
+        hitSign =
+            hitAxis == 0 ? (localPoint.x >= 0.0f ? 1.0f : -1.0f) :
+            hitAxis == 1 ? (localPoint.y >= 0.0f ? 1.0f : -1.0f) :
+            (localPoint.z >= 0.0f ? 1.0f : -1.0f);
+    }
+
+    if (distance > maxDistance)
+        return false;
+
+    Vec3 localNormal(0.0f, 0.0f, 0.0f);
+
+    if (hitAxis == 0)
+        localNormal.x = hitSign;
+    else if (hitAxis == 1)
+        localNormal.y = hitSign;
+    else if (hitAxis == 2)
+        localNormal.z = hitSign;
+    else
+        return false;
+
+    result.hit = true;
+    result.distance = distance;
+    result.point =
+        ray.origin +
+        ray.direction * distance;
+    result.normal =
+        (rotation * localNormal).Normalized();
+    result.collider =
+        const_cast<Collider*>(&collider);
+    result.rigidBody =
+        const_cast<RigidBody*>(&body);
+
+    return true;
+}
+
+bool PhysicsWorld::RaycastSphere(
+    const Raycast& ray,
+    const Collider& collider,
+    const RigidBody& body,
+    float maxDistance,
+    RaycastResult& result
+) const {
+    const Vec3 offset =
+        ray.origin - body.GetPosition();
+
+    const float radius =
+        collider.GetRadius();
+
+    const float a =
+        ray.direction.Dot(ray.direction);
+
+    const float b =
+        2.0f *
+        offset.Dot(ray.direction);
+
+    const float c =
+        offset.Dot(offset) -
+        radius * radius;
+
+    const float discriminant =
+        b * b - 4.0f * a * c;
+
+    if (discriminant < 0.0f)
+        return false;
+
+    const float sqrtDiscriminant =
+        std::sqrt(discriminant);
+
+    float t =
+        (-b - sqrtDiscriminant) /
+        (2.0f * a);
+
+    if (t < 0.0f) {
+        t =
+            (-b + sqrtDiscriminant) /
+            (2.0f * a);
+    }
+
+    if (t < 0.0f ||
+        t > maxDistance) {
+        return false;
+    }
+
+    const Vec3 point =
+        ray.origin +
+        ray.direction * t;
+
+    const Vec3 normal =
+        (point - body.GetPosition()).Normalized();
+
+    result.hit = true;
+    result.distance = t;
+    result.point = point;
+    result.normal = normal;
+    result.collider =
+        const_cast<Collider*>(&collider);
+    result.rigidBody =
+        const_cast<RigidBody*>(&body);
+
+    return true;
+}
