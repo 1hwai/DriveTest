@@ -1,5 +1,9 @@
 #include "World.h"
 
+#include <sstream>
+
+#include "../Core/Debug/Logger.h"
+
 World::World()
     : m_physicsWorld(nullptr) {}
 
@@ -162,6 +166,8 @@ bool World::Initialize(
 
     AddObject(std::move(object4));
 
+    TestRaycast();
+
     return true;
 }
 
@@ -240,4 +246,62 @@ void World::AddObject(std::unique_ptr<Object> object) {
 void World::Shutdown() {
     m_objects.clear();
     m_physicsWorld = nullptr;
+}
+void World::TestRaycast() const {
+    if (m_physicsWorld == nullptr)
+        return;
+
+    Ray sphereRay;
+    sphereRay.origin = Vec3(0.0f, 5.0f, 0.0f);
+    sphereRay.direction = Vec3(0.0f, -1.0f, 0.0f);
+
+    RaycastResult sphereResult;
+
+    if (m_physicsWorld->Raycast(
+        sphereRay,
+        sphereResult
+    )) {
+        std::ostringstream message;
+        message << "[Raycast Test] Sphere HIT distance="
+            << sphereResult.distance
+            << " point=("
+            << sphereResult.point.x << ", "
+            << sphereResult.point.y << ", "
+            << sphereResult.point.z << ") normal=("
+            << sphereResult.normal.x << ", "
+            << sphereResult.normal.y << ", "
+            << sphereResult.normal.z << ")";
+
+        Logger::Info(message.str());
+    }
+    else {
+        Logger::Error("[Raycast Test] Sphere MISS");
+    }
+
+    Ray groundRay;
+    groundRay.origin = Vec3(0.0f, 1.5f, 0.0f);
+    groundRay.direction = Vec3(0.0f, -1.0f, 0.0f);
+
+    RaycastResult groundResult;
+
+    if (m_physicsWorld->Raycast(
+        groundRay,
+        groundResult
+    )) {
+        std::ostringstream message;
+        message << "[Raycast Test] Ground HIT distance="
+            << groundResult.distance
+            << " point=("
+            << groundResult.point.x << ", "
+            << groundResult.point.y << ", "
+            << groundResult.point.z << ") normal=("
+            << groundResult.normal.x << ", "
+            << groundResult.normal.y << ", "
+            << groundResult.normal.z << ")";
+
+        Logger::Info(message.str());
+    }
+    else {
+        Logger::Error("[Raycast Test] Ground MISS");
+    }
 }
