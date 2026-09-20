@@ -1,13 +1,8 @@
 #include "Application.h"
 
-#include <sstream>
-
 Application::Application()
     : m_running(false),
-    m_physicsAccumulator(0.0f),
-    m_fpsTimer(0.0f),
-    m_frameCount(0),
-    m_physicsStepCount(0) {}
+    m_physicsAccumulator(0.0f) {}
 
 Application::~Application() {
     Shutdown();
@@ -26,41 +21,9 @@ bool Application::Initialize() {
     ))
         return false;
 
-    Ray ray;
-    ray.origin = Vec3(0.0f, 5.0f, 0.0f);
-    ray.direction = Vec3(0.0f, -1.0f, 0.0f);
-
-    RaycastResult result;
-
-    if (m_physicsWorld.Raycast(
-        ray,
-        result
-    )) {
-        std::ostringstream message;
-        message << "[Raycast Test] HIT distance="
-            << result.distance
-            << " point=("
-            << result.point.x << ", "
-            << result.point.y << ", "
-            << result.point.z << ") normal=("
-            << result.normal.x << ", "
-            << result.normal.y << ", "
-            << result.normal.z << ")";
-
-        Logger::Info(message.str());
-    }
-    else {
-        Logger::Error(
-            "[Raycast Test] MISS"
-        );
-    }
-
     m_time.Reset();
-
     m_physicsAccumulator = 0.0f;
-    m_fpsTimer = 0.0f;
-    m_frameCount = 0;
-    m_physicsStepCount = 0;
+    m_performance.Reset();
 
     m_running = true;
 
@@ -103,7 +66,7 @@ void Application::Update() {
             PhysicsFixedDeltaTime;
 
         ++physicsStepsThisFrame;
-        ++m_physicsStepCount;
+        m_performance.RecordPhysicsStep();
     }
 
     if (physicsStepsThisFrame >= MaxPhysicsStepsPerFrame &&
@@ -117,22 +80,7 @@ void Application::Update() {
         m_input
     );
 
-    ++m_frameCount;
-    m_fpsTimer += deltaTime;
-
-    if (m_fpsTimer >= 1.0f) {
-        std::ostringstream message;
-        message << "[Performance] FPS="
-            << m_frameCount
-            << " PhysicsHz="
-            << m_physicsStepCount;
-
-        Logger::Debug(message.str());
-
-        m_fpsTimer = 0.0f;
-        m_frameCount = 0;
-        m_physicsStepCount = 0;
-    }
+    m_performance.UpdateFrame(deltaTime);
 }
 
 void Application::ProcessEvents() {
