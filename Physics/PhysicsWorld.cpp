@@ -1,6 +1,7 @@
 #include "PhysicsWorld.h"
 
 #include <algorithm>
+#include <cmath>
 
 PhysicsWorld::PhysicsWorld()
     : m_gravity(0.0f, -9.81f, 0.0f),
@@ -448,10 +449,12 @@ bool PhysicsWorld::RaycastBox(
     const Vec3& halfExtents =
         collider.GetHalfExtents();
 
-    float tMin = 0.0f;
-    float tMax = maxDistance;
-    int hitAxis = -1;
-    float hitSign = 0.0f;
+    float tNear = -std::numeric_limits<float>::infinity();
+    float tFar = maxDistance;
+    int nearAxis = -1;
+    float nearSign = 0.0f;
+    int farAxis = -1;
+    float farSign = 0.0f;
 
     constexpr float Epsilon = 0.000001f;
 
@@ -486,59 +489,45 @@ bool PhysicsWorld::RaycastBox(
         float t2 =
             (extent - origin) / direction;
 
-        float nearSign = -1.0f;
+        float sign1 = -1.0f;
+        float sign2 = 1.0f;
 
         if (t1 > t2) {
             std::swap(t1, t2);
-            nearSign = 1.0f;
+            std::swap(sign1, sign2);
         }
 
-        if (t1 > tMin) {
-            tMin = t1;
-            hitAxis = axis;
-            hitSign = nearSign;
+        if (t1 > tNear) {
+            tNear = t1;
+            nearAxis = axis;
+            nearSign = sign1;
         }
 
-        tMax = std::min(tMax, t2);
+        if (t2 < tFar) {
+            tFar = t2;
+            farAxis = axis;
+            farSign = sign2;
+        }
 
-        if (tMin > tMax)
+        if (tNear > tFar)
             return false;
     }
 
-    float distance = tMin;
+    float distance = tNear;
+    int hitAxis = nearAxis;
+    float hitSign = nearSign;
 
     if (distance < 0.0f) {
-        distance = tMax;
-
-        if (distance < 0.0f)
-            return false;
-
-        const Vec3 localPoint =
-            localOrigin +
-            localDirection * distance;
-
-        const float distances[3] = {
-            std::fabs(std::fabs(localPoint.x) - halfExtents.x),
-            std::fabs(std::fabs(localPoint.y) - halfExtents.y),
-            std::fabs(std::fabs(localPoint.z) - halfExtents.z)
-        };
-
-        hitAxis = 0;
-
-        if (distances[1] < distances[hitAxis])
-            hitAxis = 1;
-
-        if (distances[2] < distances[hitAxis])
-            hitAxis = 2;
-
-        hitSign =
-            hitAxis == 0 ? (localPoint.x >= 0.0f ? 1.0f : -1.0f) :
-            hitAxis == 1 ? (localPoint.y >= 0.0f ? 1.0f : -1.0f) :
-            (localPoint.z >= 0.0f ? 1.0f : -1.0f);
+        distance = tFar;
+        hitAxis = farAxis;
+        hitSign = farSign;
     }
 
-    if (distance > maxDistance)
+    if (distance < 0.0f ||
+        distance > maxDistance ||
+        hitAxis < 0) {
         return false;
+    }
 
     Vec3 localNormal(0.0f, 0.0f, 0.0f);
 
@@ -546,10 +535,8 @@ bool PhysicsWorld::RaycastBox(
         localNormal.x = hitSign;
     else if (hitAxis == 1)
         localNormal.y = hitSign;
-    else if (hitAxis == 2)
-        localNormal.z = hitSign;
     else
-        return false;
+        localNormal.z = hitSign;
 
     result.hit = true;
     result.distance = distance;
