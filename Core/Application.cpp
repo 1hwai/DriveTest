@@ -26,14 +26,14 @@ bool Application::Initialize() {
     ))
         return false;
 
-    Raycast raycast;
-    raycast.origin = Vec3(0.0f, 5.0f, 0.0f);
-    raycast.direction = Vec3(0.0f, -1.0f, 0.0f);
+    Ray ray;
+    ray.origin = Vec3(0.0f, 5.0f, 0.0f);
+    ray.direction = Vec3(0.0f, -1.0f, 0.0f);
 
     RaycastResult result;
 
     if (m_physicsWorld.Raycast(
-        raycast,
+        ray,
         result
     )) {
         std::ostringstream message;
