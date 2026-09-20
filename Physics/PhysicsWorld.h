@@ -11,7 +11,7 @@
 #include "../Core/Math/Transform.h"
 #include "Solver.h"
 
-struct Raycast {
+struct Ray {
     Vec3 origin;
     Vec3 direction;
 };
@@ -42,7 +42,7 @@ public:
     void Step(float deltaTime);
 
     bool Raycast(
-        const Raycast& ray,
+        const Ray& ray,
         RaycastResult& result,
         float maxDistance = std::numeric_limits<float>::infinity()
     ) const;
@@ -55,7 +55,7 @@ public:
 
 private:
     bool RaycastBox(
-        const Raycast& ray,
+        const Ray& ray,
         const Collider& collider,
         const RigidBody& body,
         float maxDistance,
@@ -63,7 +63,7 @@ private:
     ) const;
 
     bool RaycastSphere(
-        const Raycast& ray,
+        const Ray& ray,
         const Collider& collider,
         const RigidBody& body,
         float maxDistance,
