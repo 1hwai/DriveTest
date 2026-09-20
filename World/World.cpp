@@ -247,6 +247,7 @@ void World::Shutdown() {
     m_objects.clear();
     m_physicsWorld = nullptr;
 }
+
 void World::TestRaycast() const {
     if (m_physicsWorld == nullptr)
         return;
