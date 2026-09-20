@@ -351,7 +351,7 @@ void PhysicsWorld::Clear() {
 }
 
 bool PhysicsWorld::Raycast(
-    const Raycast& ray,
+    const Ray& ray,
     RaycastResult& result,
     float maxDistance
 ) const {
@@ -364,7 +364,7 @@ bool PhysicsWorld::Raycast(
         return false;
     }
 
-    Raycast normalizedRay = ray;
+    Ray normalizedRay = ray;
     normalizedRay.direction =
         ray.direction / directionLength;
 
@@ -426,7 +426,7 @@ bool PhysicsWorld::Raycast(
 }
 
 bool PhysicsWorld::RaycastBox(
-    const Raycast& ray,
+    const Ray& ray,
     const Collider& collider,
     const RigidBody& body,
     float maxDistance,
@@ -554,7 +554,7 @@ bool PhysicsWorld::RaycastBox(
 }
 
 bool PhysicsWorld::RaycastSphere(
-    const Raycast& ray,
+    const Ray& ray,
     const Collider& collider,
     const RigidBody& body,
     float maxDistance,
