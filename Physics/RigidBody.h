@@ -14,6 +14,7 @@ public:
     float GetInverseMass() const;
 
     void SetBoxInertia(const Vec3& size);
+    void SetSphereInertia(float radius);
 
     void SetPosition(const Vec3& position);
     const Vec3& GetPosition() const;

@@ -19,6 +19,29 @@ public:
         Contact& contact
     );
 
+    static bool CheckSphereSphere(
+        const Transform& transformA,
+        float radiusA,
+        RigidBody* bodyA,
+        const Transform& transformB,
+        float radiusB,
+        RigidBody* bodyB,
+        Contact& contact
+    );
+
+    // sphereIsBodyA: 원래 충돌쌍에서 구 쪽이 A였는지 B였는지. 이 값에 맞춰
+    // contact.SetBodies와 법선 방향(A->B)을 일관되게 맞춘다.
+    static bool CheckSphereBox(
+        const Transform& sphereTransform,
+        float sphereRadius,
+        RigidBody* sphereBody,
+        const Transform& boxTransform,
+        const Vec3& boxHalfExtents,
+        RigidBody* boxBody,
+        bool sphereIsBodyA,
+        Contact& contact
+    );
+
 private:
     struct BoxAxes {
         Vec3 axes[3];
@@ -70,6 +93,7 @@ private:
         const Vec3& referenceNormal,
         const Transform& incidentTransform,
         const Vec3& incidentHalfExtents,
+        bool referenceIsBodyA,
         Contact& contact,
         float penetration
     );

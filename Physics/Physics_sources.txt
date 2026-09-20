@@ -1,5 +1,5 @@
-﻿============================================================
-===== Physics\RigidBody.h =====
+]633;E;for file in Physics/RigidBody.h Physics/RigidBody.cpp Physics/Collision.h Physics/Collision.cpp Physics/Contact.h Physics/Contact.cpp Physics/Solver.h Physics/Solver.cpp Physics/PhysicsWorld.h Physics/PhysicsWorld.cpp;ec209391-15f7-4b9c-98f1-9c827cebc376]633;C============================================================
+===== Physics/RigidBody.h =====
 ============================================================
 #pragma once
 
@@ -24,10 +24,10 @@ public:
     void SetOrientation(const Quaternion& orientation);
     const Quaternion& GetOrientation() const;
 
-    void SetLinearVelocity(const Vec3& velocity);
+    void SetLinearVelocity(const Vec3& velocity, bool wake = true);
     const Vec3& GetLinearVelocity() const;
 
-    void SetAngularVelocity(const Vec3& velocity);
+    void SetAngularVelocity(const Vec3& velocity, bool wake = true);
     const Vec3& GetAngularVelocity() const;
 
     void AddForce(const Vec3& force);
@@ -74,9 +74,8 @@ private:
     static constexpr float SleepAngularVelocityThreshold = 0.05f;
     static constexpr float SleepTimeThreshold = 0.5f;
 };
-
 ============================================================
-===== Physics\RigidBody.cpp =====
+===== Physics/RigidBody.cpp =====
 ============================================================
 #include "RigidBody.h"
 #include "../Core/Debug/Logger.h"
@@ -161,18 +160,28 @@ const Quaternion& RigidBody::GetOrientation() const {
     return m_orientation;
 }
 
-void RigidBody::SetLinearVelocity(const Vec3& velocity) {
+void RigidBody::SetLinearVelocity(
+    const Vec3& velocity,
+    bool wake
+) {
     m_linearVelocity = velocity;
-    Wake();
+
+    if (wake)
+        Wake();
 }
 
 const Vec3& RigidBody::GetLinearVelocity() const {
     return m_linearVelocity;
 }
 
-void RigidBody::SetAngularVelocity(const Vec3& velocity) {
+void RigidBody::SetAngularVelocity(
+    const Vec3& velocity,
+    bool wake
+) {
     m_angularVelocity = velocity;
-    Wake();
+
+    if (wake)
+        Wake();
 }
 
 const Vec3& RigidBody::GetAngularVelocity() const {
@@ -367,9 +376,8 @@ void RigidBody::Sleep() {
 bool RigidBody::IsSleeping() const {
     return m_isSleeping;
 }
-
 ============================================================
-===== Physics\Collision.h =====
+===== Physics/Collision.h =====
 ============================================================
 #pragma once
 
@@ -477,9 +485,8 @@ private:
         Vec3& point2
     );
 };
-
 ============================================================
-===== Physics\Collision.cpp =====
+===== Physics/Collision.cpp =====
 ============================================================
 #include "Collision.h"
 
@@ -1053,17 +1060,17 @@ bool Collision::BuildFaceManifold(
                 point -
                 referenceNormal * distance;
 
-            Logger::Debug(
-                "[MANIFOLD] "
-                "REF=" + std::to_string(referenceAxisIndex) +
-                " INC=" + std::to_string(incidentAxisIndex) +
-                " POINT=(" +
-                std::to_string(contactPosition.x) + "," +
-                std::to_string(contactPosition.y) + "," +
-                std::to_string(contactPosition.z) +
-                ") "
-                "PEN=" + std::to_string(pointPenetration)
-            );
+            // Logger::Debug(
+            //     "[MANIFOLD] "
+            //     "REF=" + std::to_string(referenceAxisIndex) +
+            //     " INC=" + std::to_string(incidentAxisIndex) +
+            //     " POINT=(" +
+            //     std::to_string(contactPosition.x) + "," +
+            //     std::to_string(contactPosition.y) + "," +
+            //     std::to_string(contactPosition.z) +
+            //     ") "
+            //     "PEN=" + std::to_string(pointPenetration)
+            // );
 
             contact.AddPoint(
                 contactPosition,
@@ -1274,9 +1281,8 @@ bool Collision::BuildEdgeContact(
 
     return true;
 }
-
 ============================================================
-===== Physics\Contact.h =====
+===== Physics/Contact.h =====
 ============================================================
 #pragma once
 
@@ -1333,6 +1339,8 @@ public:
 
     void ClearPoints();
 
+    void WarmStartFrom(const Contact& previous);
+
 private:
     RigidBody* m_bodyA;
     RigidBody* m_bodyB;
@@ -1345,11 +1353,12 @@ private:
     float m_restitution;
     float m_friction;
 };
-
 ============================================================
-===== Physics\Contact.cpp =====
+===== Physics/Contact.cpp =====
 ============================================================
 #include "Contact.h"
+
+#include <cmath>
 
 Contact::Contact()
     : m_bodyA(nullptr),
@@ -1422,7 +1431,9 @@ void Contact::AddPoint(
     ContactPoint& point = m_points[m_pointCount];
 
     point.position = position;
-    point.penetration = penetration > 0.0f ? penetration : 0.0f;
+    point.penetration =
+        penetration > 0.0f ? penetration : 0.0f;
+
     point.normalImpulse = 0.0f;
     point.tangentImpulse = 0.0f;
 
@@ -1445,8 +1456,69 @@ void Contact::ClearPoints() {
     m_pointCount = 0;
 }
 
+void Contact::WarmStartFrom(const Contact& previous) {
+    if (m_bodyA != previous.m_bodyA ||
+        m_bodyB != previous.m_bodyB) {
+        return;
+    }
+
+    if (m_normal.Dot(previous.m_normal) < 0.95f)
+        return;
+
+    constexpr float MatchDistanceSq = 0.05f * 0.05f;
+
+    bool used[MaxPoints] = {
+        false,
+        false,
+        false,
+        false
+    };
+
+    for (int i = 0; i < m_pointCount; ++i) {
+        ContactPoint& current =
+            m_points[i];
+
+        int bestIndex = -1;
+        float bestDistanceSq =
+            MatchDistanceSq;
+
+        for (int j = 0;
+            j < previous.m_pointCount;
+            ++j) {
+
+            if (used[j])
+                continue;
+
+            const ContactPoint& old =
+                previous.m_points[j];
+
+            Vec3 difference =
+                current.position -
+                old.position;
+
+            float distanceSq =
+                difference.LengthSquared();
+
+            if (distanceSq < bestDistanceSq) {
+                bestDistanceSq = distanceSq;
+                bestIndex = j;
+            }
+        }
+
+        if (bestIndex < 0)
+            continue;
+
+        const ContactPoint& old =
+            previous.m_points[bestIndex];
+
+        current.normalImpulse =
+            old.normalImpulse;
+
+        used[bestIndex] = true;
+    }
+}
 ============================================================
-===== Physics\Solver.h =====
+===== Physics/Solver.h =====
 ============================================================
 #pragma once
 
@@ -1469,6 +1541,8 @@ public:
     void SetRestitutionThreshold(float threshold);
     float GetRestitutionThreshold() const;
 
+    void WarmStart(Contact& contact);
+
     void SolvePosition(Contact& contact);
     void SolveVelocity(Contact& contact);
     void SolveFriction(Contact& contact);
@@ -1479,21 +1553,20 @@ private:
     int m_velocityIterations;
     float m_restitutionThreshold;
 };
-
 ============================================================
-===== Physics\Solver.cpp =====
+===== Physics/Solver.cpp =====
 ============================================================
 #include "Solver.h"
 #include "RigidBody.h"
+#include "../Core/Debug/Logger.h"
+
 #include <algorithm>
 #include <cmath>
-#include <string>
-#include "../Core/Debug/Logger.h"
 
 Solver::Solver()
     : m_penetrationSlop(0.001f),
     m_correctionPercent(0.2f),
-    m_velocityIterations(8),
+    m_velocityIterations(16),
     m_restitutionThreshold(1.0f) {}
 
 void Solver::SetPenetrationSlop(float slop) {
@@ -1514,7 +1587,7 @@ void Solver::SetCorrectionPercent(float percent) {
 }
 
 float Solver::GetCorrectionPercent() const {
-	return m_correctionPercent;
+    return m_correctionPercent;
 }
 
 void Solver::SetVelocityIterations(int iterations) {
@@ -1533,6 +1606,47 @@ float Solver::GetRestitutionThreshold() const {
     return m_restitutionThreshold;
 }
 
+void Solver::WarmStart(Contact& contact) {
+    RigidBody* bodyA = contact.GetBodyA();
+    RigidBody* bodyB = contact.GetBodyB();
+
+    if (!bodyA || !bodyB)
+        return;
+
+    Vec3 normal = contact.GetNormal();
+    float inverseMassA = bodyA->GetInverseMass();
+    float inverseMassB = bodyB->GetInverseMass();
+    Mat3 inverseInertiaA = bodyA->GetWorldInverseInertiaTensor();
+    Mat3 inverseInertiaB = bodyB->GetWorldInverseInertiaTensor();
+
+    for (int i = 0; i < contact.GetPointCount(); ++i) {
+        ContactPoint& point = contact.GetPoint(i);
+
+        if (point.normalImpulse <= 0.0f)
+            continue;
+
+        Vec3 rA = point.position - bodyA->GetPosition();
+        Vec3 rB = point.position - bodyB->GetPosition();
+        Vec3 impulse = normal * point.normalImpulse;
+
+        bodyA->SetLinearVelocity(
+            bodyA->GetLinearVelocity() - impulse * inverseMassA, false
+        );
+
+        bodyB->SetLinearVelocity(
+            bodyB->GetLinearVelocity() + impulse * inverseMassB, false
+        );
+
+        bodyA->SetAngularVelocity(
+            bodyA->GetAngularVelocity() - inverseInertiaA * rA.Cross(impulse), false
+        );
+
+        bodyB->SetAngularVelocity(
+            bodyB->GetAngularVelocity() + inverseInertiaB * rB.Cross(impulse), false
+        );
+    }
+}
+
 void Solver::SolvePosition(Contact& contact) {
     RigidBody* bodyA = contact.GetBodyA();
     RigidBody* bodyB = contact.GetBodyB();
@@ -1549,8 +1663,12 @@ void Solver::SolvePosition(Contact& contact) {
 
     float maxPenetration = 0.0f;
 
-    for (int i = 0; i < contact.GetPointCount(); ++i)
-        maxPenetration = std::max(maxPenetration, contact.GetPoint(i).penetration);
+    for (int i = 0; i < contact.GetPointCount(); ++i) {
+        maxPenetration = std::max(
+            maxPenetration,
+            contact.GetPoint(i).penetration
+        );
+    }
 
     float correctionDepth = maxPenetration - m_penetrationSlop;
 
@@ -1576,8 +1694,21 @@ void Solver::SolvePosition(Contact& contact) {
 
     Vec3 correction = contact.GetNormal() * correctionMagnitude;
 
-    bodyA->SetPosition(bodyA->GetPosition() - correction * inverseMassA);
-    bodyB->SetPosition(bodyB->GetPosition() + correction * inverseMassB);
+    bodyA->SetPosition(
+        bodyA->GetPosition() - correction * inverseMassA
+    );
+
+    bodyB->SetPosition(
+        bodyB->GetPosition() + correction * inverseMassB
+    );
+
+    Logger::Debug(
+        "[Solve Position] Pos': " +
+        std::to_string(bodyA->GetPosition().x) + ',' +
+        std::to_string(bodyA->GetPosition().y) + ',' +
+        std::to_string(bodyA->GetPosition().z)
+    );
+
 }
 
 void Solver::SolveVelocity(Contact& contact) {
@@ -1588,24 +1719,15 @@ void Solver::SolveVelocity(Contact& contact) {
         return;
 
     Vec3 normal = contact.GetNormal();
-
     float inverseMassA = bodyA->GetInverseMass();
     float inverseMassB = bodyB->GetInverseMass();
-
     Mat3 inverseInertiaA = bodyA->GetWorldInverseInertiaTensor();
     Mat3 inverseInertiaB = bodyB->GetWorldInverseInertiaTensor();
 
-    Vec3 initialVelocityA = bodyA->GetLinearVelocity();
-    Vec3 initialAngularVelocityA = bodyA->GetAngularVelocity();
-
-    float totalImpulse = 0.0f;
-    float maxImpulse = 0.0f;
-    float minNormalVelocity = INFINITY;
-    float maxNormalVelocity = -INFINITY;
-    int appliedImpulseCount = 0;
-
+    // Solve normal impulse for each contact point.
     for (int i = 0; i < contact.GetPointCount(); ++i) {
         ContactPoint& point = contact.GetPoint(i);
+
         Vec3 rA = point.position - bodyA->GetPosition();
         Vec3 rB = point.position - bodyB->GetPosition();
 
@@ -1620,12 +1742,10 @@ void Solver::SolveVelocity(Contact& contact) {
         Vec3 relativeVelocity = velocityB - velocityA;
         float normalVelocity = relativeVelocity.Dot(normal);
 
-        minNormalVelocity = std::min(minNormalVelocity, normalVelocity);
-        maxNormalVelocity = std::max(maxNormalVelocity, normalVelocity);
-
         if (point.normalImpulse == 0.0f &&
-            normalVelocity < -m_restitutionThreshold)
+            normalVelocity < -m_restitutionThreshold) {
             point.tangentImpulse = 0.0f;
+        }
 
         float targetVelocity = 0.0f;
 
@@ -1651,11 +1771,13 @@ void Solver::SolveVelocity(Contact& contact) {
             -(normalVelocity - targetVelocity) / denominator;
 
         float oldImpulse = point.normalImpulse;
-        float newImpulse =
-            std::max(0.0f, oldImpulse + impulseMagnitude);
 
-        float deltaImpulse =
-            newImpulse - oldImpulse;
+        float newImpulse = std::max(
+            0.0f,
+            oldImpulse + impulseMagnitude
+        );
+
+        float deltaImpulse = newImpulse - oldImpulse;
 
         if (std::abs(deltaImpulse) <= 0.000001f)
             continue;
@@ -1663,69 +1785,52 @@ void Solver::SolveVelocity(Contact& contact) {
         Vec3 impulse = normal * deltaImpulse;
 
         bodyA->SetLinearVelocity(
-            bodyA->GetLinearVelocity() -
-            impulse * inverseMassA
+            bodyA->GetLinearVelocity() - impulse * inverseMassA, false
         );
 
         bodyB->SetLinearVelocity(
-            bodyB->GetLinearVelocity() +
-            impulse * inverseMassB
+            bodyB->GetLinearVelocity() + impulse * inverseMassB, false
         );
 
         bodyA->SetAngularVelocity(
             bodyA->GetAngularVelocity() -
-            inverseInertiaA * rA.Cross(impulse)
+            inverseInertiaA * rA.Cross(impulse), false
         );
 
         bodyB->SetAngularVelocity(
             bodyB->GetAngularVelocity() +
-            inverseInertiaB * rB.Cross(impulse)
+            inverseInertiaB * rB.Cross(impulse), false
         );
 
+        Logger::Debug(
+            "[Solve Velocity] W, V" +
+            std::to_string(bodyA->GetAngularVelocity().x) + ',' +
+            std::to_string(bodyA->GetAngularVelocity().y) + ',' +
+            std::to_string(bodyA->GetAngularVelocity().z) + " | " +
+            std::to_string(bodyA->GetLinearVelocity().x) + ',' +
+            std::to_string(bodyA->GetLinearVelocity().y) + ',' +
+            std::to_string(bodyA->GetLinearVelocity().z)
+        );
+
+        // Logger::Debug(
+        //     "rA.Cross(normal): " +
+        //     std::to_string(rA.Cross(normal).x) + ',' +
+        //     std::to_string(rA.Cross(normal).y) + ',' +
+        //     std::to_string(rA.Cross(normal).z) +
+        //     ", Normal Velocity: " + std::to_string(normalVelocity) +
+        //     ", Target Velocity: " + std::to_string(targetVelocity) +
+        //     ", Angular Velocity A: " +
+        //     std::to_string(bodyA->GetAngularVelocity().x) + ',' +
+        //     std::to_string(bodyA->GetAngularVelocity().y) + ',' +
+        //     std::to_string(bodyA->GetAngularVelocity().z) +
+        //     ", Linear Velocity A: " +
+        //     std::to_string(bodyA->GetLinearVelocity().x) + ',' +
+        //     std::to_string(bodyA->GetLinearVelocity().y) + ',' +
+        //     std::to_string(bodyA->GetLinearVelocity().z)
+        // );
+
         point.normalImpulse = newImpulse;
-
-        totalImpulse += std::fabs(deltaImpulse);
-        maxImpulse = std::max(maxImpulse, std::fabs(deltaImpulse));
-        ++appliedImpulseCount;
     }
-
-    Vec3 finalVelocityA = bodyA->GetLinearVelocity();
-    Vec3 finalAngularVelocityA = bodyA->GetAngularVelocity();
-
-    //Logger::Debug(
-    //    "[SOLVER] "
-    //    "N=(" +
-    //    std::to_string(normal.x) + "," +
-    //    std::to_string(normal.y) + "," +
-    //    std::to_string(normal.z) + ") "
-    //    "NV=(" +
-    //    std::to_string(minNormalVelocity) + "," +
-    //    std::to_string(maxNormalVelocity) + ") "
-    //    "IMP=" +
-    //    std::to_string(totalImpulse) +
-    //    " MAX=" +
-    //    std::to_string(maxImpulse) +
-    //    " CNT=" +
-    //    std::to_string(appliedImpulseCount) +
-    //    " V=(" +
-    //    std::to_string(initialVelocityA.x) + "," +
-    //    std::to_string(initialVelocityA.y) + "," +
-    //    std::to_string(initialVelocityA.z) +
-    //    ")->(" +
-    //    std::to_string(finalVelocityA.x) + "," +
-    //    std::to_string(finalVelocityA.y) + "," +
-    //    std::to_string(finalVelocityA.z) +
-    //    ") "
-    //    "W=(" +
-    //    std::to_string(initialAngularVelocityA.x) + "," +
-    //    std::to_string(initialAngularVelocityA.y) + "," +
-    //    std::to_string(initialAngularVelocityA.z) +
-    //    ")->(" +
-    //    std::to_string(finalAngularVelocityA.x) + "," +
-    //    std::to_string(finalAngularVelocityA.y) + "," +
-    //    std::to_string(finalAngularVelocityA.z) +
-    //    ")"
-    //);
 }
 
 void Solver::SolveFriction(Contact& contact) {
@@ -1736,10 +1841,8 @@ void Solver::SolveFriction(Contact& contact) {
         return;
 
     Vec3 normal = contact.GetNormal();
-
     float inverseMassA = bodyA->GetInverseMass();
     float inverseMassB = bodyB->GetInverseMass();
-
     Mat3 inverseInertiaA = bodyA->GetWorldInverseInertiaTensor();
     Mat3 inverseInertiaB = bodyB->GetWorldInverseInertiaTensor();
 
@@ -1792,31 +1895,17 @@ void Solver::SolveFriction(Contact& contact) {
             -relativeVelocity.Dot(tangent) / denominator;
 
         float oldImpulse = point.tangentImpulse;
-
         float maxFrictionImpulse =
             contact.GetFriction() * point.normalImpulse;
 
-        float newImpulse =
-            oldImpulse + impulseMagnitude;
+        float newImpulse = oldImpulse + impulseMagnitude;
 
-        if (newImpulse > maxFrictionImpulse)
-            newImpulse = maxFrictionImpulse;
-        else if (newImpulse < -maxFrictionImpulse)
+        if (newImpulse < -maxFrictionImpulse)
             newImpulse = -maxFrictionImpulse;
+        else if (newImpulse > maxFrictionImpulse)
+            newImpulse = maxFrictionImpulse;
 
-        float deltaImpulse =
-            newImpulse - oldImpulse;
-
-        Logger::Debug(
-            "[IMPULSE] "
-            "P" + std::to_string(i) +
-            " NV=" + std::to_string(relativeVelocity.Dot(normal)) +
-            " DEN=" + std::to_string(denominator) +
-            " CALC=" + std::to_string(impulseMagnitude) +
-            " OLD=" + std::to_string(oldImpulse) +
-            " NEW=" + std::to_string(newImpulse) +
-            " DELTA=" + std::to_string(deltaImpulse)
-        );
+        float deltaImpulse = newImpulse - oldImpulse;
 
         if (std::abs(deltaImpulse) <= 0.000001f)
             continue;
@@ -1824,31 +1913,28 @@ void Solver::SolveFriction(Contact& contact) {
         Vec3 impulse = tangent * deltaImpulse;
 
         bodyA->SetLinearVelocity(
-            bodyA->GetLinearVelocity() -
-            impulse * inverseMassA
+            bodyA->GetLinearVelocity() - impulse * inverseMassA, false
         );
 
         bodyB->SetLinearVelocity(
-            bodyB->GetLinearVelocity() +
-            impulse * inverseMassB
+            bodyB->GetLinearVelocity() + impulse * inverseMassB, false
         );
 
         bodyA->SetAngularVelocity(
             bodyA->GetAngularVelocity() -
-            inverseInertiaA * rA.Cross(impulse)
+            inverseInertiaA * rA.Cross(impulse), false
         );
 
         bodyB->SetAngularVelocity(
             bodyB->GetAngularVelocity() +
-            inverseInertiaB * rB.Cross(impulse)
+            inverseInertiaB * rB.Cross(impulse), false
         );
 
         point.tangentImpulse = newImpulse;
     }
 }
-
 ============================================================
-===== Physics\PhysicsWorld.h =====
+===== Physics/PhysicsWorld.h =====
 ============================================================
 #pragma once
 
@@ -1887,17 +1973,23 @@ public:
 private:
     Vec3 m_gravity;
     Solver m_solver;
+
     std::vector<std::unique_ptr<RigidBody>> m_rigidBodies;
     std::vector<std::unique_ptr<Collider>> m_colliders;
+
     std::vector<Contact> m_contacts;
+    std::vector<Contact> m_previousContacts;
+
     float m_debugTimer;
 };
-
 ============================================================
-===== Physics\PhysicsWorld.cpp =====
+===== Physics/PhysicsWorld.cpp =====
 ============================================================
 #include "PhysicsWorld.h"
+
 #include "../Core/Debug/Logger.h"
+
+#include <algorithm>
 
 PhysicsWorld::PhysicsWorld()
     : m_gravity(0.0f, -9.81f, 0.0f),
@@ -1912,31 +2004,49 @@ const Vec3& PhysicsWorld::GetGravity() const {
 }
 
 RigidBody* PhysicsWorld::CreateRigidBody() {
-    auto body = std::make_unique<RigidBody>();
-    RigidBody* result = body.get();
+    auto body =
+        std::make_unique<RigidBody>();
 
-    m_rigidBodies.push_back(std::move(body));
+    RigidBody* result =
+        body.get();
+
+    m_rigidBodies.push_back(
+        std::move(body)
+    );
 
     return result;
 }
 
-void PhysicsWorld::AddRigidBody(std::unique_ptr<RigidBody> body) {
+void PhysicsWorld::AddRigidBody(
+    std::unique_ptr<RigidBody> body
+) {
     if (body)
-        m_rigidBodies.push_back(std::move(body));
+        m_rigidBodies.push_back(
+            std::move(body)
+        );
 }
 
 Collider* PhysicsWorld::CreateCollider() {
-    auto collider = std::make_unique<Collider>();
-    Collider* result = collider.get();
+    auto collider =
+        std::make_unique<Collider>();
 
-    m_colliders.push_back(std::move(collider));
+    Collider* result =
+        collider.get();
+
+    m_colliders.push_back(
+        std::move(collider)
+    );
 
     return result;
 }
 
-void PhysicsWorld::AddCollider(std::unique_ptr<Collider> collider) {
+void PhysicsWorld::AddCollider(
+    std::unique_ptr<Collider> collider
+) {
     if (collider)
-        m_colliders.push_back(std::move(collider));
+        m_colliders.push_back(
+            std::move(collider)
+        );
 }
 
 void PhysicsWorld::Step(float deltaTime) {
@@ -1947,10 +2057,16 @@ void PhysicsWorld::Step(float deltaTime) {
 
     // 1. Integrate
     for (auto& body : m_rigidBodies)
-        body->Integrate(deltaTime, m_gravity);
+        body->Integrate(
+            deltaTime,
+            m_gravity
+        );
 
     // 2. Collision detection
-    for (size_t i = 0; i < m_colliders.size(); ++i) {
+    for (size_t i = 0;
+        i < m_colliders.size();
+        ++i) {
+
         Collider* colliderA =
             m_colliders[i].get();
 
@@ -1976,41 +2092,32 @@ void PhysicsWorld::Step(float deltaTime) {
             if (bodyA == bodyB)
                 continue;
 
-            // Both bodies are sleeping.
-            // Nothing can change their state, so there
-            // is no reason to solve this contact.
             if (bodyA->IsSleeping() &&
                 bodyB->IsSleeping()) {
                 continue;
             }
 
-            // An awake dynamic body touching a sleeping
-            // dynamic body wakes the sleeping body.
             if (bodyA->IsSleeping() &&
                 bodyB->GetInverseMass() > 0.0f &&
                 !bodyB->IsSleeping()) {
+
                 bodyA->Wake();
             }
 
             if (bodyB->IsSleeping() &&
                 bodyA->GetInverseMass() > 0.0f &&
                 !bodyA->IsSleeping()) {
+
                 bodyB->Wake();
             }
 
             Transform transformA;
-            transformA.position =
-                bodyA->GetPosition();
-
-            transformA.rotation =
-                bodyA->GetOrientation();
+            transformA.position = bodyA->GetPosition();
+            transformA.rotation = bodyA->GetOrientation();
 
             Transform transformB;
-            transformB.position =
-                bodyB->GetPosition();
-
-            transformB.rotation =
-                bodyB->GetOrientation();
+            transformB.position = bodyB->GetPosition();
+            transformB.rotation = bodyB->GetOrientation();
 
             Contact contact;
 
@@ -2044,74 +2151,108 @@ void PhysicsWorld::Step(float deltaTime) {
                     .GetFriction()
                 );
 
-            contact.SetRestitution(restitution);
-            contact.SetFriction(friction);
-
-            Logger::Info(
-                "Contact normal: (" +
-                std::to_string(
-                    contact.GetNormal().x
-                ) + ", " +
-                std::to_string(
-                    contact.GetNormal().y
-                ) + ", " +
-                std::to_string(
-                    contact.GetNormal().z
-                ) + ")"
+            contact.SetRestitution(
+                restitution
             );
 
-            for (int k = 0;
-                k < contact.GetPointCount();
-                ++k) {
+            contact.SetFriction(
+                friction
+            );
 
-                const ContactPoint& point =
-                    contact.GetPoint(k);
+            for (const Contact& previous :
+                m_previousContacts) {
 
-                Logger::Info(
-                    "Contact point: (" +
-                    std::to_string(
-                        point.position.x
-                    ) + ", " +
-                    std::to_string(
-                        point.position.y
-                    ) + ", " +
-                    std::to_string(
-                        point.position.z
-                    ) +
-                    "), penetration: " +
-                    std::to_string(
-                        point.penetration
-                    )
+                if (previous.GetBodyA() != bodyA ||
+                    previous.GetBodyB() != bodyB) {
+                    continue;
+                }
+
+                contact.WarmStartFrom(
+                    previous
                 );
+
+                break;
             }
 
-            m_contacts.push_back(contact);
+            m_contacts.push_back(
+                contact
+            );
         }
     }
 
     // 3. Position correction
-    for (Contact& contact : m_contacts)
-        m_solver.SolvePosition(contact);
+    for (Contact& contact :
+        m_contacts) {
 
-    // 4. Iterative velocity solver
+        m_solver.SolvePosition(
+            contact
+        );
+    }
+
+    // // // 4. Warm start
+    for (Contact& contact :
+        m_contacts) {
+
+        m_solver.WarmStart(
+            contact
+        );
+    }
+
+    float error = 0.000001f;
+
+    // 5. Iterative velocity solver
     for (int iteration = 0;
         iteration < m_solver.GetVelocityIterations();
         ++iteration) {
 
-        for (Contact& contact : m_contacts)
-            m_solver.SolveVelocity(contact);
+        for (Contact& contact :
+            m_contacts) {
 
-        for (Contact& contact : m_contacts)
-            m_solver.SolveFriction(contact);
+            m_solver.SolveVelocity(
+                contact
+            );
+        }
+
+        for (Contact& contact :
+            m_contacts) {
+
+            m_solver.SolveFriction(
+                contact
+            );
+        }
     }
 
-    // 5. Sleep stable bodies
-    for (auto& body : m_rigidBodies) {
-        body->UpdateSleep(deltaTime);
+    int i = 0;
+    // 6. Sleep
+    for (auto& body :
+        m_rigidBodies) {
+        i++;
 
+        Vec3 previousLinearVelocity =
+            body->GetLinearVelocity();
+        Vec3 previousAngularVelocity =
+            body->GetAngularVelocity();
+
+        Logger::Debug(
+            "Body " + std::to_string(i) + ": W, V" +
+            std::to_string(previousAngularVelocity.x) + ',' +
+            std::to_string(previousAngularVelocity.y) + ',' +
+            std::to_string(previousAngularVelocity.z) + " | " +
+            std::to_string(previousLinearVelocity.x) + ',' +
+            std::to_string(previousLinearVelocity.y) + ',' +
+            std::to_string(previousLinearVelocity.z)
+        );
+        
+        body->UpdateSleep(
+            deltaTime
+        );
     }
 
-    // 6. Debug
+    // 7. Preserve contact impulses
+    m_previousContacts =
+        m_contacts;
+
+    // 8. Debug timer
     m_debugTimer += deltaTime;
 
     if (m_debugTimer >= 1.0f) {
@@ -2119,21 +2260,24 @@ void PhysicsWorld::Step(float deltaTime) {
     }
 }
 
-const std::vector<std::unique_ptr<RigidBody>>& PhysicsWorld::GetRigidBodies() const {
+const std::vector<std::unique_ptr<RigidBody>>&
+PhysicsWorld::GetRigidBodies() const {
     return m_rigidBodies;
 }
 
-const std::vector<std::unique_ptr<Collider>>& PhysicsWorld::GetColliders() const {
+const std::vector<std::unique_ptr<Collider>>&
+PhysicsWorld::GetColliders() const {
     return m_colliders;
 }
 
-const std::vector<Contact>& PhysicsWorld::GetContacts() const {
+const std::vector<Contact>&
+PhysicsWorld::GetContacts() const {
     return m_contacts;
 }
 
 void PhysicsWorld::Clear() {
     m_contacts.clear();
+    m_previousContacts.clear();
     m_colliders.clear();
     m_rigidBodies.clear();
 }
-

@@ -1,8 +1,18 @@
 #include "Collider.h"
 
 Collider::Collider()
-    : m_halfExtents(0.5f, 0.5f, 0.5f),
+    : m_shape(ColliderShape::Box),
+    m_halfExtents(0.5f, 0.5f, 0.5f),
+    m_radius(0.5f),
     m_rigidBody(nullptr) {}
+
+void Collider::SetShape(ColliderShape shape) {
+    m_shape = shape;
+}
+
+ColliderShape Collider::GetShape() const {
+    return m_shape;
+}
 
 void Collider::SetHalfExtents(
     const Vec3& halfExtents
@@ -12,6 +22,14 @@ void Collider::SetHalfExtents(
 
 const Vec3& Collider::GetHalfExtents() const {
     return m_halfExtents;
+}
+
+void Collider::SetRadius(float radius) {
+    m_radius = radius > 0.0f ? radius : 0.0f;
+}
+
+float Collider::GetRadius() const {
+    return m_radius;
 }
 
 void Collider::SetRigidBody(

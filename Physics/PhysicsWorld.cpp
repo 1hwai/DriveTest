@@ -1,7 +1,5 @@
 #include "PhysicsWorld.h"
 
-#include "../Core/Debug/Logger.h"
-
 #include <algorithm>
 
 PhysicsWorld::PhysicsWorld()
@@ -28,6 +26,7 @@ RigidBody* PhysicsWorld::CreateRigidBody() {
     );
 
     return result;
+
 }
 
 void PhysicsWorld::AddRigidBody(
@@ -51,6 +50,7 @@ Collider* PhysicsWorld::CreateCollider() {
     );
 
     return result;
+
 }
 
 void PhysicsWorld::AddCollider(
@@ -69,11 +69,12 @@ void PhysicsWorld::Step(float deltaTime) {
     m_contacts.clear();
 
     // 1. Integrate
-    for (auto& body : m_rigidBodies)
+    for (auto& body : m_rigidBodies) {
         body->Integrate(
             deltaTime,
             m_gravity
         );
+    }
 
     // 2. Collision detection
     for (size_t i = 0;
@@ -125,25 +126,83 @@ void PhysicsWorld::Step(float deltaTime) {
             }
 
             Transform transformA;
-            transformA.position = bodyA->GetPosition();
-            transformA.rotation = bodyA->GetOrientation();
+            transformA.position =
+                bodyA->GetPosition();
+            transformA.rotation =
+                bodyA->GetOrientation();
 
             Transform transformB;
-            transformB.position = bodyB->GetPosition();
-            transformB.rotation = bodyB->GetOrientation();
+            transformB.position =
+                bodyB->GetPosition();
+            transformB.rotation =
+                bodyB->GetOrientation();
 
             Contact contact;
 
-            bool collided =
-                Collision::CheckBoxBox(
-                    transformA,
-                    colliderA->GetHalfExtents(),
-                    bodyA,
-                    transformB,
-                    colliderB->GetHalfExtents(),
-                    bodyB,
-                    contact
-                );
+            const ColliderShape shapeA =
+                colliderA->GetShape();
+
+            const ColliderShape shapeB =
+                colliderB->GetShape();
+
+            bool collided = false;
+
+            if (shapeA == ColliderShape::Box &&
+                shapeB == ColliderShape::Box) {
+
+                collided =
+                    Collision::CheckBoxBox(
+                        transformA,
+                        colliderA->GetHalfExtents(),
+                        bodyA,
+                        transformB,
+                        colliderB->GetHalfExtents(),
+                        bodyB,
+                        contact
+                    );
+            }
+            else if (shapeA == ColliderShape::Sphere &&
+                shapeB == ColliderShape::Sphere) {
+
+                collided =
+                    Collision::CheckSphereSphere(
+                        transformA,
+                        colliderA->GetRadius(),
+                        bodyA,
+                        transformB,
+                        colliderB->GetRadius(),
+                        bodyB,
+                        contact
+                    );
+            }
+            else if (shapeA == ColliderShape::Sphere) {
+                // A = sphere, B = box
+                collided =
+                    Collision::CheckSphereBox(
+                        transformA,
+                        colliderA->GetRadius(),
+                        bodyA,
+                        transformB,
+                        colliderB->GetHalfExtents(),
+                        bodyB,
+                        true,
+                        contact
+                    );
+            }
+            else {
+                // A = box, B = sphere
+                collided =
+                    Collision::CheckSphereBox(
+                        transformB,
+                        colliderB->GetRadius(),
+                        bodyB,
+                        transformA,
+                        colliderA->GetHalfExtents(),
+                        bodyA,
+                        false,
+                        contact
+                    );
+            }
 
             if (!collided)
                 continue;
@@ -193,16 +252,30 @@ void PhysicsWorld::Step(float deltaTime) {
         }
     }
 
-    // 3. Position correction
+    // 3. Position correction (NGS, 여러 번 반복)
+    for (int iteration = 0;
+        iteration < m_solver.GetPositionIterations();
+        ++iteration) {
+
+        for (Contact& contact :
+            m_contacts) {
+
+            m_solver.SolvePosition(
+                contact
+            );
+        }
+    }
+
+    // 4. Prepare restitution bias (프레임당 1회, 워밍스타트 전)
     for (Contact& contact :
         m_contacts) {
 
-        m_solver.SolvePosition(
+        m_solver.PrepareVelocityBias(
             contact
         );
     }
 
-    // 4. Warm start
+    // 5. Warm start
     for (Contact& contact :
         m_contacts) {
 
@@ -211,7 +284,7 @@ void PhysicsWorld::Step(float deltaTime) {
         );
     }
 
-    // 5. Iterative velocity solver
+    // 6. Iterative velocity solver
     for (int iteration = 0;
         iteration < m_solver.GetVelocityIterations();
         ++iteration) {
@@ -233,7 +306,7 @@ void PhysicsWorld::Step(float deltaTime) {
         }
     }
 
-    // 6. Sleep
+    // 7. Sleep
     for (auto& body :
         m_rigidBodies) {
 
@@ -242,16 +315,16 @@ void PhysicsWorld::Step(float deltaTime) {
         );
     }
 
-    // 7. Preserve contact impulses
+    // 8. Preserve contact impulses
     m_previousContacts =
         m_contacts;
 
     // 8. Debug timer
     m_debugTimer += deltaTime;
 
-    if (m_debugTimer >= 1.0f) {
+    if (m_debugTimer >= 1.0f)
         m_debugTimer = 0.0f;
-    }
+
 }
 
 const std::vector<std::unique_ptr<RigidBody>>&

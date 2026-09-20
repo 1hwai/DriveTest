@@ -9,7 +9,6 @@
 
 namespace {
     constexpr float Epsilon = 0.000001f;
-    constexpr float AxisTieEpsilon = 0.0001f;
 }
 
 bool Collision::CheckBoxBox(
@@ -83,6 +82,20 @@ bool Collision::CheckBoxBox(
     int bestIndexA = -1;
     int bestIndexB = -1;
 
+    // 축 선택 편향(tie-break epsilon)을 물체 크기에 비례해서 잡는다.
+    // 고정값(예: 0.0001)은 아주 작은 물체(포인트 매스에 가까운)나
+    // 아주 큰 물체에서는 상대적으로 너무 작거나 너무 커서, 완전히
+    // 안정적으로 맞닿아 있는(면-면) 접촉인데도 부동소수점 잡음만으로
+    // 모서리-모서리 축이 근소하게 이겨버리는 순간이 생긴다 — 그러면
+    // 매니폴드가 4점에서 1점으로 붕괴하면서 토크가 한 점에 쏠려
+    // 멀쩡히 균형 잡힌 물체가 서서히 넘어지게 된다.
+    const float sizeScale =
+        halfExtentsA.x + halfExtentsA.y + halfExtentsA.z +
+        halfExtentsB.x + halfExtentsB.y + halfExtentsB.z;
+
+    const float axisTieEpsilon =
+        std::max(0.0001f, sizeScale * 0.0005f);
+
     auto TestAxis =
         [&](const Vec3& axis, int type, int indexA, int indexB) -> bool {
         if (axis.LengthSquared() <= Epsilon)
@@ -105,7 +118,7 @@ bool Collision::CheckBoxBox(
             return false;
         }
 
-        if (overlap < minimumPenetration - AxisTieEpsilon) {
+        if (overlap < minimumPenetration - axisTieEpsilon) {
             minimumPenetration = overlap;
             collisionNormal = normalizedAxis;
 
@@ -169,6 +182,7 @@ bool Collision::CheckBoxBox(
             collisionNormal,
             transformB,
             halfExtentsB,
+            true,
             contact,
             minimumPenetration
         );
@@ -183,6 +197,7 @@ bool Collision::CheckBoxBox(
             -collisionNormal,
             transformA,
             halfExtentsA,
+            false,
             contact,
             minimumPenetration
         );
@@ -380,6 +395,7 @@ bool Collision::BuildFaceManifold(
     const Vec3& referenceNormal,
     const Transform& incidentTransform,
     const Vec3& incidentHalfExtents,
+    bool referenceIsBodyA,
     Contact& contact,
     float penetration
 ) {
@@ -566,24 +582,41 @@ bool Collision::BuildFaceManifold(
             const float pointPenetration =
                 -distance;
 
-            const Vec3 contactPosition =
+            // point       = 충돌면(incident) 위의 실제 표면점
+            // contactPosition = 그 점을 참조면(reference)에 투영한, 참조 바디의 실제 표면점
+            // 이 둘은 서로 다른 점이며 정확히 penetration만큼 떨어져 있다.
+            const Vec3 referenceSurfacePoint =
                 point -
                 referenceNormal * distance;
+
+            const Vec3& incidentSurfacePoint =
+                point;
+
+            const Vec3& pointOnA =
+                referenceIsBodyA
+                ? referenceSurfacePoint
+                : incidentSurfacePoint;
+
+            const Vec3& pointOnB =
+                referenceIsBodyA
+                ? incidentSurfacePoint
+                : referenceSurfacePoint;
 
             Logger::Debug(
                 "[MANIFOLD] "
                 "REF=" + std::to_string(referenceAxisIndex) +
                 " INC=" + std::to_string(incidentAxisIndex) +
                 " POINT=(" +
-                std::to_string(contactPosition.x) + "," +
-                std::to_string(contactPosition.y) + "," +
-                std::to_string(contactPosition.z) +
+                std::to_string(referenceSurfacePoint.x) + "," +
+                std::to_string(referenceSurfacePoint.y) + "," +
+                std::to_string(referenceSurfacePoint.z) +
                 ") "
                 "PEN=" + std::to_string(pointPenetration)
             );
 
             contact.AddPoint(
-                contactPosition,
+                pointOnA,
+                pointOnB,
                 std::min(
                     pointPenetration,
                     penetration
@@ -781,11 +814,220 @@ bool Collision::BuildEdgeContact(
         pointB
     );
 
-    const Vec3 contactPosition =
-        (pointA + pointB) * 0.5f;
+    contact.AddPoint(
+        pointA,
+        pointB,
+        penetration
+    );
+
+    return true;
+}
+
+bool Collision::CheckSphereSphere(
+    const Transform& transformA,
+    float radiusA,
+    RigidBody* bodyA,
+    const Transform& transformB,
+    float radiusB,
+    RigidBody* bodyB,
+    Contact& contact
+) {
+    const Vec3 delta =
+        transformB.position -
+        transformA.position;
+
+    const float distanceSquared =
+        delta.Dot(delta);
+
+    const float radiusSum =
+        radiusA + radiusB;
+
+    if (distanceSquared >=
+        radiusSum * radiusSum) {
+        return false;
+    }
+
+    const float distance =
+        std::sqrt(distanceSquared);
+
+    Vec3 normal(0.0f, 1.0f, 0.0f);
+
+    if (distance > Epsilon)
+        normal = delta * (1.0f / distance);
+
+    const float penetration =
+        radiusSum - distance;
+
+    const Vec3 pointOnA =
+        transformA.position +
+        normal * radiusA;
+
+    const Vec3 pointOnB =
+        transformB.position -
+        normal * radiusB;
+
+    contact.SetBodies(bodyA, bodyB);
+    contact.SetNormal(normal);
+    contact.ClearPoints();
 
     contact.AddPoint(
-        contactPosition,
+        pointOnA,
+        pointOnB,
+        penetration
+    );
+
+    return true;
+}
+
+bool Collision::CheckSphereBox(
+    const Transform& sphereTransform,
+    float sphereRadius,
+    RigidBody* sphereBody,
+    const Transform& boxTransform,
+    const Vec3& boxHalfExtents,
+    RigidBody* boxBody,
+    bool sphereIsBodyA,
+    Contact& contact
+) {
+    const Mat3 boxRotation =
+        boxTransform.rotation.ToMat3();
+
+    const Vec3 boxAxes[3] = {
+        Vec3(boxRotation.m[0][0], boxRotation.m[1][0], boxRotation.m[2][0]).Normalized(),
+        Vec3(boxRotation.m[0][1], boxRotation.m[1][1], boxRotation.m[2][1]).Normalized(),
+        Vec3(boxRotation.m[0][2], boxRotation.m[1][2], boxRotation.m[2][2]).Normalized()
+    };
+
+    const Vec3 delta =
+        sphereTransform.position -
+        boxTransform.position;
+
+    // 구 중심을 박스 로컬 프레임으로.
+    const Vec3 localCenter(
+        delta.Dot(boxAxes[0]),
+        delta.Dot(boxAxes[1]),
+        delta.Dot(boxAxes[2])
+    );
+
+    const float halfArr[3] = {
+        boxHalfExtents.x, boxHalfExtents.y, boxHalfExtents.z
+    };
+
+    const float localArr[3] = {
+        localCenter.x, localCenter.y, localCenter.z
+    };
+
+    float clampedArr[3];
+    bool insideBox = true;
+
+    for (int i = 0; i < 3; ++i) {
+        clampedArr[i] = localArr[i];
+
+        if (clampedArr[i] > halfArr[i]) {
+            clampedArr[i] = halfArr[i];
+            insideBox = false;
+        }
+        else if (clampedArr[i] < -halfArr[i]) {
+            clampedArr[i] = -halfArr[i];
+            insideBox = false;
+        }
+    }
+
+    Vec3 closestLocal;
+    Vec3 boxOutwardNormalLocal(0.0f, 0.0f, 0.0f);
+    float penetration = 0.0f;
+
+    if (!insideBox) {
+        // 구 중심이 박스 바깥에 있는 일반적인 경우: 박스 표면에서 가장
+        // 가까운 점과 구 중심 사이의 거리로 판정한다.
+        closestLocal = Vec3(clampedArr[0], clampedArr[1], clampedArr[2]);
+
+        const Vec3 diff = localCenter - closestLocal;
+        const float distanceSquared = diff.Dot(diff);
+
+        if (distanceSquared >= sphereRadius * sphereRadius)
+            return false;
+
+        const float distance = std::sqrt(distanceSquared);
+
+        boxOutwardNormalLocal =
+            distance > Epsilon
+            ? diff * (1.0f / distance)
+            : Vec3(0.0f, 1.0f, 0.0f);
+
+        penetration = sphereRadius - distance;
+    }
+    else {
+        // 구 중심이 박스 안에 완전히 박혀 있는 경우: 가장 얕은 면으로
+        // 밀어낸다(6면 중 침투가 가장 적은 축/방향).
+        float bestPenetration = -INFINITY;
+        int bestAxis = 0;
+        float bestSign = 1.0f;
+
+        for (int i = 0; i < 3; ++i) {
+            const float distToPositive = halfArr[i] - localArr[i];
+            const float distToNegative = halfArr[i] + localArr[i];
+
+            if (distToPositive > bestPenetration) {
+                bestPenetration = distToPositive;
+                bestAxis = i;
+                bestSign = 1.0f;
+            }
+
+            if (distToNegative > bestPenetration) {
+                bestPenetration = distToNegative;
+                bestAxis = i;
+                bestSign = -1.0f;
+            }
+        }
+
+        closestLocal = Vec3(localArr[0], localArr[1], localArr[2]);
+
+        Vec3 axisVec(0.0f, 0.0f, 0.0f);
+        if (bestAxis == 0) axisVec = Vec3(1.0f, 0.0f, 0.0f);
+        else if (bestAxis == 1) axisVec = Vec3(0.0f, 1.0f, 0.0f);
+        else axisVec = Vec3(0.0f, 0.0f, 1.0f);
+
+        boxOutwardNormalLocal = axisVec * bestSign;
+        penetration = sphereRadius + bestPenetration;
+    }
+
+    const Vec3 boxOutwardNormal =
+        boxAxes[0] * boxOutwardNormalLocal.x +
+        boxAxes[1] * boxOutwardNormalLocal.y +
+        boxAxes[2] * boxOutwardNormalLocal.z;
+
+    const Vec3 closestWorld =
+        boxTransform.position +
+        boxAxes[0] * closestLocal.x +
+        boxAxes[1] * closestLocal.y +
+        boxAxes[2] * closestLocal.z;
+
+    const Vec3 pointOnSphere =
+        sphereTransform.position -
+        boxOutwardNormal * sphereRadius;
+
+    // 최종 normal은 항상 "A -> B" 방향이어야 한다.
+    // boxOutwardNormal은 박스 -> 구 방향이다.
+    RigidBody* finalBodyA = sphereIsBodyA ? sphereBody : boxBody;
+    RigidBody* finalBodyB = sphereIsBodyA ? boxBody : sphereBody;
+
+    const Vec3 finalNormal =
+        sphereIsBodyA ? -boxOutwardNormal : boxOutwardNormal;
+
+    const Vec3 pointOnA =
+        sphereIsBodyA ? pointOnSphere : closestWorld;
+
+    const Vec3 pointOnB =
+        sphereIsBodyA ? closestWorld : pointOnSphere;
+
+    contact.SetBodies(finalBodyA, finalBodyB);
+    contact.SetNormal(finalNormal);
+    contact.ClearPoints();
+
+    contact.AddPoint(
+        pointOnA,
+        pointOnB,
         penetration
     );
 

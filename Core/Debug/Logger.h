@@ -5,6 +5,7 @@
 namespace Logger {
 
     void Initialize(const std::string& filePath);
+    void Initialize();
     void Shutdown();
 
     void Info(const std::string& message);

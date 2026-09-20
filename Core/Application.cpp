@@ -8,7 +8,6 @@ Application::~Application() {
 }
 
 bool Application::Initialize() {
-    Logger::Initialize("DriveTest.log");
     if (!m_renderer.Initialize())
         return false;
 
@@ -77,7 +76,6 @@ void Application::Shutdown() {
     m_physicsWorld.Clear();
     m_meshManager.Clear();
     m_renderer.Shutdown();
-    Logger::Shutdown();
 
     m_running = false;
 }

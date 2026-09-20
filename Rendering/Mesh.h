@@ -7,6 +7,7 @@ public:
 
     bool CreateTriangle();
     bool CreateCube();
+    bool CreateSphere(int segments = 16, int rings = 12);
 
     void Draw() const;
     void Destroy();

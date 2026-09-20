@@ -40,6 +40,24 @@ bool MeshManager::CreateTriangle(const std::string& name)
     return true;
 }
 
+bool MeshManager::CreateSphere(const std::string& name)
+{
+    if (m_meshes.find(name) != m_meshes.end())
+        return false;
+
+    auto mesh = std::make_unique<Mesh>();
+
+    if (!mesh->CreateSphere())
+        return false;
+
+    m_meshes.emplace(
+        name,
+        std::move(mesh)
+    );
+
+    return true;
+}
+
 Mesh* MeshManager::Get(const std::string& name)
 {
     auto it = m_meshes.find(name);

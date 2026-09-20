@@ -21,6 +21,22 @@ void RigidBody::SetMass(float mass) {
     if (mass <= 0.0f) {
         m_mass = 0.0f;
         m_inverseMass = 0.0f;
+
+        // 정적/무한질량 바디는 회전도 절대 하지 않아야 한다.
+        // 이전에는 여기서 관성 텐서를 건드리지 않아서, 생성자 기본값인
+        // Identity가 그대로 남아 있었다. 그 상태에서 이 바디가 접촉의
+        // A/B측으로 걸릴 때마다 SolveVelocity/SolveFriction/WarmStart가
+        // "GetWorldInverseInertiaTensor() * torque" 로 각속도를 계속
+        // 누적시켰는데, 이 바디는 Integrate()/Sleep()에서 전부 스킵되기
+        // 때문에(둘 다 m_inverseMass<=0 이면 즉시 return) 그 각속도가
+        // 절대 0으로 리셋되지 않고 프레임마다 쌓였다. 위치는 안 움직이니
+        // 눈에 보이진 않지만, 이후 모든 상대속도 계산에서
+        // "GetAngularVelocity().Cross(r)" 항으로 이 가짜 회전이 계속
+        // 섞여 들어가 실제 동적 바디 쪽에 잘못된 토크가 전달됐다 —
+        // 정지해 있어야 할 물체가 서서히 돌아가며 미끄러지던 원인이 바로 이것.
+        m_inertiaTensor = Mat3();
+        m_inverseInertiaTensor = Mat3();
+
         m_isSleeping = false;
         m_sleepTimer = 0.0f;
         return;
@@ -62,6 +78,23 @@ void RigidBody::SetBoxInertia(const Vec3& size) {
 
     m_inverseInertiaTensor =
         Mat3::Diagonal(Vec3(iix, iiy, iiz));
+}
+
+void RigidBody::SetSphereInertia(float radius) {
+    // 균질한 속이 찬 구: I = (2/5) * m * r^2 (세 축 모두 동일)
+    const float i =
+        0.4f * m_mass * radius * radius;
+
+    m_inertiaTensor =
+        Mat3::Diagonal(Vec3(i, i, i));
+
+    constexpr float epsilon = 0.000001f;
+
+    const float ii =
+        i > epsilon ? 1.0f / i : 0.0f;
+
+    m_inverseInertiaTensor =
+        Mat3::Diagonal(Vec3(ii, ii, ii));
 }
 
 void RigidBody::SetPosition(const Vec3& position) {
@@ -153,6 +186,11 @@ const Mat3& RigidBody::GetInverseInertiaTensor() const {
 }
 
 Mat3 RigidBody::GetWorldInverseInertiaTensor() const {
+    // 방어적 가드: 어떤 경로로 만들어졌든 무한질량(정적) 바디는
+    // 항상 회전 관성이 0이어야 한다(회전 임펄스를 받아도 절대 돌지 않아야 함).
+    if (m_inverseMass <= 0.0f)
+        return Mat3();
+
     Mat3 rotation =
         m_orientation.ToMat3();
 
