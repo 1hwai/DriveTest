@@ -15,6 +15,7 @@ add_executable(DriveTest
     Core/Time.cpp
     Core/Object.cpp
     Core/Debug/Logger.cpp
+    Core/Debug/Performance.cpp
 
     Physics/RigidBody.cpp
     Physics/Collision.cpp
