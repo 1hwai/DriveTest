@@ -35,9 +35,6 @@ public:
     void Shutdown();
 
 private:
-    void TestRaycast() const;
-
-private:
     Camera m_camera;
     std::vector<std::unique_ptr<Object>> m_objects;
 
