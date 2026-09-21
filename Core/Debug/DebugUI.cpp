@@ -199,6 +199,22 @@ void DebugUI::Render() {
                         0.0f
                     )) {
                         body->SetMass(mass);
+
+                        if (Collider* collider =
+                            selectedObject->GetCollider()) {
+
+                            if (collider->GetShape() ==
+                                ColliderShape::Box) {
+                                body->SetBoxInertia(
+                                    collider->GetHalfExtents() * 2.0f
+                                );
+                            }
+                            else {
+                                body->SetSphereInertia(
+                                    collider->GetRadius()
+                                );
+                            }
+                        }
                     }
 
                     Vec3 linearVelocity =
@@ -265,6 +281,27 @@ void DebugUI::Render() {
                                 ? ColliderShape::Box
                                 : ColliderShape::Sphere
                         );
+
+                        if (collider->GetShape() ==
+                            ColliderShape::Box) {
+                            transform.scale =
+                                collider->GetHalfExtents() * 2.0f;
+                            body->SetBoxInertia(
+                                collider->GetHalfExtents() * 2.0f
+                            );
+                        }
+                        else {
+                            const float radius =
+                                collider->GetRadius();
+
+                            transform.scale =
+                                Vec3(
+                                    radius * 2.0f,
+                                    radius * 2.0f,
+                                    radius * 2.0f
+                                );
+                            body->SetSphereInertia(radius);
+                        }
                     }
 
                     if (collider->GetShape() ==
@@ -285,6 +322,10 @@ void DebugUI::Render() {
 
                             transform.scale =
                                 halfExtents * 2.0f;
+
+                            body->SetBoxInertia(
+                                halfExtents * 2.0f
+                            );
                         }
                     }
                     else {
@@ -305,6 +346,8 @@ void DebugUI::Render() {
                                     radius * 2.0f,
                                     radius * 2.0f
                                 );
+
+                            body->SetSphereInertia(radius);
                         }
                     }
 
