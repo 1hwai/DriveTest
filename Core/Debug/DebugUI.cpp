@@ -2,6 +2,9 @@
 
 #include "SimulationController.h"
 #include "../../Core/Object.h"
+#include "../../Physics/RigidBody.h"
+#include "../../Physics/Collider.h"
+#include "../../Physics/Material.h"
 #include "../../World/World.h"
 
 #include <imgui.h>
@@ -148,6 +151,9 @@ void DebugUI::Render() {
             Transform& transform =
                 selectedObject->GetTransform();
 
+            RigidBody* body =
+                selectedObject->GetRigidBody();
+
             if (ImGui::CollapsingHeader(
                 "Transform",
                 ImGuiTreeNodeFlags_DefaultOpen
@@ -171,9 +177,7 @@ void DebugUI::Render() {
                     0.001f
                 );
 
-                if (RigidBody* body =
-                    selectedObject->GetRigidBody()) {
-
+                if (body != nullptr) {
                     body->SetPosition(
                         transform.position
                     );
@@ -183,8 +187,7 @@ void DebugUI::Render() {
                 }
             }
 
-            if (RigidBody* body =
-                selectedObject->GetRigidBody()) {
+            if (body != nullptr) {
 
                 if (ImGui::CollapsingHeader(
                     "RigidBody",
