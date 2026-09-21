@@ -1,6 +1,8 @@
 #include "DebugUI.h"
 
 #include "SimulationController.h"
+#include "../../Core/Object.h"
+#include "../../World/World.h"
 
 #include <imgui.h>
 #include <imgui_impl_sdl3.h>
@@ -8,18 +10,27 @@
 
 DebugUI::DebugUI()
     : m_simulation(nullptr),
+    m_world(nullptr),
     m_initialized(false),
-    m_showSimulationWindow(true) {}
+    m_showSimulationWindow(true),
+    m_showHierarchyWindow(true),
+    m_selectedObjectIndex(-1) {}
 
 bool DebugUI::Initialize(
     SDL_Window* window,
     SDL_GLContext context,
-    SimulationController& simulation
+    SimulationController& simulation,
+    World& world
 ) {
-    if (m_initialized || window == nullptr || context == nullptr)
+    if (m_initialized ||
+        window == nullptr ||
+        context == nullptr) {
+
         return false;
+    }
 
     m_simulation = &simulation;
+    m_world = &world;
 
     IMGUI_CHECKVERSION();
 
@@ -36,6 +47,7 @@ bool DebugUI::Initialize(
     )) {
         ImGui::DestroyContext();
         m_simulation = nullptr;
+        m_world = nullptr;
         return false;
     }
 
@@ -43,6 +55,7 @@ bool DebugUI::Initialize(
         ImGui_ImplSDL3_Shutdown();
         ImGui::DestroyContext();
         m_simulation = nullptr;
+        m_world = nullptr;
         return false;
     }
 
@@ -59,12 +72,47 @@ void DebugUI::ProcessEvent(const SDL_Event& event) {
 }
 
 void DebugUI::Render() {
-    if (!m_initialized || m_simulation == nullptr)
+    if (!m_initialized ||
+        m_simulation == nullptr ||
+        m_world == nullptr) {
+
         return;
+    }
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
+
+    if (m_showHierarchyWindow) {
+        ImGui::Begin(
+            "Hierarchy",
+            &m_showHierarchyWindow
+        );
+
+        const auto& objects =
+            m_world->GetObjects();
+
+        for (size_t i = 0; i < objects.size(); ++i) {
+            const Object* object = objects[i].get();
+
+            if (object == nullptr)
+                continue;
+
+            const bool selected =
+                m_selectedObjectIndex ==
+                static_cast<int>(i);
+
+            if (ImGui::Selectable(
+                object->GetName().c_str(),
+                selected
+            )) {
+                m_selectedObjectIndex =
+                    static_cast<int>(i);
+            }
+        }
+
+        ImGui::End();
+    }
 
     if (m_showSimulationWindow) {
         ImGui::Begin(
@@ -129,5 +177,7 @@ void DebugUI::Shutdown() {
     ImGui::DestroyContext();
 
     m_simulation = nullptr;
+    m_world = nullptr;
+    m_selectedObjectIndex = -1;
     m_initialized = false;
 }
