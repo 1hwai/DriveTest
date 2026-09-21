@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(SDL3 CONFIG REQUIRED)
+find_package(imgui CONFIG REQUIRED)
 
 add_executable(DriveTest
     main.cpp
@@ -17,6 +18,7 @@ add_executable(DriveTest
     Core/Object.cpp
     Core/Debug/Logger.cpp
     Core/Debug/Performance.cpp
+    Core/Debug/DebugUI.cpp
 
     Physics/RigidBody.cpp
     Physics/Collision.cpp
@@ -58,6 +60,11 @@ add_executable(DriveTest
     External/glad-generated/src/gl.c
 )
 
+target_link_libraries(DriveTest PRIVATE
+    SDL3::SDL3
+    imgui::imgui
+)
+
 add_custom_command(TARGET DriveTest POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_CURRENT_SOURCE_DIR}/Shaders"
@@ -69,13 +76,11 @@ target_include_directories(DriveTest PRIVATE
 )
 
 if(WIN32)
-	target_link_libraries(DriveTest PRIVATE
-		SDL3::SDL3
-	    	opengl32
-	)
+    target_link_libraries(DriveTest PRIVATE
+        opengl32
+    )
 elseif(UNIX)
-	target_link_libraries(DriveTest PRIVATE
-		SDL3::SDL3
-		GL
-	)
+    target_link_libraries(DriveTest PRIVATE
+        GL
+    )
 endif()
