@@ -52,7 +52,7 @@ add_executable(DriveTest
     Core/Debug/Logger.cpp
 
     World/World.cpp
-
+    World/SceneFactory.cpp
 
     External/glad-generated/src/gl.c
 )
