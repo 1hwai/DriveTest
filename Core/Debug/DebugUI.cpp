@@ -1,6 +1,6 @@
 #include "DebugUI.h"
 
-#include "SimulationController.h"
+#include "../SimulationController.h"
 #include "../../Core/Object.h"
 #include "../../Physics/RigidBody.h"
 #include "../../Physics/Collider.h"
