@@ -24,7 +24,8 @@ bool Application::Initialize() {
     if (!m_debugUI.Initialize(
         m_renderer.GetWindow(),
         m_renderer.GetContext(),
-        m_simulation
+        m_simulation,
+        m_world
     ))
         return false;
 
