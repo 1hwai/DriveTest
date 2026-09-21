@@ -119,6 +119,34 @@ void World::AddObject(std::unique_ptr<Object> object) {
     m_objects.push_back(std::move(object));
 }
 
+Object* World::CreateBox(const BoxSettings& settings) {
+    if (!m_sceneFactory)
+        return nullptr;
+
+    auto object = m_sceneFactory->CreateBox(settings);
+
+    if (!object)
+        return nullptr;
+
+    Object* result = object.get();
+    AddObject(std::move(object));
+    return result;
+}
+
+Object* World::CreateSphere(const SphereSettings& settings) {
+    if (!m_sceneFactory)
+        return nullptr;
+
+    auto object = m_sceneFactory->CreateSphere(settings);
+
+    if (!object)
+        return nullptr;
+
+    Object* result = object.get();
+    AddObject(std::move(object));
+    return result;
+}
+
 void World::Shutdown() {
     m_objects.clear();
     m_sceneFactory.reset();
