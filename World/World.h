@@ -40,5 +40,5 @@ private:
     std::vector<std::unique_ptr<Object>> m_objects;
 
     PhysicsWorld* m_physicsWorld;
-    SceneFactory* m_sceneFactory;
+    std::unique_ptr<SceneFactory> m_sceneFactory;
 };
