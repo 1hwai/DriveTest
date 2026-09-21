@@ -274,6 +274,21 @@ void DebugUI::Render() {
 
             ImGui::Separator();
 
+            if (ImGui::Button("Delete Object")) {
+                if (m_world->DestroyObject(selectedObject)) {
+                    if (m_selectedObjectIndex >=
+                        static_cast<int>(m_world->GetObjects().size())) {
+
+                        m_selectedObjectIndex =
+                            static_cast<int>(m_world->GetObjects().size()) - 1;
+                    }
+
+                    selectedObject = nullptr;
+                }
+            }
+
+            ImGui::Separator();
+
             Transform& transform =
                 selectedObject->GetTransform();
 
