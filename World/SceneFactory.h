@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 #include "../Core/Math/Vec3.h"
 
@@ -9,6 +10,7 @@ class PhysicsWorld;
 class Object;
 
 struct BoxSettings {
+    std::string name;
     Vec3 position;
     Vec3 halfExtents;
     float mass;
@@ -17,6 +19,7 @@ struct BoxSettings {
 };
 
 struct SphereSettings {
+    std::string name;
     Vec3 position;
     float radius;
     float mass;
