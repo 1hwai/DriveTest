@@ -14,6 +14,7 @@ DebugUI::DebugUI()
     m_initialized(false),
     m_showSimulationWindow(true),
     m_showHierarchyWindow(true),
+    m_showInspectorWindow(true),
     m_selectedObjectIndex(-1) {}
 
 bool DebugUI::Initialize(
@@ -108,6 +109,234 @@ void DebugUI::Render() {
             )) {
                 m_selectedObjectIndex =
                     static_cast<int>(i);
+            }
+        }
+
+        ImGui::End();
+    }
+
+    if (m_showInspectorWindow) {
+        ImGui::Begin(
+            "Inspector",
+            &m_showInspectorWindow
+        );
+
+        const auto& objects =
+            m_world->GetObjects();
+
+        Object* selectedObject = nullptr;
+
+        if (m_selectedObjectIndex >= 0 &&
+            m_selectedObjectIndex <
+                static_cast<int>(objects.size())) {
+
+            selectedObject =
+                objects[m_selectedObjectIndex].get();
+        }
+
+        if (selectedObject == nullptr) {
+            ImGui::Text("No object selected.");
+        }
+        else {
+            ImGui::Text(
+                "Object: %s",
+                selectedObject->GetName().c_str()
+            );
+
+            ImGui::Separator();
+
+            Transform& transform =
+                selectedObject->GetTransform();
+
+            if (ImGui::CollapsingHeader(
+                "Transform",
+                ImGuiTreeNodeFlags_DefaultOpen
+            )) {
+                ImGui::DragFloat3(
+                    "Position",
+                    &transform.position.x,
+                    0.05f
+                );
+
+                ImGui::DragFloat4(
+                    "Rotation",
+                    &transform.rotation.w,
+                    0.01f
+                );
+
+                ImGui::DragFloat3(
+                    "Scale",
+                    &transform.scale.x,
+                    0.05f,
+                    0.001f
+                );
+
+                if (RigidBody* body =
+                    selectedObject->GetRigidBody()) {
+
+                    body->SetPosition(
+                        transform.position
+                    );
+                    body->SetOrientation(
+                        transform.rotation
+                    );
+                }
+            }
+
+            if (RigidBody* body =
+                selectedObject->GetRigidBody()) {
+
+                if (ImGui::CollapsingHeader(
+                    "RigidBody",
+                    ImGuiTreeNodeFlags_DefaultOpen
+                )) {
+                    float mass = body->GetMass();
+
+                    if (ImGui::DragFloat(
+                        "Mass",
+                        &mass,
+                        0.1f,
+                        0.0f
+                    )) {
+                        body->SetMass(mass);
+                    }
+
+                    Vec3 linearVelocity =
+                        body->GetLinearVelocity();
+
+                    if (ImGui::DragFloat3(
+                        "Linear Velocity",
+                        &linearVelocity.x,
+                        0.05f
+                    )) {
+                        body->SetLinearVelocity(
+                            linearVelocity
+                        );
+                    }
+
+                    Vec3 angularVelocity =
+                        body->GetAngularVelocity();
+
+                    if (ImGui::DragFloat3(
+                        "Angular Velocity",
+                        &angularVelocity.x,
+                        0.05f
+                    )) {
+                        body->SetAngularVelocity(
+                            angularVelocity
+                        );
+                    }
+
+                    ImGui::Text(
+                        "Sleeping: %s",
+                        body->IsSleeping()
+                            ? "Yes"
+                            : "No"
+                    );
+                }
+            }
+
+            if (Collider* collider =
+                selectedObject->GetCollider()) {
+
+                if (ImGui::CollapsingHeader(
+                    "Collider",
+                    ImGuiTreeNodeFlags_DefaultOpen
+                )) {
+                    const char* shapeNames[] = {
+                        "Box",
+                        "Sphere"
+                    };
+
+                    int shape =
+                        collider->GetShape() ==
+                            ColliderShape::Box
+                            ? 0
+                            : 1;
+
+                    if (ImGui::Combo(
+                        "Shape",
+                        &shape,
+                        shapeNames,
+                        2
+                    )) {
+                        collider->SetShape(
+                            shape == 0
+                                ? ColliderShape::Box
+                                : ColliderShape::Sphere
+                        );
+                    }
+
+                    if (collider->GetShape() ==
+                        ColliderShape::Box) {
+
+                        Vec3 halfExtents =
+                            collider->GetHalfExtents();
+
+                        if (ImGui::DragFloat3(
+                            "Half Extents",
+                            &halfExtents.x,
+                            0.05f,
+                            0.001f
+                        )) {
+                            collider->SetHalfExtents(
+                                halfExtents
+                            );
+
+                            transform.scale =
+                                halfExtents * 2.0f;
+                        }
+                    }
+                    else {
+                        float radius =
+                            collider->GetRadius();
+
+                        if (ImGui::DragFloat(
+                            "Radius",
+                            &radius,
+                            0.05f,
+                            0.001f
+                        )) {
+                            collider->SetRadius(radius);
+
+                            transform.scale =
+                                Vec3(
+                                    radius * 2.0f,
+                                    radius * 2.0f,
+                                    radius * 2.0f
+                                );
+                        }
+                    }
+
+                    Material& material =
+                        collider->GetMaterial();
+
+                    float restitution =
+                        material.GetRestitution();
+
+                    if (ImGui::SliderFloat(
+                        "Restitution",
+                        &restitution,
+                        0.0f,
+                        1.0f
+                    )) {
+                        material.SetRestitution(
+                            restitution
+                        );
+                    }
+
+                    float friction =
+                        material.GetFriction();
+
+                    if (ImGui::SliderFloat(
+                        "Friction",
+                        &friction,
+                        0.0f,
+                        1.0f
+                    )) {
+                        material.SetFriction(friction);
+                    }
+                }
             }
         }
 
