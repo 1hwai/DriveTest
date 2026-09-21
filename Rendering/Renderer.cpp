@@ -69,26 +69,18 @@ bool Renderer::Initialize() {
 
     // V-Sync
     SDL_GL_SetSwapInterval(1);
-	std::cout << "Initializing Renderer..." << std::endl;
+    std::cout << "Initializing Renderer..." << std::endl;
 
     // GLSL Shader 생성
     if (!m_shader.Load(
         "Shaders/basic.vert",
         "Shaders/basic.frag")) {
-		std::cerr << "Failed to load shader." << std::endl;
+        std::cerr << "Failed to load shader." << std::endl;
 
         return false;
     }
 
     glEnable(GL_DEPTH_TEST);
-
-    //// Cam test
-
-    //m_camera.Move(Vec3(5.0f, 0.0f, 1.0f));
-
-    //m_camera.Rotate(
-    //    Vec3(0.0f, 0.3f, 0.0f)
-    //);
 
     return true;
 }
@@ -146,8 +138,21 @@ void Renderer::Render(const World& world) {
 
         mesh->Draw();
     }
+}
+
+void Renderer::Present() {
+    if (m_window == nullptr)
+        return;
 
     SDL_GL_SwapWindow(m_window);
+}
+
+SDL_Window* Renderer::GetWindow() const {
+    return m_window;
+}
+
+SDL_GLContext Renderer::GetContext() const {
+    return m_context;
 }
 
 void Renderer::Shutdown() {
