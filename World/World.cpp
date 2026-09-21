@@ -1,8 +1,7 @@
 #include "World.h"
 
 World::World()
-    : m_physicsWorld(nullptr),
-    m_sceneFactory(nullptr) {}
+    : m_physicsWorld(nullptr) {}
 
 World::~World() {
     Shutdown();
@@ -14,17 +13,16 @@ bool World::Initialize(
 ) {
     m_physicsWorld = &physicsWorld;
 
-    SceneFactory sceneFactory(
-        meshManager,
-        physicsWorld
-    );
-
-    m_sceneFactory = &sceneFactory;
+    m_sceneFactory =
+        std::make_unique<SceneFactory>(
+            meshManager,
+            physicsWorld
+        );
 
     if (!meshManager.CreateSphere("sphere"))
         return false;
 
-    auto ground = sceneFactory.CreateBox({
+    auto ground = m_sceneFactory->CreateBox({
         Vec3(0.0f, 0.0f, 0.0f),
         Vec3(1.0f, 0.5f, 1.0f),
         0.0f,
@@ -37,7 +35,7 @@ bool World::Initialize(
 
     AddObject(std::move(ground));
 
-    auto sphere = sceneFactory.CreateSphere({
+    auto sphere = m_sceneFactory->CreateSphere({
         Vec3(0.0f, 2.5f, 0.0f),
         0.5f,
         1.0f,
@@ -121,6 +119,6 @@ void World::AddObject(std::unique_ptr<Object> object) {
 
 void World::Shutdown() {
     m_objects.clear();
+    m_sceneFactory.reset();
     m_physicsWorld = nullptr;
-    m_sceneFactory = nullptr;
 }
