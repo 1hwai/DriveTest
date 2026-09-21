@@ -2,6 +2,7 @@
 
 #include "Time.h"
 #include "SimulationController.h"
+#include "Debug/DebugUI.h"
 #include "Debug/Performance.h"
 #include "../Input/InputManager.h"
 #include "../Rendering/Renderer.h"
@@ -28,6 +29,7 @@ private:
 
     Time m_time;
     SimulationController m_simulation;
+    DebugUI m_debugUI;
     Performance m_performance;
     InputManager m_input;
 
