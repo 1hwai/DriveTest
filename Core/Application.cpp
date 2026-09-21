@@ -21,6 +21,13 @@ bool Application::Initialize() {
     ))
         return false;
 
+    if (!m_debugUI.Initialize(
+        m_renderer.GetWindow(),
+        m_renderer.GetContext(),
+        m_simulation
+    ))
+        return false;
+
     m_time.Reset();
     m_simulation.Reset();
     m_physicsAccumulator = 0.0f;
@@ -46,6 +53,8 @@ int Application::Run() {
 
 void Application::Render() {
     m_renderer.Render(m_world);
+    m_debugUI.Render();
+    m_renderer.Present();
 }
 
 void Application::Update() {
@@ -99,6 +108,7 @@ void Application::ProcessEvents() {
     SDL_Event event;
 
     while (SDL_PollEvent(&event)) {
+        m_debugUI.ProcessEvent(event);
         m_input.ProcessEvent(event);
     }
 
@@ -111,6 +121,7 @@ void Application::Shutdown() {
     if (!m_running)
         return;
 
+    m_debugUI.Shutdown();
     m_world.Shutdown();
     m_physicsWorld.Clear();
     m_meshManager.Clear();
