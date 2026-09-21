@@ -23,6 +23,7 @@ std::unique_ptr<Object> SceneFactory::CreateBox(
         return nullptr;
 
     auto object = std::make_unique<Object>();
+    object->SetName(settings.name);
     object->SetMesh(mesh);
 
     RigidBody* body =
@@ -65,6 +66,7 @@ std::unique_ptr<Object> SceneFactory::CreateSphere(
         return nullptr;
 
     auto object = std::make_unique<Object>();
+    object->SetName(settings.name);
     object->SetMesh(mesh);
 
     RigidBody* body =
