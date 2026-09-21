@@ -9,6 +9,7 @@
 #include <fstream>
 #include <iomanip>
 #include <sstream>
+#include <vector>
 
 namespace {
     constexpr const char* SceneHeader = "DRIVETEST_SCENE 1";
