@@ -35,9 +35,11 @@ public:
 
     RigidBody* CreateRigidBody();
     void AddRigidBody(std::unique_ptr<RigidBody> body);
+    void DestroyRigidBody(RigidBody* body);
 
     Collider* CreateCollider();
     void AddCollider(std::unique_ptr<Collider> collider);
+    void DestroyCollider(Collider* collider);
 
     void Step(float deltaTime);
 
