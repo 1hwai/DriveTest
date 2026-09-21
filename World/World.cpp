@@ -23,6 +23,7 @@ bool World::Initialize(
         return false;
 
     auto ground = m_sceneFactory->CreateBox({
+        "Ground",
         Vec3(0.0f, 0.0f, 0.0f),
         Vec3(1.0f, 0.5f, 1.0f),
         0.0f,
@@ -36,6 +37,7 @@ bool World::Initialize(
     AddObject(std::move(ground));
 
     auto sphere = m_sceneFactory->CreateSphere({
+        "Sphere",
         Vec3(0.0f, 2.5f, 0.0f),
         0.5f,
         1.0f,
