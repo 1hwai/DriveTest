@@ -12,7 +12,11 @@ public:
 
     bool Initialize();
     void Render(const World& world);
+    void Present();
     void Shutdown();
+
+    SDL_Window* GetWindow() const;
+    SDL_GLContext GetContext() const;
 
 private:
     SDL_Window* m_window;
