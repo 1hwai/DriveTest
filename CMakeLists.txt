@@ -13,6 +13,7 @@ add_executable(DriveTest
 
     Core/Application.cpp
     Core/Time.cpp
+    Core/SimulationController.cpp
     Core/Object.cpp
     Core/Debug/Logger.cpp
     Core/Debug/Performance.cpp
