@@ -33,6 +33,9 @@ public:
 
     void AddObject(std::unique_ptr<Object> object);
 
+    Object* CreateBox(const BoxSettings& settings);
+    Object* CreateSphere(const SphereSettings& settings);
+
     void Shutdown();
 
 private:
