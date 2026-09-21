@@ -27,5 +27,6 @@ private:
     bool m_initialized;
     bool m_showSimulationWindow;
     bool m_showHierarchyWindow;
+    bool m_showInspectorWindow;
     int m_selectedObjectIndex;
 };
