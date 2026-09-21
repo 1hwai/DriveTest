@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Time.h"
+#include "SimulationController.h"
 #include "Debug/Performance.h"
 #include "../Input/InputManager.h"
 #include "../Rendering/Renderer.h"
@@ -26,6 +27,7 @@ private:
     bool m_running;
 
     Time m_time;
+    SimulationController m_simulation;
     Performance m_performance;
     InputManager m_input;
 
