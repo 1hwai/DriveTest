@@ -18,6 +18,7 @@ DebugUI::DebugUI()
     m_showSimulationWindow(true),
     m_showHierarchyWindow(true),
     m_showInspectorWindow(true),
+    m_showCreateWindow(true),
     m_selectedObjectIndex(-1) {}
 
 bool DebugUI::Initialize(
@@ -112,6 +113,131 @@ void DebugUI::Render() {
             )) {
                 m_selectedObjectIndex =
                     static_cast<int>(i);
+            }
+        }
+
+        ImGui::End();
+    }
+
+    if (m_showCreateWindow) {
+        ImGui::Begin(
+            "Create Object",
+            &m_showCreateWindow
+        );
+
+        static int objectType = 0;
+        static char name[64] = "Box";
+        static float position[3] = { 0.0f, 3.0f, 0.0f };
+        static float halfExtents[3] = { 0.5f, 0.5f, 0.5f };
+        static float radius = 0.5f;
+        static float mass = 1.0f;
+        static float restitution = 0.0f;
+        static float friction = 0.5f;
+
+        const char* objectTypes[] = {
+            "Box",
+            "Sphere"
+        };
+
+        ImGui::Combo(
+            "Type",
+            &objectType,
+            objectTypes,
+            2
+        );
+
+        ImGui::InputText(
+            "Name",
+            name,
+            sizeof(name)
+        );
+
+        ImGui::DragFloat3(
+            "Position",
+            position,
+            0.05f
+        );
+
+        if (objectType == 0) {
+            ImGui::DragFloat3(
+                "Half Extents",
+                halfExtents,
+                0.05f,
+                0.001f
+            );
+        }
+        else {
+            ImGui::DragFloat(
+                "Radius",
+                &radius,
+                0.05f,
+                0.001f
+            );
+        }
+
+        ImGui::DragFloat(
+            "Mass",
+            &mass,
+            0.1f,
+            0.0f
+        );
+
+        ImGui::SliderFloat(
+            "Restitution",
+            &restitution,
+            0.0f,
+            1.0f
+        );
+
+        ImGui::SliderFloat(
+            "Friction",
+            &friction,
+            0.0f,
+            1.0f
+        );
+
+        if (ImGui::Button("Create")) {
+            Object* object = nullptr;
+
+            if (objectType == 0) {
+                object = m_world->CreateBox({
+                    name,
+                    Vec3(
+                        position[0],
+                        position[1],
+                        position[2]
+                    ),
+                    Vec3(
+                        halfExtents[0],
+                        halfExtents[1],
+                        halfExtents[2]
+                    ),
+                    mass,
+                    restitution,
+                    friction
+                });
+            }
+            else {
+                object = m_world->CreateSphere({
+                    name,
+                    Vec3(
+                        position[0],
+                        position[1],
+                        position[2]
+                    ),
+                    radius,
+                    mass,
+                    restitution,
+                    friction
+                });
+            }
+
+            if (object != nullptr) {
+                const auto& objects =
+                    m_world->GetObjects();
+
+                m_selectedObjectIndex =
+                    static_cast<int>(objects.size()) - 1;
             }
         }
 
