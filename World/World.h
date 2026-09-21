@@ -8,6 +8,7 @@
 #include "../Core/Object.h"
 #include "../Rendering/MeshManager.h"
 #include "../Physics/PhysicsWorld.h"
+#include "SceneFactory.h"
 
 class World {
 public:
@@ -39,4 +40,5 @@ private:
     std::vector<std::unique_ptr<Object>> m_objects;
 
     PhysicsWorld* m_physicsWorld;
+    SceneFactory* m_sceneFactory;
 };
