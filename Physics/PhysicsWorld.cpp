@@ -39,6 +39,25 @@ void PhysicsWorld::AddRigidBody(
         );
 }
 
+void PhysicsWorld::DestroyRigidBody(RigidBody* body) {
+    if (!body)
+        return;
+
+    m_contacts.clear();
+    m_previousContacts.clear();
+
+    for (auto it = m_rigidBodies.begin();
+        it != m_rigidBodies.end();
+        ++it) {
+
+        if (it->get() != body)
+            continue;
+
+        m_rigidBodies.erase(it);
+        return;
+    }
+}
+
 Collider* PhysicsWorld::CreateCollider() {
     auto collider =
         std::make_unique<Collider>();
@@ -61,6 +80,25 @@ void PhysicsWorld::AddCollider(
         m_colliders.push_back(
             std::move(collider)
         );
+}
+
+void PhysicsWorld::DestroyCollider(Collider* collider) {
+    if (!collider)
+        return;
+
+    m_contacts.clear();
+    m_previousContacts.clear();
+
+    for (auto it = m_colliders.begin();
+        it != m_colliders.end();
+        ++it) {
+
+        if (it->get() != collider)
+            continue;
+
+        m_colliders.erase(it);
+        return;
+    }
 }
 
 void PhysicsWorld::Step(float deltaTime) {
