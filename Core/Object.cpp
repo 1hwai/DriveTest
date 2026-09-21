@@ -2,10 +2,10 @@
 
 Object::Object()
     : m_transform(),
+    m_name("Object"),
     m_mesh(nullptr),
     m_rigidBody(nullptr),
-	m_collider(nullptr)
-{}
+    m_collider(nullptr) {}
 
 Transform& Object::GetTransform() {
     return m_transform;
@@ -13,6 +13,14 @@ Transform& Object::GetTransform() {
 
 const Transform& Object::GetTransform() const {
     return m_transform;
+}
+
+void Object::SetName(const std::string& name) {
+    m_name = name;
+}
+
+const std::string& Object::GetName() const {
+    return m_name;
 }
 
 void Object::SetMesh(Mesh* mesh) {
@@ -40,7 +48,7 @@ const RigidBody* Object::GetRigidBody() const {
 }
 
 void Object::SetCollider(Collider* collider) {
-	m_collider = collider;
+    m_collider = collider;
 }
 
 Collider* Object::GetCollider() {
