@@ -22,6 +22,7 @@ bool Application::Initialize() {
         return false;
 
     m_time.Reset();
+    m_simulation.Reset();
     m_physicsAccumulator = 0.0f;
     m_performance.Reset();
 
@@ -51,7 +52,10 @@ void Application::Update() {
     const float deltaTime =
         m_time.GetDeltaTime();
 
-    m_physicsAccumulator += deltaTime;
+    if (!m_simulation.IsPaused()) {
+        m_physicsAccumulator +=
+            deltaTime * m_simulation.GetTimeScale();
+    }
 
     int physicsStepsThisFrame = 0;
 
@@ -73,6 +77,14 @@ void Application::Update() {
         m_physicsAccumulator >= PhysicsFixedDeltaTime) {
 
         m_physicsAccumulator = 0.0f;
+    }
+
+    if (m_simulation.ConsumeSingleStep()) {
+        m_physicsWorld.Step(
+            PhysicsFixedDeltaTime
+        );
+
+        m_performance.RecordPhysicsStep();
     }
 
     m_world.Update(
