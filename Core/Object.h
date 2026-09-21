@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "Math/Transform.h"
 #include "../Rendering/Mesh.h"
 
@@ -13,6 +15,9 @@ public:
 
     Transform& GetTransform();
     const Transform& GetTransform() const;
+
+    void SetName(const std::string& name);
+    const std::string& GetName() const;
 
     void SetMesh(Mesh* mesh);
 
@@ -31,7 +36,8 @@ public:
 
 private:
     Transform m_transform;
+    std::string m_name;
     Mesh* m_mesh;
     RigidBody* m_rigidBody;
-	Collider* m_collider;
+    Collider* m_collider;
 };
