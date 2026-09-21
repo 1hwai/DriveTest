@@ -6,6 +6,7 @@
 #include "../../Physics/Collider.h"
 #include "../../Physics/Material.h"
 #include "../../World/World.h"
+#include "../../World/SceneSerializer.h"
 
 #include <imgui.h>
 #include <imgui_impl_sdl3.h>
@@ -19,7 +20,9 @@ DebugUI::DebugUI()
     m_showHierarchyWindow(true),
     m_showInspectorWindow(true),
     m_showCreateWindow(true),
-    m_selectedObjectIndex(-1) {}
+    m_showSceneWindow(true),
+    m_selectedObjectIndex(-1),
+    m_scenePath("Scenes/Test.scene") {}
 
 bool DebugUI::Initialize(
     SDL_Window* window,
@@ -533,6 +536,35 @@ void DebugUI::Render() {
             }
         }
 
+        ImGui::End();
+    }
+
+    if (m_showSceneWindow) {
+        ImGui::Begin("Scene", &m_showSceneWindow);
+
+        ImGui::InputText("Path", m_scenePath, sizeof(m_scenePath));
+
+        if (ImGui::Button("Save Scene"))
+            m_sceneStatus = SceneSerializer::Save(*m_world, m_scenePath)
+                ? "Scene saved."
+                : "Failed to save scene.";
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Load Scene")) {
+            m_simulation->Pause();
+            const bool loaded =
+                SceneSerializer::Load(*m_world, m_scenePath);
+
+            if (loaded)
+                m_selectedObjectIndex = -1;
+
+            m_sceneStatus = loaded
+                ? "Scene loaded."
+                : "Failed to load scene.";
+        }
+
+        ImGui::Text("%s", m_sceneStatus.c_str());
         ImGui::End();
     }
 
