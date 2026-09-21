@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL3/SDL.h>
+#include <string>
 
 class SimulationController;
 class World;
@@ -29,6 +30,8 @@ private:
     bool m_showHierarchyWindow;
     bool m_showInspectorWindow;
     bool m_showCreateWindow;
+    bool m_showSceneWindow;
     int m_selectedObjectIndex;
     char m_scenePath[256];
+    std::string m_sceneStatus;
 };
