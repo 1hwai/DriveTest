@@ -283,13 +283,18 @@ void DebugUI::Render() {
                             static_cast<int>(m_world->GetObjects().size()) - 1;
                     }
 
+                    m_selectedObjectIndex = -1;
                     selectedObject = nullptr;
                 }
             }
 
             ImGui::Separator();
 
-            Transform& transform =
+            if (selectedObject == nullptr) {
+                ImGui::Text("Object deleted.");
+            }
+            else {
+                Transform& transform =
                 selectedObject->GetTransform();
 
             RigidBody* body =
@@ -523,6 +528,7 @@ void DebugUI::Render() {
                     )) {
                         material.SetFriction(friction);
                     }
+                }
                 }
             }
         }
