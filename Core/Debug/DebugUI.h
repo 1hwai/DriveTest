@@ -30,4 +30,5 @@ private:
     bool m_showInspectorWindow;
     bool m_showCreateWindow;
     int m_selectedObjectIndex;
+    char m_scenePath[256];
 };
