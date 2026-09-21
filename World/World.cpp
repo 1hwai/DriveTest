@@ -147,6 +147,33 @@ Object* World::CreateSphere(const SphereSettings& settings) {
     return result;
 }
 
+bool World::DestroyObject(Object* object) {
+    if (!object || !m_physicsWorld)
+        return false;
+
+    Collider* collider = object->GetCollider();
+    RigidBody* body = object->GetRigidBody();
+
+    if (collider)
+        m_physicsWorld->DestroyCollider(collider);
+
+    if (body)
+        m_physicsWorld->DestroyRigidBody(body);
+
+    for (auto it = m_objects.begin();
+        it != m_objects.end();
+        ++it) {
+
+        if (it->get() != object)
+            continue;
+
+        m_objects.erase(it);
+        return true;
+    }
+
+    return false;
+}
+
 void World::Shutdown() {
     m_objects.clear();
     m_sceneFactory.reset();
