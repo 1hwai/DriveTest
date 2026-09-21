@@ -35,6 +35,7 @@ public:
 
     Object* CreateBox(const BoxSettings& settings);
     Object* CreateSphere(const SphereSettings& settings);
+    bool DestroyObject(Object* object);
 
     void Shutdown();
 
