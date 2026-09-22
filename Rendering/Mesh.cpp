@@ -4,6 +4,13 @@
 #include <vector>
 #include <cmath>
 
+namespace {
+    struct Vertex {
+        float position[3];
+        float normal[3];
+    };
+}
+
 Mesh::Mesh()
     : m_vao(0),
     m_vbo(0),
@@ -19,10 +26,10 @@ Mesh::~Mesh() {
 bool Mesh::CreateTriangle() {
     Destroy();
 
-    const float vertices[] = {
-         0.0f,  0.5f, 0.0f,
-        -0.5f, -0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f
+    const Vertex vertices[] = {
+        {{ 0.0f,  0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+        {{-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+        {{ 0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}}
     };
 
     glGenVertexArrays(1, &m_vao);
@@ -34,7 +41,6 @@ bool Mesh::CreateTriangle() {
     }
 
     glBindVertexArray(m_vao);
-
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 
     glBufferData(
@@ -49,11 +55,20 @@ bool Mesh::CreateTriangle() {
         3,
         GL_FLOAT,
         GL_FALSE,
-        3 * sizeof(float),
-        nullptr
+        sizeof(Vertex),
+        reinterpret_cast<void*>(offsetof(Vertex, position))
     );
-
     glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(
+        1,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(Vertex),
+        reinterpret_cast<void*>(offsetof(Vertex, normal))
+    );
+    glEnableVertexAttribArray(1);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -68,44 +83,51 @@ bool Mesh::CreateTriangle() {
 bool Mesh::CreateCube() {
     Destroy();
 
-    const float vertices[] = {
+    const Vertex vertices[] = {
         // Front
-        -0.5f, -0.5f,  0.5f,
-         0.5f, -0.5f,  0.5f,
-         0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
+        {{-0.5f, -0.5f,  0.5f}, { 0.0f,  0.0f,  1.0f}},
+        {{ 0.5f, -0.5f,  0.5f}, { 0.0f,  0.0f,  1.0f}},
+        {{ 0.5f,  0.5f,  0.5f}, { 0.0f,  0.0f,  1.0f}},
+        {{-0.5f,  0.5f,  0.5f}, { 0.0f,  0.0f,  1.0f}},
 
         // Back
-        -0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f, -0.5f,
-         0.5f,  0.5f, -0.5f,
-        -0.5f,  0.5f, -0.5f
+        {{ 0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}},
+        {{-0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}},
+        {{-0.5f,  0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}},
+        {{ 0.5f,  0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}},
+
+        // Left
+        {{-0.5f, -0.5f, -0.5f}, {-1.0f,  0.0f,  0.0f}},
+        {{-0.5f, -0.5f,  0.5f}, {-1.0f,  0.0f,  0.0f}},
+        {{-0.5f,  0.5f,  0.5f}, {-1.0f,  0.0f,  0.0f}},
+        {{-0.5f,  0.5f, -0.5f}, {-1.0f,  0.0f,  0.0f}},
+
+        // Right
+        {{ 0.5f, -0.5f,  0.5f}, { 1.0f,  0.0f,  0.0f}},
+        {{ 0.5f, -0.5f, -0.5f}, { 1.0f,  0.0f,  0.0f}},
+        {{ 0.5f,  0.5f, -0.5f}, { 1.0f,  0.0f, 0.0f}},
+        {{ 0.5f,  0.5f,  0.5f}, { 1.0f,  0.0f, 0.0f}},
+
+        // Top
+        {{-0.5f,  0.5f,  0.5f}, { 0.0f,  1.0f,  0.0f}},
+        {{ 0.5f,  0.5f,  0.5f}, { 0.0f,  1.0f, 0.0f}},
+        {{ 0.5f,  0.5f, -0.5f}, { 0.0f, 1.0f, 0.0f}},
+        {{-0.5f,  0.5f, -0.5f}, { 0.0f, 1.0f, 0.0f}},
+
+        // Bottom
+        {{-0.5f, -0.5f, -0.5f}, { 0.0f, -1.0f,  0.0f}},
+        {{ 0.5f, -0.5f, -0.5f}, { 0.0f, -1.0f,  0.0f}},
+        {{ 0.5f, -0.5f,  0.5f}, { 0.0f, -1.0f,  0.0f}},
+        {{-0.5f, -0.5f,  0.5f}, { 0.0f, -1.0f,  0.0f}}
     };
 
     const unsigned int indices[] = {
-        // Front
-        0, 1, 2,
-        2, 3, 0,
-
-        // Back
-        5, 4, 7,
-        7, 6, 5,
-
-        // Left
-        4, 0, 3,
-        3, 7, 4,
-
-        // Right
-        1, 5, 6,
-        6, 2, 1,
-
-        // Top
-        3, 2, 6,
-        6, 7, 3,
-
-        // Bottom
-        4, 5, 1,
-        1, 0, 4
+         0,  1,  2,   2,  3,  0,
+         4,  5,  6,   6,  7,  4,
+         8,  9, 10,  10, 11,  8,
+        12, 13, 14,  14, 15, 12,
+        16, 17, 18,  18, 19, 16,
+        20, 21, 22,  22, 23, 20
     };
 
     glGenVertexArrays(1, &m_vao);
@@ -120,7 +142,6 @@ bool Mesh::CreateCube() {
     glBindVertexArray(m_vao);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-
     glBufferData(
         GL_ARRAY_BUFFER,
         sizeof(vertices),
@@ -128,11 +149,7 @@ bool Mesh::CreateCube() {
         GL_STATIC_DRAW
     );
 
-    glBindBuffer(
-        GL_ELEMENT_ARRAY_BUFFER,
-        m_ebo
-    );
-
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
     glBufferData(
         GL_ELEMENT_ARRAY_BUFFER,
         sizeof(indices),
@@ -145,11 +162,20 @@ bool Mesh::CreateCube() {
         3,
         GL_FLOAT,
         GL_FALSE,
-        3 * sizeof(float),
-        nullptr
+        sizeof(Vertex),
+        reinterpret_cast<void*>(offsetof(Vertex, position))
     );
-
     glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(
+        1,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(Vertex),
+        reinterpret_cast<void*>(offsetof(Vertex, normal))
+    );
+    glEnableVertexAttribArray(1);
 
     glBindVertexArray(0);
 
@@ -166,31 +192,33 @@ bool Mesh::CreateSphere(int segments, int rings) {
     if (segments < 3) segments = 3;
     if (rings < 2) rings = 2;
 
-    // 큐브가 halfExtents=0.5짜리 단위 큐브인 것과 같은 관례로,
-    // 반지름 0.5짜리 단위 구를 만든다(콜라이더 반지름 r은 스케일
-    // 2r로 이 메시를 그리면 맞아떨어진다).
     const float radius = 0.5f;
+    const float pi = 3.14159265358979f;
 
-    std::vector<float> vertices;
+    std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
+
+    vertices.reserve((rings + 1) * (segments + 1));
+    indices.reserve(rings * segments * 6);
 
     for (int ring = 0; ring <= rings; ++ring) {
         const float v = static_cast<float>(ring) / static_cast<float>(rings);
-        const float phi = v * 3.14159265358979f; // 0..pi
+        const float phi = v * pi;
 
         const float y = std::cos(phi);
         const float ringRadius = std::sin(phi);
 
         for (int segment = 0; segment <= segments; ++segment) {
             const float u = static_cast<float>(segment) / static_cast<float>(segments);
-            const float theta = u * 2.0f * 3.14159265358979f;
+            const float theta = u * 2.0f * pi;
 
             const float x = ringRadius * std::cos(theta);
             const float z = ringRadius * std::sin(theta);
 
-            vertices.push_back(x * radius);
-            vertices.push_back(y * radius);
-            vertices.push_back(z * radius);
+            vertices.push_back({
+                {x * radius, y * radius, z * radius},
+                {x, y, z}
+            });
         }
     }
 
@@ -225,19 +253,14 @@ bool Mesh::CreateSphere(int segments, int rings) {
     glBindVertexArray(m_vao);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-
     glBufferData(
         GL_ARRAY_BUFFER,
-        static_cast<long>(vertices.size() * sizeof(float)),
+        static_cast<long>(vertices.size() * sizeof(Vertex)),
         vertices.data(),
         GL_STATIC_DRAW
     );
 
-    glBindBuffer(
-        GL_ELEMENT_ARRAY_BUFFER,
-        m_ebo
-    );
-
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
     glBufferData(
         GL_ELEMENT_ARRAY_BUFFER,
         static_cast<long>(indices.size() * sizeof(unsigned int)),
@@ -250,11 +273,20 @@ bool Mesh::CreateSphere(int segments, int rings) {
         3,
         GL_FLOAT,
         GL_FALSE,
-        3 * sizeof(float),
-        nullptr
+        sizeof(Vertex),
+        reinterpret_cast<void*>(offsetof(Vertex, position))
     );
-
     glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(
+        1,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(Vertex),
+        reinterpret_cast<void*>(offsetof(Vertex, normal))
+    );
+    glEnableVertexAttribArray(1);
 
     glBindVertexArray(0);
 
