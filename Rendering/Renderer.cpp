@@ -5,6 +5,19 @@
 #include <SDL3/SDL_opengl.h>
 #include <iostream>
 
+namespace {
+    Mat3 GetNormalMatrix(const Mat4& model) {
+        Mat3 upper;
+
+        for (int row = 0; row < 3; ++row) {
+            for (int column = 0; column < 3; ++column)
+                upper.m[row][column] = model.m[row][column];
+        }
+
+        return upper.Inversed().Transposed();
+    }
+}
+
 Renderer::Renderer()
     : m_window(nullptr),
     m_context(nullptr) {}
@@ -81,6 +94,8 @@ bool Renderer::Initialize() {
     }
 
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
 
     return true;
 }
@@ -124,6 +139,8 @@ void Renderer::Render(const World& world) {
 
     m_shader.SetMat4("uView", view);
     m_shader.SetMat4("uProjection", projection);
+    m_shader.SetVec3("uLightDirection", Vec3(-0.45f, -1.0f, -0.65f).Normalized());
+    m_shader.SetVec3("uCameraPosition", world.GetCamera().GetPosition());
 
     for (const auto& object : world.GetObjects()) {
         const Mesh* mesh = object->GetMesh();
@@ -135,6 +152,7 @@ void Renderer::Render(const World& world) {
             object->GetTransform().GetMatrix();
 
         m_shader.SetMat4("uModel", model);
+        m_shader.SetMat3("uNormalMatrix", GetNormalMatrix(model));
 
         mesh->Draw();
     }
