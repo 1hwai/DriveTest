@@ -56,7 +56,8 @@ void Wheel::Update(
     if (!physicsWorld.Raycast(
         ray,
         result,
-        maxRayDistance
+        maxRayDistance,
+        &body
     )) {
         m_grounded = false;
         m_suspensionLength =
