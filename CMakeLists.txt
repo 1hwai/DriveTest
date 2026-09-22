@@ -38,6 +38,7 @@ add_executable(DriveTest
 
     Rendering/Renderer.cpp
     Rendering/Camera.cpp
+    Rendering/DebugRenderer.cpp
     Rendering/Mesh.cpp
     Rendering/Shader.cpp
     Rendering/MeshManager.cpp
