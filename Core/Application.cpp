@@ -72,6 +72,11 @@ void Application::Update() {
     while (m_physicsAccumulator >= PhysicsFixedDeltaTime &&
         physicsStepsThisFrame < MaxPhysicsStepsPerFrame) {
 
+        m_world.UpdatePhysics(
+            PhysicsFixedDeltaTime,
+            m_input
+        );
+
         m_physicsWorld.Step(
             PhysicsFixedDeltaTime
         );
@@ -90,6 +95,11 @@ void Application::Update() {
     }
 
     if (m_simulation.ConsumeSingleStep()) {
+        m_world.UpdatePhysics(
+            PhysicsFixedDeltaTime,
+            m_input
+        );
+
         m_physicsWorld.Step(
             PhysicsFixedDeltaTime
         );
