@@ -391,7 +391,8 @@ void PhysicsWorld::Clear() {
 bool PhysicsWorld::Raycast(
     const Ray& ray,
     RaycastResult& result,
-    float maxDistance
+    float maxDistance,
+    const RigidBody* ignoreBody
 ) const {
     result = RaycastResult();
 
@@ -417,6 +418,9 @@ bool PhysicsWorld::Raycast(
             collider->GetRigidBody();
 
         if (!body)
+            continue;
+
+        if (body == ignoreBody)
             continue;
 
         RaycastResult candidate;
