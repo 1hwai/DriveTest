@@ -7,7 +7,7 @@
 #include "../Input/InputManager.h"
 #include "../Core/Object.h"
 #include "../Rendering/MeshManager.h"
-#include "../Physics/PhysicsWorld.h"
+#include "../Physics/PhysicsWorld.h"\n#include "../Vehicle/Wheel.h"\n#include "../Vehicle/Suspension.h"
 #include "SceneFactory.h"
 
 class World {
@@ -45,5 +45,5 @@ private:
     std::vector<std::unique_ptr<Object>> m_objects;
 
     PhysicsWorld* m_physicsWorld;
-    std::unique_ptr<SceneFactory> m_sceneFactory;
+    std::unique_ptr<SceneFactory> m_sceneFactory;\n\n    Wheel m_testWheel;\n    Suspension m_testSuspension;\n    Object* m_testChassisObject;\n    Object* m_testWheelObject;\n    float m_suspensionDebugTimer;
 };
