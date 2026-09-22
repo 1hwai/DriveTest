@@ -33,7 +33,6 @@ bool Renderer::Initialize() {
     if (!SDL_Init(SDL_INIT_VIDEO))
         return false;
 
-    // OpenGL 3.3 Core Profile
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(
@@ -53,7 +52,6 @@ bool Renderer::Initialize() {
         return false;
     }
 
-    // OpenGL Context 생성
     m_context = SDL_GL_CreateContext(m_window);
 
     if (m_context == nullptr) {
@@ -64,7 +62,6 @@ bool Renderer::Initialize() {
         return false;
     }
 
-    // OpenGL 함수 로딩
     int version = gladLoadGL(
         (GLADloadfunc)SDL_GL_GetProcAddress
     );
@@ -80,16 +77,18 @@ bool Renderer::Initialize() {
         return false;
     }
 
-    // V-Sync
     SDL_GL_SetSwapInterval(1);
     std::cout << "Initializing Renderer..." << std::endl;
 
-    // GLSL Shader 생성
     if (!m_shader.Load(
         "Shaders/basic.vert",
         "Shaders/basic.frag")) {
         std::cerr << "Failed to load shader." << std::endl;
+        return false;
+    }
 
+    if (!m_debugRenderer.Initialize()) {
+        std::cerr << "Failed to initialize debug renderer." << std::endl;
         return false;
     }
 
@@ -113,20 +112,9 @@ void Renderer::Render(const World& world) {
         &height
     );
 
-    glViewport(
-        0,
-        0,
-        width,
-        height
-    );
+    glViewport(0, 0, width, height);
 
-    glClearColor(
-        0.05f,
-        0.05f,
-        0.05f,
-        1.0f
-    );
-
+    glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     m_shader.Use();
@@ -139,8 +127,14 @@ void Renderer::Render(const World& world) {
 
     m_shader.SetMat4("uView", view);
     m_shader.SetMat4("uProjection", projection);
-    m_shader.SetVec3("uLightDirection", Vec3(-0.45f, -1.0f, -0.65f).Normalized());
-    m_shader.SetVec3("uCameraPosition", world.GetCamera().GetPosition());
+    m_shader.SetVec3(
+        "uLightDirection",
+        Vec3(-0.45f, -1.0f, -0.65f).Normalized()
+    );
+    m_shader.SetVec3(
+        "uCameraPosition",
+        world.GetCamera().GetPosition()
+    );
 
     for (const auto& object : world.GetObjects()) {
         const Mesh* mesh = object->GetMesh();
@@ -152,10 +146,15 @@ void Renderer::Render(const World& world) {
             object->GetTransform().GetMatrix();
 
         m_shader.SetMat4("uModel", model);
-        m_shader.SetMat3("uNormalMatrix", GetNormalMatrix(model));
+        m_shader.SetMat3(
+            "uNormalMatrix",
+            GetNormalMatrix(model)
+        );
 
         mesh->Draw();
     }
+
+    m_debugRenderer.Render(world.GetCamera());
 }
 
 void Renderer::Present() {
@@ -175,6 +174,7 @@ SDL_GLContext Renderer::GetContext() const {
 
 void Renderer::Shutdown() {
     if (m_context != nullptr) {
+        m_debugRenderer.Shutdown();
         m_shader.Destroy();
 
         SDL_GL_DestroyContext(m_context);
