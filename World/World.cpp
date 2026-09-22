@@ -1,5 +1,10 @@
 #include "World.h"
 
+namespace {
+    constexpr float CameraRotationSpeed = 1.5f;
+    constexpr float CameraPitchLimit = 1.55334306f;
+}
+
 World::World()
     : m_physicsWorld(nullptr) {}
 
@@ -74,7 +79,42 @@ void World::Update(
     if (keyboard.IsDown(SDL_SCANCODE_A))
         movement.x -= 1.0f;
 
+    if (keyboard.IsDown(SDL_SCANCODE_E))
+        movement.y += 1.0f;
+
+    if (keyboard.IsDown(SDL_SCANCODE_Q))
+        movement.y -= 1.0f;
+
     m_camera.MoveLocal(movement * cameraSpeed * deltaTime);
+
+    Vec3 rotation(0.0f, 0.0f, 0.0f);
+
+    if (keyboard.IsDown(SDL_SCANCODE_LEFT))
+        rotation.y -= 1.0f;
+
+    if (keyboard.IsDown(SDL_SCANCODE_RIGHT))
+        rotation.y += 1.0f;
+
+    if (keyboard.IsDown(SDL_SCANCODE_UP))
+        rotation.x += 1.0f;
+
+    if (keyboard.IsDown(SDL_SCANCODE_DOWN))
+        rotation.x -= 1.0f;
+
+    m_camera.Rotate(
+        rotation * CameraRotationSpeed * deltaTime
+    );
+
+    Vec3 cameraRotation = m_camera.GetRotation();
+
+    if (cameraRotation.x > CameraPitchLimit)
+        cameraRotation.x = CameraPitchLimit;
+
+    if (cameraRotation.x < -CameraPitchLimit)
+        cameraRotation.x = -CameraPitchLimit;
+
+    cameraRotation.z = 0.0f;
+    m_camera.SetRotation(cameraRotation);
 
     for (auto& object : m_objects) {
         if (object == nullptr)
