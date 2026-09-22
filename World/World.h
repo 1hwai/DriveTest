@@ -54,5 +54,9 @@ private:
     PhysicsWorld* m_physicsWorld;
     std::unique_ptr<SceneFactory> m_sceneFactory;
 
-    Wheel m_testWheel;\n    Suspension m_testSuspension;\n    Object* m_testChassisObject;\n    Object* m_testWheelObject;\n    float m_suspensionDebugTimer;
+    Wheel m_testWheel;
+    Suspension m_testSuspension;
+    Object* m_testChassisObject;
+    Object* m_testWheelObject;
+    float m_suspensionDebugTimer;
 };
