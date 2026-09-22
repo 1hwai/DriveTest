@@ -298,6 +298,129 @@ bool Mesh::CreateSphere(int segments, int rings) {
     return true;
 }
 
+
+bool Mesh::CreateWheel(int segments, int widthSegments) {
+    Destroy();
+
+    if (segments < 8) segments = 8;
+    if (widthSegments < 4) widthSegments = 4;
+
+    const float pi = 3.14159265358979f;
+    const float majorRadius = 0.34f;
+    const float tubeRadius = 0.16f;
+
+    std::vector<Vertex> vertices;
+    std::vector<unsigned int> indices;
+
+    vertices.reserve((widthSegments + 1) * (segments + 1));
+    indices.reserve(widthSegments * segments * 6);
+
+    for (int width = 0; width <= widthSegments; ++width) {
+        const float v = static_cast<float>(width) / static_cast<float>(widthSegments);
+        const float phi = v * 2.0f * pi;
+
+        const float cosPhi = std::cos(phi);
+        const float sinPhi = std::sin(phi);
+
+        for (int segment = 0; segment <= segments; ++segment) {
+            const float u = static_cast<float>(segment) / static_cast<float>(segments);
+            const float theta = u * 2.0f * pi;
+
+            const float cosTheta = std::cos(theta);
+            const float sinTheta = std::sin(theta);
+
+            const float radial = majorRadius + tubeRadius * sinPhi;
+
+            vertices.push_back({
+                {
+                    tubeRadius * cosPhi,
+                    radial * cosTheta,
+                    radial * sinTheta
+                },
+                {
+                    cosPhi,
+                    sinPhi * cosTheta,
+                    sinPhi * sinTheta
+                }
+            });
+        }
+    }
+
+    const int columns = segments + 1;
+
+    for (int width = 0; width < widthSegments; ++width) {
+        for (int segment = 0; segment < segments; ++segment) {
+            const unsigned int a = width * columns + segment;
+            const unsigned int b = a + columns;
+            const unsigned int c = a + 1;
+            const unsigned int d = b + 1;
+
+            indices.push_back(a);
+            indices.push_back(b);
+            indices.push_back(c);
+
+            indices.push_back(c);
+            indices.push_back(b);
+            indices.push_back(d);
+        }
+    }
+
+    glGenVertexArrays(1, &m_vao);
+    glGenBuffers(1, &m_vbo);
+    glGenBuffers(1, &m_ebo);
+
+    if (m_vao == 0 || m_vbo == 0 || m_ebo == 0) {
+        Destroy();
+        return false;
+    }
+
+    glBindVertexArray(m_vao);
+
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+    glBufferData(
+        GL_ARRAY_BUFFER,
+        static_cast<long>(vertices.size() * sizeof(Vertex)),
+        vertices.data(),
+        GL_STATIC_DRAW
+    );
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+    glBufferData(
+        GL_ELEMENT_ARRAY_BUFFER,
+        static_cast<long>(indices.size() * sizeof(unsigned int)),
+        indices.data(),
+        GL_STATIC_DRAW
+    );
+
+    glVertexAttribPointer(
+        0,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(Vertex),
+        reinterpret_cast<void*>(offsetof(Vertex, position))
+    );
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(
+        1,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(Vertex),
+        reinterpret_cast<void*>(offsetof(Vertex, normal))
+    );
+    glEnableVertexAttribArray(1);
+
+    glBindVertexArray(0);
+
+    m_vertexCount = 0;
+    m_indexCount = static_cast<unsigned int>(indices.size());
+    m_indexed = true;
+
+    return true;
+}
+
 void Mesh::Draw() const {
     if (m_vao == 0)
         return;
