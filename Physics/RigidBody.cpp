@@ -152,6 +152,28 @@ void RigidBody::AddTorque(const Vec3& torque) {
     Wake();
 }
 
+void RigidBody::AddForceAtPoint(
+    const Vec3& force,
+    const Vec3& worldPoint
+) {
+    AddForce(force);
+
+    const Vec3 r =
+        worldPoint - m_position;
+
+    AddTorque(r.Cross(force));
+}
+
+Vec3 RigidBody::GetPointVelocity(
+    const Vec3& worldPoint
+) const {
+    const Vec3 r =
+        worldPoint - m_position;
+
+    return m_linearVelocity +
+        m_angularVelocity.Cross(r);
+}
+
 const Vec3& RigidBody::GetForce() const {
     return m_force;
 }
