@@ -46,7 +46,8 @@ public:
     bool Raycast(
         const Ray& ray,
         RaycastResult& result,
-        float maxDistance = std::numeric_limits<float>::infinity()
+        float maxDistance = std::numeric_limits<float>::infinity(),
+        const RigidBody* ignoreBody = nullptr
     ) const;
 
     const std::vector<std::unique_ptr<RigidBody>>& GetRigidBodies() const;
