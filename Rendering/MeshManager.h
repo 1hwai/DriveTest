@@ -14,6 +14,7 @@ public:
     bool CreateCube(const std::string& name);
     bool CreateTriangle(const std::string& name);
     bool CreateSphere(const std::string& name);
+    bool CreateWheel(const std::string& name);
 
     Mesh* Get(const std::string& name);
     const Mesh* Get(const std::string& name) const;
