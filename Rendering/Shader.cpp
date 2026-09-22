@@ -104,6 +104,8 @@ bool Shader::Load(
         return false;
     }
 
+    m_uniformLocations.clear();
+
     return true;
 }
 
@@ -117,11 +119,24 @@ void Shader::Destroy() {
         glDeleteProgram(m_program);
         m_program = 0;
     }
+
+    m_uniformLocations.clear();
+}
+
+int Shader::GetUniformLocation(const char* name) {
+    const auto found = m_uniformLocations.find(name);
+
+    if (found != m_uniformLocations.end())
+        return found->second;
+
+    const int location = glGetUniformLocation(m_program, name);
+    m_uniformLocations.emplace(name, location);
+
+    return location;
 }
 
 void Shader::SetMat4(const char* name, const Mat4& matrix) {
-    const int location =
-        glGetUniformLocation(m_program, name);
+    const int location = GetUniformLocation(name);
 
     if (location == -1)
         return;
@@ -131,5 +146,33 @@ void Shader::SetMat4(const char* name, const Mat4& matrix) {
         1,
         GL_TRUE,
         &matrix.m[0][0]
+    );
+}
+
+void Shader::SetMat3(const char* name, const Mat3& matrix) {
+    const int location = GetUniformLocation(name);
+
+    if (location == -1)
+        return;
+
+    glUniformMatrix3fv(
+        location,
+        1,
+        GL_TRUE,
+        &matrix.m[0][0]
+    );
+}
+
+void Shader::SetVec3(const char* name, const Vec3& vector) {
+    const int location = GetUniformLocation(name);
+
+    if (location == -1)
+        return;
+
+    glUniform3f(
+        location,
+        vector.x,
+        vector.y,
+        vector.z
     );
 }
