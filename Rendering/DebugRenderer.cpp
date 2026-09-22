@@ -1,6 +1,7 @@
 #include "DebugRenderer.h"
 
 #include <glad/gl.h>
+#include <cstddef>
 #include <vector>
 
 DebugRenderer::DebugRenderer()
@@ -21,30 +22,17 @@ bool DebugRenderer::Initialize() {
     constexpr float gridSpacing = 1.0f;
     constexpr float gridY = 0.0f;
 
-    const float gridColor[3] = {
-        0.22f, 0.22f, 0.22f
-    };
-
-    const float xAxisColor[3] = {
-        0.85f, 0.20f, 0.20f
-    };
-
-    const float yAxisColor[3] = {
-        0.25f, 0.85f, 0.25f
-    };
-
-    const float zAxisColor[3] = {
-        0.20f, 0.45f, 0.90f
-    };
+    const float gridColor[3] = {0.22f, 0.22f, 0.22f};
+    const float xAxisColor[3] = {0.85f, 0.20f, 0.20f};
+    const float yAxisColor[3] = {0.25f, 0.85f, 0.25f};
+    const float zAxisColor[3] = {0.20f, 0.45f, 0.90f};
 
     std::vector<Vertex> vertices;
 
     const int gridLineCount =
         static_cast<int>(gridSize * 2.0f / gridSpacing) + 1;
 
-    vertices.reserve(
-        gridLineCount * 4 + 6
-    );
+    vertices.reserve(gridLineCount * 4 + 6);
 
     for (int i = 0; i < gridLineCount; ++i) {
         const float coordinate =
@@ -166,12 +154,7 @@ void DebugRenderer::Render(const Camera& camera) {
 
     glBindVertexArray(m_vao);
 
-    glDrawArrays(
-        GL_LINES,
-        0,
-        m_gridVertexCount
-    );
-
+    glDrawArrays(GL_LINES, 0, m_gridVertexCount);
     glDrawArrays(
         GL_LINES,
         m_gridVertexCount,
