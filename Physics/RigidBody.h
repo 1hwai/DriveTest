@@ -29,7 +29,10 @@ public:
     const Vec3& GetAngularVelocity() const;
 
     void AddForce(const Vec3& force);
-    void AddTorque(const Vec3& torque);\n    void AddForceAtPoint(const Vec3& force, const Vec3& worldPoint);\n\n    Vec3 GetPointVelocity(const Vec3& worldPoint) const;
+    void AddTorque(const Vec3& torque);
+    void AddForceAtPoint(const Vec3& force, const Vec3& worldPoint);
+
+    Vec3 GetPointVelocity(const Vec3& worldPoint) const;
 
     const Vec3& GetForce() const;
     const Vec3& GetTorque() const;
