@@ -1,12 +1,18 @@
 #include "World.h"
 
+#include "../Core/Debug/Logger.h"
+
 namespace {
     constexpr float CameraRotationSpeed = 1.5f;
     constexpr float CameraPitchLimit = 1.55334306f;
+    constexpr float WheelInputSpeed = 0.5f;
 }
 
 World::World()
-    : m_physicsWorld(nullptr) {}
+    : m_physicsWorld(nullptr),
+    m_testChassisObject(nullptr),
+    m_testWheelObject(nullptr),
+    m_suspensionDebugTimer(0.0f) {}
 
 World::~World() {
     Shutdown();
@@ -24,13 +30,13 @@ bool World::Initialize(
             physicsWorld
         );
 
-    if (!meshManager.CreateSphere("sphere"))
+    if (!meshManager.CreateWheel("wheel"))
         return false;
 
     auto ground = m_sceneFactory->CreateBox({
         "Ground",
         Vec3(0.0f, 0.0f, 0.0f),
-        Vec3(1.0f, 0.5f, 1.0f),
+        Vec3(5.0f, 0.5f, 5.0f),
         0.0f,
         0.0f,
         0.0f
@@ -41,21 +47,98 @@ bool World::Initialize(
 
     AddObject(std::move(ground));
 
-    auto sphere = m_sceneFactory->CreateSphere({
-        "Sphere",
-        Vec3(0.0f, 2.5f, 0.0f),
-        0.5f,
-        1.0f,
-        0.9f,
-        0.4f
+    auto chassis = m_sceneFactory->CreateBox({
+        "SuspensionTestChassis",
+        Vec3(0.0f, 2.0f, 0.0f),
+        Vec3(1.0f, 0.5f, 1.5f),
+        1200.0f,
+        0.0f,
+        0.5f
     });
 
-    if (!sphere)
+    if (!chassis)
         return false;
 
-    AddObject(std::move(sphere));
+    m_testChassisObject = chassis.get();
+    AddObject(std::move(chassis));
+
+    auto wheel = std::make_unique<Object>();
+    wheel->SetName("TestWheel");
+    wheel->SetMesh(meshManager.Get("wheel"));
+    AddObject(std::move(wheel));
+    m_testWheelObject = m_objects.back().get();
+
+    m_testWheel.SetLocalPosition(
+        Vec3(0.0f, -0.2f, 0.0f)
+    );
+    m_testWheel.SetRadius(0.5f);
+
+    m_testSuspension.SetRestLength(0.8f);
+    m_testSuspension.SetMaxLength(1.0f);
+    m_testSuspension.SetSpringRate(30000.0f);
+    m_testSuspension.SetDamperRate(4500.0f);
 
     return true;
+}
+
+void World::UpdatePhysics(
+    float deltaTime,
+    const InputManager& input
+) {
+    if (!m_testChassisObject)
+        return;
+
+    RigidBody* body =
+        m_testChassisObject->GetRigidBody();
+
+    if (!body)
+        return;
+
+    const Keyboard& keyboard =
+        input.GetKeyboard();
+
+    Vec3 wheelPosition =
+        m_testWheel.GetLocalPosition();
+
+    if (keyboard.IsDown(SDL_SCANCODE_R))
+        wheelPosition.y += WheelInputSpeed * deltaTime;
+
+    if (keyboard.IsDown(SDL_SCANCODE_F))
+        wheelPosition.y -= WheelInputSpeed * deltaTime;
+
+    if (wheelPosition.y > 0.4f)
+        wheelPosition.y = 0.4f;
+
+    if (wheelPosition.y < -0.8f)
+        wheelPosition.y = -0.8f;
+
+    m_testWheel.SetLocalPosition(wheelPosition);
+
+    m_testWheel.Update(
+        *body,
+        *m_physicsWorld,
+        m_testSuspension,
+        deltaTime
+    );
+
+    m_suspensionDebugTimer += deltaTime;
+
+    if (m_suspensionDebugTimer >= 0.25f) {
+        m_suspensionDebugTimer = 0.0f;
+
+        Logger::Debug(
+            "[Suspension] grounded=" +
+            std::to_string(m_testWheel.IsGrounded()) +
+            " length=" +
+            std::to_string(m_testWheel.GetSuspensionLength()) +
+            " compression=" +
+            std::to_string(m_testWheel.GetCompression()) +
+            " force=" +
+            std::to_string(m_testWheel.GetForce()) +
+            " mountY=" +
+            std::to_string(wheelPosition.y)
+        );
+    }
 }
 
 void World::Update(
@@ -140,6 +223,20 @@ void World::Update(
             }
         }
     }
+
+    if (m_testWheelObject && m_testChassisObject) {
+        m_testWheelObject->GetTransform().position =
+            m_testWheel.GetWorldPosition();
+
+        m_testWheelObject->GetTransform().rotation =
+            m_testChassisObject->GetTransform().rotation;
+
+        const float diameter =
+            m_testWheel.GetRadius() * 2.0f;
+
+        m_testWheelObject->GetTransform().scale =
+            Vec3(diameter, diameter, diameter);
+    }
 }
 
 Camera& World::GetCamera() {
@@ -190,6 +287,8 @@ Object* World::CreateSphere(const SphereSettings& settings) {
 void World::ClearObjects() {
     if (!m_physicsWorld) {
         m_objects.clear();
+        m_testChassisObject = nullptr;
+        m_testWheelObject = nullptr;
         return;
     }
 
@@ -205,6 +304,8 @@ void World::ClearObjects() {
     }
 
     m_objects.clear();
+    m_testChassisObject = nullptr;
+    m_testWheelObject = nullptr;
 }
 
 bool World::DestroyObject(Object* object) {
@@ -226,6 +327,12 @@ bool World::DestroyObject(Object* object) {
 
         if (it->get() != object)
             continue;
+
+        if (object == m_testChassisObject)
+            m_testChassisObject = nullptr;
+
+        if (object == m_testWheelObject)
+            m_testWheelObject = nullptr;
 
         m_objects.erase(it);
         return true;
