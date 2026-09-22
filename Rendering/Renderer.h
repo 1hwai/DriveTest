@@ -3,6 +3,7 @@
 #include <SDL3/SDL.h>
 
 #include "Shader.h"
+#include "DebugRenderer.h"
 #include "../World/World.h"
 
 class Renderer {
@@ -23,4 +24,5 @@ private:
     SDL_GLContext m_context;
 
     Shader m_shader;
+    DebugRenderer m_debugRenderer;
 };
