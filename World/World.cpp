@@ -90,10 +90,10 @@ void World::Update(
     Vec3 rotation(0.0f, 0.0f, 0.0f);
 
     if (keyboard.IsDown(SDL_SCANCODE_LEFT))
-        rotation.y -= 1.0f;
+        rotation.y += 1.0f;
 
     if (keyboard.IsDown(SDL_SCANCODE_RIGHT))
-        rotation.y += 1.0f;
+        rotation.y -= 1.0f;
 
     if (keyboard.IsDown(SDL_SCANCODE_UP))
         rotation.x += 1.0f;
