@@ -3,6 +3,8 @@
 #include "../Physics/PhysicsWorld.h"
 #include "../Physics/RigidBody.h"
 
+#include <cmath>
+
 namespace {
     size_t ToIndex(WheelIndex index) {
         return static_cast<size_t>(index);
@@ -10,10 +12,16 @@ namespace {
 }
 
 Car::Car()
-    : m_chassis(nullptr) {}
+    : m_chassis(nullptr),
+    m_planarX(0.0f) {}
 
 void Car::SetChassis(RigidBody* chassis) {
     m_chassis = chassis;
+
+    if (m_chassis) {
+        m_planarX =
+            m_chassis->GetPosition().x;
+    }
 }
 
 void Car::UpdatePhysics(
@@ -22,6 +30,44 @@ void Car::UpdatePhysics(
 ) {
     if (!m_chassis)
         return;
+
+    {
+        Vec3 position =
+            m_chassis->GetPosition();
+
+        position.x = m_planarX;
+        m_chassis->SetPosition(position);
+
+        Vec3 velocity =
+            m_chassis->GetLinearVelocity();
+
+        velocity.x = 0.0f;
+        m_chassis->SetLinearVelocity(velocity);
+
+        Vec3 angularVelocity =
+            m_chassis->GetAngularVelocity();
+
+        angularVelocity.y = 0.0f;
+        angularVelocity.z = 0.0f;
+        m_chassis->SetAngularVelocity(angularVelocity);
+
+        Vec3 forward =
+            m_chassis->GetOrientation() *
+            Vec3(0.0f, 0.0f, 1.0f);
+
+        const float pitch =
+            std::atan2(
+                -forward.y,
+                forward.z
+            );
+
+        m_chassis->SetOrientation(
+            Quaternion::FromAxisAngle(
+                Vec3(1.0f, 0.0f, 0.0f),
+                pitch
+            )
+        );
+    }
 
     for (size_t i = 0; i < WheelCount; ++i) {
         m_wheels[i].Update(
