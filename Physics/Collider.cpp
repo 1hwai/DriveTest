@@ -4,6 +4,8 @@ Collider::Collider()
     : m_shape(ColliderShape::Box),
     m_halfExtents(0.5f, 0.5f, 0.5f),
     m_radius(0.5f),
+    m_planeHeight(0.0f),
+    m_terrain(nullptr),
     m_rigidBody(nullptr) {}
 
 void Collider::SetShape(ColliderShape shape) {
@@ -30,6 +32,22 @@ void Collider::SetRadius(float radius) {
 
 float Collider::GetRadius() const {
     return m_radius;
+}
+
+void Collider::SetPlaneHeight(float height) {
+    m_planeHeight = height;
+}
+
+float Collider::GetPlaneHeight() const {
+    return m_planeHeight;
+}
+
+void Collider::SetTerrain(const Terrain* terrain) {
+    m_terrain = terrain;
+}
+
+const Terrain* Collider::GetTerrain() const {
+    return m_terrain;
 }
 
 void Collider::SetRigidBody(

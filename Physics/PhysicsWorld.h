@@ -73,6 +73,22 @@ private:
         RaycastResult& result
     ) const;
 
+    bool RaycastPlane(
+        const Ray& ray,
+        const Collider& collider,
+        const RigidBody& body,
+        float maxDistance,
+        RaycastResult& result
+    ) const;
+
+    bool RaycastTerrain(
+        const Ray& ray,
+        const Collider& collider,
+        const RigidBody& body,
+        float maxDistance,
+        RaycastResult& result
+    ) const;
+
 private:
     Vec3 m_gravity;
     Solver m_solver;

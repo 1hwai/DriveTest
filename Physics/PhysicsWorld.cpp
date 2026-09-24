@@ -1,5 +1,7 @@
 #include "PhysicsWorld.h"
 
+#include "Terrain.h"
+
 #include <algorithm>
 #include <cmath>
 
@@ -123,6 +125,11 @@ void PhysicsWorld::Step(float deltaTime) {
         Collider* colliderA =
             m_colliders[i].get();
 
+        if (colliderA->GetShape() == ColliderShape::Plane ||
+            colliderA->GetShape() == ColliderShape::Terrain) {
+            continue;
+        }
+
         RigidBody* bodyA =
             colliderA->GetRigidBody();
 
@@ -135,6 +142,11 @@ void PhysicsWorld::Step(float deltaTime) {
 
             Collider* colliderB =
                 m_colliders[j].get();
+
+            if (colliderB->GetShape() == ColliderShape::Plane ||
+                colliderB->GetShape() == ColliderShape::Terrain) {
+                continue;
+            }
 
             RigidBody* bodyB =
                 colliderB->GetRigidBody();
@@ -465,6 +477,73 @@ bool PhysicsWorld::Raycast(
     }
 
     return hit;
+}
+
+
+bool PhysicsWorld::RaycastPlane(
+    const Ray& ray,
+    const Collider& collider,
+    const RigidBody& body,
+    float maxDistance,
+    RaycastResult& result
+) const {
+    const float denominator = ray.direction.y;
+
+    if (std::fabs(denominator) <= 0.000001f)
+        return false;
+
+    const float distance =
+        (collider.GetPlaneHeight() - ray.origin.y) /
+        denominator;
+
+    if (distance < 0.0f || distance > maxDistance)
+        return false;
+
+    result.hit = true;
+    result.distance = distance;
+    result.point = ray.origin + ray.direction * distance;
+    result.normal =
+        denominator < 0.0f
+        ? Vec3(0.0f, 1.0f, 0.0f)
+        : Vec3(0.0f, -1.0f, 0.0f);
+    result.collider = const_cast<Collider*>(&collider);
+    result.rigidBody = const_cast<RigidBody*>(&body);
+    return true;
+}
+
+bool PhysicsWorld::RaycastTerrain(
+    const Ray& ray,
+    const Collider& collider,
+    const RigidBody& body,
+    float maxDistance,
+    RaycastResult& result
+) const {
+    const Terrain* terrain = collider.GetTerrain();
+
+    if (!terrain)
+        return false;
+
+    float distance;
+    Vec3 point;
+    Vec3 normal;
+
+    if (!terrain->Raycast(
+        ray.origin,
+        ray.direction,
+        maxDistance,
+        distance,
+        point,
+        normal
+    ))
+        return false;
+
+    result.hit = true;
+    result.distance = distance;
+    result.point = point;
+    result.normal = normal;
+    result.collider = const_cast<Collider*>(&collider);
+    result.rigidBody = const_cast<RigidBody*>(&body);
+    return true;
 }
 
 bool PhysicsWorld::RaycastBox(

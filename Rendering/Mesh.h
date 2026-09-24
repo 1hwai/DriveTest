@@ -1,5 +1,7 @@
 #pragma once
 
+class Terrain;
+
 class Mesh {
 public:
     Mesh();
@@ -9,6 +11,7 @@ public:
     bool CreateCube();
     bool CreateSphere(int segments = 16, int rings = 12);
     bool CreateWheel(int segments = 32, int widthSegments = 8);
+    bool CreateTerrain(const Terrain& terrain);
 
     void Draw() const;
     void Destroy();

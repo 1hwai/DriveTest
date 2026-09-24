@@ -26,6 +26,7 @@ add_executable(DriveTest
     Physics/Contact.cpp
     Physics/Solver.cpp
     Physics/PhysicsWorld.cpp
+    Physics/Terrain.cpp
     Physics/Material.cpp
 
     Vehicle/Car.cpp

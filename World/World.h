@@ -9,6 +9,7 @@
 #include "../Core/Object.h"
 #include "../Rendering/MeshManager.h"
 #include "../Physics/PhysicsWorld.h"
+#include "../Physics/Terrain.h"
 #include "../Vehicle/Car.h"
 #include "SceneFactory.h"
 
@@ -53,6 +54,7 @@ private:
 
     PhysicsWorld* m_physicsWorld;
     std::unique_ptr<SceneFactory> m_sceneFactory;
+    std::unique_ptr<Terrain> m_terrain;
 
     Car m_car;
     Object* m_carChassisObject;

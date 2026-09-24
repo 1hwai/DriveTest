@@ -5,6 +5,7 @@
 #include <unordered_map>
 
 class Mesh;
+class Terrain;
 
 class MeshManager {
 public:
@@ -15,6 +16,7 @@ public:
     bool CreateTriangle(const std::string& name);
     bool CreateSphere(const std::string& name);
     bool CreateWheel(const std::string& name);
+    bool CreateTerrain(const std::string& name, const Terrain& terrain);
 
     Mesh* Get(const std::string& name);
     const Mesh* Get(const std::string& name) const;

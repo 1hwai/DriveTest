@@ -8,6 +8,7 @@
 class MeshManager;
 class PhysicsWorld;
 class Object;
+class Terrain;
 
 struct BoxSettings {
     std::string name;
@@ -27,6 +28,17 @@ struct SphereSettings {
     float friction;
 };
 
+struct PlaneSettings {
+    std::string name;
+    float height;
+};
+
+struct TerrainSettings {
+    std::string name;
+    float restitution;
+    float friction;
+};
+
 class SceneFactory {
 public:
     SceneFactory(
@@ -40,6 +52,15 @@ public:
 
     std::unique_ptr<Object> CreateSphere(
         const SphereSettings& settings
+    );
+
+    std::unique_ptr<Object> CreatePlane(
+        const PlaneSettings& settings
+    );
+
+    std::unique_ptr<Object> CreateTerrain(
+        const TerrainSettings& settings,
+        const Terrain& terrain
     );
 
 private:

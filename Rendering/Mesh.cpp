@@ -1,5 +1,7 @@
 #include "Mesh.h"
 
+#include "../Physics/Terrain.h"
+
 #include <glad/gl.h>
 #include <cstddef>
 #include <vector>
@@ -418,6 +420,100 @@ bool Mesh::CreateWheel(int segments, int widthSegments) {
     m_indexCount = static_cast<unsigned int>(indices.size());
     m_indexed = true;
 
+    return true;
+}
+
+
+bool Mesh::CreateTerrain(const Terrain& terrain) {
+    Destroy();
+
+    const int resolution = terrain.GetResolution();
+    const float size = terrain.GetSize();
+    const std::vector<float>& heights = terrain.GetHeights();
+
+    std::vector<Vertex> vertices;
+    std::vector<unsigned int> indices;
+
+    vertices.reserve(static_cast<size_t>(resolution) * resolution);
+    indices.reserve(static_cast<size_t>(resolution - 1) * (resolution - 1) * 6);
+
+    const float halfSize = size * 0.5f;
+
+    for (int z = 0; z < resolution; ++z) {
+        for (int x = 0; x < resolution; ++x) {
+            const float worldX =
+                -halfSize +
+                size * static_cast<float>(x) /
+                static_cast<float>(resolution - 1);
+
+            const float worldZ =
+                -halfSize +
+                size * static_cast<float>(z) /
+                static_cast<float>(resolution - 1);
+
+            const Vec3 normal =
+                terrain.GetNormal(worldX, worldZ);
+
+            vertices.push_back({
+                {worldX, heights[static_cast<size_t>(z) * resolution + x], worldZ},
+                {normal.x, normal.y, normal.z}
+            });
+        }
+    }
+
+    for (int z = 0; z < resolution - 1; ++z) {
+        for (int x = 0; x < resolution - 1; ++x) {
+            const unsigned int a = static_cast<unsigned int>(z * resolution + x);
+            const unsigned int b = a + 1;
+            const unsigned int c = a + static_cast<unsigned int>(resolution);
+            const unsigned int d = c + 1;
+
+            indices.push_back(a);
+            indices.push_back(c);
+            indices.push_back(b);
+            indices.push_back(b);
+            indices.push_back(c);
+            indices.push_back(d);
+        }
+    }
+
+    glGenVertexArrays(1, &m_vao);
+    glGenBuffers(1, &m_vbo);
+    glGenBuffers(1, &m_ebo);
+
+    if (m_vao == 0 || m_vbo == 0 || m_ebo == 0) {
+        Destroy();
+        return false;
+    }
+
+    glBindVertexArray(m_vao);
+
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+    glBufferData(
+        GL_ARRAY_BUFFER,
+        static_cast<long>(vertices.size() * sizeof(Vertex)),
+        vertices.data(),
+        GL_STATIC_DRAW
+    );
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+    glBufferData(
+        GL_ELEMENT_ARRAY_BUFFER,
+        static_cast<long>(indices.size() * sizeof(unsigned int)),
+        indices.data(),
+        GL_STATIC_DRAW
+    );
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, position)));
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, normal)));
+    glEnableVertexAttribArray(1);
+
+    glBindVertexArray(0);
+
+    m_vertexCount = 0;
+    m_indexCount = static_cast<unsigned int>(indices.size());
+    m_indexed = true;
     return true;
 }
 

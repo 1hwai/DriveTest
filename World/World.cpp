@@ -2,6 +2,8 @@
 
 #include "../Core/Debug/Logger.h"
 
+#include <string>
+
 namespace {
     constexpr float CameraRotationSpeed = 1.5f;
     constexpr float CameraPitchLimit = 1.55334306f;
@@ -30,17 +32,31 @@ bool World::Initialize(
             physicsWorld
         );
 
+    m_terrain =
+        std::make_unique<Terrain>(
+            65,
+            100.0f,
+            4.0f,
+            0.035f,
+            5,
+            1337
+        );
+
+    if (!meshManager.CreateTerrain(
+        "terrain",
+        *m_terrain
+    ))
+        return false;
+
     if (!meshManager.CreateWheel("wheel"))
         return false;
 
-    auto ground = m_sceneFactory->CreateBox({
-        "Ground",
-        Vec3(0.0f, 0.0f, 0.0f),
-        Vec3(5.0f, 0.5f, 5.0f),
-        0.0f,
-        0.0f,
-        0.0f
-    });
+    auto ground =
+        m_sceneFactory->CreateTerrain({
+            "Terrain",
+            0.0f,
+            0.5f
+        }, *m_terrain);
 
     if (!ground)
         return false;
@@ -49,7 +65,7 @@ bool World::Initialize(
 
     auto chassis = m_sceneFactory->CreateBox({
         "CarChassis",
-        Vec3(0.0f, 2.0f, 0.0f),
+        Vec3(0.0f, 5.0f, 0.0f),
         Vec3(1.0f, 0.5f, 1.5f),
         1200.0f,
         0.0f,

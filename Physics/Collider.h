@@ -4,10 +4,13 @@
 #include "Material.h"
 
 class RigidBody;
+class Terrain;
 
 enum class ColliderShape {
     Box,
-    Sphere
+    Sphere,
+    Plane,
+    Terrain
 };
 
 class Collider {
@@ -27,6 +30,12 @@ public:
     void SetRadius(float radius);
     float GetRadius() const;
 
+    void SetPlaneHeight(float height);
+    float GetPlaneHeight() const;
+
+    void SetTerrain(const Terrain* terrain);
+    const Terrain* GetTerrain() const;
+
     void SetRigidBody(RigidBody* rigidBody);
 
     RigidBody* GetRigidBody();
@@ -39,6 +48,8 @@ private:
     ColliderShape m_shape;
     Vec3 m_halfExtents;
     float m_radius;
+    float m_planeHeight;
+    const Terrain* m_terrain;
     RigidBody* m_rigidBody;
     Material m_material;
 };

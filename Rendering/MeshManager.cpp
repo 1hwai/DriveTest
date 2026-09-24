@@ -1,6 +1,7 @@
 #include "MeshManager.h"
 
 #include "Mesh.h"
+#include "../Physics/Terrain.h"
 
 MeshManager::~MeshManager() = default;
 
@@ -66,6 +67,23 @@ bool MeshManager::CreateWheel(const std::string& name)
     auto mesh = std::make_unique<Mesh>();
 
     if (!mesh->CreateWheel())
+        return false;
+
+    m_meshes.emplace(
+        name,
+        std::move(mesh)
+    );
+
+    return true;
+}
+
+bool MeshManager::CreateTerrain(const std::string& name, const Terrain& terrain) {
+    if (m_meshes.find(name) != m_meshes.end())
+        return false;
+
+    auto mesh = std::make_unique<Mesh>();
+
+    if (!mesh->CreateTerrain(terrain))
         return false;
 
     m_meshes.emplace(
