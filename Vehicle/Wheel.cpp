@@ -12,7 +12,8 @@ Wheel::Wheel()
     m_compression(0.0f),
     m_force(0.0f),
     m_worldPosition(0.0f, 0.0f, 0.0f),
-    m_contactPoint(0.0f, 0.0f, 0.0f) {}
+    m_contactPoint(0.0f, 0.0f, 0.0f),
+    m_contactNormal(0.0f, 1.0f, 0.0f) {}
 
 void Wheel::SetLocalPosition(const Vec3& position) {
     m_localPosition = position;
@@ -64,6 +65,8 @@ void Wheel::Update(
             suspension.GetMaxLength();
         m_compression = 0.0f;
         m_force = 0.0f;
+        m_contactNormal =
+            Vec3(0.0f, 1.0f, 0.0f);
 
         m_worldPosition =
             worldMount +
@@ -72,6 +75,7 @@ void Wheel::Update(
         m_contactPoint =
             m_worldPosition;
 
+        (void)deltaTime;
         return;
     }
 
@@ -115,6 +119,7 @@ void Wheel::Update(
 
     m_grounded = true;
     m_contactPoint = result.point;
+    m_contactNormal = result.normal;
 
     m_worldPosition =
         worldMount +
@@ -145,4 +150,8 @@ const Vec3& Wheel::GetWorldPosition() const {
 
 const Vec3& Wheel::GetContactPoint() const {
     return m_contactPoint;
+}
+
+const Vec3& Wheel::GetContactNormal() const {
+    return m_contactNormal;
 }
