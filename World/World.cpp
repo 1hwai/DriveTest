@@ -2,15 +2,20 @@
 
 #include "../Core/Debug/Logger.h"
 
+#include <cmath>
 #include <string>
 
 namespace {
     constexpr float CameraRotationSpeed = 1.5f;
     constexpr float CameraPitchLimit = 1.55334306f;
+    constexpr float ChaseCameraDistance = 7.0f;
+    constexpr float ChaseCameraHeight = 3.0f;
+    constexpr float ChaseCameraLookHeight = 0.8f;
 }
 
 World::World()
-    : m_physicsWorld(nullptr),
+    : m_cameraMode(CameraMode::Free),
+    m_physicsWorld(nullptr),
     m_carChassisObject(nullptr),
     m_suspensionDebugTimer(0.0f) {
     m_wheelObjects.fill(nullptr);
@@ -158,59 +163,104 @@ void World::Update(
     float deltaTime,
     const InputManager& input
 ) {
-    const Keyboard& keyboard = input.GetKeyboard();
-    constexpr float cameraSpeed = 5.0f;
+    if (m_cameraMode == CameraMode::Free) {
+        const Keyboard& keyboard = input.GetKeyboard();
+        constexpr float cameraSpeed = 5.0f;
 
-    Vec3 movement(0.0f, 0.0f, 0.0f);
+        Vec3 movement(0.0f, 0.0f, 0.0f);
 
-    if (keyboard.IsDown(SDL_SCANCODE_W))
-        movement.z += 1.0f;
+        if (keyboard.IsDown(SDL_SCANCODE_W))
+            movement.z += 1.0f;
 
-    if (keyboard.IsDown(SDL_SCANCODE_S))
-        movement.z -= 1.0f;
+        if (keyboard.IsDown(SDL_SCANCODE_S))
+            movement.z -= 1.0f;
 
-    if (keyboard.IsDown(SDL_SCANCODE_D))
-        movement.x += 1.0f;
+        if (keyboard.IsDown(SDL_SCANCODE_D))
+            movement.x += 1.0f;
 
-    if (keyboard.IsDown(SDL_SCANCODE_A))
-        movement.x -= 1.0f;
+        if (keyboard.IsDown(SDL_SCANCODE_A))
+            movement.x -= 1.0f;
 
-    if (keyboard.IsDown(SDL_SCANCODE_E))
-        movement.y += 1.0f;
+        if (keyboard.IsDown(SDL_SCANCODE_E))
+            movement.y += 1.0f;
 
-    if (keyboard.IsDown(SDL_SCANCODE_Q))
-        movement.y -= 1.0f;
+        if (keyboard.IsDown(SDL_SCANCODE_Q))
+            movement.y -= 1.0f;
 
-    m_camera.MoveLocal(movement * cameraSpeed * deltaTime);
+        m_camera.MoveLocal(
+            movement * cameraSpeed * deltaTime
+        );
 
-    Vec3 rotation(0.0f, 0.0f, 0.0f);
+        Vec3 rotation(0.0f, 0.0f, 0.0f);
 
-    if (keyboard.IsDown(SDL_SCANCODE_LEFT))
-        rotation.y += 1.0f;
+        if (keyboard.IsDown(SDL_SCANCODE_LEFT))
+            rotation.y += 1.0f;
 
-    if (keyboard.IsDown(SDL_SCANCODE_RIGHT))
-        rotation.y -= 1.0f;
+        if (keyboard.IsDown(SDL_SCANCODE_RIGHT))
+            rotation.y -= 1.0f;
 
-    if (keyboard.IsDown(SDL_SCANCODE_UP))
-        rotation.x += 1.0f;
+        if (keyboard.IsDown(SDL_SCANCODE_UP))
+            rotation.x += 1.0f;
 
-    if (keyboard.IsDown(SDL_SCANCODE_DOWN))
-        rotation.x -= 1.0f;
+        if (keyboard.IsDown(SDL_SCANCODE_DOWN))
+            rotation.x -= 1.0f;
 
-    m_camera.Rotate(
-        rotation * CameraRotationSpeed * deltaTime
-    );
+        m_camera.Rotate(
+            rotation * CameraRotationSpeed * deltaTime
+        );
 
-    Vec3 cameraRotation = m_camera.GetRotation();
+        Vec3 cameraRotation = m_camera.GetRotation();
 
-    if (cameraRotation.x > CameraPitchLimit)
-        cameraRotation.x = CameraPitchLimit;
+        if (cameraRotation.x > CameraPitchLimit)
+            cameraRotation.x = CameraPitchLimit;
 
-    if (cameraRotation.x < -CameraPitchLimit)
-        cameraRotation.x = -CameraPitchLimit;
+        if (cameraRotation.x < -CameraPitchLimit)
+            cameraRotation.x = -CameraPitchLimit;
 
-    cameraRotation.z = 0.0f;
-    m_camera.SetRotation(cameraRotation);
+        cameraRotation.z = 0.0f;
+        m_camera.SetRotation(cameraRotation);
+    }
+    else if (m_carChassisObject != nullptr) {
+        const Transform& chassisTransform =
+            m_carChassisObject->GetTransform();
+
+        Vec3 forward =
+            chassisTransform.rotation *
+            Vec3(0.0f, 0.0f, 1.0f);
+
+        forward.y = 0.0f;
+
+        if (forward.LengthSquared() > 0.000001f)
+            forward = forward.Normalized();
+        else
+            forward = Vec3(0.0f, 0.0f, 1.0f);
+
+        const Vec3 cameraPosition =
+            chassisTransform.position -
+            forward * ChaseCameraDistance +
+            Vec3(0.0f, ChaseCameraHeight, 0.0f);
+
+        const Vec3 target =
+            chassisTransform.position +
+            Vec3(0.0f, ChaseCameraLookHeight, 0.0f);
+
+        const Vec3 direction =
+            (target - cameraPosition).Normalized();
+
+        const float yaw =
+            std::atan2(
+                -direction.x,
+                -direction.z
+            );
+
+        const float pitch =
+            std::asin(direction.y);
+
+        m_camera.SetPosition(cameraPosition);
+        m_camera.SetRotation(
+            Vec3(pitch, yaw, 0.0f)
+        );
+    }
 
     for (auto& object : m_objects) {
         if (object == nullptr)
@@ -272,6 +322,29 @@ Camera& World::GetCamera() {
 
 const Camera& World::GetCamera() const {
     return m_camera;
+}
+
+void World::SetCameraMode(CameraMode mode) {
+    if (m_cameraMode == mode)
+        return;
+
+    m_cameraMode = mode;
+
+    if (m_cameraMode == CameraMode::Free) {
+        if (m_carChassisObject != nullptr) {
+            m_camera.SetPosition(
+                m_carChassisObject->GetTransform().position +
+                Vec3(0.0f, 3.0f, -7.0f)
+            );
+            m_camera.SetRotation(
+                Vec3(-0.2f, 0.0f, 0.0f)
+            );
+        }
+    }
+}
+
+CameraMode World::GetCameraMode() const {
+    return m_cameraMode;
 }
 
 const std::vector<std::unique_ptr<Object>>&
