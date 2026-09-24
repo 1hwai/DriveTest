@@ -23,7 +23,8 @@ public:
 
     Vec3 CalculateForce(
         const RigidBody& body,
-        const Wheel& wheel
+        const Wheel& wheel,
+        float deltaTime
     ) const;
 
 private:
