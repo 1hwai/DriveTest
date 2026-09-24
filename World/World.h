@@ -13,6 +13,11 @@
 #include "../Vehicle/Car.h"
 #include "SceneFactory.h"
 
+enum class CameraMode {
+    Free,
+    Chase
+};
+
 class World {
 public:
     World();
@@ -36,6 +41,9 @@ public:
     Camera& GetCamera();
     const Camera& GetCamera() const;
 
+    void SetCameraMode(CameraMode mode);
+    CameraMode GetCameraMode() const;
+
     const std::vector<std::unique_ptr<Object>>&
         GetObjects() const;
 
@@ -50,6 +58,7 @@ public:
 
 private:
     Camera m_camera;
+    CameraMode m_cameraMode;
     std::vector<std::unique_ptr<Object>> m_objects;
 
     PhysicsWorld* m_physicsWorld;
