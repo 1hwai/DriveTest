@@ -174,13 +174,13 @@ void Wheel::ApplyTireForce(
 
     const Vec3 radiusVector =
         m_contactPoint -
-        body.GetPosition();
+        m_worldPosition;
 
     const Vec3 torque =
         radiusVector.Cross(force);
 
     const float wheelTorque =
-        -torque.Dot(axle);
+        torque.Dot(axle);
 
     m_driveTorque +=
         wheelTorque;
