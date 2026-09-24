@@ -63,8 +63,10 @@ Vec3 Tire::CalculateForce(
     const Wheel& wheel,
     float deltaTime
 ) const {
-    if (!wheel.IsGrounded())
+    if (!wheel.IsGrounded() ||
+        deltaTime <= 0.0f) {
         return Vec3(0.0f, 0.0f, 0.0f);
+    }
 
     const float normalLoad =
         wheel.GetForce();
@@ -119,11 +121,6 @@ Vec3 Tire::CalculateForce(
         longitudinalVelocity -
         wheelSurfaceSpeed;
 
-    const float inverseInertiaContribution =
-        wheel.GetRadius() *
-        wheel.GetRadius() /
-        wheel.GetInertia();
-
     const Vec3 bodyRadius =
         contactPoint -
         body.GetPosition();
@@ -141,27 +138,14 @@ Vec3 Tire::CalculateForce(
             longitudinalTorqueAxis
         );
 
+    const float wheelInverseMass =
+        wheel.GetRadius() *
+        wheel.GetRadius() /
+        wheel.GetInertia();
+
     const float longitudinalInverseMass =
         longitudinalBodyInverseMass +
-        inverseInertiaContribution;
-
-    float longitudinalStiffness =
-        m_longitudinalStiffness;
-
-    if (deltaTime > 0.0f &&
-        longitudinalInverseMass > 0.0f) {
-        longitudinalStiffness =
-            m_longitudinalStiffness /
-            (
-                1.0f +
-                m_longitudinalStiffness *
-                longitudinalInverseMass *
-                deltaTime
-            );
-    }
-
-    float lateralStiffness =
-        m_lateralStiffness;
+        wheelInverseMass;
 
     const Vec3 lateralTorqueAxis =
         bodyRadius.Cross(lateral);
@@ -173,49 +157,18 @@ Vec3 Tire::CalculateForce(
             lateralTorqueAxis
         );
 
-    if (deltaTime > 0.0f &&
-        lateralInverseMass > 0.0f) {
-        lateralStiffness =
-            m_lateralStiffness /
-            (
-                1.0f +
-                m_lateralStiffness *
-                lateralInverseMass *
-                deltaTime
-            );
-    }
-
-    Vec3 desiredForce =
-        forward *
-            (-longitudinalSlipVelocity *
-             longitudinalStiffness) +
-        lateral *
-            (-lateralVelocity *
-             lateralStiffness);
-
-    const float contactSpeedSq =
-        longitudinalVelocity *
-            longitudinalVelocity +
-        lateralVelocity *
-            lateralVelocity;
-
-    if (contactSpeedSq > 0.000001f) {
-        const float contactSpeed =
-            std::sqrt(contactSpeedSq);
-
-        desiredForce +=
-            forward *
-            (-longitudinalVelocity /
-             contactSpeed *
-             m_rollingResistance *
-             normalLoad);
-    }
-
-    const float desiredMagnitude =
-        desiredForce.Length();
-
-    if (desiredMagnitude <= 0.000001f)
+    if (longitudinalInverseMass <= 0.0f ||
+        lateralInverseMass <= 0.0f) {
         return Vec3(0.0f, 0.0f, 0.0f);
+    }
+
+    const float longitudinalImpulse =
+        -longitudinalSlipVelocity /
+        longitudinalInverseMass;
+
+    const float lateralImpulse =
+        -lateralVelocity /
+        lateralInverseMass;
 
     const float slipSpeed =
         std::max(
@@ -228,12 +181,57 @@ Vec3 Tire::CalculateForce(
         ? m_staticFriction
         : m_dynamicFriction;
 
-    const float maxForce =
-        friction * normalLoad;
+    const float maxImpulse =
+        friction *
+        normalLoad *
+        deltaTime;
 
-    if (desiredMagnitude <= maxForce)
-        return desiredForce;
+    const float impulseMagnitude =
+        std::sqrt(
+            longitudinalImpulse *
+                longitudinalImpulse +
+            lateralImpulse *
+                lateralImpulse
+        );
 
-    return desiredForce *
-        (maxForce / desiredMagnitude);
+    float impulseScale = 1.0f;
+
+    if (impulseMagnitude > maxImpulse &&
+        impulseMagnitude > 0.000001f) {
+        impulseScale =
+            maxImpulse /
+            impulseMagnitude;
+    }
+
+    const Vec3 tireImpulse =
+        forward *
+            (longitudinalImpulse *
+             impulseScale) +
+        lateral *
+            (lateralImpulse *
+             impulseScale);
+
+    Vec3 tireForce =
+        tireImpulse /
+        deltaTime;
+
+    const float contactSpeedSq =
+        longitudinalVelocity *
+            longitudinalVelocity +
+        lateralVelocity *
+            lateralVelocity;
+
+    if (contactSpeedSq > 0.000001f) {
+        const float contactSpeed =
+            std::sqrt(contactSpeedSq);
+
+        tireForce +=
+            forward *
+            (-longitudinalVelocity /
+             contactSpeed *
+             m_rollingResistance *
+             normalLoad);
+    }
+
+    return tireForce;
 }
