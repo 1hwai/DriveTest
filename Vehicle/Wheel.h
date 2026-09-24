@@ -29,6 +29,7 @@ public:
     float GetForce() const;
     const Vec3& GetWorldPosition() const;
     const Vec3& GetContactPoint() const;
+    const Vec3& GetContactNormal() const;
 
 private:
     Vec3 m_localPosition;
@@ -41,4 +42,5 @@ private:
 
     Vec3 m_worldPosition;
     Vec3 m_contactPoint;
+    Vec3 m_contactNormal;
 };
