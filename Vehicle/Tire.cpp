@@ -60,7 +60,8 @@ float Tire::GetRollingResistance() const {
 
 Vec3 Tire::CalculateForce(
     const RigidBody& body,
-    const Wheel& wheel
+    const Wheel& wheel,
+    float deltaTime
 ) const {
     if (!wheel.IsGrounded())
         return Vec3(0.0f, 0.0f, 0.0f);
@@ -118,13 +119,79 @@ Vec3 Tire::CalculateForce(
         longitudinalVelocity -
         wheelSurfaceSpeed;
 
+    const float inverseInertiaContribution =
+        wheel.GetRadius() *
+        wheel.GetRadius() /
+        wheel.GetInertia();
+
+    const Vec3 bodyRadius =
+        contactPoint -
+        body.GetPosition();
+
+    const Mat3 inverseInertia =
+        body.GetWorldInverseInertiaTensor();
+
+    const Vec3 longitudinalTorqueAxis =
+        bodyRadius.Cross(forward);
+
+    const float longitudinalBodyInverseMass =
+        body.GetInverseMass() +
+        longitudinalTorqueAxis.Dot(
+            inverseInertia *
+            longitudinalTorqueAxis
+        );
+
+    const float longitudinalInverseMass =
+        longitudinalBodyInverseMass +
+        inverseInertiaContribution;
+
+    float longitudinalStiffness =
+        m_longitudinalStiffness;
+
+    if (deltaTime > 0.0f &&
+        longitudinalInverseMass > 0.0f) {
+        longitudinalStiffness =
+            m_longitudinalStiffness /
+            (
+                1.0f +
+                m_longitudinalStiffness *
+                longitudinalInverseMass *
+                deltaTime
+            );
+    }
+
+    float lateralStiffness =
+        m_lateralStiffness;
+
+    const Vec3 lateralTorqueAxis =
+        bodyRadius.Cross(lateral);
+
+    const float lateralInverseMass =
+        body.GetInverseMass() +
+        lateralTorqueAxis.Dot(
+            inverseInertia *
+            lateralTorqueAxis
+        );
+
+    if (deltaTime > 0.0f &&
+        lateralInverseMass > 0.0f) {
+        lateralStiffness =
+            m_lateralStiffness /
+            (
+                1.0f +
+                m_lateralStiffness *
+                lateralInverseMass *
+                deltaTime
+            );
+    }
+
     Vec3 desiredForce =
         forward *
             (-longitudinalSlipVelocity *
-             m_longitudinalStiffness) +
+             longitudinalStiffness) +
         lateral *
             (-lateralVelocity *
-             m_lateralStiffness);
+             lateralStiffness);
 
     const float contactSpeedSq =
         longitudinalVelocity *
