@@ -463,6 +463,30 @@ bool PhysicsWorld::Raycast(
                     candidate
                 );
         }
+        else if (collider->GetShape() ==
+            ColliderShape::Plane) {
+
+            candidateHit =
+                RaycastPlane(
+                    normalizedRay,
+                    *collider,
+                    *body,
+                    closestDistance,
+                    candidate
+                );
+        }
+        else if (collider->GetShape() ==
+            ColliderShape::Terrain) {
+
+            candidateHit =
+                RaycastTerrain(
+                    normalizedRay,
+                    *collider,
+                    *body,
+                    closestDistance,
+                    candidate
+                );
+        }
 
         if (!candidateHit)
             continue;
