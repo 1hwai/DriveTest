@@ -46,6 +46,7 @@ public:
 
 private:
     RigidBody* m_chassis;
+    float m_planarX;
 
     std::array<Wheel, WheelCount> m_wheels;
     std::array<Suspension, WheelCount> m_suspensions;
