@@ -30,6 +30,20 @@ void Car::UpdatePhysics(
             m_suspensions[i],
             deltaTime
         );
+
+        const Vec3 tireForce =
+            m_tires[i].CalculateForce(
+                *m_chassis,
+                m_wheels[i]
+            );
+
+        if (tireForce.LengthSquared() >
+            0.000001f) {
+            m_chassis->AddForceAtPoint(
+                tireForce,
+                m_wheels[i].GetContactPoint()
+            );
+        }
     }
 }
 
@@ -47,6 +61,14 @@ Suspension& Car::GetSuspension(WheelIndex index) {
 
 const Suspension& Car::GetSuspension(WheelIndex index) const {
     return m_suspensions[ToIndex(index)];
+}
+
+Tire& Car::GetTire(WheelIndex index) {
+    return m_tires[ToIndex(index)];
+}
+
+const Tire& Car::GetTire(WheelIndex index) const {
+    return m_tires[ToIndex(index)];
 }
 
 RigidBody* Car::GetChassis() {
