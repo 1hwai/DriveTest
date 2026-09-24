@@ -43,7 +43,16 @@ void Car::UpdatePhysics(
                 tireForce,
                 m_wheels[i].GetContactPoint()
             );
+
+            m_wheels[i].ApplyTireForce(
+                *m_chassis,
+                tireForce
+            );
         }
+
+        m_wheels[i].IntegrateRotation(
+            deltaTime
+        );
     }
 }
 
