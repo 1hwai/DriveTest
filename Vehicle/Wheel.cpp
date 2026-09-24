@@ -180,7 +180,7 @@ void Wheel::ApplyTireForce(
         radiusVector.Cross(force);
 
     const float wheelTorque =
-        -torque.Dot(axle);
+        torque.Dot(axle);
 
     m_driveTorque +=
         wheelTorque;
