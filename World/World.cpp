@@ -302,8 +302,19 @@ void World::Update(
                     static_cast<WheelIndex>(i)
                 ).GetWorldPosition();
 
+            const float wheelAngle =
+                m_car.GetWheel(
+                    static_cast<WheelIndex>(i)
+                ).GetRotationAngle();
+
+            const Quaternion wheelSpin =
+                Quaternion::FromAxisAngle(
+                    Vec3(1.0f, 0.0f, 0.0f),
+                    -wheelAngle
+                );
+
             m_wheelObjects[i]->GetTransform().rotation =
-                chassisRotation;
+                chassisRotation * wheelSpin;
 
             const float diameter =
                 m_car.GetWheel(
