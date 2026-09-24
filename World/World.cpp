@@ -156,6 +156,18 @@ void World::UpdatePhysics(
             " RR=" +
             std::to_string(rearRight.GetCompression())
         );
+
+        Logger::Debug(
+            "[Wheel] " +
+            std::string("FL=") +
+            std::to_string(frontLeft.GetAngularVelocity()) +
+            " FR=" +
+            std::to_string(frontRight.GetAngularVelocity()) +
+            " RL=" +
+            std::to_string(rearLeft.GetAngularVelocity()) +
+            " RR=" +
+            std::to_string(rearRight.GetAngularVelocity())
+        );
     }
 }
 
