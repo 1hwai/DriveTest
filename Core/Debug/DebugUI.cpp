@@ -574,6 +574,22 @@ void DebugUI::Render() {
             &m_showSimulationWindow
         );
 
+        bool chaseCamera =
+            m_world->GetCameraMode() == CameraMode::Chase;
+
+        if (ImGui::Checkbox(
+            "Chase Camera",
+            &chaseCamera
+        )) {
+            m_world->SetCameraMode(
+                chaseCamera
+                    ? CameraMode::Chase
+                    : CameraMode::Free
+            );
+        }
+
+        ImGui::Separator();
+
         if (m_simulation->IsPaused()) {
             if (ImGui::Button("Resume"))
                 m_simulation->Resume();
