@@ -4,9 +4,17 @@
 #include "../Physics/PhysicsWorld.h"
 #include "../Physics/RigidBody.h"
 
+#include <algorithm>
+#include <cmath>
+
 Wheel::Wheel()
     : m_localPosition(0.0f, 0.0f, 0.0f),
     m_radius(0.5f),
+    m_inertia(1.8f),
+    m_driveTorque(0.0f),
+    m_brakeTorque(0.0f),
+    m_angularVelocity(0.0f),
+    m_rotationAngle(0.0f),
     m_grounded(false),
     m_suspensionLength(0.0f),
     m_compression(0.0f),
@@ -29,6 +37,31 @@ void Wheel::SetRadius(float radius) {
 
 float Wheel::GetRadius() const {
     return m_radius;
+}
+
+void Wheel::SetInertia(float inertia) {
+    m_inertia = inertia > 0.0f ? inertia : 0.0001f;
+}
+
+float Wheel::GetInertia() const {
+    return m_inertia;
+}
+
+void Wheel::SetDriveTorque(float torque) {
+    m_driveTorque = torque;
+}
+
+float Wheel::GetDriveTorque() const {
+    return m_driveTorque;
+}
+
+void Wheel::SetBrakeTorque(float torque) {
+    m_brakeTorque =
+        std::max(0.0f, torque);
+}
+
+float Wheel::GetBrakeTorque() const {
+    return m_brakeTorque;
 }
 
 void Wheel::Update(
@@ -128,6 +161,59 @@ void Wheel::Update(
     (void)deltaTime;
 }
 
+void Wheel::ApplyTireForce(
+    const RigidBody& body,
+    const Vec3& force
+) {
+    if (!m_grounded)
+        return;
+
+    const Vec3 axle =
+        body.GetOrientation() *
+        Vec3(1.0f, 0.0f, 0.0f);
+
+    const Vec3 radiusVector =
+        m_contactPoint -
+        body.GetPosition();
+
+    const Vec3 torque =
+        radiusVector.Cross(force);
+
+    const float wheelTorque =
+        -torque.Dot(axle);
+
+    m_driveTorque +=
+        wheelTorque;
+}
+
+void Wheel::IntegrateRotation(float deltaTime) {
+    if (deltaTime <= 0.0f)
+        return;
+
+    float brakeTorque = 0.0f;
+
+    if (std::abs(m_angularVelocity) > 0.0001f)
+        brakeTorque =
+            m_brakeTorque *
+            (m_angularVelocity > 0.0f ? 1.0f : -1.0f);
+
+    const float netTorque =
+        m_driveTorque -
+        brakeTorque;
+
+    m_angularVelocity +=
+        (netTorque / m_inertia) *
+        deltaTime;
+
+    if (std::abs(m_angularVelocity) < 0.0001f)
+        m_angularVelocity = 0.0f;
+
+    m_rotationAngle +=
+        m_angularVelocity * deltaTime;
+
+    m_driveTorque = 0.0f;
+}
+
 bool Wheel::IsGrounded() const {
     return m_grounded;
 }
@@ -142,6 +228,14 @@ float Wheel::GetCompression() const {
 
 float Wheel::GetForce() const {
     return m_force;
+}
+
+float Wheel::GetAngularVelocity() const {
+    return m_angularVelocity;
+}
+
+float Wheel::GetRotationAngle() const {
+    return m_rotationAngle;
 }
 
 const Vec3& Wheel::GetWorldPosition() const {
