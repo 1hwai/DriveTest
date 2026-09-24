@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <memory>
 #include <vector>
 
@@ -8,8 +9,7 @@
 #include "../Core/Object.h"
 #include "../Rendering/MeshManager.h"
 #include "../Physics/PhysicsWorld.h"
-#include "../Vehicle/Wheel.h"
-#include "../Vehicle/Suspension.h"
+#include "../Vehicle/Car.h"
 #include "SceneFactory.h"
 
 class World {
@@ -54,9 +54,9 @@ private:
     PhysicsWorld* m_physicsWorld;
     std::unique_ptr<SceneFactory> m_sceneFactory;
 
-    Wheel m_testWheel;
-    Suspension m_testSuspension;
-    Object* m_testChassisObject;
-    Object* m_testWheelObject;
+    Car m_car;
+    Object* m_carChassisObject;
+    std::array<Object*, WheelCount> m_wheelObjects;
+
     float m_suspensionDebugTimer;
 };

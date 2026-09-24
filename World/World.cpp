@@ -5,14 +5,14 @@
 namespace {
     constexpr float CameraRotationSpeed = 1.5f;
     constexpr float CameraPitchLimit = 1.55334306f;
-    constexpr float WheelInputSpeed = 0.5f;
 }
 
 World::World()
     : m_physicsWorld(nullptr),
-    m_testChassisObject(nullptr),
-    m_testWheelObject(nullptr),
-    m_suspensionDebugTimer(0.0f) {}
+    m_carChassisObject(nullptr),
+    m_suspensionDebugTimer(0.0f) {
+    m_wheelObjects.fill(nullptr);
+}
 
 World::~World() {
     Shutdown();
@@ -48,7 +48,7 @@ bool World::Initialize(
     AddObject(std::move(ground));
 
     auto chassis = m_sceneFactory->CreateBox({
-        "SuspensionTestChassis",
+        "CarChassis",
         Vec3(0.0f, 2.0f, 0.0f),
         Vec3(1.0f, 0.5f, 1.5f),
         1200.0f,
@@ -59,24 +59,39 @@ bool World::Initialize(
     if (!chassis)
         return false;
 
-    m_testChassisObject = chassis.get();
+    m_carChassisObject = chassis.get();
+    m_car.SetChassis(chassis->GetRigidBody());
     AddObject(std::move(chassis));
 
-    auto wheel = std::make_unique<Object>();
-    wheel->SetName("TestWheel");
-    wheel->SetMesh(meshManager.Get("wheel"));
-    AddObject(std::move(wheel));
-    m_testWheelObject = m_objects.back().get();
+    const Vec3 wheelPositions[WheelCount] = {
+        Vec3(-0.9f, -0.2f, 1.1f),
+        Vec3(0.9f, -0.2f, 1.1f),
+        Vec3(-0.9f, -0.2f, -1.1f),
+        Vec3(0.9f, -0.2f, -1.1f)
+    };
 
-    m_testWheel.SetLocalPosition(
-        Vec3(0.0f, -0.2f, 0.0f)
-    );
-    m_testWheel.SetRadius(0.5f);
+    for (size_t i = 0; i < WheelCount; ++i) {
+        const WheelIndex index =
+            static_cast<WheelIndex>(i);
 
-    m_testSuspension.SetRestLength(0.8f);
-    m_testSuspension.SetMaxLength(1.0f);
-    m_testSuspension.SetSpringRate(30000.0f);
-    m_testSuspension.SetDamperRate(4500.0f);
+        m_car.GetWheel(index).SetLocalPosition(
+            wheelPositions[i]
+        );
+
+        m_car.GetWheel(index).SetRadius(0.5f);
+
+        m_car.GetSuspension(index).SetRestLength(0.8f);
+        m_car.GetSuspension(index).SetMaxLength(1.0f);
+        m_car.GetSuspension(index).SetSpringRate(30000.0f);
+        m_car.GetSuspension(index).SetDamperRate(4500.0f);
+
+        auto wheel = std::make_unique<Object>();
+        wheel->SetName("CarWheel");
+        wheel->SetMesh(meshManager.Get("wheel"));
+        AddObject(std::move(wheel));
+
+        m_wheelObjects[i] = m_objects.back().get();
+    }
 
     return true;
 }
@@ -85,39 +100,10 @@ void World::UpdatePhysics(
     float deltaTime,
     const InputManager& input
 ) {
-    if (!m_testChassisObject)
-        return;
+    (void)input;
 
-    RigidBody* body =
-        m_testChassisObject->GetRigidBody();
-
-    if (!body)
-        return;
-
-    const Keyboard& keyboard =
-        input.GetKeyboard();
-
-    Vec3 wheelPosition =
-        m_testWheel.GetLocalPosition();
-
-    if (keyboard.IsDown(SDL_SCANCODE_R))
-        wheelPosition.y += WheelInputSpeed * deltaTime;
-
-    if (keyboard.IsDown(SDL_SCANCODE_F))
-        wheelPosition.y -= WheelInputSpeed * deltaTime;
-
-    if (wheelPosition.y > 0.4f)
-        wheelPosition.y = 0.4f;
-
-    if (wheelPosition.y < -0.8f)
-        wheelPosition.y = -0.8f;
-
-    m_testWheel.SetLocalPosition(wheelPosition);
-
-    m_testWheel.Update(
-        *body,
+    m_car.UpdatePhysics(
         *m_physicsWorld,
-        m_testSuspension,
         deltaTime
     );
 
@@ -126,17 +112,28 @@ void World::UpdatePhysics(
     if (m_suspensionDebugTimer >= 0.25f) {
         m_suspensionDebugTimer = 0.0f;
 
+        const Wheel& frontLeft =
+            m_car.GetWheel(WheelIndex::FrontLeft);
+
+        const Wheel& frontRight =
+            m_car.GetWheel(WheelIndex::FrontRight);
+
+        const Wheel& rearLeft =
+            m_car.GetWheel(WheelIndex::RearLeft);
+
+        const Wheel& rearRight =
+            m_car.GetWheel(WheelIndex::RearRight);
+
         Logger::Debug(
-            "[Suspension] grounded=" +
-            std::to_string(m_testWheel.IsGrounded()) +
-            " length=" +
-            std::to_string(m_testWheel.GetSuspensionLength()) +
-            " compression=" +
-            std::to_string(m_testWheel.GetCompression()) +
-            " force=" +
-            std::to_string(m_testWheel.GetForce()) +
-            " mountY=" +
-            std::to_string(wheelPosition.y)
+            "[Suspension] " +
+            std::string("FL=") +
+            std::to_string(frontLeft.GetCompression()) +
+            " FR=" +
+            std::to_string(frontRight.GetCompression()) +
+            " RL=" +
+            std::to_string(rearLeft.GetCompression()) +
+            " RR=" +
+            std::to_string(rearRight.GetCompression())
         );
     }
 }
@@ -216,26 +213,40 @@ void World::Update(
         if (collider != nullptr) {
             if (collider->GetShape() == ColliderShape::Sphere) {
                 const float diameter = collider->GetRadius() * 2.0f;
-                object->GetTransform().scale = Vec3(diameter, diameter, diameter);
+                object->GetTransform().scale =
+                    Vec3(diameter, diameter, diameter);
             }
             else {
-                object->GetTransform().scale = collider->GetHalfExtents() * 2.0f;
+                object->GetTransform().scale =
+                    collider->GetHalfExtents() * 2.0f;
             }
         }
     }
 
-    if (m_testWheelObject && m_testChassisObject) {
-        m_testWheelObject->GetTransform().position =
-            m_testWheel.GetWorldPosition();
+    if (m_carChassisObject) {
+        const Quaternion& chassisRotation =
+            m_carChassisObject->GetTransform().rotation;
 
-        m_testWheelObject->GetTransform().rotation =
-            m_testChassisObject->GetTransform().rotation;
+        for (size_t i = 0; i < WheelCount; ++i) {
+            if (!m_wheelObjects[i])
+                continue;
 
-        const float diameter =
-            m_testWheel.GetRadius() * 2.0f;
+            m_wheelObjects[i]->GetTransform().position =
+                m_car.GetWheel(
+                    static_cast<WheelIndex>(i)
+                ).GetWorldPosition();
 
-        m_testWheelObject->GetTransform().scale =
-            Vec3(diameter, diameter, diameter);
+            m_wheelObjects[i]->GetTransform().rotation =
+                chassisRotation;
+
+            const float diameter =
+                m_car.GetWheel(
+                    static_cast<WheelIndex>(i)
+                ).GetRadius() * 2.0f;
+
+            m_wheelObjects[i]->GetTransform().scale =
+                Vec3(diameter, diameter, diameter);
+        }
     }
 }
 
@@ -287,8 +298,9 @@ Object* World::CreateSphere(const SphereSettings& settings) {
 void World::ClearObjects() {
     if (!m_physicsWorld) {
         m_objects.clear();
-        m_testChassisObject = nullptr;
-        m_testWheelObject = nullptr;
+        m_car.SetChassis(nullptr);
+        m_carChassisObject = nullptr;
+        m_wheelObjects.fill(nullptr);
         return;
     }
 
@@ -304,8 +316,9 @@ void World::ClearObjects() {
     }
 
     m_objects.clear();
-    m_testChassisObject = nullptr;
-    m_testWheelObject = nullptr;
+    m_car.SetChassis(nullptr);
+    m_carChassisObject = nullptr;
+    m_wheelObjects.fill(nullptr);
 }
 
 bool World::DestroyObject(Object* object) {
@@ -328,11 +341,15 @@ bool World::DestroyObject(Object* object) {
         if (it->get() != object)
             continue;
 
-        if (object == m_testChassisObject)
-            m_testChassisObject = nullptr;
+        if (object == m_carChassisObject) {
+            m_car.SetChassis(nullptr);
+            m_carChassisObject = nullptr;
+        }
 
-        if (object == m_testWheelObject)
-            m_testWheelObject = nullptr;
+        for (size_t i = 0; i < WheelCount; ++i) {
+            if (object == m_wheelObjects[i])
+                m_wheelObjects[i] = nullptr;
+        }
 
         m_objects.erase(it);
         return true;

@@ -99,7 +99,7 @@ void Wheel::Update(
             pointVelocity.Dot(down);
 
         const float compressionVelocity =
-            -lengthVelocity;
+            lengthVelocity;
 
         m_force =
             suspension.CalculateForce(
