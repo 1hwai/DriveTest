@@ -34,7 +34,8 @@ void Car::UpdatePhysics(
         const Vec3 tireForce =
             m_tires[i].CalculateForce(
                 *m_chassis,
-                m_wheels[i]
+                m_wheels[i],
+                deltaTime
             );
 
         if (tireForce.LengthSquared() >
