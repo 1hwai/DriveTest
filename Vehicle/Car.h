@@ -5,6 +5,7 @@
 
 #include "Wheel.h"
 #include "Suspension.h"
+#include "Tire.h"
 
 class RigidBody;
 class PhysicsWorld;
@@ -37,6 +38,9 @@ public:
     Suspension& GetSuspension(WheelIndex index);
     const Suspension& GetSuspension(WheelIndex index) const;
 
+    Tire& GetTire(WheelIndex index);
+    const Tire& GetTire(WheelIndex index) const;
+
     RigidBody* GetChassis();
     const RigidBody* GetChassis() const;
 
@@ -45,4 +49,5 @@ private:
 
     std::array<Wheel, WheelCount> m_wheels;
     std::array<Suspension, WheelCount> m_suspensions;
+    std::array<Tire, WheelCount> m_tires;
 };
