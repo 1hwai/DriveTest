@@ -171,8 +171,11 @@ void Wheel::Update(
                 springForce + damperForce
             );
 
+        // Test 1: keep the new raycast/compression calculation,
+        // but restore the old suspension force geometry.
+        // This isolates terrain-normal/contact-point changes.
         const Vec3 suspensionForce =
-            result.normal * m_force;
+            -down * m_force;
 
         const float springPower =
             suspension.GetSpringRate() *
@@ -186,7 +189,7 @@ void Wheel::Update(
 
         m_suspensionPower =
             suspensionForce.Dot(
-                contactVelocity
+                body.GetPointVelocity(worldMount)
             );
 
         m_suspensionResidual =
@@ -196,7 +199,7 @@ void Wheel::Update(
 
         body.AddForceAtPoint(
             suspensionForce,
-            result.point
+            worldMount
         );
     }
 
