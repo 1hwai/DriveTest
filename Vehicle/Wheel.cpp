@@ -18,7 +18,9 @@ Wheel::Wheel()
     m_grounded(false),
     m_suspensionLength(0.0f),
     m_compression(0.0f),
+    m_previousCompression(0.0f),
     m_force(0.0f),
+    m_hasPreviousCompression(false),
     m_worldPosition(0.0f, 0.0f, 0.0f),
     m_contactPoint(0.0f, 0.0f, 0.0f),
     m_contactNormal(0.0f, 1.0f, 0.0f) {}
@@ -98,6 +100,7 @@ void Wheel::Update(
             suspension.GetMaxLength();
         m_compression = 0.0f;
         m_force = 0.0f;
+        m_hasPreviousCompression = false;
         m_contactNormal =
             Vec3(0.0f, 1.0f, 0.0f);
 
@@ -108,7 +111,6 @@ void Wheel::Update(
         m_contactPoint =
             m_worldPosition;
 
-        (void)deltaTime;
         return;
     }
 
@@ -129,14 +131,14 @@ void Wheel::Update(
         m_force = 0.0f;
     }
     else {
-        const Vec3 pointVelocity =
-            body.GetPointVelocity(worldMount);
+        float compressionVelocity = 0.0f;
 
-        const float lengthVelocity =
-            pointVelocity.Dot(down);
-
-        const float compressionVelocity =
-            lengthVelocity;
+        if (m_hasPreviousCompression &&
+            deltaTime > 0.0f) {
+            compressionVelocity =
+                (m_compression - m_previousCompression) /
+                deltaTime;
+        }
 
         m_force =
             suspension.CalculateForce(
@@ -151,6 +153,10 @@ void Wheel::Update(
     }
 
     m_grounded = true;
+
+    m_previousCompression = m_compression;
+    m_hasPreviousCompression = true;
+
     m_contactPoint = result.point;
     m_contactNormal = result.normal;
 
@@ -158,7 +164,6 @@ void Wheel::Update(
         worldMount +
         down * m_suspensionLength;
 
-    (void)deltaTime;
 }
 
 void Wheel::ApplyTireForce(
