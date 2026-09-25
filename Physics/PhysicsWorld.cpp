@@ -429,9 +429,6 @@ bool PhysicsWorld::Raycast(
         const RigidBody* body =
             collider->GetRigidBody();
 
-        if (!body)
-            continue;
-
         if (body == ignoreBody)
             continue;
 
@@ -441,6 +438,9 @@ bool PhysicsWorld::Raycast(
 
         if (collider->GetShape() ==
             ColliderShape::Box) {
+
+            if (!body)
+                continue;
 
             candidateHit =
                 RaycastBox(
@@ -470,7 +470,7 @@ bool PhysicsWorld::Raycast(
                 RaycastPlane(
                     normalizedRay,
                     *collider,
-                    *body,
+                    body,
                     closestDistance,
                     candidate
                 );
@@ -482,7 +482,7 @@ bool PhysicsWorld::Raycast(
                 RaycastTerrain(
                     normalizedRay,
                     *collider,
-                    *body,
+                    body,
                     closestDistance,
                     candidate
                 );
@@ -507,7 +507,7 @@ bool PhysicsWorld::Raycast(
 bool PhysicsWorld::RaycastPlane(
     const Ray& ray,
     const Collider& collider,
-    const RigidBody& body,
+    const RigidBody* body,
     float maxDistance,
     RaycastResult& result
 ) const {
@@ -531,14 +531,15 @@ bool PhysicsWorld::RaycastPlane(
         ? Vec3(0.0f, 1.0f, 0.0f)
         : Vec3(0.0f, -1.0f, 0.0f);
     result.collider = const_cast<Collider*>(&collider);
-    result.rigidBody = const_cast<RigidBody*>(&body);
+    result.rigidBody =
+        const_cast<RigidBody*>(body);
     return true;
 }
 
 bool PhysicsWorld::RaycastTerrain(
     const Ray& ray,
     const Collider& collider,
-    const RigidBody& body,
+    const RigidBody* body,
     float maxDistance,
     RaycastResult& result
 ) const {
