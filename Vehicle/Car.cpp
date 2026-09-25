@@ -55,22 +55,6 @@ void Car::UpdatePhysics(
         angularVelocity.z = 0.0f;
         m_chassis->SetAngularVelocity(angularVelocity);
 
-        Vec3 forward =
-            m_chassis->GetOrientation() *
-            Vec3(0.0f, 0.0f, 1.0f);
-
-        const float pitch =
-            std::atan2(
-                -forward.y,
-                forward.z
-            );
-
-        m_chassis->SetOrientation(
-            Quaternion::FromAxisAngle(
-                Vec3(1.0f, 0.0f, 0.0f),
-                pitch
-            )
-        );
     }
 
     for (size_t i = 0; i < WheelCount; ++i) {
