@@ -11,6 +11,8 @@ public:
     float GetSize() const;
     const std::vector<float>& GetHeights() const;
 
+    void GenerateSineWave(float amplitude, float phase);
+
     float GetHeight(float x, float z) const;
     Vec3 GetNormal(float x, float z) const;
 
