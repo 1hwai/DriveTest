@@ -62,7 +62,9 @@ private:
     bool m_grounded;
     float m_suspensionLength;
     float m_compression;
+    float m_previousCompression;
     float m_force;
+    bool m_hasPreviousCompression;
 
     Vec3 m_worldPosition;
     Vec3 m_contactPoint;
