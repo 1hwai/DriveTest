@@ -47,6 +47,7 @@ public:
 private:
     RigidBody* m_chassis;
     float m_planarX;
+    float m_energyTimer;
 
     std::array<Wheel, WheelCount> m_wheels;
     std::array<Suspension, WheelCount> m_suspensions;
