@@ -115,6 +115,9 @@ void Car::UpdatePhysics(
         const float height =
             m_chassis->GetPosition().y;
 
+        const Vec3 position =
+            m_chassis->GetPosition();
+
         const Vec3 velocity =
             m_chassis->GetLinearVelocity();
 
@@ -178,7 +181,13 @@ void Car::UpdatePhysics(
 
         std::ostringstream log;
         log << std::fixed << std::setprecision(3)
-            << "[Energy] total=" << totalEnergy
+            << "[Energy] x=" << position.x
+            << " y=" << position.y
+            << " z=" << position.z
+            << " vx=" << velocity.x
+            << " vy=" << velocity.y
+            << " vz=" << velocity.z
+            << " total=" << totalEnergy
             << " potential=" << potentialEnergy
             << " linear=" << linearEnergy
             << " angular=" << angularEnergy
