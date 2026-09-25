@@ -570,7 +570,7 @@ bool PhysicsWorld::RaycastTerrain(
     result.point = point;
     result.normal = normal;
     result.collider = const_cast<Collider*>(&collider);
-    result.rigidBody = const_cast<RigidBody*>(&body);
+    result.rigidBody = const_cast<RigidBody*>(body);
     return true;
 }
 
