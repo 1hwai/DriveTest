@@ -118,38 +118,42 @@ void Wheel::Update(
         return;
     }
 
-    const Vec3 wheelCenter =
-        result.point +
-        result.normal * m_radius;
-
-    const float wheelCenterDistance =
-        (wheelCenter - worldMount).Dot(down);
-
-    m_suspensionLength =
+    const float suspensionLength =
         suspension.ClampLength(
-            wheelCenterDistance
+            result.distance - m_radius
         );
 
-    m_compression =
+    const float compression =
         suspension.GetRestLength() -
-        m_suspensionLength;
+        suspensionLength;
+
+    const float denominator =
+        result.normal.Dot(down);
+
+    m_suspensionLength =
+        suspensionLength;
+
+    m_compression =
+        std::max(0.0f, compression);
 
     m_suspensionPower = 0.0f;
     m_suspensionResidual = 0.0f;
+    m_force = 0.0f;
 
-    if (m_compression <= 0.0f) {
-        m_compression = 0.0f;
-        m_force = 0.0f;
-    }
-    else {
-        float compressionVelocity = 0.0f;
+    if (m_compression > 0.0f &&
+        denominator < -0.1f) {
+        const float inverseContactDotSuspension =
+            -1.0f / denominator;
 
-        if (m_hasPreviousCompression &&
-            deltaTime > 0.0f) {
-            compressionVelocity =
-                (m_compression - m_previousCompression) /
-                deltaTime;
-        }
+        const Vec3 contactVelocity =
+            body.GetPointVelocity(result.point);
+
+        const float projectedVelocity =
+            result.normal.Dot(contactVelocity);
+
+        const float compressionVelocity =
+            projectedVelocity *
+            inverseContactDotSuspension;
 
         m_force =
             suspension.CalculateForce(
@@ -158,13 +162,7 @@ void Wheel::Update(
             );
 
         const Vec3 suspensionForce =
-            -down * m_force;
-
-        const Vec3 mountVelocity =
-            body.GetPointVelocity(worldMount);
-
-        m_suspensionPower =
-            suspensionForce.Dot(mountVelocity);
+            result.normal * m_force;
 
         const float springPower =
             suspension.GetSpringRate() *
@@ -176,6 +174,11 @@ void Wheel::Update(
             compressionVelocity *
             compressionVelocity;
 
+        m_suspensionPower =
+            suspensionForce.Dot(
+                contactVelocity
+            );
+
         m_suspensionResidual =
             m_suspensionPower +
             springPower +
@@ -183,7 +186,7 @@ void Wheel::Update(
 
         body.AddForceAtPoint(
             suspensionForce,
-            worldMount
+            result.point
         );
     }
 
@@ -196,8 +199,8 @@ void Wheel::Update(
     m_contactNormal = result.normal;
 
     m_worldPosition =
-        wheelCenter;
-
+        worldMount +
+        down * m_suspensionLength;
 }
 
 void Wheel::ApplyTireForce(
