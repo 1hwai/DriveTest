@@ -48,7 +48,7 @@ bool World::Initialize(
         );
 
         m_terrain->GenerateSineWave(
-            2.0f,
+            0.5f,
             3.14159265f * 0.25f
         );
 
