@@ -44,6 +44,7 @@ public:
     float GetCompression() const;
     float GetForce() const;
     float GetSuspensionPower() const;
+    float GetSuspensionResidual() const;
     float GetAngularVelocity() const;
     float GetRotationAngle() const;
     const Vec3& GetWorldPosition() const;
@@ -66,6 +67,7 @@ private:
     float m_previousCompression;
     float m_force;
     float m_suspensionPower;
+    float m_suspensionResidual;
     bool m_hasPreviousCompression;
 
     Vec3 m_worldPosition;
