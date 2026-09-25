@@ -20,6 +20,7 @@ Wheel::Wheel()
     m_compression(0.0f),
     m_previousCompression(0.0f),
     m_force(0.0f),
+    m_suspensionPower(0.0f),
     m_hasPreviousCompression(false),
     m_worldPosition(0.0f, 0.0f, 0.0f),
     m_contactPoint(0.0f, 0.0f, 0.0f),
@@ -100,6 +101,7 @@ void Wheel::Update(
             suspension.GetMaxLength();
         m_compression = 0.0f;
         m_force = 0.0f;
+        m_suspensionPower = 0.0f;
         m_hasPreviousCompression = false;
         m_contactNormal =
             Vec3(0.0f, 1.0f, 0.0f);
@@ -126,6 +128,8 @@ void Wheel::Update(
         suspension.GetRestLength() -
         m_suspensionLength;
 
+    m_suspensionPower = 0.0f;
+
     if (m_compression <= 0.0f) {
         m_compression = 0.0f;
         m_force = 0.0f;
@@ -146,8 +150,17 @@ void Wheel::Update(
                 compressionVelocity
             );
 
+        const Vec3 suspensionForce =
+            -down * m_force;
+
+        const Vec3 mountVelocity =
+            body.GetPointVelocity(worldMount);
+
+        m_suspensionPower =
+            suspensionForce.Dot(mountVelocity);
+
         body.AddForceAtPoint(
-            -down * m_force,
+            suspensionForce,
             worldMount
         );
     }
@@ -233,6 +246,10 @@ float Wheel::GetCompression() const {
 
 float Wheel::GetForce() const {
     return m_force;
+}
+
+float Wheel::GetSuspensionPower() const {
+    return m_suspensionPower;
 }
 
 float Wheel::GetAngularVelocity() const {
