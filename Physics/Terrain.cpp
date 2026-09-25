@@ -179,12 +179,8 @@ bool Terrain::Raycast(const Vec3& origin, const Vec3& direction, float maxDistan
     float previousT = 0.0f;
     float previousDelta = origin.y - GetHeight(origin.x, origin.z);
 
-    if (std::isfinite(previousDelta) && previousDelta <= 0.0f) {
-        distance = 0.0f;
-        point = origin;
-        normal = GetNormal(origin.x, origin.z);
-        return true;
-    }
+    if (!std::isfinite(previousDelta))
+        return false;
 
     for (int i = 1; i <= Steps; ++i) {
         const float t = maxDistance * static_cast<float>(i) / static_cast<float>(Steps);
