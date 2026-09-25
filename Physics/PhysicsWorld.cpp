@@ -454,6 +454,9 @@ bool PhysicsWorld::Raycast(
         else if (collider->GetShape() ==
             ColliderShape::Sphere) {
 
+            if (!body)
+                continue;
+
             candidateHit =
                 RaycastSphere(
                     normalizedRay,
