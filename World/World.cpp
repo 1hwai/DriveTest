@@ -41,7 +41,7 @@ bool World::Initialize(
         std::make_unique<Terrain>(
             65,
             100.0f,
-            4.0f,
+            0.0f,
             0.035f,
             5,
             1337
