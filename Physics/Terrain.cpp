@@ -50,6 +50,21 @@ const std::vector<float>& Terrain::GetHeights() const {
     return m_heights;
 }
 
+void Terrain::GenerateSineWave(float amplitude, float phase) {
+    for (int z = 0; z < m_resolution; ++z) {
+        for (int x = 0; x < m_resolution; ++x) {
+            const float worldZ =
+                -m_size * 0.5f +
+                m_size * static_cast<float>(z) /
+                    static_cast<float>(m_resolution - 1);
+
+            m_heights[
+                static_cast<size_t>(z) * m_resolution + x
+            ] = amplitude * std::sin(worldZ - phase);
+        }
+    }
+}
+
 float Terrain::Fade(float t) const {
     return t * t * t * (t * (t * 6.0f - 15.0f) + 10.0f);
 }
