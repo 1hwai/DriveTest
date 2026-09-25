@@ -118,8 +118,12 @@ void Wheel::Update(
         return;
     }
 
+    const Vec3 wheelCenter =
+        result.point +
+        result.normal * m_radius;
+
     const float wheelCenterDistance =
-        result.distance - m_radius;
+        (wheelCenter - worldMount).Dot(down);
 
     m_suspensionLength =
         suspension.ClampLength(
@@ -192,8 +196,7 @@ void Wheel::Update(
     m_contactNormal = result.normal;
 
     m_worldPosition =
-        worldMount +
-        down * m_suspensionLength;
+        wheelCenter;
 
 }
 
