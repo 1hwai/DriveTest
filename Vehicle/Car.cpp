@@ -116,6 +116,7 @@ void Car::UpdatePhysics(
         float wheelEnergy = 0.0f;
         float suspensionEnergy = 0.0f;
         float suspensionPower = 0.0f;
+        float suspensionResidual = 0.0f;
 
         for (size_t i = 0; i < WheelCount; ++i) {
             const float wheelVelocity =
@@ -138,6 +139,9 @@ void Car::UpdatePhysics(
 
             suspensionPower +=
                 m_wheels[i].GetSuspensionPower();
+
+            suspensionResidual +=
+                m_wheels[i].GetSuspensionResidual();
         }
 
         const float totalEnergy =
@@ -161,7 +165,8 @@ void Car::UpdatePhysics(
             << " angular=" << angularEnergy
             << " wheels=" << wheelEnergy
             << " suspension=" << suspensionEnergy
-            << " suspensionPower=" << suspensionPower;
+            << " suspensionPower=" << suspensionPower
+            << " suspensionResidual=" << suspensionResidual;
 
         Logger::Debug(log.str());
 
