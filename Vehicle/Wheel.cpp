@@ -155,10 +155,20 @@ void Wheel::Update(
             projectedVelocity *
             inverseContactDotSuspension;
 
+        const float springForce =
+            suspension.GetSpringRate() *
+            m_compression *
+            inverseContactDotSuspension;
+
+        const float damperForce =
+            suspension.GetDamperRate() *
+            compressionVelocity *
+            inverseContactDotSuspension;
+
         m_force =
-            suspension.CalculateForce(
-                m_compression,
-                compressionVelocity
+            std::max(
+                0.0f,
+                springForce + damperForce
             );
 
         const Vec3 suspensionForce =
