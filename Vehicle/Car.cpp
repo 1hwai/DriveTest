@@ -81,26 +81,6 @@ void Car::UpdatePhysics(
             deltaTime
         );
 
-        const Vec3 tireForce =
-            m_tires[i].CalculateForce(
-                *m_chassis,
-                m_wheels[i],
-                deltaTime
-            );
-
-        if (tireForce.LengthSquared() >
-            0.000001f) {
-            m_chassis->AddForceAtPoint(
-                tireForce,
-                m_wheels[i].GetContactPoint()
-            );
-
-            m_wheels[i].ApplyTireForce(
-                *m_chassis,
-                tireForce
-            );
-        }
-
         m_wheels[i].IntegrateRotation(
             deltaTime
         );
