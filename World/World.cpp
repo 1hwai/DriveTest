@@ -47,6 +47,11 @@ bool World::Initialize(
             1337
         );
 
+        m_terrain->GenerateSineWave(
+            2.0f,
+            3.14159265f * 0.25f
+        );
+
     if (!meshManager.CreateTerrain(
         "terrain",
         *m_terrain
