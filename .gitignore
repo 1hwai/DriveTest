@@ -1,7 +1,14 @@
 .vs/
+
 out/
+
 vcpkg_installed/
+
 External.zip
+
 *.user
+
 *.suo
-Logs/
+
+Logs/*
+!Logs/latest.log
