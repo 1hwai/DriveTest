@@ -76,7 +76,7 @@ private:
     bool RaycastPlane(
         const Ray& ray,
         const Collider& collider,
-        const RigidBody& body,
+        const RigidBody* body,
         float maxDistance,
         RaycastResult& result
     ) const;
@@ -84,7 +84,7 @@ private:
     bool RaycastTerrain(
         const Ray& ray,
         const Collider& collider,
-        const RigidBody& body,
+        const RigidBody* body,
         float maxDistance,
         RaycastResult& result
     ) const;
