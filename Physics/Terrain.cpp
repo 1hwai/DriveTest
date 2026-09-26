@@ -149,22 +149,62 @@ float Terrain::GetHeight(float x, float z) const {
 }
 
 Vec3 Terrain::GetNormal(float x, float z) const {
-    const float cellSize = m_size / static_cast<float>(m_resolution - 1);
-    const float center = GetHeight(x, z);
-    const float left = GetHeight(x - cellSize, z);
-    const float right = GetHeight(x + cellSize, z);
-    const float down = GetHeight(x, z - cellSize);
-    const float up = GetHeight(x, z + cellSize);
+    const float halfSize = m_size * 0.5f;
+
+    if (x < -halfSize || x > halfSize ||
+        z < -halfSize || z > halfSize) {
+        return Vec3(0.0f, 1.0f, 0.0f);
+    }
+
+    const float cellSize =
+        m_size / static_cast<float>(m_resolution - 1);
+
+    const float gridX =
+        (x + halfSize) / cellSize;
+
+    const float gridZ =
+        (z + halfSize) / cellSize;
+
+    const int x0 =
+        std::min(
+            m_resolution - 2,
+            static_cast<int>(std::floor(gridX))
+        );
+
+    const int z0 =
+        std::min(
+            m_resolution - 2,
+            static_cast<int>(std::floor(gridZ))
+        );
+
+    const float tx =
+        gridX - static_cast<float>(x0);
+
+    const float tz =
+        gridZ - static_cast<float>(z0);
+
+    const auto HeightAt = [this](int ix, int iz) {
+        return m_heights[
+            static_cast<size_t>(iz) * m_resolution + ix
+        ];
+    };
+
+    const float h00 = HeightAt(x0, z0);
+    const float h10 = HeightAt(x0 + 1, z0);
+    const float h01 = HeightAt(x0, z0 + 1);
+    const float h11 = HeightAt(x0 + 1, z0 + 1);
 
     const float dx =
-        std::isfinite(left) && std::isfinite(right)
-        ? (right - left) / (2.0f * cellSize)
-        : 0.0f;
+        (
+            (h10 - h00) * (1.0f - tz) +
+            (h11 - h01) * tz
+        ) / cellSize;
 
     const float dz =
-        std::isfinite(down) && std::isfinite(up)
-        ? (up - down) / (2.0f * cellSize)
-        : 0.0f;
+        (
+            (h01 - h00) * (1.0f - tx) +
+            (h11 - h10) * tx
+        ) / cellSize;
 
     return Vec3(-dx, 1.0f, -dz).Normalized();
 }
