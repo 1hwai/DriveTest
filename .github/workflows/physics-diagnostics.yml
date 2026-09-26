@@ -43,7 +43,7 @@ jobs:
 
       - name: Run physics diagnostics
         working-directory: build
-        run: ./DriveTestPhysicsDiagnostics | tee physics-diagnostics.log
+        run: ./DriveTestPhysicsDiagnostics | tee run.log
 
       - name: Upload physics logs
         if: always()
@@ -53,6 +53,6 @@ jobs:
           path: |
             configure.log
             build.log
-            build/physics-diagnostics.log
+            build/run.log
             build/Logs/physics_diagnostics.log
           if-no-files-found: warn
