@@ -6,6 +6,7 @@
 
 class Contact;
 class RigidBody;
+class Terrain;
 
 class Collision {
 public:
@@ -58,6 +59,26 @@ public:
         RigidBody* boxBody,
         float planeHeight,
         RigidBody* planeBody,
+        bool boxIsBodyA,
+        Contact& contact
+    );
+
+    static bool CheckSphereTerrain(
+        const Transform& sphereTransform,
+        float sphereRadius,
+        RigidBody* sphereBody,
+        const Terrain& terrain,
+        RigidBody* terrainBody,
+        bool sphereIsBodyA,
+        Contact& contact
+    );
+
+    static bool CheckBoxTerrain(
+        const Transform& boxTransform,
+        const Vec3& halfExtents,
+        RigidBody* boxBody,
+        const Terrain& terrain,
+        RigidBody* terrainBody,
         bool boxIsBodyA,
         Contact& contact
     );
