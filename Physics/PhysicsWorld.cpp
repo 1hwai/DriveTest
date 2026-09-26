@@ -125,8 +125,7 @@ void PhysicsWorld::Step(float deltaTime) {
         Collider* colliderA =
             m_colliders[i].get();
 
-        if (colliderA->GetShape() == ColliderShape::Plane ||
-            colliderA->GetShape() == ColliderShape::Terrain) {
+        if (colliderA->GetShape() == ColliderShape::Terrain) {
             continue;
         }
 
@@ -143,8 +142,7 @@ void PhysicsWorld::Step(float deltaTime) {
             Collider* colliderB =
                 m_colliders[j].get();
 
-            if (colliderB->GetShape() == ColliderShape::Plane ||
-                colliderB->GetShape() == ColliderShape::Terrain) {
+            if (colliderB->GetShape() == ColliderShape::Terrain) {
                 continue;
             }
 
@@ -226,8 +224,9 @@ void PhysicsWorld::Step(float deltaTime) {
                         contact
                     );
             }
-            else if (shapeA == ColliderShape::Sphere) {
-                // A = sphere, B = box
+            else if (shapeA == ColliderShape::Sphere &&
+                shapeB == ColliderShape::Box) {
+
                 collided =
                     Collision::CheckSphereBox(
                         transformA,
@@ -240,8 +239,9 @@ void PhysicsWorld::Step(float deltaTime) {
                         contact
                     );
             }
-            else {
-                // A = box, B = sphere
+            else if (shapeA == ColliderShape::Box &&
+                shapeB == ColliderShape::Sphere) {
+
                 collided =
                     Collision::CheckSphereBox(
                         transformB,
@@ -249,6 +249,62 @@ void PhysicsWorld::Step(float deltaTime) {
                         bodyB,
                         transformA,
                         colliderA->GetHalfExtents(),
+                        bodyA,
+                        false,
+                        contact
+                    );
+            }
+            else if (shapeA == ColliderShape::Sphere &&
+                shapeB == ColliderShape::Plane) {
+
+                collided =
+                    Collision::CheckSpherePlane(
+                        transformA,
+                        colliderA->GetRadius(),
+                        bodyA,
+                        colliderB->GetPlaneHeight(),
+                        bodyB,
+                        true,
+                        contact
+                    );
+            }
+            else if (shapeA == ColliderShape::Plane &&
+                shapeB == ColliderShape::Sphere) {
+
+                collided =
+                    Collision::CheckSpherePlane(
+                        transformB,
+                        colliderB->GetRadius(),
+                        bodyB,
+                        colliderA->GetPlaneHeight(),
+                        bodyA,
+                        false,
+                        contact
+                    );
+            }
+            else if (shapeA == ColliderShape::Box &&
+                shapeB == ColliderShape::Plane) {
+
+                collided =
+                    Collision::CheckBoxPlane(
+                        transformA,
+                        colliderA->GetHalfExtents(),
+                        bodyA,
+                        colliderB->GetPlaneHeight(),
+                        bodyB,
+                        true,
+                        contact
+                    );
+            }
+            else if (shapeA == ColliderShape::Plane &&
+                shapeB == ColliderShape::Box) {
+
+                collided =
+                    Collision::CheckBoxPlane(
+                        transformB,
+                        colliderB->GetHalfExtents(),
+                        bodyB,
+                        colliderA->GetPlaneHeight(),
                         bodyA,
                         false,
                         contact
