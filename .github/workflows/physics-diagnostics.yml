@@ -43,7 +43,10 @@ jobs:
 
       - name: Run physics diagnostics
         working-directory: build
-        run: ./DriveTestPhysicsDiagnostics | tee run.log
+        run: |
+          ./DriveTestPhysicsDiagnostics > run.log 2>&1
+          cat run.log
+          test -s run.log
 
       - name: Upload physics logs
         if: always()
