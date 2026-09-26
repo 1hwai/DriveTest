@@ -2,6 +2,7 @@
 
 #include "Contact.h"
 #include "RigidBody.h"
+#include "Terrain.h"
 #include "../Core/Debug/Logger.h"
 
 #include <cmath>
@@ -1192,6 +1193,279 @@ bool Collision::CheckBoxPlane(
                 if (contact.GetPointCount() >= Contact::MaxPoints)
                     return true;
             }
+        }
+    }
+
+    return contact.GetPointCount() > 0;
+}
+
+
+bool Collision::CheckSphereTerrain(
+    const Transform& sphereTransform,
+    float sphereRadius,
+    RigidBody* sphereBody,
+    const Terrain& terrain,
+    RigidBody* terrainBody,
+    bool sphereIsBodyA,
+    Contact& contact
+) {
+    const Vec3 center =
+        sphereTransform.position;
+
+    const float height =
+        terrain.GetHeight(
+            center.x,
+            center.z
+        );
+
+    if (!std::isfinite(height))
+        return false;
+
+    const float penetration =
+        height +
+        sphereRadius -
+        center.y;
+
+    if (penetration <= Epsilon)
+        return false;
+
+    const Vec3 normal =
+        terrain.GetNormal(
+            center.x,
+            center.z
+        );
+
+    const Vec3 terrainPoint(
+        center.x,
+        height,
+        center.z
+    );
+
+    const Vec3 spherePoint =
+        center -
+        normal * sphereRadius;
+
+    contact.ClearPoints();
+
+    if (sphereIsBodyA) {
+        contact.SetBodies(
+            sphereBody,
+            terrainBody
+        );
+        contact.SetNormal(
+            -normal
+        );
+        contact.AddPoint(
+            spherePoint,
+            terrainPoint,
+            penetration
+        );
+    }
+    else {
+        contact.SetBodies(
+            terrainBody,
+            sphereBody
+        );
+        contact.SetNormal(
+            normal
+        );
+        contact.AddPoint(
+            terrainPoint,
+            spherePoint,
+            penetration
+        );
+    }
+
+    return true;
+}
+
+bool Collision::CheckBoxTerrain(
+    const Transform& boxTransform,
+    const Vec3& halfExtents,
+    RigidBody* boxBody,
+    const Terrain& terrain,
+    RigidBody* terrainBody,
+    bool boxIsBodyA,
+    Contact& contact
+) {
+    const Mat3 rotation =
+        boxTransform.rotation.ToMat3();
+
+    const Vec3 axes[3] = {
+        Vec3(
+            rotation.m[0][0],
+            rotation.m[1][0],
+            rotation.m[2][0]
+        ).Normalized(),
+
+        Vec3(
+            rotation.m[0][1],
+            rotation.m[1][1],
+            rotation.m[2][1]
+        ).Normalized(),
+
+        Vec3(
+            rotation.m[0][2],
+            rotation.m[1][2],
+            rotation.m[2][2]
+        ).Normalized()
+    };
+
+    struct Candidate {
+        Vec3 boxPoint;
+        Vec3 terrainPoint;
+        Vec3 normal;
+        float penetration;
+    };
+
+    Candidate candidates[8];
+    int candidateCount = 0;
+    Vec3 normalSum(0.0f, 0.0f, 0.0f);
+
+    for (int xSign = -1; xSign <= 1; xSign += 2) {
+        for (int ySign = -1; ySign <= 1; ySign += 2) {
+            for (int zSign = -1; zSign <= 1; zSign += 2) {
+                const Vec3 vertex =
+                    boxTransform.position +
+                    axes[0] * (
+                        halfExtents.x *
+                        static_cast<float>(xSign)
+                    ) +
+                    axes[1] * (
+                        halfExtents.y *
+                        static_cast<float>(ySign)
+                    ) +
+                    axes[2] * (
+                        halfExtents.z *
+                        static_cast<float>(zSign)
+                    );
+
+                const float height =
+                    terrain.GetHeight(
+                        vertex.x,
+                        vertex.z
+                    );
+
+                if (!std::isfinite(height))
+                    continue;
+
+                const float penetration =
+                    height -
+                    vertex.y;
+
+                if (penetration <= Epsilon)
+                    continue;
+
+                const Vec3 normal =
+                    terrain.GetNormal(
+                        vertex.x,
+                        vertex.z
+                    );
+
+                if (candidateCount < 8) {
+                    candidates[candidateCount++] = {
+                        vertex,
+                        Vec3(
+                            vertex.x,
+                            height,
+                            vertex.z
+                        ),
+                        normal,
+                        penetration
+                    };
+                }
+
+                normalSum += normal;
+            }
+        }
+    }
+
+    if (candidateCount == 0)
+        return false;
+
+    const Vec3 terrainNormal =
+        normalSum.Normalized();
+
+    contact.ClearPoints();
+
+    if (boxIsBodyA) {
+        contact.SetBodies(
+            boxBody,
+            terrainBody
+        );
+        contact.SetNormal(
+            -terrainNormal
+        );
+    }
+    else {
+        contact.SetBodies(
+            terrainBody,
+            boxBody
+        );
+        contact.SetNormal(
+            terrainNormal
+        );
+    }
+
+    // Keep the deepest four points. The terrain normal is shared by
+    // the contact so the solver has one consistent constraint direction.
+    int selected[Contact::MaxPoints] = {
+        -1,
+        -1,
+        -1,
+        -1
+    };
+
+    for (int slot = 0; slot < Contact::MaxPoints; ++slot) {
+        int best = -1;
+        float bestPenetration = -INFINITY;
+
+        for (int i = 0; i < candidateCount; ++i) {
+            bool alreadySelected = false;
+
+            for (int j = 0; j < slot; ++j) {
+                if (selected[j] == i) {
+                    alreadySelected = true;
+                    break;
+                }
+            }
+
+            if (alreadySelected)
+                continue;
+
+            if (candidates[i].penetration > bestPenetration) {
+                bestPenetration =
+                    candidates[i].penetration;
+                best = i;
+            }
+        }
+
+        if (best < 0)
+            break;
+
+        selected[slot] = best;
+    }
+
+    for (int i = 0; i < Contact::MaxPoints; ++i) {
+        if (selected[i] < 0)
+            continue;
+
+        const Candidate& candidate =
+            candidates[selected[i]];
+
+        if (boxIsBodyA) {
+            contact.AddPoint(
+                candidate.boxPoint,
+                candidate.terrainPoint,
+                candidate.penetration
+            );
+        }
+        else {
+            contact.AddPoint(
+                candidate.terrainPoint,
+                candidate.boxPoint,
+                candidate.penetration
+            );
         }
     }
 
