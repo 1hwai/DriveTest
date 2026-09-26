@@ -81,16 +81,23 @@ int main() {
         Vec3(0.0f, 5.0f, 0.0f)
     );
 
-    Collider* chassisCollider =
-        physicsWorld.CreateCollider();
+    // The gravity-well test isolates suspension forces from chassis-terrain
+    // contact resolution. Chassis collision is tested separately by the
+    // rigid-body terrain diagnostics.
+    constexpr bool EnableChassisTerrainCollision = false;
 
-    chassisCollider->SetShape(
-        ColliderShape::Box
-    );
-    chassisCollider->SetHalfExtents(
-        Vec3(1.0f, 0.5f, 1.5f)
-    );
-    chassisCollider->SetRigidBody(chassis);
+    if (EnableChassisTerrainCollision) {
+        Collider* chassisCollider =
+            physicsWorld.CreateCollider();
+
+        chassisCollider->SetShape(
+            ColliderShape::Box
+        );
+        chassisCollider->SetHalfExtents(
+            Vec3(1.0f, 0.5f, 1.5f)
+        );
+        chassisCollider->SetRigidBody(chassis);
+    }
 
     Car car;
     car.SetChassis(chassis);
