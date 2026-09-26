@@ -1033,3 +1033,167 @@ bool Collision::CheckSphereBox(
 
     return true;
 }
+
+
+bool Collision::CheckSpherePlane(
+    const Transform& sphereTransform,
+    float sphereRadius,
+    RigidBody* sphereBody,
+    float planeHeight,
+    RigidBody* planeBody,
+    bool sphereIsBodyA,
+    Contact& contact
+) {
+    const float bottom =
+        sphereTransform.position.y -
+        sphereRadius;
+
+    const float penetration =
+        planeHeight - bottom;
+
+    if (penetration <= Epsilon)
+        return false;
+
+    const Vec3 pointOnSphere(
+        sphereTransform.position.x,
+        bottom,
+        sphereTransform.position.z
+    );
+
+    const Vec3 pointOnPlane(
+        pointOnSphere.x,
+        planeHeight,
+        pointOnSphere.z
+    );
+
+    contact.ClearPoints();
+
+    if (sphereIsBodyA) {
+        contact.SetBodies(
+            sphereBody,
+            planeBody
+        );
+        contact.SetNormal(
+            Vec3(0.0f, -1.0f, 0.0f)
+        );
+        contact.AddPoint(
+            pointOnSphere,
+            pointOnPlane,
+            penetration
+        );
+    }
+    else {
+        contact.SetBodies(
+            planeBody,
+            sphereBody
+        );
+        contact.SetNormal(
+            Vec3(0.0f, 1.0f, 0.0f)
+        );
+        contact.AddPoint(
+            pointOnPlane,
+            pointOnSphere,
+            penetration
+        );
+    }
+
+    return true;
+}
+
+bool Collision::CheckBoxPlane(
+    const Transform& boxTransform,
+    const Vec3& halfExtents,
+    RigidBody* boxBody,
+    float planeHeight,
+    RigidBody* planeBody,
+    bool boxIsBodyA,
+    Contact& contact
+) {
+    const Mat3 rotation =
+        boxTransform.rotation.ToMat3();
+
+    const Vec3 axes[3] = {
+        Vec3(
+            rotation.m[0][0],
+            rotation.m[1][0],
+            rotation.m[2][0]
+        ).Normalized(),
+
+        Vec3(
+            rotation.m[0][1],
+            rotation.m[1][1],
+            rotation.m[2][1]
+        ).Normalized(),
+
+        Vec3(
+            rotation.m[0][2],
+            rotation.m[1][2],
+            rotation.m[2][2]
+        ).Normalized()
+    };
+
+    contact.ClearPoints();
+
+    if (boxIsBodyA) {
+        contact.SetBodies(
+            boxBody,
+            planeBody
+        );
+        contact.SetNormal(
+            Vec3(0.0f, -1.0f, 0.0f)
+        );
+    }
+    else {
+        contact.SetBodies(
+            planeBody,
+            boxBody
+        );
+        contact.SetNormal(
+            Vec3(0.0f, 1.0f, 0.0f)
+        );
+    }
+
+    for (int xSign = -1; xSign <= 1; xSign += 2) {
+        for (int ySign = -1; ySign <= 1; ySign += 2) {
+            for (int zSign = -1; zSign <= 1; zSign += 2) {
+                const Vec3 vertex =
+                    boxTransform.position +
+                    axes[0] * (halfExtents.x * static_cast<float>(xSign)) +
+                    axes[1] * (halfExtents.y * static_cast<float>(ySign)) +
+                    axes[2] * (halfExtents.z * static_cast<float>(zSign));
+
+                const float penetration =
+                    planeHeight - vertex.y;
+
+                if (penetration <= Epsilon)
+                    continue;
+
+                const Vec3 planePoint(
+                    vertex.x,
+                    planeHeight,
+                    vertex.z
+                );
+
+                if (boxIsBodyA) {
+                    contact.AddPoint(
+                        vertex,
+                        planePoint,
+                        penetration
+                    );
+                }
+                else {
+                    contact.AddPoint(
+                        planePoint,
+                        vertex,
+                        penetration
+                    );
+                }
+
+                if (contact.GetPointCount() >= Contact::MaxPoints)
+                    return true;
+            }
+        }
+    }
+
+    return contact.GetPointCount() > 0;
+}
