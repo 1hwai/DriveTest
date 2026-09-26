@@ -45,8 +45,8 @@ jobs:
         working-directory: build
         run: |
           ./DriveTestPhysicsDiagnostics > run.log 2>&1
-          cat run.log
-          test -s run.log
+          cat Logs/physics_diagnostics.log
+          test -s Logs/physics_diagnostics.log
 
       - name: Upload physics logs
         if: always()
