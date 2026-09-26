@@ -1,0 +1,45 @@
+name: Physics Diagnostics
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  physics:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Configure
+        run: >
+          cmake
+          -S .
+          -B build
+          -G Ninja
+          -DCMAKE_BUILD_TYPE=Debug
+          -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
+          -DDRIVETEST_BUILD_PHYSICS_DIAGNOSTICS=ON
+
+      - name: Build physics diagnostics
+        run: cmake --build build --target DriveTestPhysicsDiagnostics -j2
+
+      - name: Run physics diagnostics
+        working-directory: build
+        run: ./DriveTestPhysicsDiagnostics | tee physics-diagnostics.log
+
+      - name: Upload physics logs
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: physics-diagnostics
+          path: |
+            build/physics-diagnostics.log
+            build/Logs/physics_diagnostics.log
+          if-no-files-found: warn
