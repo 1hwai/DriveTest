@@ -125,9 +125,8 @@ void PhysicsWorld::Step(float deltaTime) {
         Collider* colliderA =
             m_colliders[i].get();
 
-        if (colliderA->GetShape() == ColliderShape::Terrain) {
+        if (!colliderA->GetRigidBody())
             continue;
-        }
 
         RigidBody* bodyA =
             colliderA->GetRigidBody();
@@ -142,9 +141,8 @@ void PhysicsWorld::Step(float deltaTime) {
             Collider* colliderB =
                 m_colliders[j].get();
 
-            if (colliderB->GetShape() == ColliderShape::Terrain) {
+            if (!colliderB->GetRigidBody())
                 continue;
-            }
 
             RigidBody* bodyB =
                 colliderB->GetRigidBody();
@@ -309,6 +307,82 @@ void PhysicsWorld::Step(float deltaTime) {
                         false,
                         contact
                     );
+            }
+            else if (shapeA == ColliderShape::Sphere &&
+                shapeB == ColliderShape::Terrain) {
+
+                const Terrain* terrain =
+                    colliderB->GetTerrain();
+
+                if (terrain) {
+                    collided =
+                        Collision::CheckSphereTerrain(
+                            transformA,
+                            colliderA->GetRadius(),
+                            bodyA,
+                            *terrain,
+                            bodyB,
+                            true,
+                            contact
+                        );
+                }
+            }
+            else if (shapeA == ColliderShape::Terrain &&
+                shapeB == ColliderShape::Sphere) {
+
+                const Terrain* terrain =
+                    colliderA->GetTerrain();
+
+                if (terrain) {
+                    collided =
+                        Collision::CheckSphereTerrain(
+                            transformB,
+                            colliderB->GetRadius(),
+                            bodyB,
+                            *terrain,
+                            bodyA,
+                            false,
+                            contact
+                        );
+                }
+            }
+            else if (shapeA == ColliderShape::Box &&
+                shapeB == ColliderShape::Terrain) {
+
+                const Terrain* terrain =
+                    colliderB->GetTerrain();
+
+                if (terrain) {
+                    collided =
+                        Collision::CheckBoxTerrain(
+                            transformA,
+                            colliderA->GetHalfExtents(),
+                            bodyA,
+                            *terrain,
+                            bodyB,
+                            true,
+                            contact
+                        );
+                }
+            }
+            else if (shapeA == ColliderShape::Terrain &&
+                shapeB == ColliderShape::Box) {
+
+                const Terrain* terrain =
+                    colliderA->GetTerrain();
+
+                if (terrain) {
+                    collided =
+                        Collision::CheckBoxTerrain(
+                            transformB,
+                            colliderB->GetHalfExtents(),
+                            bodyB,
+                            *terrain,
+                            bodyA,
+                            false,
+                            contact
+                        );
+                }
             }
 
             if (!collided)
