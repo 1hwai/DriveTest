@@ -116,9 +116,16 @@ int main() {
         Vec3(0.9f, -0.2f, -1.1f)
     );
 
+    constexpr float MaxWellAbsZ = 2.2f;
+    constexpr float EnergyTolerance = 1.0f;
+
     float maxAbsZ = 0.0f;
     float minY = chassis->GetPosition().y;
     float maxEnergy = 0.0f;
+    const float initialEnergy =
+        chassis->GetMass() *
+        9.81f *
+        chassis->GetPosition().y;
 
     Logger::Info("[PhysicsDiagnostics] sine terrain suspension test");
 
@@ -266,6 +273,29 @@ int main() {
         << chassis->GetPosition().z;
 
     Logger::Info(summary.str());
+
+    if (maxAbsZ > MaxWellAbsZ) {
+        Logger::Error(
+            "[FAIL] Gravity well escape: maxAbsZ=" +
+            std::to_string(maxAbsZ)
+        );
+
+        Logger::Shutdown();
+        return 1;
+    }
+
+    if (maxEnergy > initialEnergy + EnergyTolerance) {
+        Logger::Error(
+            "[FAIL] Mechanical energy increased above initial energy"
+        );
+
+        Logger::Shutdown();
+        return 1;
+    }
+
+    Logger::Info(
+        "[PASS] Gravity well remained bounded and energy did not increase"
+    );
 
     Logger::Shutdown();
 
