@@ -30,17 +30,19 @@ jobs:
       - name: Configure
         run: |
           set -o pipefail
-          cmake
-          -S .
-          -B build
-          -G Ninja
-          -DCMAKE_BUILD_TYPE=Debug
-          -DCMAKE_TOOLCHAIN_FILE=$RUNNER_TEMP/vcpkg/scripts/buildsystems/vcpkg.cmake
-          -DDRIVETEST_BUILD_PHYSICS_DIAGNOSTICS=ON
-          2>&1 | tee configure.log
+          cmake \
+            -S . \
+            -B build \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_TOOLCHAIN_FILE=$RUNNER_TEMP/vcpkg/scripts/buildsystems/vcpkg.cmake \
+            -DDRIVETEST_BUILD_PHYSICS_DIAGNOSTICS=ON \
+            2>&1 | tee configure.log
 
       - name: Build physics diagnostics
-        run: cmake --build build --target DriveTestPhysicsDiagnostics -j2 2>&1 | tee build.log
+        run: |
+          set -o pipefail
+          cmake --build build --target DriveTestPhysicsDiagnostics -j2 2>&1 | tee build.log
 
       - name: Run physics diagnostics
         working-directory: build
