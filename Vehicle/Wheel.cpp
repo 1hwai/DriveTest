@@ -152,7 +152,7 @@ void Wheel::Update(
             result.normal.Dot(contactVelocity);
 
         const float compressionVelocity =
-            projectedVelocity *
+            -projectedVelocity *
             inverseContactDotSuspension;
 
         const float springForce =
