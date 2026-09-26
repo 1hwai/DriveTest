@@ -17,6 +17,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Install vcpkg
+        run: |
+          git clone --depth 1 https://github.com/microsoft/vcpkg.git "$RUNNER_TEMP/vcpkg"
+          "$RUNNER_TEMP/vcpkg/bootstrap-vcpkg.sh"
+
       - name: Configure
         run: >
           cmake
@@ -24,7 +29,7 @@ jobs:
           -B build
           -G Ninja
           -DCMAKE_BUILD_TYPE=Debug
-          -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
+          -DCMAKE_TOOLCHAIN_FILE=$RUNNER_TEMP/vcpkg/scripts/buildsystems/vcpkg.cmake
           -DDRIVETEST_BUILD_PHYSICS_DIAGNOSTICS=ON
 
       - name: Build physics diagnostics
