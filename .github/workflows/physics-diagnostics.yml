@@ -31,6 +31,7 @@ jobs:
           -DCMAKE_BUILD_TYPE=Debug
           -DCMAKE_TOOLCHAIN_FILE=$RUNNER_TEMP/vcpkg/scripts/buildsystems/vcpkg.cmake
           -DDRIVETEST_BUILD_PHYSICS_DIAGNOSTICS=ON
+          2>&1 | tee configure.log
 
       - name: Build physics diagnostics
         run: cmake --build build --target DriveTestPhysicsDiagnostics -j2
@@ -45,6 +46,7 @@ jobs:
         with:
           name: physics-diagnostics
           path: |
+            configure.log
             build/physics-diagnostics.log
             build/Logs/physics_diagnostics.log
           if-no-files-found: warn
