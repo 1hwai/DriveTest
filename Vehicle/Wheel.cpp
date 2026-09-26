@@ -145,15 +145,23 @@ void Wheel::Update(
         const float inverseContactDotSuspension =
             -1.0f / denominator;
 
-        const Vec3 contactVelocity =
-            body.GetPointVelocity(result.point);
+        const Vec3 mountVelocity =
+            body.GetPointVelocity(worldMount);
+
+        const Vec3 suspensionDirectionVelocity =
+            body.GetAngularVelocity().Cross(down);
+
+        const Vec3 rayPointVelocity =
+            mountVelocity +
+            suspensionDirectionVelocity *
+            result.distance;
 
         const float projectedVelocity =
-            result.normal.Dot(contactVelocity);
+            result.normal.Dot(rayPointVelocity);
 
         const float compressionVelocity =
-            -projectedVelocity *
-            inverseContactDotSuspension;
+            projectedVelocity /
+            denominator;
 
         const float springForce =
             suspension.GetSpringRate() *
@@ -189,7 +197,7 @@ void Wheel::Update(
 
         m_suspensionPower =
             suspensionForce.Dot(
-                body.GetPointVelocity(worldMount)
+                body.GetPointVelocity(result.point)
             );
 
         m_suspensionResidual =
@@ -199,7 +207,7 @@ void Wheel::Update(
 
         body.AddForceAtPoint(
             suspensionForce,
-            worldMount
+            result.point
         );
     }
 
