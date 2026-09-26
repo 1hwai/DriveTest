@@ -42,6 +42,26 @@ public:
         Contact& contact
     );
 
+    static bool CheckSpherePlane(
+        const Transform& sphereTransform,
+        float sphereRadius,
+        RigidBody* sphereBody,
+        float planeHeight,
+        RigidBody* planeBody,
+        bool sphereIsBodyA,
+        Contact& contact
+    );
+
+    static bool CheckBoxPlane(
+        const Transform& boxTransform,
+        const Vec3& halfExtents,
+        RigidBody* boxBody,
+        float planeHeight,
+        RigidBody* planeBody,
+        bool boxIsBodyA,
+        Contact& contact
+    );
+
 private:
     struct BoxAxes {
         Vec3 axes[3];
