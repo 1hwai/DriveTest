@@ -14,7 +14,7 @@
 
 namespace {
     constexpr float FixedDeltaTime = 1.0f / 120.0f;
-    constexpr int SimulationSteps = 120 * 20;
+    constexpr int SimulationSteps = 120 * 40;
 
     void ConfigureWheel(
         Car& car,
