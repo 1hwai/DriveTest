@@ -15,6 +15,9 @@ bool Application::Initialize() {
     if (!m_meshManager.CreateCube("cube"))
         return false;
 
+    if (!m_meshManager.CreateSphere("sphere"))
+        return false;
+
     if (!m_world.Initialize(
         m_meshManager,
         m_physicsWorld
