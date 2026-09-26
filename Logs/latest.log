@@ -5,333 +5,308 @@
 [DEBUG] [Energy] x=0.000 y=3.753 z=0.000 vx=0.000 vy=-4.905 vz=0.000 total=58619.406 potential=44184.004 linear=14435.402 angular=0.000 wheels=0.000 suspension=0.000 suspensionPower=0.000 suspensionResidual=0.000
 [DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.335767 FR=0.335767 RL=0.398755 RR=0.398755
+[DEBUG] [Suspension] FL=0.339612 FR=0.339612 RL=0.408276 RR=0.408276
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Performance] FPS=70 PhysicsHz=119
-[DEBUG] [Energy] x=0.000 y=1.023 z=-0.140 vx=0.000 vy=0.385 vz=-1.842 total=21860.066 potential=12044.053 linear=2125.223 angular=0.027 wheels=0.000 suspension=7690.764 suspensionPower=30452.439 suspensionResidual=13667.250
-[DEBUG] [Suspension] FL=0.038037 FR=0.038037 RL=0.097546 RR=0.097546
+[DEBUG] [Performance] FPS=66 PhysicsHz=120
+[DEBUG] [Energy] x=0.000 y=1.015 z=-0.138 vx=0.000 vy=0.330 vz=-1.830 total=22064.932 potential=11952.604 linear=2073.879 angular=1.636 wheels=0.000 suspension=8036.812 suspensionPower=28554.703 suspensionResidual=13145.609
+[DEBUG] [Suspension] FL=0.039502 FR=0.039502 RL=0.108716 RR=0.108716
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.126843 FR=0.126843 RL=0.210706 RR=0.210706
+[DEBUG] [Suspension] FL=0.127759 FR=0.127759 RL=0.215283 RR=0.215283
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.195 z=-1.359 vx=0.000 vy=0.195 vz=-2.321 total=19793.354 potential=14064.105 linear=3255.636 angular=508.021 wheels=0.000 suspension=1965.590 suspensionPower=-12516.680 suspensionResidual=-12453.686
-[DEBUG] [Suspension] FL=0.110364 FR=0.110364 RL=0.123914 RR=0.123914
+[DEBUG] [Energy] x=0.000 y=1.194 z=-1.369 vx=0.000 vy=0.195 vz=-2.355 total=19990.328 potential=14054.920 linear=3351.752 angular=550.583 wheels=0.000 suspension=2033.072 suspensionPower=-13120.527 suspensionResidual=-12521.877
+[DEBUG] [Suspension] FL=0.113110 FR=0.113110 RL=0.118970 RR=0.118970
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.066235 FR=0.066235 RL=0.071912 RR=0.071912
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Energy] x=0.000 y=1.353 z=-2.158 vx=0.000 vy=-0.032 vz=-0.876 total=16703.938 potential=15925.890 linear=460.635 angular=0.493 wheels=0.000 suspension=316.919 suspensionPower=-3713.928 suspensionResidual=-1692.317
-[DEBUG] [Suspension] FL=0.103955 FR=0.103955 RL=0.093518 RR=0.093518
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.087842 FR=0.087842 RL=0.098096 RR=0.098096
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.339 z=-2.179 vx=0.000 vy=-0.135 vz=0.722 total=16594.000 potential=15760.143 linear=323.629 angular=2.779 wheels=0.000 suspension=507.450 suspensionPower=1141.333 suspensionResidual=1250.134
-[DEBUG] [Suspension] FL=0.123364 FR=0.123364 RL=0.112561 RR=0.112561
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.134351 FR=0.134351 RL=0.091870 RR=0.091870
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Energy] x=0.000 y=1.276 z=-1.373 vx=0.000 vy=-0.113 vz=2.408 total=19208.623 potential=15025.592 linear=3485.752 angular=81.767 wheels=0.000 suspension=615.512 suspensionPower=8034.870 suspensionResidual=7619.044
-[DEBUG] [Suspension] FL=0.066968 FR=0.066968 RL=0.000000 RR=0.000000
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.220410 FR=0.220410 RL=0.174634 RR=0.174634
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.221 z=0.001 vx=0.000 vy=0.631 vz=2.344 total=20343.975 potential=14368.348 linear=3536.959 angular=158.574 wheels=0.000 suspension=2280.094 suspensionPower=-2141.224 suspensionResidual=-8231.863
-[DEBUG] [Suspension] FL=0.081067 FR=0.081067 RL=0.088574 RR=0.088574
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.079602 FR=0.079602 RL=0.108533 RR=0.108533
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Energy] x=0.000 y=1.379 z=0.831 vx=0.000 vy=0.127 vz=0.891 total=17365.756 potential=16232.240 linear=486.390 angular=11.052 wheels=0.000 suspension=636.072 suspensionPower=-1847.310 suspensionResidual=-1648.827
-[DEBUG] [Suspension] FL=0.095715 FR=0.095715 RL=0.111646 RR=0.111646
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.094983 FR=0.094983 RL=0.094617 RR=0.094617
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.411 z=0.919 vx=0.000 vy=-0.073 vz=-0.478 total=17255.801 potential=16604.594 linear=140.100 angular=1.300 wheels=0.000 suspension=509.806 suspensionPower=696.503 suspensionResidual=794.949
-[DEBUG] [Suspension] FL=0.095532 FR=0.095532 RL=0.078320 RR=0.078320
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.108350 FR=0.108350 RL=0.105969 RR=0.105969
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Energy] x=0.000 y=1.297 z=0.314 vx=0.000 vy=-0.219 vz=-1.986 total=18637.324 potential=15272.093 linear=2395.725 angular=0.108 wheels=0.000 suspension=969.399 suspensionPower=6076.084 suspensionResidual=4914.314
-[DEBUG] [Suspension] FL=0.098096 FR=0.098096 RL=0.142407 RR=0.142407
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.105420 RR=0.105420
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.185 z=-1.090 vx=0.000 vy=-0.568 vz=-3.158 total=23809.979 potential=13952.888 linear=6178.732 angular=2392.249 wheels=0.000 suspension=1286.111 suspensionPower=-38188.719 suspensionResidual=-20613.361
-[DEBUG] [Suspension] FL=0.185986 FR=0.185986 RL=0.228284 RR=0.228284
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.066968 FR=0.066968 RL=0.065686 RR=0.065686
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Energy] x=0.000 y=1.373 z=-2.311 vx=0.000 vy=0.155 vz=-1.709 total=18412.379 potential=16161.836 linear=1766.132 angular=16.314 wheels=0.000 suspension=468.098 suspensionPower=-4688.831 suspensionResidual=-3362.413
-[DEBUG] [Suspension] FL=0.127209 FR=0.127209 RL=0.090039 RR=0.090039
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.116223 FR=0.116223 RL=0.099744 RR=0.099744
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.468 z=-2.800 vx=0.000 vy=0.113 vz=-0.347 total=18023.027 potential=17284.805 linear=79.867 angular=2.600 wheels=0.000 suspension=655.757 suspensionPower=315.427 suspensionResidual=-500.879
-[DEBUG] [Suspension] FL=0.101941 FR=0.101941 RL=0.097180 RR=0.097180
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.088757 FR=0.088757 RL=0.091687 RR=0.091687
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Energy] x=0.000 y=1.463 z=-2.693 vx=0.000 vy=-0.134 vz=0.758 total=18032.926 potential=17227.344 linear=355.863 angular=5.043 wheels=0.000 suspension=444.676 suspensionPower=618.845 suspensionResidual=1164.153
-[DEBUG] [Suspension] FL=0.074475 FR=0.074475 RL=0.088757 RR=0.088757
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.057996 FR=0.057996 RL=0.096814 RR=0.096814
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.312 z=-1.980 vx=0.000 vy=-0.384 vz=2.121 total=18990.598 potential=15449.276 linear=2788.401 angular=7.468 wheels=0.000 suspension=745.450 suspensionPower=4279.802 suspensionResidual=4867.937
-[DEBUG] [Suspension] FL=0.148450 FR=0.148450 RL=0.145154 RR=0.145154
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.081250 FR=0.081250 RL=0.000000 RR=0.000000
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Energy] x=0.000 y=1.194 z=-0.474 vx=0.000 vy=-0.585 vz=3.413 total=25257.404 potential=14055.924 linear=7194.881 angular=2713.753 wheels=0.000 suspension=1292.846 suspensionPower=-35834.383 suspensionResidual=-18717.205
-[DEBUG] [Suspension] FL=0.237622 FR=0.237622 RL=0.180127 RR=0.180127
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.069714 FR=0.069714 RL=0.075024 RR=0.075024
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.390 z=0.873 vx=0.000 vy=0.258 vz=1.935 total=19321.625 potential=16366.365 linear=2287.007 angular=37.945 wheels=0.000 suspension=630.309 suspensionPower=-4051.080 suspensionResidual=-3753.781
-[DEBUG] [Suspension] FL=0.090955 FR=0.090955 RL=0.135449 RR=0.135449
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.106152 FR=0.106152 RL=0.125562 RR=0.125562
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Energy] x=0.000 y=1.521 z=1.518 vx=0.000 vy=0.181 vz=0.741 total=19032.072 potential=17910.252 linear=348.752 angular=8.701 wheels=0.000 suspension=764.366 suspensionPower=419.849 suspensionResidual=-1028.464
-[DEBUG] [Suspension] FL=0.106702 FR=0.106702 RL=0.113843 RR=0.113843
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.101025 FR=0.101025 RL=0.103955 RR=0.103955
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.571 z=1.678 vx=0.000 vy=0.021 vz=-0.074 total=19062.486 potential=18494.291 linear=3.572 angular=0.045 wheels=0.000 suspension=564.578 suspensionPower=379.401 suspensionResidual=104.563
-[DEBUG] [Suspension] FL=0.092786 FR=0.092786 RL=0.094617 RR=0.094617
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.084363 FR=0.084363 RL=0.084912 RR=0.084912
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Energy] x=0.000 y=1.538 z=1.432 vx=0.000 vy=-0.161 vz=-0.905 total=18991.549 potential=18101.617 linear=507.243 angular=8.512 wheels=0.000 suspension=374.177 suspensionPower=230.261 suspensionResidual=1272.274
-[DEBUG] [Suspension] FL=0.078870 FR=0.078870 RL=0.073926 RR=0.073926
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.081067 FR=0.081067 RL=0.060742 RR=0.060742
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.383 z=0.698 vx=0.000 vy=-0.480 vz=-2.037 total=19266.547 potential=16276.421 linear=2627.067 angular=33.563 wheels=0.000 suspension=329.496 suspensionPower=1529.747 suspensionResidual=3053.557
-[DEBUG] [Suspension] FL=0.101209 FR=0.101209 RL=0.071912 RR=0.071912
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.083997 FR=0.083997 RL=0.151379 RR=0.151379
+[DEBUG] [Suspension] FL=0.067334 FR=0.067334 RL=0.073926 RR=0.073926
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
 [DEBUG] [Performance] FPS=58 PhysicsHz=120
-[DEBUG] [Energy] x=0.000 y=1.234 z=-0.784 vx=0.000 vy=-0.289 vz=-3.626 total=23968.668 potential=14524.214 linear=7938.814 angular=1197.232 wheels=0.000 suspension=308.408 suspensionPower=17372.844 suspensionResidual=19613.590
-[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.194959 RR=0.194959
+[DEBUG] [Energy] x=0.000 y=1.352 z=-2.181 vx=0.000 vy=-0.023 vz=-0.896 total=16770.004 potential=15920.639 linear=481.902 angular=1.105 wheels=0.000 suspension=366.358 suspensionPower=-3784.081 suspensionResidual=-1715.111
+[DEBUG] [Suspension] FL=0.106152 FR=0.106152 RL=0.097180 RR=0.097180
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.146069 FR=0.146069 RL=0.157788 RR=0.157788
+[DEBUG] [Suspension] FL=0.089124 FR=0.089124 RL=0.100842 RR=0.100842
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.379 z=-2.382 vx=0.000 vy=0.353 vz=-2.448 total=20547.133 potential=16232.654 linear=3671.296 angular=41.303 wheels=0.000 suspension=601.881 suspensionPower=-4598.975 suspensionResidual=-4592.184
-[DEBUG] [Suspension] FL=0.137646 FR=0.137646 RL=0.077588 RR=0.077588
+[DEBUG] [Energy] x=0.000 y=1.346 z=-2.216 vx=0.000 vy=-0.123 vz=0.679 total=16660.736 potential=15843.243 linear=285.612 angular=2.481 wheels=0.000 suspension=529.399 suspensionPower=1067.305 suspensionResidual=1161.293
+[DEBUG] [Suspension] FL=0.117139 FR=0.117139 RL=0.111646 RR=0.111646
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.140027 FR=0.140027 RL=0.110730 RR=0.110730
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Energy] x=0.000 y=1.552 z=-3.289 vx=0.000 vy=0.273 vz=-1.291 total=20291.197 potential=18274.240 linear=1045.440 angular=25.321 wheels=0.000 suspension=946.197 suspensionPower=719.746 suspensionResidual=-1700.857
-[DEBUG] [Suspension] FL=0.128857 FR=0.128857 RL=0.121533 RR=0.121533
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.117139 FR=0.117139 RL=0.075574 RR=0.075574
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.617 z=-3.798 vx=0.000 vy=0.006 vz=-0.808 total=19991.389 potential=19031.174 linear=392.013 angular=23.759 wheels=0.000 suspension=544.443 suspensionPower=-360.533 suspensionResidual=-265.898
-[DEBUG] [Suspension] FL=0.112012 FR=0.112012 RL=0.075208 RR=0.075208
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.111462 FR=0.111462 RL=0.078503 RR=0.078503
+[DEBUG] [Suspension] FL=0.139478 FR=0.139478 RL=0.112744 RR=0.112744
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
 [DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Energy] x=0.000 y=1.614 z=-4.197 vx=0.000 vy=-0.012 vz=-0.850 total=20027.289 potential=19004.488 linear=433.246 angular=23.706 wheels=0.000 suspension=565.847 suspensionPower=502.040 suspensionResidual=475.671
-[DEBUG] [Suspension] FL=0.112744 FR=0.112744 RL=0.078503 RR=0.078503
+[DEBUG] [Energy] x=0.000 y=1.277 z=-1.441 vx=0.000 vy=-0.099 vz=2.363 total=19182.383 potential=15027.218 linear=3356.124 angular=47.907 wheels=0.000 suspension=751.134 suspensionPower=7980.206 suspensionResidual=6892.827
+[DEBUG] [Suspension] FL=0.072461 FR=0.072461 RL=0.000000 RR=0.000000
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.088757 FR=0.088757 RL=0.074109 RR=0.074109
+[DEBUG] [Suspension] FL=0.227002 FR=0.227002 RL=0.190747 RR=0.190747
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.566 z=-4.754 vx=0.000 vy=-0.257 vz=-1.416 total=19961.254 potential=18434.348 linear=1242.188 angular=23.405 wheels=0.000 suspension=261.315 suspensionPower=-16.381 suspensionResidual=1787.265
-[DEBUG] [Suspension] FL=0.067700 FR=0.067700 RL=0.062939 RR=0.062939
+[DEBUG] [Energy] x=0.000 y=1.192 z=-0.053 vx=0.000 vy=0.598 vz=2.415 total=20613.121 potential=14035.042 linear=3712.308 angular=197.012 wheels=0.000 suspension=2668.760 suspensionPower=-4004.111 suspensionResidual=-10439.326
+[DEBUG] [Suspension] FL=0.093518 FR=0.093518 RL=0.104871 RR=0.104871
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.075391 FR=0.075391 RL=0.051953 RR=0.051953
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Energy] x=0.000 y=1.350 z=-5.739 vx=0.000 vy=-0.588 vz=-2.553 total=20538.900 potential=15888.860 linear=4116.929 angular=39.020 wheels=0.000 suspension=494.093 suspensionPower=2506.298 suspensionResidual=4676.927
-[DEBUG] [Suspension] FL=0.107434 FR=0.107434 RL=0.087842 RR=0.087842
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.048657 FR=0.048657 RL=0.140027 RR=0.140027
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.189 z=-7.480 vx=0.000 vy=-0.369 vz=-3.878 total=27576.979 potential=13994.542 linear=9103.499 angular=2691.164 wheels=0.000 suspension=1787.773 suspensionPower=-42463.387 suspensionResidual=-24300.227
-[DEBUG] [Suspension] FL=0.070447 FR=0.070447 RL=0.242566 RR=0.242566
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.093152 FR=0.093152 RL=0.090771 RR=0.090771
+[DEBUG] [Suspension] FL=0.077954 FR=0.077954 RL=0.103040 RR=0.103040
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
 [DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Energy] x=0.000 y=1.438 z=-9.043 vx=0.000 vy=0.461 vz=-2.349 total=21483.672 potential=16933.928 linear=3437.508 angular=85.806 wheels=0.000 suspension=1026.430 suspensionPower=-1870.159 suspensionResidual=-4212.384
-[DEBUG] [Suspension] FL=0.155774 FR=0.155774 RL=0.099744 RR=0.099744
+[DEBUG] [Energy] x=0.000 y=1.373 z=0.802 vx=0.000 vy=0.107 vz=0.956 total=17352.795 potential=16168.040 linear=554.902 angular=11.488 wheels=0.000 suspension=618.365 suspensionPower=-2388.496 suspensionResidual=-1754.771
+[DEBUG] [Suspension] FL=0.099194 FR=0.099194 RL=0.113110 RR=0.113110
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.144238 FR=0.144238 RL=0.129590 RR=0.129590
+[DEBUG] [Suspension] FL=0.099194 FR=0.099194 RL=0.095898 RR=0.095898
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.128857 FR=0.128857 RL=0.062207 RR=0.062207
+[DEBUG] [Energy] x=0.000 y=1.407 z=0.916 vx=0.000 vy=-0.061 vz=-0.431 total=17219.562 potential=16564.559 linear=113.919 angular=0.977 wheels=0.000 suspension=540.107 suspensionPower=673.851 suspensionResidual=716.335
+[DEBUG] [Suspension] FL=0.099011 FR=0.099011 RL=0.079602 RR=0.079602
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.613 z=-9.994 vx=0.000 vy=0.106 vz=-1.567 total=21149.396 potential=18983.305 linear=1479.495 angular=79.334 wheels=0.000 suspension=607.263 suspensionPower=-57.350 suspensionResidual=-706.090
-[DEBUG] [Suspension] FL=0.124280 FR=0.124280 RL=0.059827 RR=0.059827
+[DEBUG] [Suspension] FL=0.109998 FR=0.109998 RL=0.103040 RR=0.103040
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Suspension] FL=0.086011 FR=0.086011 RL=0.059644 RR=0.059644
+[DEBUG] [Energy] x=0.000 y=1.298 z=0.337 vx=0.000 vy=-0.226 vz=-1.925 total=18498.324 potential=15285.798 linear=2254.245 angular=0.467 wheels=0.000 suspension=957.814 suspensionPower=5626.919 suspensionResidual=4635.590
+[DEBUG] [Performance] FPS=60 PhysicsHz=123
+[DEBUG] [Suspension] FL=0.108350 FR=0.108350 RL=0.145154 RR=0.145154
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.605 z=-10.784 vx=0.000 vy=-0.157 vz=-1.694 total=20987.619 potential=18888.385 linear=1735.528 angular=58.858 wheels=0.000 suspension=304.850 suspensionPower=438.645 suspensionResidual=1374.252
-[DEBUG] [Suspension] FL=0.063855 FR=0.063855 RL=0.048291 RR=0.048291
+[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.088025 RR=0.088025
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.089490 FR=0.089490 RL=0.037854 RR=0.037854
+[DEBUG] [Energy] x=0.000 y=1.190 z=-1.044 vx=0.000 vy=-0.596 vz=-3.159 total=23878.129 potential=14012.471 linear=6201.908 angular=2433.978 wheels=0.000 suspension=1229.772 suspensionPower=12707.324 suspensionResidual=8759.738
+[DEBUG] [Suspension] FL=0.194226 FR=0.194226 RL=0.232861 RR=0.232861
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.392 z=-11.858 vx=0.000 vy=-0.634 vz=-2.645 total=21191.178 potential=16384.443 linear=4439.238 angular=62.942 wheels=0.000 suspension=304.554 suspensionPower=1756.029 suspensionResidual=3622.873
-[DEBUG] [Suspension] FL=0.117139 FR=0.117139 RL=0.149548 RR=0.149548
+[DEBUG] [Suspension] FL=0.075940 FR=0.075940 RL=0.069165 RR=0.069165
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.185620 RR=0.185620
+[DEBUG] [Energy] x=0.000 y=1.369 z=-2.283 vx=0.000 vy=0.159 vz=-1.746 total=18412.328 potential=16110.620 linear=1843.988 angular=15.063 wheels=0.000 suspension=442.658 suspensionPower=-4679.874 suspensionResidual=-3288.659
+[DEBUG] [Suspension] FL=0.126660 FR=0.126660 RL=0.091687 RR=0.091687
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.199 z=-13.648 vx=0.000 vy=-0.466 vz=-4.095 total=28844.396 potential=14116.713 linear=10192.258 angular=2997.002 wheels=0.000 suspension=1538.424 suspensionPower=17864.439 suspensionResidual=12878.240
-[DEBUG] [Suspension] FL=0.127209 FR=0.127209 RL=0.144238 RR=0.144238
+[DEBUG] [Suspension] FL=0.116956 FR=0.116956 RL=0.104138 RR=0.104138
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.166028 FR=0.166028 RL=0.098645 RR=0.098645
+[DEBUG] [Energy] x=0.000 y=1.463 z=-2.789 vx=0.000 vy=0.118 vz=-0.374 total=18007.047 potential=17223.410 linear=92.189 angular=2.984 wheels=0.000 suspension=688.464 suspensionPower=300.576 suspensionResidual=-546.086
+[DEBUG] [Suspension] FL=0.102490 FR=0.102490 RL=0.101941 RR=0.101941
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.442 z=-15.364 vx=0.000 vy=0.540 vz=-2.642 total=22626.359 potential=16979.656 linear=4364.488 angular=107.169 wheels=0.000 suspension=1175.045 suspensionPower=-1701.578 suspensionResidual=-4794.721
-[DEBUG] [Suspension] FL=0.153760 FR=0.153760 RL=0.139294 RR=0.139294
+[DEBUG] [Suspension] FL=0.089307 FR=0.089307 RL=0.096448 RR=0.096448
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Performance] FPS=59 PhysicsHz=120
-[DEBUG] [Suspension] FL=0.134167 FR=0.134167 RL=0.048474 RR=0.048474
+[DEBUG] [Energy] x=0.000 y=1.461 z=-2.695 vx=0.000 vy=-0.126 vz=0.729 total=18008.227 potential=17201.693 linear=328.286 angular=4.680 wheels=0.000 suspension=473.569 suspensionPower=605.241 suspensionResidual=1110.395
+[DEBUG] [Suspension] FL=0.075391 FR=0.075391 RL=0.093152 RR=0.093152
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.620 z=-16.487 vx=0.000 vy=0.044 vz=-1.980 total=22151.887 potential=19075.289 linear=2352.663 angular=133.280 wheels=0.000 suspension=590.655 suspensionPower=28.555 suspensionResidual=-93.632
-[DEBUG] [Suspension] FL=0.112195 FR=0.112195 RL=0.049573 RR=0.049573
+[DEBUG] [Suspension] FL=0.059277 FR=0.059277 RL=0.099744 RR=0.099744
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.060742 FR=0.060742 RL=0.040417 RR=0.040417
+[DEBUG] [Energy] x=0.000 y=1.315 z=-2.001 vx=0.000 vy=-0.390 vz=2.074 total=18886.549 potential=15474.924 linear=2673.074 angular=9.648 wheels=0.000 suspension=728.902 suspensionPower=3848.782 suspensionResidual=4581.046
+[DEBUG] [Suspension] FL=0.148267 FR=0.148267 RL=0.143872 RR=0.143872
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.524 z=-17.563 vx=0.000 vy=-0.494 vz=-2.418 total=21832.203 potential=17944.943 linear=3654.765 angular=67.600 wheels=0.000 suspension=164.896 suspensionPower=178.486 suspensionResidual=2843.759
-[DEBUG] [Suspension] FL=0.090955 FR=0.090955 RL=0.032544 RR=0.032544
+[DEBUG] [Suspension] FL=0.095532 FR=0.095532 RL=0.000000 RR=0.000000
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Suspension] FL=0.093335 FR=0.093335 RL=0.145886 RR=0.145886
+[DEBUG] [Energy] x=0.000 y=1.198 z=-0.514 vx=0.000 vy=-0.518 vz=3.414 total=24998.395 potential=14104.481 linear=7156.012 angular=2470.024 wheels=0.000 suspension=1267.877 suspensionPower=14029.512 suspensionResidual=9987.552
+[DEBUG] [Suspension] FL=0.242566 FR=0.242566 RL=0.179578 RR=0.179578
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.261 z=-19.147 vx=0.000 vy=-0.256 vz=-3.978 total=25114.432 potential=14838.641 linear=9535.142 angular=213.218 wheels=0.000 suspension=527.432 suspensionPower=15485.565 suspensionResidual=17195.693
-[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.230481 RR=0.230481
+[DEBUG] [Suspension] FL=0.074109 FR=0.074109 RL=0.084912 RR=0.084912
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.092603 FR=0.092603 RL=0.104871 RR=0.104871
+[DEBUG] [Energy] x=0.000 y=1.386 z=0.851 vx=0.000 vy=0.260 vz=1.968 total=19337.152 potential=16310.179 linear=2364.549 angular=38.647 wheels=0.000 suspension=623.778 suspensionPower=-4130.163 suspensionResidual=-3708.774
+[DEBUG] [Suspension] FL=0.092786 FR=0.092786 RL=0.135266 RR=0.135266
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.348 z=-21.170 vx=0.000 vy=0.572 vz=-3.399 total=23917.279 potential=15867.917 linear=7128.983 angular=36.688 wheels=0.000 suspension=883.691 suspensionPower=-5498.538 suspensionResidual=-6840.255
-[DEBUG] [Suspension] FL=0.175732 FR=0.175732 RL=0.118970 RR=0.118970
+[DEBUG] [Suspension] FL=0.110730 FR=0.110730 RL=0.126294 RR=0.126294
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Suspension] FL=0.153394 FR=0.153394 RL=0.072461 RR=0.072461
+[DEBUG] [Performance] FPS=60 PhysicsHz=474
+[DEBUG] [Energy] x=0.000 y=1.517 z=1.510 vx=0.000 vy=0.185 vz=0.767 total=19041.547 potential=17855.670 linear=373.089 angular=9.379 wheels=0.000 suspension=803.408 suspensionPower=407.737 suspensionResidual=-1083.392
+[DEBUG] [Suspension] FL=0.112195 FR=0.112195 RL=0.114392 RR=0.114392
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.611 z=-22.574 vx=0.000 vy=0.199 vz=-2.393 total=23284.881 potential=18960.768 linear=3460.815 angular=177.507 wheels=0.000 suspension=685.791 suspensionPower=400.738 suspensionResidual=-769.641
-[DEBUG] [Suspension] FL=0.135999 FR=0.135999 RL=0.037488 RR=0.037488
+[DEBUG] [Suspension] FL=0.107068 FR=0.107068 RL=0.104871 RR=0.104871
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.060193 FR=0.060193 RL=0.033643 RR=0.033643
+[DEBUG] [Energy] x=0.000 y=1.569 z=1.685 vx=0.000 vy=0.027 vz=-0.041 total=19074.242 potential=18465.814 linear=1.441 angular=0.009 wheels=0.000 suspension=606.976 suspensionPower=384.923 suspensionResidual=50.233
+[DEBUG] [Suspension] FL=0.099011 FR=0.099011 RL=0.095715 RR=0.095715
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.532 z=-23.818 vx=0.000 vy=-0.535 vz=-2.693 total=22789.676 potential=18030.311 linear=4524.434 angular=89.858 wheels=0.000 suspension=145.073 suspensionPower=108.475 suspensionResidual=2881.199
-[DEBUG] [Suspension] FL=0.087476 FR=0.087476 RL=0.028516 RR=0.028516
+[DEBUG] [Suspension] FL=0.090588 FR=0.090588 RL=0.086194 RR=0.086194
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Performance] FPS=58 PhysicsHz=120
-[DEBUG] [Suspension] FL=0.096082 FR=0.096082 RL=0.142407 RR=0.142407
+[DEBUG] [Energy] x=0.000 y=1.540 z=1.461 vx=0.000 vy=-0.147 vz=-0.852 total=18995.430 potential=18129.078 linear=448.421 angular=7.647 wheels=0.000 suspension=410.285 suspensionPower=204.966 suspensionResidual=1196.711
+[DEBUG] [Suspension] FL=0.084363 FR=0.084363 RL=0.075391 RR=0.075391
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.255 z=-25.543 vx=0.000 vy=-0.284 vz=-4.246 total=26328.973 potential=14770.582 linear=10865.174 angular=350.769 wheels=0.000 suspension=342.447 suspensionPower=16591.020 suspensionResidual=20239.055
-[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.240186 RR=0.240186
+[DEBUG] [Suspension] FL=0.084546 FR=0.084546 RL=0.062756 RR=0.062756
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.112744 FR=0.112744 RL=0.099744 RR=0.099744
+[DEBUG] [Energy] x=0.000 y=1.396 z=0.762 vx=0.000 vy=-0.450 vz=-1.950 total=19205.812 potential=16429.840 linear=2402.177 angular=31.931 wheels=0.000 suspension=341.864 suspensionPower=1358.302 suspensionResidual=2896.589
+[DEBUG] [Suspension] FL=0.100293 FR=0.100293 RL=0.050122 RR=0.050122
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.375 z=-27.636 vx=0.000 vy=0.639 vz=-3.470 total=25010.432 potential=16191.204 linear=7469.281 angular=101.466 wheels=0.000 suspension=1248.483 suspensionPower=-4703.649 suspensionResidual=-7626.048
-[DEBUG] [Suspension] FL=0.183240 FR=0.183240 RL=0.133801 RR=0.133801
+[DEBUG] [Suspension] FL=0.112561 FR=0.112561 RL=0.155774 RR=0.155774
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Suspension] FL=0.151746 FR=0.151746 RL=0.043347 RR=0.043347
+[DEBUG] [Energy] x=0.000 y=1.239 z=-0.666 vx=0.000 vy=-0.182 vz=-3.588 total=23257.613 potential=14583.984 linear=7743.799 angular=700.272 wheels=0.000 suspension=229.559 suspensionPower=14901.078 suspensionResidual=17673.053
+[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.160718 RR=0.160718
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.624 z=-29.125 vx=0.000 vy=0.065 vz=-2.679 total=24288.559 potential=19113.834 linear=4309.526 angular=242.683 wheels=0.000 suspension=622.517 suspensionPower=539.356 suspensionResidual=361.986
-[DEBUG] [Suspension] FL=0.090771 FR=0.090771 RL=0.029248 RR=0.029248
+[DEBUG] [Suspension] FL=0.172986 FR=0.172986 RL=0.210522 RR=0.210522
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.066418 FR=0.066418 RL=0.024487 RR=0.024487
+[DEBUG] [Energy] x=0.000 y=1.364 z=-2.304 vx=0.000 vy=0.394 vz=-2.545 total=20621.119 potential=16062.378 linear=3979.837 angular=29.869 wheels=0.000 suspension=549.036 suspensionPower=-4262.030 suspensionResidual=-4398.593
+[DEBUG] [Suspension] FL=0.133618 FR=0.133618 RL=0.074475 RR=0.074475
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.426 z=-30.590 vx=0.000 vy=-0.765 vz=-3.285 total=24009.768 potential=16787.400 linear=6823.901 angular=117.292 wheels=0.000 suspension=281.174 suspensionPower=1655.237 suspensionResidual=3837.120
-[DEBUG] [Suspension] FL=0.146069 FR=0.146069 RL=0.119153 RR=0.119153
+[DEBUG] [Suspension] FL=0.141675 FR=0.141675 RL=0.112744 RR=0.112744
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.070630 RR=0.070630
+[DEBUG] [Energy] x=0.000 y=1.542 z=-3.253 vx=0.000 vy=0.283 vz=-1.356 total=20320.557 potential=18148.232 linear=1151.107 angular=28.440 wheels=0.000 suspension=992.777 suspensionPower=634.436 suspensionResidual=-1857.831
+[DEBUG] [Suspension] FL=0.130322 FR=0.130322 RL=0.126660 RR=0.126660
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Performance] FPS=58 PhysicsHz=120
-[DEBUG] [Energy] x=0.000 y=1.184 z=-32.691 vx=0.000 vy=-0.081 vz=-4.622 total=32220.641 potential=13942.165 linear=12819.584 angular=2862.845 wheels=0.000 suspension=2596.048 suspensionPower=-39407.035 suspensionResidual=-23325.578
-[DEBUG] [Suspension] FL=0.121716 FR=0.121716 RL=0.196057 RR=0.196057
+[DEBUG] [Suspension] FL=0.119519 FR=0.119519 RL=0.082349 RR=0.082349
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.197339 FR=0.197339 RL=0.123181 RR=0.123181
+[DEBUG] [Energy] x=0.000 y=1.614 z=-3.790 vx=0.000 vy=0.010 vz=-0.857 total=20039.787 potential=19001.760 linear=440.553 angular=26.011 wheels=0.000 suspension=571.462 suspensionPower=-362.265 suspensionResidual=-279.239
+[DEBUG] [Suspension] FL=0.114209 FR=0.114209 RL=0.077771 RR=0.077771
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.528 z=-34.640 vx=0.000 vy=0.713 vz=-3.163 total=26066.881 potential=17992.404 linear=6308.045 angular=155.352 wheels=0.000 suspension=1611.080 suspensionPower=1491.549 suspensionResidual=-3871.572
-[DEBUG] [Suspension] FL=0.163464 FR=0.163464 RL=0.052136 RR=0.052136
+[DEBUG] [Suspension] FL=0.114758 FR=0.114758 RL=0.079968 RR=0.079968
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.092603 FR=0.092603 RL=0.020825 RR=0.020825
+[DEBUG] [Performance] FPS=60 PhysicsHz=480
+[DEBUG] [Energy] x=0.000 y=1.612 z=-4.214 vx=0.000 vy=-0.014 vz=-0.902 total=20086.498 potential=18973.678 linear=488.025 angular=26.087 wheels=0.000 suspension=598.708 suspensionPower=555.312 suspensionResidual=511.754
+[DEBUG] [Suspension] FL=0.117505 FR=0.117505 RL=0.078870 RR=0.078870
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.571 z=-36.179 vx=0.000 vy=-0.512 vz=-3.118 total=24745.395 potential=18492.764 linear=5989.167 angular=150.189 wheels=0.000 suspension=113.275 suspensionPower=-304.870 suspensionResidual=2295.556
-[DEBUG] [Suspension] FL=0.069165 FR=0.069165 RL=0.018994 RR=0.018994
+[DEBUG] [Suspension] FL=0.088208 FR=0.088208 RL=0.072827 RR=0.072827
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.168408 FR=0.168408 RL=0.126294 RR=0.126294
+[DEBUG] [Energy] x=0.000 y=1.555 z=-4.802 vx=0.000 vy=-0.281 vz=-1.489 total=19977.000 potential=18301.939 linear=1377.304 angular=24.943 wheels=0.000 suspension=272.814 suspensionPower=-24.116 suspensionResidual=1939.103
+[DEBUG] [Suspension] FL=0.072278 FR=0.072278 RL=0.061292 RR=0.061292
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Performance] FPS=60 PhysicsHz=189
-[DEBUG] [Energy] x=0.000 y=1.260 z=-38.081 vx=0.000 vy=-0.382 vz=-4.570 total=28043.857 potential=14829.756 linear=12616.288 angular=321.920 wheels=0.000 suspension=275.895 suspensionPower=17360.039 suspensionResidual=20901.541
-[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.159985 RR=0.159985
+[DEBUG] [Suspension] FL=0.082166 FR=0.082166 RL=0.049939 RR=0.049939
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.075574 FR=0.075574 RL=0.133801 RR=0.133801
+[DEBUG] [Energy] x=0.000 y=1.328 z=-5.834 vx=0.000 vy=-0.542 vz=-2.688 total=20877.973 potential=15633.489 linear=4510.723 angular=21.708 wheels=0.000 suspension=712.053 suspensionPower=4326.072 suspensionResidual=5906.242
+[DEBUG] [Suspension] FL=0.120618 FR=0.120618 RL=0.112012 RR=0.112012
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.398 z=-40.348 vx=0.000 vy=0.772 vz=-3.798 total=27318.701 potential=16459.992 linear=9012.153 angular=167.345 wheels=0.000 suspension=1679.211 suspensionPower=-3785.264 suspensionResidual=-8631.593
-[DEBUG] [Suspension] FL=0.201733 FR=0.201733 RL=0.147168 RR=0.147168
+[DEBUG] [Suspension] FL=0.023755 FR=0.023755 RL=0.129041 RR=0.129041
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.154492 FR=0.154492 RL=0.021558 RR=0.021558
+[DEBUG] [Energy] x=0.000 y=1.178 z=-7.620 vx=0.000 vy=-0.032 vz=-3.813 total=26937.609 potential=13872.278 linear=8722.237 angular=1870.550 wheels=0.000 suspension=2472.545 suspensionPower=-39251.750 suspensionResidual=-25544.969
+[DEBUG] [Suspension] FL=0.135449 FR=0.135449 RL=0.260510 RR=0.260510
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.620 z=-42.060 vx=0.000 vy=-0.212 vz=-3.256 total=25909.676 potential=19071.986 linear=6388.362 angular=254.482 wheels=0.000 suspension=194.846 suspensionPower=-638.764 suspensionResidual=709.443
-[DEBUG] [Suspension] FL=0.060925 FR=0.060925 RL=0.011304 RR=0.011304
+[DEBUG] [Suspension] FL=0.112012 FR=0.112012 RL=0.077588 RR=0.077588
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.104688 FR=0.104688 RL=0.046826 RR=0.046826
+[DEBUG] [Energy] x=0.000 y=1.454 z=-9.133 vx=0.000 vy=0.459 vz=-2.272 total=21520.432 potential=17120.754 linear=3224.644 angular=85.795 wheels=0.000 suspension=1089.239 suspensionPower=-1226.076 suspensionResidual=-3856.092
+[DEBUG] [Suspension] FL=0.155591 FR=0.155591 RL=0.109998 RR=0.109998
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.305 z=-43.928 vx=0.000 vy=-0.481 vz=-4.418 total=27932.248 potential=15358.288 linear=11848.345 angular=6.449 wheels=0.000 suspension=719.166 suspensionPower=13219.375 suspensionResidual=14196.932
-[DEBUG] [Suspension] FL=0.016797 FR=0.016797 RL=0.106519 RR=0.106519
+[DEBUG] [Suspension] FL=0.142957 FR=0.142957 RL=0.138379 RR=0.138379
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.116406 FR=0.116406 RL=0.302808 RR=0.302808
+[DEBUG] [Suspension] FL=0.128308 FR=0.128308 RL=0.062756 RR=0.062756
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.339 z=-46.322 vx=0.000 vy=0.729 vz=-4.275 total=28411.539 potential=15762.012 linear=11286.142 angular=30.233 wheels=0.000 suspension=1333.154 suspensionPower=-6925.722 suspensionResidual=-9097.729
-[DEBUG] [Suspension] FL=0.213269 FR=0.213269 RL=0.112378 RR=0.112378
+[DEBUG] [Energy] x=0.000 y=1.614 z=-10.069 vx=0.000 vy=0.070 vz=-1.577 total=21182.639 potential=18996.965 linear=1495.566 angular=82.257 wheels=0.000 suspension=607.850 suspensionPower=-143.326 suspensionResidual=-493.524
+[DEBUG] [Suspension] FL=0.127942 FR=0.127942 RL=0.062024 RR=0.062024
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.180859 FR=0.180859 RL=0.005078 RR=0.005078
+[DEBUG] [Suspension] FL=0.076855 FR=0.076855 RL=0.056714 RR=0.056714
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.632 z=-48.189 vx=0.000 vy=-0.033 vz=-3.467 total=26980.689 potential=19211.275 linear=7212.447 angular=278.960 wheels=0.000 suspension=278.007 suspensionPower=3245.068 suspensionResidual=2344.896
-[DEBUG] [Suspension] FL=0.073010 FR=0.073010 RL=0.000684 RR=0.000684
+[DEBUG] [Energy] x=0.000 y=1.590 z=-10.889 vx=0.000 vy=-0.236 vz=-1.795 total=20997.994 potential=18721.473 linear=1965.892 angular=51.647 wheels=0.000 suspension=258.983 suspensionPower=196.133 suspensionResidual=1701.065
+[DEBUG] [Suspension] FL=0.070996 FR=0.070996 RL=0.045361 RR=0.045361
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.079236 FR=0.079236 RL=0.000000 RR=0.000000
+[DEBUG] [Suspension] FL=0.105420 FR=0.105420 RL=0.066602 RR=0.066602
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=1.026 z=-50.053 vx=0.000 vy=-2.804 vz=-3.904 total=27891.393 potential=12082.796 linear=13862.370 angular=1491.020 wheels=0.000 suspension=455.208 suspensionPower=4509.652 suspensionResidual=3106.458
-[DEBUG] [Suspension] FL=0.088757 FR=0.088757 RL=0.000000 RR=0.000000
+[DEBUG] [Energy] x=0.000 y=1.349 z=-12.037 vx=0.000 vy=-0.625 vz=-2.860 total=21660.537 potential=15877.295 linear=5143.549 angular=41.358 wheels=0.000 suspension=598.334 suspensionPower=3347.608 suspensionResidual=5579.916
+[DEBUG] [Suspension] FL=0.057080 FR=0.057080 RL=0.144238 RR=0.144238
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Performance] FPS=60 PhysicsHz=473
+[DEBUG] [Suspension] FL=0.059094 FR=0.059094 RL=0.259412 RR=0.259412
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Energy] x=0.000 y=1.179 z=-13.919 vx=0.000 vy=0.020 vz=-4.027 total=28265.633 potential=13885.016 linear=9730.185 angular=2010.413 wheels=0.000 suspension=2640.020 suspensionPower=-39602.523 suspensionResidual=-25711.840
+[DEBUG] [Suspension] FL=0.110547 FR=0.110547 RL=0.089673 RR=0.089673
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Suspension] FL=0.166394 FR=0.166394 RL=0.116772 RR=0.116772
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Energy] x=0.000 y=1.478 z=-15.545 vx=0.000 vy=0.529 vz=-2.511 total=22719.760 potential=17396.561 linear=3949.719 angular=103.967 wheels=0.000 suspension=1269.514 suspensionPower=-516.032 suspensionResidual=-4137.747
+[DEBUG] [Suspension] FL=0.149731 FR=0.149731 RL=0.100842 RR=0.100842
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Suspension] FL=0.133801 FR=0.133801 RL=0.048840 RR=0.048840
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Energy] x=0.000 y=1.619 z=-16.647 vx=0.000 vy=-0.005 vz=-2.025 total=22270.301 potential=19063.523 linear=2460.095 angular=138.037 wheels=0.000 suspension=608.645 suspensionPower=429.314 suspensionResidual=537.711
+[DEBUG] [Suspension] FL=0.082349 FR=0.082349 RL=0.047559 RR=0.047559
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Suspension] FL=0.069348 FR=0.069348 RL=0.036938 RR=0.036938
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Energy] x=0.000 y=1.474 z=-17.791 vx=0.000 vy=-0.584 vz=-2.630 total=21994.947 potential=17354.268 linear=4355.532 angular=72.652 wheels=0.000 suspension=212.494 suspensionPower=695.323 suspensionResidual=3295.549
+[DEBUG] [Suspension] FL=0.119336 FR=0.119336 RL=0.095532 RR=0.095532
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Suspension] FL=0.013135 FR=0.013135 RL=0.118970 RR=0.118970
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Energy] x=0.000 y=1.232 z=-19.533 vx=0.000 vy=-0.341 vz=-4.214 total=26351.271 potential=14501.323 linear=10725.062 angular=955.201 wheels=0.000 suspension=169.685 suspensionPower=19177.574 suspensionResidual=24551.199
+[DEBUG] [Suspension] FL=0.146985 FR=0.146985 RL=0.281934 RR=0.281934
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Suspension] FL=0.164197 FR=0.164197 RL=0.086560 RR=0.086560
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Energy] x=0.000 y=1.403 z=-21.486 vx=0.000 vy=0.618 vz=-3.123 total=23999.922 potential=16513.393 linear=6081.235 angular=128.041 wheels=0.000 suspension=1277.252 suspensionPower=-3120.453 suspensionResidual=-6266.231
+[DEBUG] [Suspension] FL=0.168774 FR=0.168774 RL=0.143323 RR=0.143323
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Suspension] FL=0.144055 FR=0.144055 RL=0.046277 RR=0.046277
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Energy] x=0.000 y=1.620 z=-22.829 vx=0.000 vy=0.053 vz=-2.410 total=23381.783 potential=19073.035 linear=3485.368 angular=193.384 wheels=0.000 suspension=629.999 suspensionPower=381.886 suspensionResidual=203.895
+[DEBUG] [Suspension] FL=0.094251 FR=0.094251 RL=0.038770 RR=0.038770
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Suspension] FL=0.067151 FR=0.067151 RL=0.029980 RR=0.029980
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Energy] x=0.000 y=1.460 z=-24.149 vx=0.000 vy=-0.668 vz=-2.965 total=23048.850 potential=17186.148 linear=5543.960 angular=94.823 wheels=0.000 suspension=223.918 suspensionPower=966.971 suspensionResidual=3532.065
+[DEBUG] [Suspension] FL=0.128491 FR=0.128491 RL=0.103772 RR=0.103772
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Performance] FPS=60 PhysicsHz=470
+[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.096631 RR=0.096631
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Energy] x=0.000 y=1.205 z=-26.074 vx=0.000 vy=-0.424 vz=-4.482 total=29969.920 potential=14189.982 linear=12158.177 angular=2326.634 wheels=0.000 suspension=1295.125 suspensionPower=27333.168 suspensionResidual=26197.932
+[DEBUG] [Suspension] FL=0.151013 FR=0.151013 RL=0.287610 RR=0.287610
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Suspension] FL=0.187085 FR=0.187085 RL=0.102307 RR=0.102307
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Energy] x=0.000 y=1.459 z=-28.052 vx=0.000 vy=0.695 vz=-3.160 total=25191.350 potential=17170.574 linear=6280.941 angular=158.886 wheels=0.000 suspension=1580.950 suspensionPower=-871.068 suspensionResidual=-5697.918
+[DEBUG] [Suspension] FL=0.170605 FR=0.170605 RL=0.118054 RR=0.118054
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Suspension] FL=0.142773 FR=0.142773 RL=0.030347 RR=0.030347
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Energy] x=0.000 y=1.617 z=-29.499 vx=0.000 vy=-0.161 vz=-2.784 total=24173.225 potential=19035.414 linear=4665.993 angular=196.973 wheels=0.000 suspension=274.846 suspensionPower=-162.835 suspensionResidual=920.341
+[DEBUG] [Suspension] FL=0.061292 FR=0.061292 RL=0.024487 RR=0.024487
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Suspension] FL=0.102307 FR=0.102307 RL=0.043713 RR=0.043713
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Energy] x=0.000 y=1.323 z=-31.111 vx=0.000 vy=-0.549 vz=-3.845 total=25917.469 potential=15574.083 linear=9051.434 angular=12.527 wheels=0.000 suspension=1279.426 suspensionPower=10776.754 suspensionResidual=10368.646
+[DEBUG] [Suspension] FL=0.039685 FR=0.039685 RL=0.128491 RR=0.128491
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Suspension] FL=0.108167 FR=0.108167 RL=0.297314 RR=0.297314
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Energy] x=0.000 y=1.268 z=-33.354 vx=0.000 vy=0.829 vz=-4.190 total=27044.975 potential=14929.049 linear=10948.016 angular=226.764 wheels=0.000 suspension=941.147 suspensionPower=-12416.482 suspensionResidual=-6121.432
+[DEBUG] [Suspension] FL=0.185254 FR=0.185254 RL=0.093335 RR=0.093335
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Suspension] FL=0.181592 FR=0.181592 RL=0.130872 RR=0.130872
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Energy] x=0.000 y=1.606 z=-35.135 vx=0.000 vy=0.301 vz=-3.076 total=25701.547 potential=18904.404 linear=5732.149 angular=285.791 wheels=0.000 suspension=779.204 suspensionPower=920.105 suspensionResidual=-697.307
+[DEBUG] [Suspension] FL=0.145703 FR=0.145703 RL=0.022473 RR=0.022473
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Suspension] FL=0.061108 FR=0.061108 RL=0.016980 RR=0.016980
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Energy] x=0.000 y=1.457 z=-36.743 vx=0.000 vy=-0.779 vz=-3.477 total=25160.768 potential=17157.119 linear=7616.494 angular=142.356 wheels=0.000 suspension=244.800 suspensionPower=1202.351 suspensionResidual=3660.086
+[DEBUG] [Suspension] FL=0.125928 FR=0.125928 RL=0.086743 RR=0.086743
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.086011 RR=0.086011
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Energy] x=0.000 y=1.178 z=-38.927 vx=0.000 vy=-0.162 vz=-4.856 total=34049.016 potential=13872.543 linear=14164.730 angular=3268.257 wheels=0.000 suspension=2743.485 suspensionPower=-32995.938 suspensionResidual=-16685.258
+[DEBUG] [Performance] FPS=59 PhysicsHz=469
+[DEBUG] [Suspension] FL=0.129407 FR=0.129407 RL=0.268201 RR=0.268201
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Suspension] FL=0.210706 FR=0.210706 RL=0.123364 RR=0.123364
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Energy] x=0.000 y=1.543 z=-41.013 vx=0.000 vy=0.722 vz=-3.450 total=27240.477 potential=18168.977 linear=7456.321 angular=225.652 wheels=0.000 suspension=1389.527 suspensionPower=2170.716 suspensionResidual=-2413.266
+[DEBUG] [Suspension] FL=0.168591 FR=0.168591 RL=0.043896 RR=0.043896
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Suspension] FL=0.073926 FR=0.073926 RL=0.011487 RR=0.011487
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Energy] x=0.000 y=1.522 z=-42.731 vx=0.000 vy=-0.702 vz=-3.546 total=26078.082 potential=17915.596 linear=7840.062 angular=170.739 wheels=0.000 suspension=151.685 suspensionPower=160.631 suspensionResidual=3022.812
+[DEBUG] [Suspension] FL=0.089856 FR=0.089856 RL=0.014783 RR=0.014783
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Suspension] FL=0.062573 FR=0.062573 RL=0.125928 RR=0.125928
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Energy] x=0.000 y=1.200 z=-44.910 vx=0.000 vy=-0.495 vz=-5.001 total=33332.207 potential=14121.631 linear=15154.618 angular=2515.042 wheels=0.000 suspension=1540.913 suspensionPower=34602.570 suspensionResidual=34785.352
+[DEBUG] [Suspension] FL=0.074841 FR=0.074841 RL=0.307202 RR=0.307202
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Suspension] FL=0.206311 FR=0.206311 RL=0.094434 RR=0.094434
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Energy] x=0.000 y=1.517 z=-47.169 vx=0.000 vy=0.913 vz=-3.725 total=28628.502 potential=17852.377 linear=8827.377 angular=188.515 wheels=0.000 suspension=1760.232 suspensionPower=853.466 suspensionResidual=-3830.566
+[DEBUG] [Suspension] FL=0.191296 FR=0.191296 RL=0.046277 RR=0.046277
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Suspension] FL=0.085828 FR=0.085828 RL=0.000000 RR=0.000000
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Energy] x=0.000 y=1.527 z=-49.005 vx=0.000 vy=-0.710 vz=-3.761 total=27113.045 potential=17980.152 linear=8791.016 angular=183.563 wheels=0.000 suspension=158.315 suspensionPower=3519.817 suspensionResidual=3871.325
+[DEBUG] [Suspension] FL=0.081982 FR=0.081982 RL=0.000000 RR=0.000000
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Suspension] FL=0.100659 FR=0.100659 RL=0.000000 RR=0.000000
+[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Energy] x=0.000 y=0.203 z=-51.029 vx=0.000 vy=-4.787 vz=-4.110 total=28091.609 potential=2394.236 linear=23885.145 angular=1812.228 wheels=0.000 suspension=0.000 suspensionPower=0.000 suspensionResidual=0.000
+[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
 [DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Performance] FPS=59 PhysicsHz=423
-[DEBUG] [Energy] x=0.000 y=-1.603 z=-52.094 vx=0.000 vy=-7.618 vz=-4.021 total=27648.547 potential=-18875.703 linear=44518.742 angular=2005.507 wheels=0.000 suspension=0.000 suspensionPower=0.000 suspensionResidual=0.000
+[DEBUG] [Energy] x=0.000 y=-3.518 z=-53.118 vx=0.000 vy=-9.773 vz=-4.110 total=27846.971 potential=-41414.984 linear=67449.727 angular=1812.228 wheels=0.000 suspension=0.000 suspensionPower=0.000 suspensionResidual=0.000
 [DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
 [DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=-6.764 z=-54.138 vx=0.000 vy=-12.604 vz=-4.021 total=27403.883 potential=-79626.266 linear=105024.641 angular=2005.507 wheels=0.000 suspension=0.000 suspensionPower=0.000 suspensionResidual=0.000
+[DEBUG] [Performance] FPS=60 PhysicsHz=478
+[DEBUG] [Energy] x=0.000 y=-9.774 z=-55.208 vx=0.000 vy=-14.760 vz=-4.110 total=27602.291 potential=-115065.391 linear=140855.453 angular=1812.228 wheels=0.000 suspension=0.000 suspensionPower=0.000 suspensionResidual=0.000
 [DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
 [DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=-14.460 z=-56.182 vx=0.000 vy=-17.591 vz=-4.021 total=27159.539 potential=-170218.031 linear=195372.062 angular=2005.507 wheels=0.000 suspension=0.000 suspensionPower=0.000 suspensionResidual=0.000
+[DEBUG] [Energy] x=0.000 y=-18.566 z=-57.297 vx=0.000 vy=-19.747 vz=-4.110 total=27358.494 potential=-218557.078 linear=244103.344 angular=1812.228 wheels=0.000 suspension=0.000 suspensionPower=0.000 suspensionResidual=0.000
 [DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
 [DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=-24.690 z=-58.226 vx=0.000 vy=-22.578 vz=-4.021 total=26916.133 potential=-290651.281 linear=315561.906 angular=2005.507 wheels=0.000 suspension=0.000 suspensionPower=0.000 suspensionResidual=0.000
+[DEBUG] [Energy] x=0.000 y=-29.892 z=-59.387 vx=0.000 vy=-24.734 vz=-4.110 total=27115.291 potential=-351890.281 linear=377193.344 angular=1812.228 wheels=0.000 suspension=0.000 suspensionPower=0.000 suspensionResidual=0.000
 [DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=-37.455 z=-60.270 vx=0.000 vy=-27.565 vz=-4.021 total=26673.195 potential=-440925.969 linear=465593.656 angular=2005.507 wheels=0.000 suspension=0.000 suspensionPower=0.000 suspensionResidual=0.000
-[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Performance] FPS=60 PhysicsHz=269
-[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Energy] x=0.000 y=-52.756 z=-62.314 vx=0.000 vy=-32.552 vz=-4.021 total=26429.945 potential=-621042.250 linear=645466.688 angular=2005.507 wheels=0.000 suspension=0.000 suspensionPower=0.000 suspensionResidual=0.000
 [DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
 [DEBUG] [Wheel] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
