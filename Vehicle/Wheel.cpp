@@ -169,11 +169,13 @@ void Wheel::Update(
                 springForce + damperForce
             );
 
-        // Test 2: use the raycast-derived compression and compression velocity,
-        // but remove terrain-slope scaling from the chassis-down force magnitude.
-        // This isolates the inverse normal/down projection from the force model.
+        // The spring coordinate is the raycast distance along the chassis
+        // suspension axis. Its generalized force must be mapped back through
+        // the terrain contact normal, otherwise F dot v does not match the
+        // spring/damper work when the terrain is sloped.
         const Vec3 suspensionForce =
-            -down * m_force;
+            result.normal *
+            (m_force * inverseContactDotSuspension);
 
         const float springPower =
             suspension.GetSpringRate() *
