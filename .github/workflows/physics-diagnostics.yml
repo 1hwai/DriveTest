@@ -34,7 +34,7 @@ jobs:
           2>&1 | tee configure.log
 
       - name: Build physics diagnostics
-        run: cmake --build build --target DriveTestPhysicsDiagnostics -j2
+        run: cmake --build build --target DriveTestPhysicsDiagnostics -j2 2>&1 | tee build.log
 
       - name: Run physics diagnostics
         working-directory: build
@@ -47,6 +47,7 @@ jobs:
           name: physics-diagnostics
           path: |
             configure.log
+            build.log
             build/physics-diagnostics.log
             build/Logs/physics_diagnostics.log
           if-no-files-found: warn
