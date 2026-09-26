@@ -157,13 +157,11 @@ void Wheel::Update(
 
         const float springForce =
             suspension.GetSpringRate() *
-            m_compression *
-            inverseContactDotSuspension;
+            m_compression;
 
         const float damperForce =
             suspension.GetDamperRate() *
-            compressionVelocity *
-            inverseContactDotSuspension;
+            compressionVelocity;
 
         m_force =
             std::max(
@@ -171,9 +169,9 @@ void Wheel::Update(
                 springForce + damperForce
             );
 
-        // Test 1: keep the new raycast/compression calculation,
-        // but restore the old suspension force geometry.
-        // This isolates terrain-normal/contact-point changes.
+        // Test 2: use the raycast-derived compression and compression velocity,
+        // but remove terrain-slope scaling from the chassis-down force magnitude.
+        // This isolates the inverse normal/down projection from the force model.
         const Vec3 suspensionForce =
             -down * m_force;
 
