@@ -1,6 +1,7 @@
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 
 #include "../Core/Debug/Logger.h"
 #include "../Core/Math/Mat3.h"
@@ -119,8 +120,7 @@ int main() {
     float minY = chassis->GetPosition().y;
     float maxEnergy = 0.0f;
 
-    std::cout << std::fixed << std::setprecision(6);
-    std::cout << "[PhysicsDiagnostics] sine terrain suspension test\n";
+    Logger::Info("[PhysicsDiagnostics] sine terrain suspension test");
 
     for (int step = 0;
         step < SimulationSteps;
@@ -219,7 +219,8 @@ int main() {
             std::max(maxEnergy, totalEnergy);
 
         if (step % 60 == 0) {
-            std::cout
+            std::ostringstream log;
+            log << std::fixed << std::setprecision(6)
                 << "[State] t="
                 << step * FixedDeltaTime
                 << " y="
@@ -238,20 +239,21 @@ int main() {
                 i < WheelCount;
                 ++i) {
 
-                std::cout
+                log
                     << car.GetWheel(
                         static_cast<WheelIndex>(i)
                     ).GetCompression();
 
                 if (i + 1 < WheelCount)
-                    std::cout << ',';
+                    log << ',';
             }
 
-            std::cout << '\n';
+            Logger::Info(log.str());
         }
     }
 
-    std::cout
+    std::ostringstream summary;
+    summary << std::fixed << std::setprecision(6)
         << "[Summary] minY="
         << minY
         << " maxAbsZ="
@@ -261,8 +263,9 @@ int main() {
         << " finalY="
         << chassis->GetPosition().y
         << " finalZ="
-        << chassis->GetPosition().z
-        << '\n';
+        << chassis->GetPosition().z;
+
+    Logger::Info(summary.str());
 
     Logger::Shutdown();
 
