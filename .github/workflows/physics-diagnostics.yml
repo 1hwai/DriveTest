@@ -20,7 +20,7 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build autoconf autoconf-archive automake libtool
+          sudo apt-get install -y ninja-build autoconf autoconf-archive automake libtool libltdl-dev
 
       - name: Install vcpkg
         run: |
@@ -28,7 +28,8 @@ jobs:
           "$RUNNER_TEMP/vcpkg/bootstrap-vcpkg.sh"
 
       - name: Configure
-        run: >
+        run: |
+          set -o pipefail
           cmake
           -S .
           -B build
