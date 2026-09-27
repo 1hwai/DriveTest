@@ -41,16 +41,12 @@ bool World::Initialize(
         std::make_unique<Terrain>(
             65,
             100.0f,
-            0.0f,
+            4.0f,
             0.035f,
             5,
             1337
         );
 
-        m_terrain->GenerateSineWave(
-            0.5f,
-            3.14159265f * 0.25f
-        );
 
     if (!meshManager.CreateTerrain(
         "terrain",
@@ -126,7 +122,23 @@ void World::UpdatePhysics(
     float deltaTime,
     const InputManager& input
 ) {
-    (void)input;
+    const Keyboard& keyboard = input.GetKeyboard();
+
+    const float throttle =
+        keyboard.IsDown(SDL_SCANCODE_W) ? 1.0f : 0.0f;
+
+    const float brake =
+        keyboard.IsDown(SDL_SCANCODE_S) ? 1.0f : 0.0f;
+
+    const float steering =
+        (keyboard.IsDown(SDL_SCANCODE_D) ? 1.0f : 0.0f) -
+        (keyboard.IsDown(SDL_SCANCODE_A) ? 1.0f : 0.0f);
+
+    m_car.SetInput(
+        throttle,
+        brake,
+        steering
+    );
 
     m_car.UpdatePhysics(
         *m_physicsWorld,
@@ -324,6 +336,14 @@ void World::Update(
                     static_cast<WheelIndex>(i)
                 ).GetRotationAngle();
 
+            const Quaternion wheelSteering =
+                Quaternion::FromAxisAngle(
+                    Vec3(0.0f, 1.0f, 0.0f),
+                    m_car.GetWheel(
+                        static_cast<WheelIndex>(i)
+                    ).GetSteeringAngle()
+                );
+
             const Quaternion wheelSpin =
                 Quaternion::FromAxisAngle(
                     Vec3(1.0f, 0.0f, 0.0f),
@@ -331,7 +351,9 @@ void World::Update(
                 );
 
             m_wheelObjects[i]->GetTransform().rotation =
-                chassisRotation * wheelSpin;
+                chassisRotation *
+                wheelSteering *
+                wheelSpin;
 
             const float diameter =
                 m_car.GetWheel(
