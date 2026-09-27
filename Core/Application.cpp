@@ -47,6 +47,7 @@ int Application::Run() {
         m_time.Update();
 
         ProcessEvents();
+        m_input.Update();
 
         Update();
         Render();
