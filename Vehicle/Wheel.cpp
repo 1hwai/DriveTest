@@ -177,13 +177,8 @@ void Wheel::Update(
                 springForce + damperForce
             );
 
-        // The spring coordinate is the raycast distance along the chassis
-        // suspension axis. Its generalized force must be mapped back through
-        // the terrain contact normal, otherwise F dot v does not match the
-        // spring/damper work when the terrain is sloped.
         const Vec3 suspensionForce =
-            result.normal *
-            (m_force * inverseContactDotSuspension);
+            -down * m_force;
 
         const float springPower =
             suspension.GetSpringRate() *
@@ -197,7 +192,7 @@ void Wheel::Update(
 
         m_suspensionPower =
             suspensionForce.Dot(
-                body.GetPointVelocity(result.point)
+                body.GetPointVelocity(worldMount)
             );
 
         m_suspensionResidual =
@@ -207,7 +202,7 @@ void Wheel::Update(
 
         body.AddForceAtPoint(
             suspensionForce,
-            result.point
+            worldMount
         );
     }
 
