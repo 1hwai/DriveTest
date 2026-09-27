@@ -12,7 +12,12 @@ Tire::Tire()
     m_dynamicFriction(0.95f),
     m_longitudinalStiffness(9000.0f),
     m_lateralStiffness(11000.0f),
-    m_rollingResistance(0.015f) {}
+    m_rollingResistance(0.015f),
+    m_longitudinalVelocity(0.0f),
+    m_wheelSurfaceSpeed(0.0f),
+    m_longitudinalSlipVelocity(0.0f),
+    m_normalLoad(0.0f),
+    m_longitudinalForce(0.0f) {}
 
 void Tire::SetStaticFriction(float friction) {
     m_staticFriction =
@@ -59,11 +64,37 @@ float Tire::GetRollingResistance() const {
     return m_rollingResistance;
 }
 
+float Tire::GetLongitudinalVelocity() const {
+    return m_longitudinalVelocity;
+}
+
+float Tire::GetWheelSurfaceSpeed() const {
+    return m_wheelSurfaceSpeed;
+}
+
+float Tire::GetLongitudinalSlipVelocity() const {
+    return m_longitudinalSlipVelocity;
+}
+
+float Tire::GetNormalLoad() const {
+    return m_normalLoad;
+}
+
+float Tire::GetLongitudinalForce() const {
+    return m_longitudinalForce;
+}
+
 Vec3 Tire::CalculateForce(
     const RigidBody& body,
     const Wheel& wheel,
     float deltaTime
 ) const {
+    m_longitudinalVelocity = 0.0f;
+    m_wheelSurfaceSpeed = 0.0f;
+    m_longitudinalSlipVelocity = 0.0f;
+    m_normalLoad = 0.0f;
+    m_longitudinalForce = 0.0f;
+
     if (!wheel.IsGrounded() ||
         deltaTime <= 0.0f) {
         return Vec3(0.0f, 0.0f, 0.0f);
@@ -71,6 +102,8 @@ Vec3 Tire::CalculateForce(
 
     const float normalLoad =
         wheel.GetForce();
+
+    m_normalLoad = normalLoad;
 
     if (normalLoad <= 0.0f)
         return Vec3(0.0f, 0.0f, 0.0f);
@@ -114,6 +147,10 @@ Vec3 Tire::CalculateForce(
     const float longitudinalSlipVelocity =
         longitudinalVelocity -
         wheelSurfaceSpeed;
+
+    m_longitudinalVelocity = longitudinalVelocity;
+    m_wheelSurfaceSpeed = wheelSurfaceSpeed;
+    m_longitudinalSlipVelocity = longitudinalSlipVelocity;
 
     const Vec3 bodyRadius =
         contactPoint -
@@ -236,6 +273,9 @@ Vec3 Tire::CalculateForce(
              m_rollingResistance *
              normalLoad);
     }
+
+    m_longitudinalForce =
+        tireForce.Dot(forward);
 
     return tireForce;
 }
