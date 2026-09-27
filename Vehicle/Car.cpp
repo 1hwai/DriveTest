@@ -25,7 +25,6 @@ Car::Car()
 void Car::SetChassis(RigidBody* chassis) {
     m_chassis = chassis;
 
-    }
 }
 
 void Car::SetInput(
