@@ -57,6 +57,7 @@ private:
     float m_steering;
     float m_energyTimer;
     float m_brakeTimer;
+    float m_tireTimer;
 
     std::array<Wheel, WheelCount> m_wheels;
     std::array<Suspension, WheelCount> m_suspensions;
