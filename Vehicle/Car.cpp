@@ -20,7 +20,8 @@ Car::Car()
     m_throttle(0.0f),
     m_brake(0.0f),
     m_steering(0.0f),
-    m_energyTimer(0.0f) {}
+    m_energyTimer(0.0f),
+    m_brakeTimer(0.0f) {}
 
 void Car::SetChassis(RigidBody* chassis) {
     m_chassis = chassis;
@@ -104,6 +105,35 @@ void Car::UpdatePhysics(
     }
 
     m_energyTimer += deltaTime;
+    m_brakeTimer += deltaTime;
+
+    if (m_brake > 0.0f &&
+        m_brakeTimer >= 0.1f) {
+        const char* names[WheelCount] = {
+            "FL", "FR", "RL", "RR"
+        };
+
+        for (size_t i = 0; i < WheelCount; ++i) {
+            const Tire& tire = m_tires[i];
+            const Wheel& wheel = m_wheels[i];
+
+            std::ostringstream log;
+            log << std::fixed << std::setprecision(3)
+                << "[Brake] " << names[i]
+                << " input=" << m_brake
+                << " torque=" << wheel.GetBrakeTorque()
+                << " omega=" << wheel.GetAngularVelocity()
+                << " wheelSpeed=" << tire.GetWheelSurfaceSpeed()
+                << " longVel=" << tire.GetLongitudinalVelocity()
+                << " slipVel=" << tire.GetLongitudinalSlipVelocity()
+                << " normal=" << tire.GetNormalLoad()
+                << " longForce=" << tire.GetLongitudinalForce();
+
+            Logger::Debug(log.str());
+        }
+
+        m_brakeTimer = 0.0f;
+    }
 
     if (m_energyTimer >= 0.5f) {
         const float mass =
