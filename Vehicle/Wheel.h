@@ -25,6 +25,9 @@ public:
     void SetBrakeTorque(float torque);
     float GetBrakeTorque() const;
 
+    void SetSteeringAngle(float angle);
+    float GetSteeringAngle() const;
+
     void Update(
         RigidBody& body,
         PhysicsWorld& physicsWorld,
@@ -58,6 +61,7 @@ private:
 
     float m_driveTorque;
     float m_brakeTorque;
+    float m_steeringAngle;
     float m_angularVelocity;
     float m_rotationAngle;
 
