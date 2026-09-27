@@ -21,7 +21,8 @@ Car::Car()
     m_brake(0.0f),
     m_steering(0.0f),
     m_energyTimer(0.0f),
-    m_brakeTimer(0.0f) {}
+    m_brakeTimer(0.0f),
+    m_tireTimer(0.0f) {}
 
 void Car::SetChassis(RigidBody* chassis) {
     m_chassis = chassis;
@@ -106,9 +107,9 @@ void Car::UpdatePhysics(
 
     m_energyTimer += deltaTime;
     m_brakeTimer += deltaTime;
+    m_tireTimer += deltaTime;
 
-    if (m_brake > 0.0f &&
-        m_brakeTimer >= 0.1f) {
+    if (m_tireTimer >= 0.1f) {
         const char* names[WheelCount] = {
             "FL", "FR", "RL", "RR"
         };
@@ -119,23 +120,22 @@ void Car::UpdatePhysics(
 
             std::ostringstream log;
             log << std::fixed << std::setprecision(3)
-                << "[Brake] " << names[i]
-                << " input=" << m_brake
-                << " torque=" << wheel.GetBrakeTorque()
+                << "[Tire] " << names[i]
+                << " grounded=" << wheel.IsGrounded()
                 << " omega=" << wheel.GetAngularVelocity()
                 << " wheelSpeed=" << tire.GetWheelSurfaceSpeed()
-                << " longVel=" << tire.GetLongitudinalVelocity()
-                << " latVel=" << tire.GetLateralVelocity()
+                << " Vx=" << tire.GetLongitudinalVelocity()
+                << " Vy=" << tire.GetLateralVelocity()
                 << " slipVel=" << tire.GetLongitudinalSlipVelocity()
-                << " slipRatio=" << tire.GetSlipRatio()
-                << " slipAngle=" << tire.GetSlipAngle()
-                << " normal=" << tire.GetNormalLoad()
-                << " longForce=" << tire.GetLongitudinalForce();
+                << " kappa=" << tire.GetSlipRatio()
+                << " alpha=" << tire.GetSlipAngle()
+                << " Fz=" << tire.GetNormalLoad()
+                << " Fx=" << tire.GetLongitudinalForce();
 
             Logger::Debug(log.str());
         }
 
-        m_brakeTimer = 0.0f;
+        m_tireTimer = 0.0f;
     }
 
     if (m_energyTimer >= 0.5f) {
