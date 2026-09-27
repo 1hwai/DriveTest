@@ -5,6 +5,20 @@
 class RigidBody;
 class Wheel;
 
+struct TireState {
+    bool grounded;
+    float normalLoad;
+    float longitudinalVelocity;
+    float lateralVelocity;
+    float wheelSurfaceSpeed;
+    float longitudinalSlipVelocity;
+    float slipRatio;
+    float slipAngle;
+    Vec3 forward;
+    Vec3 lateral;
+    Vec3 contactPoint;
+};
+
 class Tire {
 public:
     Tire();
@@ -21,6 +35,8 @@ public:
     float GetLateralStiffness() const;
     float GetRollingResistance() const;
 
+    const TireState& GetState() const;
+
     float GetLongitudinalVelocity() const;
     float GetLateralVelocity() const;
     float GetWheelSurfaceSpeed() const;
@@ -30,10 +46,18 @@ public:
     float GetNormalLoad() const;
     float GetLongitudinalForce() const;
 
+    TireState CalculateState(
+        const RigidBody& body,
+        const Wheel& wheel
+    ) const;
+
+    Vec3 CalculateForce(
+        const TireState& state
+    ) const;
+
     Vec3 CalculateForce(
         const RigidBody& body,
-        const Wheel& wheel,
-        float deltaTime
+        const Wheel& wheel
     ) const;
 
 private:
@@ -43,12 +67,6 @@ private:
     float m_lateralStiffness;
     float m_rollingResistance;
 
-    mutable float m_longitudinalVelocity;
-    mutable float m_lateralVelocity;
-    mutable float m_wheelSurfaceSpeed;
-    mutable float m_longitudinalSlipVelocity;
-    mutable float m_slipRatio;
-    mutable float m_slipAngle;
-    mutable float m_normalLoad;
+    mutable TireState m_state;
     mutable float m_longitudinalForce;
 };
