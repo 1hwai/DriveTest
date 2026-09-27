@@ -125,7 +125,10 @@ void Car::UpdatePhysics(
                 << " omega=" << wheel.GetAngularVelocity()
                 << " wheelSpeed=" << tire.GetWheelSurfaceSpeed()
                 << " longVel=" << tire.GetLongitudinalVelocity()
+                << " latVel=" << tire.GetLateralVelocity()
                 << " slipVel=" << tire.GetLongitudinalSlipVelocity()
+                << " slipRatio=" << tire.GetSlipRatio()
+                << " slipAngle=" << tire.GetSlipAngle()
                 << " normal=" << tire.GetNormalLoad()
                 << " longForce=" << tire.GetLongitudinalForce();
 

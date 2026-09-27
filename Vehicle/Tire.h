@@ -22,8 +22,11 @@ public:
     float GetRollingResistance() const;
 
     float GetLongitudinalVelocity() const;
+    float GetLateralVelocity() const;
     float GetWheelSurfaceSpeed() const;
     float GetLongitudinalSlipVelocity() const;
+    float GetSlipRatio() const;
+    float GetSlipAngle() const;
     float GetNormalLoad() const;
     float GetLongitudinalForce() const;
 
@@ -41,8 +44,11 @@ private:
     float m_rollingResistance;
 
     mutable float m_longitudinalVelocity;
+    mutable float m_lateralVelocity;
     mutable float m_wheelSurfaceSpeed;
     mutable float m_longitudinalSlipVelocity;
+    mutable float m_slipRatio;
+    mutable float m_slipAngle;
     mutable float m_normalLoad;
     mutable float m_longitudinalForce;
 };

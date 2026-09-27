@@ -14,8 +14,11 @@ Tire::Tire()
     m_lateralStiffness(11000.0f),
     m_rollingResistance(0.015f),
     m_longitudinalVelocity(0.0f),
+    m_lateralVelocity(0.0f),
     m_wheelSurfaceSpeed(0.0f),
     m_longitudinalSlipVelocity(0.0f),
+    m_slipRatio(0.0f),
+    m_slipAngle(0.0f),
     m_normalLoad(0.0f),
     m_longitudinalForce(0.0f) {}
 
@@ -68,12 +71,24 @@ float Tire::GetLongitudinalVelocity() const {
     return m_longitudinalVelocity;
 }
 
+float Tire::GetLateralVelocity() const {
+    return m_lateralVelocity;
+}
+
 float Tire::GetWheelSurfaceSpeed() const {
     return m_wheelSurfaceSpeed;
 }
 
 float Tire::GetLongitudinalSlipVelocity() const {
     return m_longitudinalSlipVelocity;
+}
+
+float Tire::GetSlipRatio() const {
+    return m_slipRatio;
+}
+
+float Tire::GetSlipAngle() const {
+    return m_slipAngle;
 }
 
 float Tire::GetNormalLoad() const {
@@ -90,8 +105,11 @@ Vec3 Tire::CalculateForce(
     float deltaTime
 ) const {
     m_longitudinalVelocity = 0.0f;
+    m_lateralVelocity = 0.0f;
     m_wheelSurfaceSpeed = 0.0f;
     m_longitudinalSlipVelocity = 0.0f;
+    m_slipRatio = 0.0f;
+    m_slipAngle = 0.0f;
     m_normalLoad = 0.0f;
     m_longitudinalForce = 0.0f;
 
@@ -148,9 +166,41 @@ Vec3 Tire::CalculateForce(
         longitudinalVelocity -
         wheelSurfaceSpeed;
 
+    Vec3 lateral =
+        normal.Cross(forward);
+
+    if (lateral.LengthSquared() <=
+        0.000001f) {
+        return Vec3(0.0f, 0.0f, 0.0f);
+    }
+
+    lateral = lateral.Normalized();
+
+    const float lateralVelocity =
+        contactVelocity.Dot(lateral);
+
+    constexpr float SlipVelocityEpsilon = 0.1f;
+
+    const float slipRatio =
+        (wheelSurfaceSpeed -
+         longitudinalVelocity) /
+        std::max(
+            std::abs(longitudinalVelocity),
+            SlipVelocityEpsilon
+        );
+
+    const float slipAngle =
+        std::atan2(
+            lateralVelocity,
+            std::abs(longitudinalVelocity)
+        );
+
     m_longitudinalVelocity = longitudinalVelocity;
+    m_lateralVelocity = lateralVelocity;
     m_wheelSurfaceSpeed = wheelSurfaceSpeed;
     m_longitudinalSlipVelocity = longitudinalSlipVelocity;
+    m_slipRatio = slipRatio;
+    m_slipAngle = slipAngle;
 
     const Vec3 bodyRadius =
         contactPoint -
@@ -181,19 +231,6 @@ Vec3 Tire::CalculateForce(
     const float longitudinalImpulse =
         -longitudinalSlipVelocity /
         longitudinalInverseMass;
-
-    Vec3 lateral =
-        normal.Cross(forward);
-
-    if (lateral.LengthSquared() <=
-        0.000001f) {
-        return Vec3(0.0f, 0.0f, 0.0f);
-    }
-
-    lateral = lateral.Normalized();
-
-    const float lateralVelocity =
-        contactVelocity.Dot(lateral);
 
     const Vec3 lateralTorqueAxis =
         bodyRadius.Cross(lateral);
