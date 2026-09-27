@@ -174,8 +174,12 @@ void Wheel::Update(
                 springForce + damperForce
             );
 
+        const float inverseContactDotSuspension =
+            -1.0f / denominator;
+
         const Vec3 suspensionForce =
-            -down * m_force;
+            result.normal *
+            (m_force * inverseContactDotSuspension);
 
         const float springPower =
             suspension.GetSpringRate() *
@@ -189,7 +193,7 @@ void Wheel::Update(
 
         m_suspensionPower =
             suspensionForce.Dot(
-                body.GetPointVelocity(worldMount)
+                body.GetPointVelocity(result.point)
             );
 
         m_suspensionResidual =
