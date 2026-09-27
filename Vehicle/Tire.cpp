@@ -2,6 +2,7 @@
 
 #include "Wheel.h"
 #include "../Physics/RigidBody.h"
+#include "../Core/Math/Quaternion.h"
 
 #include <algorithm>
 #include <cmath>
@@ -96,6 +97,12 @@ Vec3 Tire::CalculateForce(
     }
 
     forward = forward.Normalized();
+
+    forward =
+        Quaternion::FromAxisAngle(
+            normal,
+            wheel.GetSteeringAngle()
+        ) * forward;
 
     const float longitudinalVelocity =
         contactVelocity.Dot(forward);
