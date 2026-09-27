@@ -27,6 +27,12 @@ public:
 
     void SetChassis(RigidBody* chassis);
 
+    void SetInput(
+        float throttle,
+        float brake,
+        float steering
+    );
+
     void UpdatePhysics(
         PhysicsWorld& physicsWorld,
         float deltaTime
@@ -46,7 +52,9 @@ public:
 
 private:
     RigidBody* m_chassis;
-    float m_planarX;
+    float m_throttle;
+    float m_brake;
+    float m_steering;
     float m_energyTimer;
 
     std::array<Wheel, WheelCount> m_wheels;
