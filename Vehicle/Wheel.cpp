@@ -13,6 +13,7 @@ Wheel::Wheel()
     m_inertia(1.8f),
     m_driveTorque(0.0f),
     m_brakeTorque(0.0f),
+    m_steeringAngle(0.0f),
     m_angularVelocity(0.0f),
     m_rotationAngle(0.0f),
     m_grounded(false),
@@ -66,6 +67,14 @@ void Wheel::SetBrakeTorque(float torque) {
 
 float Wheel::GetBrakeTorque() const {
     return m_brakeTorque;
+}
+
+void Wheel::SetSteeringAngle(float angle) {
+    m_steeringAngle = angle;
+}
+
+float Wheel::GetSteeringAngle() const {
+    return m_steeringAngle;
 }
 
 void Wheel::Update(
