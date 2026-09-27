@@ -142,9 +142,6 @@ void Wheel::Update(
 
     if (m_compression > 0.0f &&
         denominator < -0.1f) {
-        const float inverseContactDotSuspension =
-            -1.0f / denominator;
-
         const Vec3 mountVelocity =
             body.GetPointVelocity(worldMount);
 
