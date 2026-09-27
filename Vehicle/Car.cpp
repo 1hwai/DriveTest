@@ -26,7 +26,6 @@ Car::Car()
 
 void Car::SetChassis(RigidBody* chassis) {
     m_chassis = chassis;
-
 }
 
 void Car::SetInput(
@@ -81,11 +80,15 @@ void Car::UpdatePhysics(
             deltaTime
         );
 
+        const TireState tireState =
+            m_tires[i].CalculateState(
+                *m_chassis,
+                m_wheels[i]
+            );
+
         const Vec3 tireForce =
             m_tires[i].CalculateForce(
-                *m_chassis,
-                m_wheels[i],
-                deltaTime
+                tireState
             );
 
         if (tireForce.LengthSquared() > 0.0f) {
