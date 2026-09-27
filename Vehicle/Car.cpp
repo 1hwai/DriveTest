@@ -4,6 +4,7 @@
 #include "../Physics/RigidBody.h"
 #include "../Core/Debug/Logger.h"
 
+#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <sstream>
@@ -16,16 +17,25 @@ namespace {
 
 Car::Car()
     : m_chassis(nullptr),
-    m_planarX(0.0f),
+    m_throttle(0.0f),
+    m_brake(0.0f),
+    m_steering(0.0f),
     m_energyTimer(0.0f) {}
 
 void Car::SetChassis(RigidBody* chassis) {
     m_chassis = chassis;
 
-    if (m_chassis) {
-        m_planarX =
-            m_chassis->GetPosition().x;
     }
+}
+
+void Car::SetInput(
+    float throttle,
+    float brake,
+    float steering
+) {
+    m_throttle = std::clamp(throttle, 0.0f, 1.0f);
+    m_brake = std::clamp(brake, 0.0f, 1.0f);
+    m_steering = std::clamp(steering, -1.0f, 1.0f);
 }
 
 void Car::UpdatePhysics(
@@ -35,26 +45,31 @@ void Car::UpdatePhysics(
     if (!m_chassis)
         return;
 
-    {
-        Vec3 position =
-            m_chassis->GetPosition();
+    constexpr float MaxSteeringAngle = 0.5f;
+    constexpr float DriveTorque = 1500.0f;
+    constexpr float BrakeTorque = 2500.0f;
 
-        position.x = m_planarX;
-        m_chassis->SetPosition(position);
+    for (size_t i = 0; i < WheelCount; ++i) {
+        const WheelIndex index =
+            static_cast<WheelIndex>(i);
 
-        Vec3 velocity =
-            m_chassis->GetLinearVelocity();
+        const bool frontWheel =
+            index == WheelIndex::FrontLeft ||
+            index == WheelIndex::FrontRight;
 
-        velocity.x = 0.0f;
-        m_chassis->SetLinearVelocity(velocity);
+        m_wheels[i].SetSteeringAngle(
+            frontWheel
+                ? m_steering * MaxSteeringAngle
+                : 0.0f
+        );
 
-        Vec3 angularVelocity =
-            m_chassis->GetAngularVelocity();
+        m_wheels[i].SetDriveTorque(
+            m_throttle * DriveTorque
+        );
 
-        angularVelocity.y = 0.0f;
-        angularVelocity.z = 0.0f;
-        m_chassis->SetAngularVelocity(angularVelocity);
-
+        m_wheels[i].SetBrakeTorque(
+            m_brake * BrakeTorque
+        );
     }
 
     for (size_t i = 0; i < WheelCount; ++i) {
@@ -64,6 +79,25 @@ void Car::UpdatePhysics(
             m_suspensions[i],
             deltaTime
         );
+
+        const Vec3 tireForce =
+            m_tires[i].CalculateForce(
+                *m_chassis,
+                m_wheels[i],
+                deltaTime
+            );
+
+        if (tireForce.LengthSquared() > 0.0f) {
+            m_chassis->AddForceAtPoint(
+                tireForce,
+                m_wheels[i].GetContactPoint()
+            );
+
+            m_wheels[i].ApplyTireForce(
+                *m_chassis,
+                tireForce
+            );
+        }
 
         m_wheels[i].IntegrateRotation(
             deltaTime
