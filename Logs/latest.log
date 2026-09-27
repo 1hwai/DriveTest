@@ -7,825 +7,680 @@
 [DEBUG] [Wheel] FL=-1.838250 FR=-1.858997 RL=-1.663998 RR=-1.836929
 [DEBUG] [Suspension] FL=0.043896 FR=0.160901 RL=0.070630 RR=0.142041
 [DEBUG] [Wheel] FL=-2.322246 FR=-2.372948 RL=-2.324440 RR=-2.346466
-[DEBUG] [Performance] FPS=70 PhysicsHz=120
+[DEBUG] [Performance] FPS=64 PhysicsHz=120
 [DEBUG] [Energy] x=0.219 y=3.336 z=-0.398 vx=-0.020 vy=0.010 vz=-1.182 total=40887.121 potential=39268.445 linear=839.177 angular=1.359 wheels=20.459 suspension=757.684 suspensionPower=1262.636 suspensionResidual=0.000
 [DEBUG] [Suspension] FL=0.066785 FR=0.121167 RL=0.077954 RR=0.114026
 [DEBUG] [Wheel] FL=-2.926610 FR=-2.934105 RL=-2.926242 RR=-2.935260
-[DEBUG] [Suspension] FL=0.088025 FR=0.102673 RL=0.085645 RR=0.109814
-[DEBUG] [Wheel] FL=-3.410182 FR=-3.447028 RL=-3.423788 RR=-3.457036
-[DEBUG] [Energy] x=0.218 y=3.266 z=-1.133 vx=0.165 vy=-0.176 vz=-1.678 total=40782.996 potential=38446.906 linear=1723.436 angular=4.562 wheels=44.450 suspension=563.640 suspensionPower=-199.889 suspensionResidual=0.000
-[DEBUG] [Suspension] FL=0.078320 FR=0.104504 RL=0.073560 RR=0.119702
-[DEBUG] [Wheel] FL=-4.065196 FR=-4.169177 RL=-4.100006 RR=-4.165985
-[DEBUG] [Suspension] FL=0.075757 FR=0.114575 RL=0.071545 RR=0.122632
-[DEBUG] [Wheel] FL=-4.691932 FR=-4.767411 RL=-4.713687 RR=-4.759271
+[DEBUG] [Suspension] FL=0.031812 FR=0.058911 RL=0.130688 RR=0.157239
+[DEBUG] [Wheel] FL=116.937599 FR=96.198807 RL=7.168371 RR=5.936179
+[DEBUG] [Energy] x=0.213 y=3.273 z=-1.034 vx=0.111 vy=-0.095 vz=-0.650 total=68270.469 potential=38530.066 linear=266.443 angular=23.125 wheels=28722.764 suspension=728.070 suspensionPower=-2281.613 suspensionResidual=0.000
+[DEBUG] [Suspension] FL=0.000867 FR=0.035291 RL=0.155591 RR=0.186353
+[DEBUG] [Wheel] FL=319.544922 FR=250.911804 RL=9.318691 RR=8.006662
+[DEBUG] [Suspension] FL=0.000000 FR=0.037854 RL=0.162000 RR=0.187085
+[DEBUG] [Wheel] FL=527.705994 FR=386.567169 RL=11.095753 RR=10.345841
+[DEBUG] [Performance] FPS=59 PhysicsHz=120
+[DEBUG] [Energy] x=0.305 y=3.290 z=-0.744 vx=0.278 vy=0.179 vz=1.768 total=466109.562 potential=38724.109 linear=1941.094 angular=21.724 wheels=424472.281 suspension=950.341 suspensionPower=-361.976 suspensionResidual=0.000
+[DEBUG] [Suspension] FL=0.000000 FR=0.043164 RL=0.166577 RR=0.182690
+[DEBUG] [Wheel] FL=736.039734 FR=509.338287 RL=13.346141 RR=12.609257
+[DEBUG] [Suspension] FL=0.000000 FR=0.033276 RL=0.159802 RR=0.177563
+[DEBUG] [Wheel] FL=944.373474 FR=651.471313 RL=15.818958 RR=14.573273
+[DEBUG] [Energy] x=0.568 y=3.478 z=0.743 vx=0.767 vy=0.405 vz=4.008 total=1328282.875 potential=40940.488 linear=10088.966 angular=15.085 wheels=1276401.000 suspension=837.391 suspensionPower=1476.881 suspensionResidual=0.001
+[DEBUG] [Suspension] FL=0.000000 FR=0.027600 RL=0.141126 RR=0.188001
+[DEBUG] [Wheel] FL=1152.707153 FR=808.342102 RL=17.814585 RR=16.703466
+[DEBUG] [Suspension] FL=0.000000 FR=0.019727 RL=0.161267 RR=0.146619
+[DEBUG] [Wheel] FL=1361.040894 FR=983.084473 RL=19.699442 RR=23.512909
+[DEBUG] [Performance] FPS=60 PhysicsHz=120
+[DEBUG] [Energy] x=1.070 y=3.574 z=3.402 vx=1.437 vy=-0.075 vz=6.421 total=2724504.500 potential=42067.594 linear=25979.725 angular=71.529 wheels=2655627.250 suspension=758.405 suspensionPower=-4322.573 suspensionResidual=-0.000
+[DEBUG] [Suspension] FL=0.041150 FR=0.007092 RL=0.205396 RR=0.137646
+[DEBUG] [Wheel] FL=1459.340820 FR=1170.304321 RL=23.535908 RR=26.923540
+[DEBUG] [Suspension] FL=0.000000 FR=0.006360 RL=0.185620 RR=0.163464
+[DEBUG] [Wheel] FL=1667.674561 FR=1347.548218 RL=25.974598 RR=24.826660
+[DEBUG] [Energy] x=2.213 y=3.619 z=7.365 vx=2.596 vy=-0.030 vz=9.059 total=4455407.500 potential=42600.812 linear=53289.441 angular=52.861 wheels=4358616.500 suspension=847.913 suspensionPower=-1160.851 suspensionResidual=-0.000
+[DEBUG] [Suspension] FL=0.034009 FR=0.037671 RL=0.164746 RR=0.175183
+[DEBUG] [Wheel] FL=1812.923706 FR=1463.982300 RL=32.744663 RR=30.689335
+[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.171887 RR=0.168408
+[DEBUG] [Wheel] FL=1916.251221 FR=1564.911133 RL=20.431128 RR=20.569601
 [DEBUG] [Performance] FPS=58 PhysicsHz=120
-[DEBUG] [Energy] x=0.268 y=3.138 z=-2.123 vx=-0.010 vy=-0.290 vz=-2.238 total=40670.707 potential=36939.199 linear=3055.345 angular=6.295 wheels=83.413 suspension=586.457 suspensionPower=-595.563 suspensionResidual=-0.000
-[DEBUG] [Suspension] FL=0.067151 FR=0.105786 RL=0.088208 RR=0.131604
-[DEBUG] [Wheel] FL=30.320431 FR=15.379631 RL=6.135034 RR=3.262949
-[DEBUG] [Suspension] FL=0.010022 FR=0.044446 RL=0.150830 RR=0.186169
-[DEBUG] [Wheel] FL=231.589096 FR=164.202896 RL=6.627450 RR=5.134213
-[DEBUG] [Energy] x=0.280 y=3.039 z=-3.030 vx=0.106 vy=-0.061 vz=-0.653 total=132116.953 potential=35774.301 linear=264.564 angular=9.522 wheels=95158.461 suspension=910.109 suspensionPower=-505.719 suspensionResidual=0.000
-[DEBUG] [Suspension] FL=0.003980 FR=0.034192 RL=0.160718 RR=0.187634
-[DEBUG] [Wheel] FL=425.734985 FR=311.317810 RL=9.568572 RR=7.982187
-[DEBUG] [Suspension] FL=0.008557 FR=0.032727 RL=0.164380 RR=0.186353
-[DEBUG] [Wheel] FL=614.210327 FR=456.527344 RL=12.635484 RR=10.795217
-[DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Energy] x=0.403 y=3.057 z=-2.670 vx=0.443 vy=0.152 vz=2.040 total=633401.000 potential=35990.945 linear=2627.624 angular=43.104 wheels=593790.125 suspension=949.184 suspensionPower=-271.372 suspensionResidual=0.403
-[DEBUG] [Suspension] FL=0.010022 FR=0.030896 RL=0.172986 RR=0.183057
-[DEBUG] [Wheel] FL=799.694092 FR=605.842224 RL=15.051726 RR=13.603292
-[DEBUG] [Suspension] FL=0.005261 FR=0.027234 RL=0.173535 RR=0.174268
-[DEBUG] [Wheel] FL=987.361023 FR=768.975708 RL=17.177685 RR=16.629501
-[DEBUG] [Energy] x=0.860 y=3.204 z=-0.978 vx=1.462 vy=0.367 vz=4.485 total=1596308.250 potential=37712.262 linear=13433.288 angular=129.395 wheels=1544116.625 suspension=916.590 suspensionPower=-2472.642 suspensionResidual=-0.000
-[DEBUG] [Suspension] FL=0.013501 FR=0.033093 RL=0.209058 RR=0.152295
-[DEBUG] [Wheel] FL=1170.827148 FR=923.765808 RL=19.410980 RR=19.604893
-[DEBUG] [Suspension] FL=0.036389 FR=0.055432 RL=0.181958 RR=0.088391
-[DEBUG] [Wheel] FL=1170.151001 FR=879.489563 RL=13.188119 RR=11.084920
-[DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Energy] x=2.039 y=3.460 z=1.698 vx=3.138 vy=0.411 vz=5.575 total=1883143.500 potential=40726.664 linear=24655.994 angular=236.259 wheels=1816800.250 suspension=724.424 suspensionPower=-764.576 suspensionResidual=0.000
-[DEBUG] [Suspension] FL=0.057813 FR=0.051587 RL=0.176648 RR=0.078687
-[DEBUG] [Wheel] FL=1046.007935 FR=786.452942 RL=13.739917 RR=12.707808
-[DEBUG] [Suspension] FL=0.072278 FR=0.072644 RL=0.142590 RR=0.124646
-[DEBUG] [Wheel] FL=902.429749 FR=661.085876 RL=15.413936 RR=16.023434
-[DEBUG] [Energy] x=3.977 y=3.621 z=4.688 vx=4.086 vy=0.406 vz=6.415 total=1132746.625 potential=42622.184 linear=34807.582 angular=137.411 wheels=1054527.500 suspension=652.061 suspensionPower=-43.425 suspensionResidual=-0.000
-[DEBUG] [Suspension] FL=0.000000 FR=0.081799 RL=0.082715 RR=0.190564
-[DEBUG] [Wheel] FL=886.735474 FR=533.398010 RL=13.981105 RR=15.518735
-[DEBUG] [Suspension] FL=0.014783 FR=0.111462 RL=0.036938 RR=0.173718
-[DEBUG] [Wheel] FL=865.381409 FR=318.267822 RL=17.082483 RR=17.007835
-[DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Energy] x=5.764 y=3.688 z=8.343 vx=3.153 vy=-0.122 vz=8.055 total=776261.000 potential=43420.922 linear=44905.668 angular=152.884 wheels=687197.688 suspension=583.793 suspensionPower=-720.778 suspensionResidual=0.000
-[DEBUG] [Suspension] FL=0.000000 FR=0.153394 RL=0.071362 RR=0.201001
-[DEBUG] [Wheel] FL=802.966614 FR=212.986191 RL=16.933619 RR=20.633282
-[DEBUG] [Suspension] FL=0.000000 FR=0.069348 RL=0.057813 RR=0.218030
-[DEBUG] [Wheel] FL=802.966614 FR=29.314911 RL=18.635136 RR=18.200567
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=791.393 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=17.741 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=6.865 wheelSpeed=9.279 longVel=8.873 slipVel=-0.406 normal=317.463 longForce=51.164
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=6.362 wheelSpeed=9.052 longVel=8.878 slipVel=-0.174 normal=4947.985 longForce=72.907
-[DEBUG] [Energy] x=6.836 y=3.885 z=12.831 vx=1.307 vy=-0.002 vz=9.091 total=522567.531 potential=45739.133 linear=50608.918 angular=487.129 wheels=425243.562 suspension=488.784 suspensionPower=1140.597 suspensionResidual=-0.000
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=652.503 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=12.981 wheelSpeed=-2.185 longVel=7.547 slipVel=9.733 normal=3286.164 longForce=-2507.686
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-4.801 wheelSpeed=2.552 longVel=7.774 slipVel=5.222 normal=747.937 longForce=-721.308
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-4.454 wheelSpeed=1.897 longVel=7.624 slipVel=5.727 normal=1492.838 longForce=-1438.932
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=407.726 wheelSpeed=215.848 longVel=8.830 slipVel=-207.018 normal=5727.733 longForce=5355.421
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-6.832 wheelSpeed=1.285 longVel=8.247 slipVel=6.961 normal=974.646 longForce=-938.510
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=8.474 wheelSpeed=-2.690 longVel=8.814 slipVel=11.504 normal=1736.213 longForce=-985.669
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-7.285 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Suspension] FL=0.087476 FR=0.062939 RL=0.039502 RR=0.083813
-[DEBUG] [Wheel] FL=319.511353 FR=-3.075732 RL=-7.766054 RR=-5.883731
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=139.484 wheelSpeed=81.390 longVel=9.689 slipVel=-71.701 normal=5428.637 longForce=5065.112
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-3.076 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-2.368 wheelSpeed=1.903 longVel=9.675 slipVel=7.772 normal=6029.064 longForce=-2334.505
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=1.770 wheelSpeed=6.415 longVel=9.232 slipVel=2.817 normal=1383.755 longForce=-221.656
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=5.724 wheelSpeed=3.024 longVel=8.635 slipVel=5.611 normal=8478.440 longForce=-4861.935
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-0.056 wheelSpeed=5.075 longVel=8.767 slipVel=3.692 normal=1100.462 longForce=-590.913
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=5.915 wheelSpeed=10.236 longVel=8.643 slipVel=-1.593 normal=3696.309 longForce=1288.743
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=8.426 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Suspension] FL=0.238721 FR=0.032910 RL=0.101025 RR=0.000000
-[DEBUG] [Wheel] FL=4.539935 FR=11.564066 RL=-1.740967 RR=8.426453
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=4.536 wheelSpeed=2.251 longVel=8.034 slipVel=5.783 normal=10545.329 longForce=-5038.488
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=0.780 wheelSpeed=2.183 longVel=8.011 slipVel=5.829 normal=3605.379 longForce=-3467.013
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=1.303 wheelSpeed=5.412 longVel=8.043 slipVel=2.631 normal=930.336 longForce=-888.333
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=8.426 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Energy] x=7.680 y=3.713 z=17.309 vx=2.156 vy=-0.028 vz=7.627 total=83125.094 potential=43708.402 linear=37687.957 angular=12.057 wheels=421.463 suspension=1295.215 suspensionPower=-2414.109 suspensionResidual=0.001
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=4.200 wheelSpeed=2.041 longVel=7.913 slipVel=5.872 normal=8255.895 longForce=-5080.763
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=0.983 wheelSpeed=1.972 longVel=7.720 slipVel=5.749 normal=3997.960 longForce=-3750.605
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=6.253 wheelSpeed=-2.951 longVel=7.907 slipVel=10.858 normal=289.104 longForce=-252.007
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=8.426 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=3.596 wheelSpeed=1.749 longVel=7.647 slipVel=5.898 normal=8292.766 longForce=-5099.940
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=2.857 wheelSpeed=1.635 longVel=7.362 slipVel=5.728 normal=5695.778 longForce=-4898.940
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=10.036 wheelSpeed=-1.242 longVel=7.642 slipVel=8.884 normal=557.234 longForce=-409.366
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=8.426 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Suspension] FL=0.281018 FR=0.129956 RL=0.032544 RR=0.000000
-[DEBUG] [Wheel] FL=2.842033 FR=2.033223 RL=-7.895656 RR=8.426453
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=1.574 wheelSpeed=0.869 longVel=6.639 slipVel=5.770 normal=7112.771 longForce=-4974.191
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=0.473 wheelSpeed=0.383 longVel=6.193 slipVel=5.809 normal=5677.208 longForce=-4918.461
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-4.165 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=8.426 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=0.492 wheelSpeed=0.329 longVel=6.123 slipVel=5.794 normal=6767.152 longForce=-4986.154
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=0.046 wheelSpeed=8.890 longVel=5.635 slipVel=-3.255 normal=4552.223 longForce=2674.494
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-4.096 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=8.426 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Suspension] FL=0.233777 FR=0.142041 RL=0.024487 RR=0.000000
-[DEBUG] [Wheel] FL=-0.265583 FR=1.450675 RL=11.180048 RR=8.426453
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-0.053 wheelSpeed=11.340 longVel=5.490 slipVel=-5.850 normal=5866.919 longForce=4846.899
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=12.194 wheelSpeed=-2.517 longVel=5.419 slipVel=7.936 normal=2550.863 longForce=-2443.779
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=17.662 wheelSpeed=-0.113 longVel=5.495 slipVel=5.607 normal=2912.467 longForce=-2734.379
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=8.426 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Energy] x=8.676 y=3.811 z=20.220 vx=1.870 vy=0.275 vz=4.410 total=60031.660 potential=44862.781 linear=13813.977 angular=102.762 wheels=415.655 suspension=836.483 suspensionPower=-3219.658 suspensionResidual=-0.001
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-1.685 wheelSpeed=4.922 longVel=4.846 slipVel=-0.077 normal=2933.068 longForce=-19.266
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-1.934 wheelSpeed=4.808 longVel=4.749 slipVel=-0.059 normal=1267.670 longForce=-10.498
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-1.594 wheelSpeed=5.048 longVel=4.858 slipVel=-0.190 normal=2674.679 longForce=50.237
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-1.897 wheelSpeed=4.834 longVel=4.751 slipVel=-0.082 normal=3164.021 longForce=-3.893
-[DEBUG] [Suspension] FL=0.134534 FR=0.083081 RL=0.067517 RR=0.105603
-[DEBUG] [Wheel] FL=0.297674 FR=11.808960 RL=-1.036475 RR=0.858566
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=15.364 wheelSpeed=-0.368 longVel=4.479 slipVel=4.847 normal=3142.676 longForce=-1956.378
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=13.140 wheelSpeed=-1.319 longVel=4.474 slipVel=5.794 normal=2697.092 longForce=-1816.645
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-0.372 wheelSpeed=6.810 longVel=4.471 slipVel=-2.338 normal=2977.059 longForce=1046.976
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=14.527 wheelSpeed=-0.586 longVel=4.477 slipVel=5.063 normal=2758.102 longForce=-1782.328
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-1.071 wheelSpeed=7.250 longVel=4.274 slipVel=-2.976 normal=3176.712 longForce=1727.406
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=14.230 wheelSpeed=-1.257 longVel=4.364 slipVel=5.621 normal=2884.014 longForce=-2233.432
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=14.116 wheelSpeed=-0.660 longVel=4.267 slipVel=4.927 normal=2962.415 longForce=-1672.934
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=12.091 wheelSpeed=-1.430 longVel=4.367 slipVel=5.796 normal=2342.941 longForce=-1458.497
-[DEBUG] [Suspension] FL=0.099927 FR=0.106152 RL=0.080884 RR=0.093701
-[DEBUG] [Wheel] FL=13.129350 FR=14.074761 RL=15.846813 RR=11.969451
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=14.105 wheelSpeed=-0.745 longVel=4.347 slipVel=5.092 normal=2615.829 longForce=-1737.672
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=13.937 wheelSpeed=-1.447 longVel=4.375 slipVel=5.822 normal=3205.472 longForce=-2271.128
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-6.867 wheelSpeed=0.004 longVel=4.340 slipVel=4.336 normal=3641.886 longForce=-2035.347
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=11.933 wheelSpeed=-1.505 longVel=4.374 slipVel=5.879 normal=2184.967 longForce=-1455.513
-[DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-1.021 wheelSpeed=6.375 longVel=4.129 slipVel=-2.246 normal=1738.705 longForce=949.769
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=17.051 wheelSpeed=-1.544 longVel=4.221 slipVel=5.766 normal=4342.466 longForce=-3702.405
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=14.020 wheelSpeed=-1.619 longVel=4.129 slipVel=5.748 normal=3605.259 longForce=-2462.362
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=11.392 wheelSpeed=-1.672 longVel=4.223 slipVel=5.895 normal=1945.745 longForce=-1365.822
-[DEBUG] [Energy] x=9.568 y=3.909 z=22.344 vx=1.591 vy=0.084 vz=3.983 total=58183.695 potential=46013.465 linear=11040.641 angular=5.150 wheels=556.291 suspension=568.151 suspensionPower=-710.572 suspensionResidual=0.000
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=10.633 wheelSpeed=-1.715 longVel=4.243 slipVel=5.958 normal=1269.682 longForce=-1075.476
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=16.566 wheelSpeed=-1.546 longVel=4.278 slipVel=5.824 normal=4108.508 longForce=-3493.922
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=15.389 wheelSpeed=-0.715 longVel=4.245 slipVel=4.960 normal=3035.248 longForce=-2265.596
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=12.526 wheelSpeed=-1.671 longVel=4.278 slipVel=5.949 normal=2305.017 longForce=-1856.685
-[DEBUG] [Suspension] FL=0.061292 FR=0.146619 RL=0.093884 RR=0.076672
-[DEBUG] [Wheel] FL=11.266829 FR=15.803305 RL=-6.525863 RR=12.314043
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-4.173 wheelSpeed=3.025 longVel=4.061 slipVel=1.036 normal=2174.980 longForce=-583.798
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=16.630 wheelSpeed=-1.514 longVel=4.176 slipVel=5.690 normal=4313.856 longForce=-3495.577
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=11.418 wheelSpeed=-2.863 longVel=4.059 slipVel=6.921 normal=3561.255 longForce=-2406.333
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=10.933 wheelSpeed=-1.618 longVel=4.177 slipVel=5.795 normal=1809.975 longForce=-1122.088
-[DEBUG] [Suspension] FL=0.058179 FR=0.173535 RL=0.090771 RR=0.072278
-[DEBUG] [Wheel] FL=21.478939 FR=42.087254 RL=6.747982 RR=8.827941
-[DEBUG] [Energy] x=10.127 y=3.927 z=24.320 vx=0.138 vy=0.086 vz=3.991 total=58659.293 potential=46231.891 linear=9571.363 angular=910.004 wheels=1058.900 suspension=887.138 suspensionPower=-3665.399 suspensionResidual=138.535
-[DEBUG] [Suspension] FL=0.000000 FR=0.192212 RL=0.000000 RR=0.183423
-[DEBUG] [Wheel] FL=21.270374 FR=15.853293 RL=6.183617 RR=10.642842
-[DEBUG] [Suspension] FL=0.000000 FR=0.155042 RL=0.000000 RR=0.181958
-[DEBUG] [Wheel] FL=21.270374 FR=12.312366 RL=6.183617 RR=10.193679
-[DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Energy] x=9.468 y=3.882 z=26.379 vx=-2.156 vy=-0.652 vz=4.005 total=59352.230 potential=45699.828 linear=12668.536 angular=178.892 wheels=305.205 suspension=499.772 suspensionPower=-11790.330 suspensionResidual=-0.004
-[DEBUG] [Suspension] FL=0.127209 FR=0.092236 RL=0.084363 RR=0.122449
-[DEBUG] [Wheel] FL=9.450837 FR=9.352666 RL=9.439290 RR=9.320743
-[DEBUG] [Suspension] FL=0.090039 FR=0.111096 RL=0.057813 RR=0.123914
-[DEBUG] [Wheel] FL=23.433931 FR=38.934875 RL=7.360503 RR=11.019898
-[DEBUG] [Energy] x=8.308 y=3.782 z=28.364 vx=-3.260 vy=-0.206 vz=3.412 total=61301.695 potential=44523.438 linear=13387.069 angular=1329.027 wheels=1193.053 suspension=869.111 suspensionPower=-5081.679 suspensionResidual=137.699
-[DEBUG] [Suspension] FL=0.000000 FR=0.185254 RL=0.000000 RR=0.222424
-[DEBUG] [Wheel] FL=23.433931 FR=17.571173 RL=7.195055 RR=12.329929
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=11.860 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-0.541 wheelSpeed=5.504 longVel=5.461 slipVel=-0.043 normal=3148.953 longForce=-10.697
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-4.379 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=0.476 wheelSpeed=6.017 longVel=5.462 slipVel=-0.556 normal=2238.797 longForce=-6.613
-[DEBUG] [Suspension] FL=0.023938 FR=0.145886 RL=0.031812 RR=0.131421
-[DEBUG] [Wheel] FL=-2.996252 FR=-1.602613 RL=-0.759595 RR=7.459029
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-0.520 wheelSpeed=10.223 longVel=4.356 slipVel=-5.866 normal=5319.903 longForce=4066.641
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-0.644 wheelSpeed=10.209 longVel=4.921 slipVel=-5.289 normal=5976.448 longForce=4108.586
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=4.051 wheelSpeed=-4.899 longVel=4.403 slipVel=9.302 normal=1596.181 longForce=-983.118
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=11.765 wheelSpeed=-1.084 longVel=4.927 slipVel=6.011 normal=2175.914 longForce=-1019.092
-[DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=17.405 wheelSpeed=-0.733 longVel=4.902 slipVel=5.634 normal=4144.789 longForce=-3158.333
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-1.357 wheelSpeed=6.612 longVel=4.973 slipVel=-1.639 normal=3681.762 longForce=1299.877
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-1.159 wheelSpeed=5.444 longVel=4.921 slipVel=-0.524 normal=1125.240 longForce=204.735
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-1.462 wheelSpeed=6.615 longVel=4.969 slipVel=-1.646 normal=2738.447 longForce=1346.998
-[DEBUG] [Energy] x=6.193 y=3.682 z=29.665 vx=-4.289 vy=-0.197 vz=2.008 total=57783.078 potential=43342.027 linear=13480.444 angular=22.463 wheels=264.433 suspension=673.709 suspensionPower=164.355 suspensionResidual=0.001
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=15.818 wheelSpeed=-0.872 longVel=4.895 slipVel=5.767 normal=2820.855 longForce=-2588.811
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-1.869 wheelSpeed=4.700 longVel=4.812 slipVel=0.113 normal=2475.379 longForce=-132.094
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=13.578 wheelSpeed=-0.556 longVel=4.919 slipVel=5.476 normal=1749.260 longForce=-1350.162
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=15.069 wheelSpeed=-0.961 longVel=4.817 slipVel=5.778 normal=3004.295 longForce=-2340.754
-[DEBUG] [Suspension] FL=0.111096 FR=0.112378 RL=0.054334 RR=0.098279
-[DEBUG] [Wheel] FL=15.802359 FR=-0.911939 RL=12.849001 RR=15.592365
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=14.937 wheelSpeed=-1.143 longVel=4.689 slipVel=5.832 normal=3465.174 longForce=-2442.103
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=12.433 wheelSpeed=-1.070 longVel=4.656 slipVel=5.726 normal=1860.690 longForce=-1298.160
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=16.208 wheelSpeed=-1.163 longVel=4.674 slipVel=5.838 normal=4283.132 longForce=-3009.749
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-7.387 wheelSpeed=0.139 longVel=4.659 slipVel=4.520 normal=2899.165 longForce=-1688.499
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=15.330 wheelSpeed=-1.297 longVel=4.553 slipVel=5.850 normal=3682.768 longForce=-2743.903
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=13.393 wheelSpeed=-1.242 longVel=4.527 slipVel=5.769 normal=2495.719 longForce=-1859.833
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=15.214 wheelSpeed=-1.334 longVel=4.550 slipVel=5.884 normal=3840.876 longForce=-2728.605
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=14.550 wheelSpeed=-0.515 longVel=4.525 slipVel=5.040 normal=2563.166 longForce=-1730.908
-[DEBUG] [Suspension] FL=0.132520 FR=0.081799 RL=0.113110 RR=0.077405
-[DEBUG] [Wheel] FL=14.410934 FR=15.159822 RL=14.118904 RR=-0.826876
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=14.828 wheelSpeed=-1.287 longVel=4.428 slipVel=5.715 normal=3460.442 longForce=-2517.785
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-2.735 wheelSpeed=4.354 longVel=4.366 slipVel=0.013 normal=3191.957 longForce=-56.844
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=13.146 wheelSpeed=-1.299 longVel=4.442 slipVel=5.740 normal=2947.886 longForce=-1805.045
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=8.631 wheelSpeed=-4.041 longVel=4.365 slipVel=8.406 normal=2873.212 longForce=-2224.028
-[DEBUG] [Energy] x=4.112 y=3.577 z=30.748 vx=-3.890 vy=-0.134 vz=2.306 total=55297.781 potential=42112.391 linear=12283.285 angular=7.397 wheels=282.147 suspension=612.558 suspensionPower=182.910 suspensionResidual=0.000
-[DEBUG] [Suspension] FL=0.106885 FR=0.099194 RL=0.090039 RR=0.075391
-[DEBUG] [Wheel] FL=9.268685 FR=9.288186 RL=9.271324 RR=9.264026
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-2.119 wheelSpeed=4.728 longVel=4.636 slipVel=-0.093 normal=1199.068 longForce=0.692
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-2.058 wheelSpeed=4.754 longVel=4.667 slipVel=-0.087 normal=4091.124 longForce=-3.433
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-2.114 wheelSpeed=4.733 longVel=4.645 slipVel=-0.089 normal=2986.817 longForce=3.131
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-2.076 wheelSpeed=4.753 longVel=4.665 slipVel=-0.087 normal=3250.141 longForce=2.958
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=14.057 wheelSpeed=-1.250 longVel=4.468 slipVel=5.718 normal=3547.062 longForce=-2155.010
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=0.134 wheelSpeed=8.699 longVel=4.500 slipVel=-4.199 normal=5324.119 longForce=2458.527
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=15.017 wheelSpeed=-0.049 longVel=4.482 slipVel=4.531 normal=2684.100 longForce=-1530.189
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-0.493 wheelSpeed=6.300 longVel=4.500 slipVel=-1.799 normal=2746.437 longForce=655.900
-[DEBUG] [Suspension] FL=0.082349 FR=0.119885 RL=0.108533 RR=0.071362
-[DEBUG] [Wheel] FL=14.056566 FR=0.134455 RL=15.017471 RR=-0.492589
+[DEBUG] [Energy] x=3.686 y=3.658 z=12.728 vx=3.134 vy=-0.022 vz=11.395 total=5347930.500 potential=43059.484 linear=83798.602 angular=120.979 wheels=5220468.500 suspension=483.216 suspensionPower=-1324.743 suspensionResidual=720.644
+[DEBUG] [Suspension] FL=0.097913 FR=0.000000 RL=0.183972 RR=0.066968
+[DEBUG] [Wheel] FL=1704.800049 FR=1506.680420 RL=25.918026 RR=24.391533
+[DEBUG] [Suspension] FL=0.109998 FR=0.000000 RL=0.194226 RR=0.037122
+[DEBUG] [Wheel] FL=1488.218384 FR=1506.680420 RL=26.169899 RR=26.586107
+[DEBUG] [Energy] x=5.850 y=3.620 z=18.703 vx=5.175 vy=0.041 vz=12.206 total=3876945.500 potential=42611.457 linear=105467.945 angular=119.686 wheels=3727870.500 suspension=876.003 suspensionPower=-10635.223 suspensionResidual=-0.003
+[DEBUG] [Suspension] FL=0.044446 FR=0.091870 RL=0.177014 RR=0.192578
+[DEBUG] [Wheel] FL=1354.762329 FR=1299.846558 RL=28.697325 RR=28.018747
+[DEBUG] [Suspension] FL=0.035840 FR=0.025952 RL=0.093701 RR=0.041333
+[DEBUG] [Wheel] FL=1299.809814 FR=1269.516724 RL=26.806316 RR=24.955866
 [DEBUG] [Performance] FPS=59 PhysicsHz=120
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=13.264 wheelSpeed=-1.163 longVel=4.645 slipVel=5.807 normal=2791.192 longForce=-1737.361
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=15.793 wheelSpeed=-0.951 longVel=4.792 slipVel=5.742 normal=4238.656 longForce=-2646.032
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=15.597 wheelSpeed=-0.903 longVel=4.636 slipVel=5.539 normal=2791.791 longForce=-2518.260
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-1.827 wheelSpeed=6.050 longVel=4.791 slipVel=-1.259 normal=3008.188 longForce=1016.828
-[DEBUG] [Energy] x=2.075 y=3.411 z=31.899 vx=-4.049 vy=-0.224 vz=2.174 total=53944.117 potential=40155.941 linear=12701.085 angular=10.273 wheels=417.064 suspension=659.752 suspensionPower=-100.158 suspensionResidual=0.000
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=14.373 wheelSpeed=-0.893 longVel=4.633 slipVel=5.526 normal=2767.316 longForce=-1983.511
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-1.925 wheelSpeed=5.946 longVel=4.696 slipVel=-1.250 normal=4425.683 longForce=970.938
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=8.409 wheelSpeed=-3.709 longVel=4.621 slipVel=8.330 normal=2010.697 longForce=-1837.703
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-1.956 wheelSpeed=6.514 longVel=4.695 slipVel=-1.819 normal=3048.174 longForce=1474.448
-[DEBUG] [Suspension] FL=0.104321 FR=0.127026 RL=0.094800 RR=0.081250
-[DEBUG] [Wheel] FL=15.314879 FR=-0.632792 RL=-6.955400 RR=-1.925127
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=15.314 wheelSpeed=-0.474 longVel=4.704 slipVel=5.178 normal=2692.901 longForce=-2026.876
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-0.290 wheelSpeed=8.124 longVel=4.779 slipVel=-3.345 normal=3661.103 longForce=2146.356
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-0.650 wheelSpeed=7.038 longVel=4.694 slipVel=-2.344 normal=1814.892 longForce=1362.988
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-1.872 wheelSpeed=6.014 longVel=4.779 slipVel=-1.235 normal=2381.688 longForce=1005.142
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=15.488 wheelSpeed=-0.925 longVel=4.760 slipVel=5.685 normal=3561.813 longForce=-2495.422
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-6.084 wheelSpeed=0.405 longVel=4.854 slipVel=4.449 normal=3242.228 longForce=-2022.478
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-2.271 wheelSpeed=3.997 longVel=4.761 slipVel=0.764 normal=1627.150 longForce=-567.430
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-1.633 wheelSpeed=6.922 longVel=4.863 slipVel=-2.059 normal=3235.147 longForce=1686.411
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=14.247 wheelSpeed=-1.101 longVel=4.670 slipVel=5.771 normal=3550.958 longForce=-2108.802
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=14.610 wheelSpeed=-0.516 longVel=4.670 slipVel=5.186 normal=3130.152 longForce=-1757.459
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=14.150 wheelSpeed=-0.701 longVel=4.668 slipVel=5.369 normal=2939.091 longForce=-1717.975
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=10.993 wheelSpeed=-3.519 longVel=4.678 slipVel=8.197 normal=3841.311 longForce=-2790.216
-[DEBUG] [Suspension] FL=0.123547 FR=0.102856 RL=0.083813 RR=0.092969
-[DEBUG] [Wheel] FL=14.246782 FR=14.610490 RL=14.149635 RR=10.992905
-[DEBUG] [Energy] x=0.058 y=3.313 z=32.946 vx=-3.825 vy=-0.056 vz=2.031 total=51220.520 potential=39000.602 linear=11256.854 angular=8.188 wheels=296.228 suspension=658.651 suspensionPower=-610.876 suspensionResidual=0.000
-[DEBUG] [Suspension] FL=0.128491 FR=0.087476 RL=0.086926 RR=0.104871
-[DEBUG] [Wheel] FL=9.146429 FR=9.136242 RL=9.168015 RR=9.129449
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-2.627 wheelSpeed=4.488 longVel=4.367 slipVel=-0.120 normal=1493.974 longForce=12.514
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-2.710 wheelSpeed=4.455 longVel=4.354 slipVel=-0.101 normal=3758.654 longForce=19.936
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-2.621 wheelSpeed=4.487 longVel=4.381 slipVel=-0.106 normal=2490.897 longForce=8.812
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-2.671 wheelSpeed=4.462 longVel=4.360 slipVel=-0.102 normal=3273.088 longForce=9.238
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=11.685 wheelSpeed=-1.542 longVel=4.139 slipVel=5.681 normal=2054.592 longForce=-1382.851
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-0.182 wheelSpeed=8.898 longVel=4.111 slipVel=-4.787 normal=4751.141 longForce=2769.137
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=13.522 wheelSpeed=-1.308 longVel=4.144 slipVel=5.452 normal=3171.206 longForce=-1972.314
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-0.008 wheelSpeed=6.499 longVel=4.118 slipVel=-2.381 normal=1985.340 longForce=618.436
-[DEBUG] [Suspension] FL=0.088757 FR=0.120068 RL=0.114209 RR=0.068433
-[DEBUG] [Wheel] FL=11.444736 FR=15.528997 RL=15.177860 RR=11.689081
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=11.226 wheelSpeed=-1.672 longVel=4.221 slipVel=5.893 normal=1736.693 longForce=-1295.652
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=15.537 wheelSpeed=-1.586 longVel=4.247 slipVel=5.833 normal=4099.651 longForce=-3084.006
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=16.141 wheelSpeed=-1.607 longVel=4.222 slipVel=5.829 normal=4305.814 longForce=-3363.866
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-7.878 wheelSpeed=0.724 longVel=4.247 slipVel=3.523 normal=1549.074 longForce=-971.164
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=1212.219 wheelSpeed=615.457 longVel=15.113 latVel=-0.032 slipVel=-600.344 slipRatio=39.724 slipAngle=-0.002 normal=3292.439 longForce=3078.427
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=1216.274 wheelSpeed=615.456 longVel=14.880 latVel=-0.025 slipVel=-600.576 slipRatio=40.360 slipAngle=-0.002 normal=1417.427 longForce=1325.294
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=17.783 wheelSpeed=14.420 longVel=15.124 latVel=-0.315 slipVel=0.704 slipRatio=-0.047 slipAngle=-0.021 normal=2142.048 longForce=-223.574
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=14.705 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Energy] x=8.390 y=3.871 z=25.247 vx=5.239 vy=-0.331 vz=13.346 total=2752601.250 potential=45564.750 linear=123403.023 angular=169.496 wheels=2583267.500 suspension=196.511 suspensionPower=-650.902 suspensionResidual=0.002
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=957.264 wheelSpeed=489.569 longVel=14.571 latVel=-0.203 slipVel=-474.999 slipRatio=32.600 slipAngle=-0.014 normal=4760.168 longForce=4450.529
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=1054.386 wheelSpeed=534.208 longVel=14.624 latVel=-0.238 slipVel=-519.585 slipRatio=35.531 slipAngle=-0.016 normal=1135.544 longForce=1061.670
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=14.679 wheelSpeed=6.584 longVel=14.591 latVel=-0.118 slipVel=8.007 slipRatio=-0.549 slipAngle=-0.008 normal=6207.467 longForce=-5655.936
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=7.882 wheelSpeed=4.266 longVel=14.621 latVel=-0.177 slipVel=10.355 slipRatio=-0.708 slipAngle=-0.012 normal=5297.882 longForce=-4719.167
+[DEBUG] [Suspension] FL=0.135632 FR=0.050122 RL=0.147351 RR=0.081616
+[DEBUG] [Wheel] FL=750.549500 FR=908.870789 RL=15.849625 RR=-1.073972
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=678.908 wheelSpeed=351.430 longVel=13.668 latVel=-0.294 slipVel=-337.762 slipRatio=24.712 slipAngle=-0.022 normal=5720.253 longForce=5347.190
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=859.056 wheelSpeed=437.618 longVel=13.879 latVel=-0.311 slipVel=-423.739 slipRatio=30.531 slipAngle=-0.022 normal=2129.761 longForce=1990.997
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=14.442 wheelSpeed=7.621 longVel=13.671 latVel=-0.055 slipVel=6.049 slipRatio=-0.443 slipAngle=-0.004 normal=4942.834 longForce=-4655.099
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=7.288 wheelSpeed=6.084 longVel=13.878 latVel=-0.049 slipVel=7.794 slipRatio=-0.562 slipAngle=-0.004 normal=3033.501 longForce=-2892.061
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=428.641 wheelSpeed=223.637 longVel=13.805 latVel=-0.221 slipVel=-209.831 slipRatio=15.199 slipAngle=-0.016 normal=3262.469 longForce=3049.362
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=696.795 wheelSpeed=354.218 longVel=13.896 latVel=-0.220 slipVel=-340.322 slipRatio=24.490 slipAngle=-0.016 normal=30.806 longForce=28.800
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=12.121 wheelSpeed=-1.469 longVel=13.804 latVel=-0.122 slipVel=15.273 slipRatio=-1.106 slipAngle=-0.009 normal=1588.908 longForce=-1505.644
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-0.735 wheelSpeed=2.619 longVel=13.901 latVel=-0.102 slipVel=11.282 slipRatio=-0.812 slipAngle=-0.007 normal=2567.392 longForce=-2419.669
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=192.067 wheelSpeed=106.456 longVel=13.747 latVel=-0.149 slipVel=-92.708 slipRatio=6.744 slipAngle=-0.011 normal=4287.236 longForce=4005.342
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=554.345 wheelSpeed=283.042 longVel=13.597 latVel=-0.154 slipVel=-269.445 slipRatio=19.817 slipAngle=-0.011 normal=75.852 longForce=70.914
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.316 wheelSpeed=0.320 longVel=13.758 latVel=-0.315 slipVel=13.438 slipRatio=-0.977 slipAngle=-0.023 normal=2907.160 longForce=-2430.825
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=7.018 wheelSpeed=-3.606 longVel=13.602 latVel=-0.321 slipVel=17.208 slipRatio=-1.265 slipAngle=-0.024 normal=1312.397 longForce=-1147.176
+[DEBUG] [Suspension] FL=0.135999 FR=0.024854 RL=0.091870 RR=0.077405
+[DEBUG] [Wheel] FL=130.054794 FR=511.591522 RL=-9.076885 RR=4.159489
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-9.154 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=360.246 wheelSpeed=188.948 longVel=14.150 latVel=-0.021 slipVel=-174.797 slipRatio=12.353 slipAngle=-0.002 normal=2807.191 longForce=2624.711
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=2.912 wheelSpeed=4.618 longVel=14.112 latVel=0.031 slipVel=9.494 slipRatio=-0.673 slipAngle=0.002 normal=2357.684 longForce=-2268.286
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=4.734 wheelSpeed=7.019 longVel=14.152 latVel=0.032 slipVel=7.132 slipRatio=-0.504 slipAngle=0.002 normal=1022.462 longForce=-980.745
+[DEBUG] [Energy] x=11.211 y=3.822 z=31.866 vx=5.832 vy=-0.416 vz=12.893 total=260035.266 potential=44996.418 linear=120245.648 angular=11.398 wheels=94402.523 suspension=379.293 suspensionPower=-955.602 suspensionResidual=2346.733
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-9.154 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=178.530 wheelSpeed=95.024 longVel=11.901 latVel=-6.400 slipVel=-83.123 slipRatio=6.985 slipAngle=-0.493 normal=3831.131 longForce=1710.216
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=6.996 wheelSpeed=7.443 longVel=13.338 latVel=0.337 slipVel=5.895 slipRatio=-0.442 slipAngle=0.025 normal=2843.227 longForce=-1592.620
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=11.554 wheelSpeed=-2.442 longVel=13.493 latVel=0.324 slipVel=15.935 slipRatio=-1.181 slipAngle=0.024 normal=2433.771 longForce=-2101.892
+[DEBUG] [Suspension] FL=0.110730 FR=0.092053 RL=0.082349 RR=0.026318
+[DEBUG] [Wheel] FL=10.841952 FR=83.235168 RL=1.608132 RR=6.719559
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=21.899 wheelSpeed=8.773 longVel=13.392 latVel=-3.648 slipVel=4.620 slipRatio=-0.345 slipAngle=-0.266 normal=13747.494 longForce=-747.153
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=53.782 wheelSpeed=32.008 longVel=12.666 latVel=-3.247 slipVel=-19.342 slipRatio=1.527 slipAngle=-0.251 normal=2174.532 longForce=435.504
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-7.706 wheelSpeed=1.500 longVel=13.603 latVel=2.028 slipVel=12.103 slipRatio=-0.890 slipAngle=0.148 normal=1528.013 longForce=-375.159
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-4.855 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=15.329 wheelSpeed=7.758 longVel=13.485 latVel=-0.012 slipVel=5.727 slipRatio=-0.425 slipAngle=-0.001 normal=7516.743 longForce=-4945.091
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=13.384 wheelSpeed=5.714 longVel=12.587 latVel=-0.003 slipVel=6.873 slipRatio=-0.546 slipAngle=-0.000 normal=6347.953 longForce=-5879.565
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-0.104 wheelSpeed=5.403 longVel=13.476 latVel=-1.110 slipVel=8.074 slipRatio=-0.599 slipAngle=-0.082 normal=905.642 longForce=-287.995
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-4.855 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=13.368 wheelSpeed=6.758 longVel=12.486 latVel=-0.103 slipVel=5.728 slipRatio=-0.459 slipAngle=-0.008 normal=8253.223 longForce=-4958.143
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-3.240 wheelSpeed=0.419 longVel=11.565 latVel=-0.065 slipVel=11.146 slipRatio=-0.964 slipAngle=-0.006 normal=3400.557 longForce=-3243.060
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=12.816 wheelSpeed=-0.118 longVel=12.479 latVel=-1.205 slipVel=12.597 slipRatio=-1.009 slipAngle=-0.096 normal=1536.813 longForce=-641.782
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-4.855 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Suspension] FL=0.251355 FR=0.119885 RL=0.038586 RR=0.000000
+[DEBUG] [Wheel] FL=12.903959 FR=5.283932 RL=6.412458 RR=6.719559
+[DEBUG] [Performance] FPS=60 PhysicsHz=120
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=10.399 wheelSpeed=5.945 longVel=10.212 latVel=-5.672 slipVel=4.267 slipRatio=-0.418 slipAngle=-0.507 normal=8980.119 longForce=-331.974
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-0.969 wheelSpeed=3.223 longVel=9.441 latVel=-5.234 slipVel=6.218 slipRatio=-0.659 slipAngle=-0.506 normal=3570.084 longForce=-205.779
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=6.036 wheelSpeed=-3.384 longVel=11.675 latVel=-1.145 slipVel=15.058 slipRatio=-1.290 slipAngle=-0.098 normal=1073.880 longForce=-533.843
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-4.855 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Energy] x=14.189 y=3.654 z=37.743 vx=5.845 vy=0.059 vz=9.671 total=121411.258 potential=43012.449 linear=76609.992 angular=268.204 wheels=158.068 suspension=1362.546 suspensionPower=-4396.932 suspensionResidual=-0.002
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=37.501 wheelSpeed=17.223 longVel=10.398 latVel=-3.872 slipVel=-6.825 slipRatio=0.656 slipAngle=-0.357 normal=15196.400 longForce=576.866
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=5.726 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=17.330 wheelSpeed=-0.246 longVel=10.977 latVel=0.052 slipVel=11.223 slipRatio=-1.022 slipAngle=0.005 normal=2828.824 longForce=-2716.678
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-4.855 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Suspension] FL=0.381543 FR=0.000000 RL=0.056897 RR=0.000000
+[DEBUG] [Wheel] FL=10.773210 FR=-5.848442 RL=5.646389 RR=6.719559
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=10.752 wheelSpeed=5.383 longVel=11.196 latVel=-0.277 slipVel=5.812 slipRatio=-0.519 slipAngle=-0.025 normal=10774.658 longForce=-5070.918
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=5.726 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-4.923 wheelSpeed=3.168 longVel=11.143 latVel=-2.055 slipVel=7.974 slipRatio=-0.716 slipAngle=-0.182 normal=726.520 longForce=-136.804
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-4.855 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=9.322 wheelSpeed=4.740 longVel=10.455 latVel=-0.210 slipVel=5.715 slipRatio=-0.547 slipAngle=-0.020 normal=9483.188 longForce=-4971.545
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=5.726 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=12.573 wheelSpeed=-0.663 longVel=10.421 latVel=-1.778 slipVel=11.084 slipRatio=-1.064 slipAngle=-0.169 normal=3539.353 longForce=-1010.710
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-4.855 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=7.194 wheelSpeed=3.673 longVel=9.382 latVel=-0.170 slipVel=5.709 slipRatio=-0.609 slipAngle=-0.018 normal=9705.192 longForce=-4969.256
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-7.887 wheelSpeed=1.448 longVel=8.631 latVel=-0.234 slipVel=7.183 slipRatio=-0.832 slipAngle=-0.027 normal=487.683 longForce=-344.877
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-7.274 wheelSpeed=0.852 longVel=9.360 latVel=-1.114 slipVel=8.507 slipRatio=-0.909 slipAngle=-0.118 normal=3378.427 longForce=-1128.499
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-4.855 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Suspension] FL=0.333752 FR=0.006543 RL=0.094251 RR=0.000000
+[DEBUG] [Wheel] FL=6.660857 FR=4.672976 RL=12.673350 RR=6.719559
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=4.826 wheelSpeed=2.233 longVel=8.476 latVel=-0.158 slipVel=6.243 slipRatio=-0.737 slipAngle=-0.019 normal=6478.120 longForce=-5159.885
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-6.901 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-9.229 wheelSpeed=0.245 longVel=8.485 latVel=-0.697 slipVel=8.240 slipRatio=-0.971 slipAngle=-0.082 normal=1716.271 longForce=-805.897
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-4.855 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Energy] x=17.375 y=3.897 z=41.456 vx=6.283 vy=0.398 vz=5.328 total=88085.203 potential=45877.129 linear=40809.836 angular=31.257 wheels=88.056 suspension=1278.924 suspensionPower=2814.223 suspensionResidual=0.000
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=0.547 wheelSpeed=1.883 longVel=6.616 latVel=-3.796 slipVel=4.733 slipRatio=-0.715 slipAngle=-0.521 normal=7227.939 longForce=-370.932
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-6.901 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=10.820 wheelSpeed=-1.305 longVel=7.635 latVel=-0.397 slipVel=8.940 slipRatio=-1.171 slipAngle=-0.052 normal=1152.821 longForce=-808.924
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-4.855 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Suspension] FL=0.266736 FR=0.000000 RL=0.062390 RR=0.000000
+[DEBUG] [Wheel] FL=1.140373 FR=4.672976 RL=3.075945 RR=6.719559
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=18.912 wheelSpeed=10.897 longVel=6.612 latVel=-2.890 slipVel=-4.285 slipRatio=0.648 slipAngle=-0.412 normal=8757.333 longForce=247.712
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-6.901 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=2.792 wheelSpeed=5.799 longVel=7.198 latVel=0.053 slipVel=1.399 slipRatio=-0.194 slipAngle=0.007 normal=1866.347 longForce=-1211.711
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-4.855 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=3.686 wheelSpeed=9.730 longVel=7.235 latVel=-0.171 slipVel=-2.495 slipRatio=0.345 slipAngle=-0.024 normal=3999.519 longForce=1815.054
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-6.901 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-8.080 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-4.855 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-0.923 wheelSpeed=0.558 longVel=7.267 latVel=-0.131 slipVel=6.709 slipRatio=-0.923 slipAngle=-0.018 normal=4775.801 longForce=-4121.817
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-6.901 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-0.728 wheelSpeed=5.174 longVel=7.271 latVel=-0.774 slipVel=2.096 slipRatio=-0.288 slipAngle=-0.106 normal=1717.919 longForce=-216.923
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-4.855 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Suspension] FL=0.183606 FR=0.000000 RL=0.036572 RR=0.000000
+[DEBUG] [Wheel] FL=1.994010 FR=4.672976 RL=-8.495492 RR=6.719559
+[DEBUG] [Performance] FPS=60 PhysicsHz=120
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=0.913 wheelSpeed=0.584 longVel=6.289 latVel=-0.142 slipVel=5.705 slipRatio=-0.907 slipAngle=-0.023 normal=6188.600 longForce=-4904.552
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=0.357 wheelSpeed=0.211 longVel=5.991 latVel=-0.134 slipVel=5.780 slipRatio=-0.965 slipAngle=-0.022 normal=8290.306 longForce=-4989.378
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-7.539 wheelSpeed=1.943 longVel=6.327 latVel=-0.404 slipVel=4.384 slipRatio=-0.693 slipAngle=-0.064 normal=161.846 longForce=-65.102
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-4.855 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Energy] x=20.490 y=3.710 z=43.493 vx=5.642 vy=-0.751 vz=2.956 total=69367.648 potential=43672.379 linear=24682.471 angular=83.141 wheels=75.643 suspension=854.017 suspensionPower=-5854.470 suspensionResidual=653.610
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=19.555 wheelSpeed=-0.859 longVel=6.570 latVel=-0.003 slipVel=7.429 slipRatio=-1.131 slipAngle=-0.000 normal=4372.514 longForce=-4219.271
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=0.460 wheelSpeed=0.239 longVel=6.096 latVel=-0.042 slipVel=5.857 slipRatio=-0.961 slipAngle=-0.007 normal=9736.650 longForce=-5073.639
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.832 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-4.855 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Suspension] FL=0.165479 FR=0.225537 RL=0.004529 RR=0.018628
+[DEBUG] [Wheel] FL=17.728844 FR=0.212877 RL=8.741752 RR=-4.042445
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=16.496 wheelSpeed=-1.744 longVel=6.029 latVel=0.133 slipVel=7.773 slipRatio=-1.289 slipAngle=0.022 normal=4192.759 longForce=-3659.777
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=23.128 wheelSpeed=-0.008 longVel=5.848 latVel=0.139 slipVel=5.855 slipRatio=-1.001 slipAngle=0.024 normal=8213.658 longForce=-5057.846
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-2.037 wheelSpeed=4.610 longVel=6.019 latVel=-0.065 slipVel=1.409 slipRatio=-0.234 slipAngle=-0.011 normal=214.225 longForce=-137.484
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-5.862 wheelSpeed=0.264 longVel=5.866 latVel=-0.081 slipVel=5.601 slipRatio=-0.955 slipAngle=-0.014 normal=2457.526 longForce=-2243.928
+[DEBUG] [Suspension] FL=0.094251 FR=0.159619 RL=0.073193 RR=0.092969
+[DEBUG] [Wheel] FL=12.493377 FR=12.458183 RL=12.507934 RR=12.531152
+[DEBUG] [Energy] x=22.965 y=3.566 z=44.919 vx=4.680 vy=0.094 vz=2.867 total=61323.363 potential=41983.910 linear=18077.771 angular=18.321 wheels=488.263 suspension=755.102 suspensionPower=-1267.155 suspensionResidual=-0.001
+[DEBUG] [Suspension] FL=0.109082 FR=0.105237 RL=0.091321 RR=0.112195
+[DEBUG] [Wheel] FL=37.496445 FR=30.026054 RL=11.563773 RR=9.943384
+[DEBUG] [Suspension] FL=0.202466 FR=0.000000 RL=0.197888 RR=0.000000
+[DEBUG] [Wheel] FL=40.325073 FR=32.358356 RL=13.306279 RR=9.225393
+[DEBUG] [Performance] FPS=60 PhysicsHz=120
+[DEBUG] [Energy] x=25.508 y=3.610 z=45.840 vx=5.446 vy=-0.075 vz=0.650 total=62921.895 potential=42498.594 linear=18049.209 angular=281.547 wheels=1328.913 suspension=763.630 suspensionPower=-76.610 suspensionResidual=0.001
+[DEBUG] [Suspension] FL=0.149548 FR=0.048840 RL=0.134167 RR=0.070630
+[DEBUG] [Wheel] FL=11.796223 FR=11.733171 RL=11.756242 RR=11.805829
+[DEBUG] [Suspension] FL=0.100842 FR=0.102490 RL=0.105786 RR=0.101758
+[DEBUG] [Wheel] FL=11.577776 FR=11.547415 RL=11.529291 RR=11.617990
+[DEBUG] [Energy] x=28.274 y=3.704 z=46.020 vx=5.292 vy=0.425 vz=0.354 total=61724.637 potential=43598.230 linear=16985.107 angular=0.986 wheels=428.022 suspension=712.290 suspensionPower=9.968 suspensionResidual=0.000
+[DEBUG] [Suspension] FL=0.088574 FR=0.085828 RL=0.057446 RR=0.151379
+[DEBUG] [Wheel] FL=10.229005 FR=10.158670 RL=10.478343 RR=10.236733
+[DEBUG] [Suspension] FL=0.109998 FR=0.078870 RL=0.060193 RR=0.138928
+[DEBUG] [Wheel] FL=9.934649 FR=9.801218 RL=10.035645 RR=9.845551
+[DEBUG] [Performance] FPS=60 PhysicsHz=120
+[DEBUG] [Energy] x=30.894 y=3.826 z=46.250 vx=5.074 vy=0.046 vz=0.411 total=61491.680 potential=45034.672 linear=15549.841 angular=43.714 wheels=338.621 suspension=524.832 suspensionPower=46.634 suspensionResidual=0.001
+[DEBUG] [Suspension] FL=0.091870 FR=0.090039 RL=0.052502 RR=0.117322
+[DEBUG] [Wheel] FL=10.049407 FR=10.045595 RL=10.059444 RR=10.053650
+[DEBUG] [Suspension] FL=0.073926 FR=0.116956 RL=0.059460 RR=0.119885
+[DEBUG] [Wheel] FL=10.179735 FR=10.312993 RL=10.102481 RR=10.298913
+[DEBUG] [Energy] x=33.488 y=3.759 z=46.449 vx=5.132 vy=-0.153 vz=0.454 total=61259.363 potential=44252.941 linear=15939.809 angular=7.862 wheels=413.250 suspension=645.499 suspensionPower=-1820.073 suspensionResidual=-0.000
+[DEBUG] [Suspension] FL=0.053967 FR=0.158704 RL=0.066968 RR=0.126294
+[DEBUG] [Wheel] FL=10.816546 FR=10.921285 RL=10.716690 RR=10.885181
+[DEBUG] [Suspension] FL=0.026318 FR=0.153210 RL=0.086743 RR=0.104504
+[DEBUG] [Wheel] FL=10.645787 FR=10.606755 RL=10.465683 RR=10.560598
+[DEBUG] [Performance] FPS=60 PhysicsHz=120
+[DEBUG] [Energy] x=36.080 y=3.742 z=46.792 vx=5.085 vy=0.030 vz=0.816 total=61033.477 potential=44045.523 linear=15911.719 angular=10.915 wheels=363.253 suspension=702.067 suspensionPower=-524.359 suspensionResidual=-0.000
+[DEBUG] [Suspension] FL=0.046826 FR=0.142407 RL=0.090588 RR=0.112744
+[DEBUG] [Wheel] FL=9.968873 FR=10.034580 RL=9.899939 RR=10.023402
+[DEBUG] [Suspension] FL=0.079968 FR=0.109814 RL=0.078137 RR=0.101941
+[DEBUG] [Wheel] FL=10.404685 FR=10.410467 RL=10.406585 RR=10.417781
+[DEBUG] [Energy] x=38.671 y=3.704 z=47.115 vx=5.066 vy=-0.067 vz=-0.088 total=63510.496 potential=43599.805 linear=15408.028 angular=886.563 wheels=2898.829 suspension=717.273 suspensionPower=-5713.926 suspensionResidual=605.114
+[DEBUG] [Suspension] FL=0.180676 FR=0.024487 RL=0.159253 RR=0.009473
+[DEBUG] [Wheel] FL=42.107403 FR=26.767746 RL=13.466422 RR=8.754790
+[DEBUG] [Suspension] FL=0.138745 FR=0.000000 RL=0.195691 RR=0.000000
+[DEBUG] [Wheel] FL=12.200351 FR=26.767746 RL=13.600166 RR=8.754790
+[DEBUG] [Performance] FPS=60 PhysicsHz=120
+[DEBUG] [Energy] x=41.208 y=3.622 z=46.232 vx=4.746 vy=-0.395 vz=-2.904 total=62520.504 potential=42638.410 linear=18664.355 angular=25.404 wheels=416.325 suspension=776.012 suspensionPower=-3812.780 suspensionResidual=0.001
+[DEBUG] [Suspension] FL=0.145154 FR=0.062390 RL=0.141492 RR=0.068250
+[DEBUG] [Wheel] FL=33.572327 FR=31.766851 RL=11.094501 RR=9.838947
+[DEBUG] [Suspension] FL=0.177014 FR=0.029614 RL=0.183972 RR=0.015332
+[DEBUG] [Wheel] FL=36.385220 FR=8.799249 RL=14.295020 RR=9.060347
+[DEBUG] [Energy] x=43.334 y=3.503 z=44.296 vx=3.756 vy=-0.090 vz=-4.434 total=64562.215 potential=41235.082 linear=20264.061 angular=113.220 wheels=2265.505 suspension=684.350 suspensionPower=475.540 suspensionResidual=0.001
+[DEBUG] [Suspension] FL=0.127393 FR=0.097730 RL=0.115491 RR=0.063855
+[DEBUG] [Wheel] FL=47.119591 FR=38.271767 RL=13.686469 RR=10.563313
+[DEBUG] [Suspension] FL=0.159802 FR=0.042065 RL=0.176648 RR=0.037671
+[DEBUG] [Wheel] FL=58.673443 FR=31.981852 RL=13.590055 RR=9.674358
+[DEBUG] [Performance] FPS=59 PhysicsHz=120
+[DEBUG] [Energy] x=44.729 y=3.456 z=41.672 vx=1.753 vy=-0.004 vz=-5.860 total=65331.414 potential=40687.430 linear=22447.375 angular=23.071 wheels=1306.436 suspension=867.102 suspensionPower=747.826 suspensionResidual=-0.003
+[DEBUG] [Suspension] FL=0.159436 FR=0.027600 RL=0.140942 RR=0.071545
+[DEBUG] [Wheel] FL=43.811176 FR=33.033443 RL=12.225746 RR=10.729313
+[DEBUG] [Suspension] FL=0.195691 FR=0.000000 RL=0.179211 RR=0.003430
+[DEBUG] [Wheel] FL=53.284367 FR=35.193424 RL=14.925689 RR=10.031076
+[DEBUG] [Energy] x=44.813 y=3.349 z=38.540 vx=-1.836 vy=-0.167 vz=-6.426 total=71910.406 potential=39429.066 linear=26818.863 angular=2254.412 wheels=2025.407 suspension=1382.656 suspensionPower=-11777.771 suspensionResidual=0.003
+[DEBUG] [Suspension] FL=0.222424 FR=0.000000 RL=0.240552 RR=0.000000
+[DEBUG] [Wheel] FL=25.730257 FR=35.193424 RL=15.922428 RR=10.031076
+[DEBUG] [Suspension] FL=0.137280 FR=0.000000 RL=0.171155 RR=0.000000
+[DEBUG] [Wheel] FL=14.849435 FR=35.193424 RL=16.632347 RR=10.031076
+[DEBUG] [Performance] FPS=60 PhysicsHz=120
+[DEBUG] [Energy] x=43.292 y=3.189 z=35.453 vx=-4.134 vy=-0.463 vz=-5.370 total=68741.516 potential=37535.910 linear=27682.705 angular=61.309 wheels=2406.012 suspension=1055.577 suspensionPower=526.781 suspensionResidual=0.007
+[DEBUG] [Suspension] FL=0.182874 FR=0.000000 RL=0.193860 RR=0.000000
+[DEBUG] [Wheel] FL=51.832638 FR=35.193424 RL=12.940477 RR=10.031076
+[DEBUG] [Suspension] FL=0.181775 FR=0.000000 RL=0.163281 RR=0.000000
+[DEBUG] [Wheel] FL=15.228379 FR=35.193424 RL=15.361801 RR=10.031076
+[DEBUG] [Energy] x=40.662 y=2.926 z=33.138 vx=-6.102 vy=-0.521 vz=-3.770 total=68397.844 potential=34450.695 linear=31032.139 angular=158.001 wheels=1623.842 suspension=1133.163 suspensionPower=-2709.972 suspensionResidual=0.002
+[DEBUG] [Suspension] FL=0.202100 FR=0.000000 RL=0.192212 RR=0.000000
+[DEBUG] [Wheel] FL=15.276760 FR=35.193424 RL=15.207734 RR=10.031076
+[DEBUG] [Suspension] FL=0.107068 FR=0.123730 RL=0.129407 RR=0.151563
+[DEBUG] [Wheel] FL=15.847201 FR=14.749618 RL=14.836557 RR=14.838592
+[DEBUG] [Performance] FPS=60 PhysicsHz=120
+[DEBUG] [Energy] x=37.505 y=2.909 z=31.360 vx=-6.192 vy=0.460 vz=-3.011 total=70614.727 potential=34240.234 linear=28573.791 angular=1207.810 wheels=5811.590 suspension=781.305 suspensionPower=-4531.999 suspensionResidual=3333.789
+[DEBUG] [Suspension] FL=0.174084 FR=0.035840 RL=0.127759 RR=0.068982
+[DEBUG] [Wheel] FL=65.448395 FR=41.293999 RL=16.370754 RR=11.453125
+[DEBUG] [Suspension] FL=0.093518 FR=0.000000 RL=0.204663 RR=0.073010
+[DEBUG] [Wheel] FL=107.598839 FR=191.673584 RL=24.386673 RR=89.011452
+[DEBUG] [Energy] x=33.814 y=3.125 z=30.048 vx=-8.587 vy=0.415 vz=-2.633 total=309427.562 potential=36782.875 linear=48508.781 angular=56.661 wheels=223106.516 suspension=972.703 suspensionPower=-3316.750 suspensionResidual=0.007
+[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.201917 RR=0.152661
+[DEBUG] [Wheel] FL=310.509186 FR=400.007172 RL=24.541147 RR=25.279850
+[DEBUG] [Suspension] FL=0.000000 FR=0.043896 RL=0.164746 RR=0.204297
+[DEBUG] [Wheel] FL=518.842896 FR=509.353516 RL=29.173698 RR=28.409754
+[DEBUG] [Performance] FPS=60 PhysicsHz=120
+[DEBUG] [Energy] x=28.812 y=3.402 z=28.361 vx=-11.133 vy=0.768 vz=-3.603 total=970740.375 potential=40047.004 linear=82512.320 angular=22.490 wheels=847204.562 suspension=953.969 suspensionPower=1034.153 suspensionResidual=115.661
+[DEBUG] [Suspension] FL=0.026685 FR=0.000000 RL=0.187451 RR=0.166577
+[DEBUG] [Wheel] FL=662.068298 FR=707.681335 RL=30.740608 RR=35.300201
+[DEBUG] [Suspension] FL=0.112744 FR=0.000000 RL=0.176465 RR=0.031262
+[DEBUG] [Wheel] FL=537.259277 FR=749.348083 RL=26.455505 RR=23.294775
+[DEBUG] [Suspension] FL=0.037305 FR=0.078870 RL=0.126111 RR=0.189465
+[DEBUG] [Wheel] FL=429.564575 FR=669.939209 RL=23.652082 RR=25.752424
+[DEBUG] [Energy] x=22.745 y=3.781 z=26.794 vx=-12.266 vy=1.318 vz=-3.141 total=706486.500 potential=44515.105 linear=97230.344 angular=421.135 wheels=563435.812 suspension=884.137 suspensionPower=-3037.042 suspensionResidual=3092.523
+[DEBUG] [Suspension] FL=0.000000 FR=0.109082 RL=0.000000 RR=0.244397
+[DEBUG] [Wheel] FL=457.342407 FR=488.133118 RL=51.438137 RR=34.499336
+[DEBUG] [Performance] FPS=60 PhysicsHz=120
+[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.203015
+[DEBUG] [Wheel] FL=561.509277 FR=561.157410 RL=155.604782 RR=24.392344
+[DEBUG] [Energy] x=16.536 y=4.466 z=24.498 vx=-12.153 vy=0.648 vz=-5.293 total=748668.688 potential=52579.605 linear=105679.539 angular=346.811 wheels=589487.250 suspension=575.500 suspensionPower=1642.530 suspensionResidual=-0.003
+[DEBUG] [Suspension] FL=0.000000 FR=0.038953 RL=0.000000 RR=0.039502
+[DEBUG] [Wheel] FL=568.453735 FR=496.869507 RL=162.549225 RR=31.710752
+[DEBUG] [Suspension] FL=0.000000 FR=0.072461 RL=0.000000 RR=0.245862
+[DEBUG] [Wheel] FL=776.787476 FR=494.302551 RL=370.882751 RR=39.783577
+[DEBUG] [Energy] x=10.152 y=3.967 z=21.574 vx=-13.304 vy=-1.422 vz=-6.823 total=1135448.875 potential=46700.898 linear=135343.344 angular=1453.920 wheels=950888.000 suspension=1062.704 suspensionPower=-13466.104 suspensionResidual=12404.580
+[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.307935 RR=0.000000
+[DEBUG] [Wheel] FL=846.232056 FR=563.747131 RL=29.752754 RR=31.970106
+[DEBUG] [Performance] FPS=58 PhysicsHz=119
+[DEBUG] [Suspension] FL=0.067151 FR=0.000000 RL=0.090588 RR=0.000000
+[DEBUG] [Wheel] FL=857.918274 FR=688.747375 RL=137.211639 RR=156.970093
+[DEBUG] [Energy] x=2.650 y=3.612 z=18.339 vx=-15.395 vy=-1.904 vz=-6.123 total=1312495.125 potential=42514.922 linear=166872.938 angular=649.346 wheels=1102277.875 suspension=180.028 suspensionPower=-1069.604 suspensionResidual=-0.001
+[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.163647 RR=0.000000
+[DEBUG] [Wheel] FL=758.967773 FR=688.747375 RL=33.088730 RR=156.970093
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=627.043 wheelSpeed=324.751 longVel=19.502 latVel=-0.929 slipVel=-305.249 slipRatio=15.652 slipAngle=-0.048 normal=5053.245 longForce=4710.186
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=677.173 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=21.515 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=145.396 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=382.365 wheelSpeed=201.619 longVel=17.694 latVel=-1.293 slipVel=-183.925 slipRatio=10.395 slipAngle=-0.073 normal=4366.866 longForce=4017.881
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=538.284 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=23.755 wheelSpeed=12.237 longVel=17.681 latVel=-0.061 slipVel=5.443 slipRatio=-0.308 slipAngle=-0.003 normal=6321.860 longForce=-4690.070
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=6.507 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Suspension] FL=0.114758 FR=0.000000 RL=0.131238 RR=0.000000
+[DEBUG] [Wheel] FL=309.114197 FR=491.987793 RL=1.755029 RR=6.507117
+[DEBUG] [Energy] x=-5.545 y=3.079 z=15.313 vx=-16.352 vy=0.550 vz=-6.267 total=441591.438 potential=36241.379 linear=184173.875 angular=503.878 wheels=220364.438 suspension=307.874 suspensionPower=360.845 suspensionResidual=1319.215
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=167.532 wheelSpeed=95.913 longVel=18.191 latVel=-0.861 slipVel=-77.722 slipRatio=4.273 slipAngle=-0.047 normal=6101.926 longForce=5497.602
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=399.395 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-4.034 wheelSpeed=1.336 longVel=18.197 latVel=0.512 slipVel=16.861 slipRatio=-0.927 slipAngle=0.028 normal=2657.414 longForce=-2103.132
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=6.507 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=10.367 wheelSpeed=8.714 longVel=18.836 latVel=-0.054 slipVel=10.122 slipRatio=-0.537 slipAngle=-0.003 normal=2035.232 longForce=-1950.527
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=260.506 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=6.008 wheelSpeed=-4.231 longVel=18.904 latVel=0.039 slipVel=23.135 slipRatio=-1.224 slipAngle=0.002 normal=1300.966 longForce=-1254.650
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=6.507 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Suspension] FL=0.130322 FR=0.000000 RL=0.148633 RR=0.000000
+[DEBUG] [Wheel] FL=32.370380 FR=179.487900 RL=32.533268 RR=-5.066957
+[DEBUG] [Performance] FPS=60 PhysicsHz=120
+[DEBUG] [Suspension] FL=0.029614 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Wheel] FL=32.766605 FR=179.487900 RL=32.386452 RR=-5.066957
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=21.582 wheelSpeed=16.523 longVel=16.522 latVel=-0.060 slipVel=-0.001 slipRatio=0.000 slipAngle=-0.004 normal=3242.771 longForce=-47.471
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=167.914 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=20.812 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=6.507 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Energy] x=-13.796 y=3.459 z=12.414 vx=-16.151 vy=-0.714 vz=-5.367 total=234603.625 potential=40714.266 linear=174094.281 angular=712.137 wheels=19044.420 suspension=38.514 suspensionPower=-1249.549 suspensionResidual=-0.003
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=8.779 wheelSpeed=0.231 longVel=16.057 latVel=-0.137 slipVel=15.826 slipRatio=-0.986 slipAngle=-0.009 normal=9137.684 longForce=-8679.321
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=29.025 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-2.336 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=6.507 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=10.322 wheelSpeed=6.793 longVel=16.125 latVel=0.190 slipVel=9.332 slipRatio=-0.579 slipAngle=0.012 normal=4267.058 longForce=-3634.868
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=19.878 wheelSpeed=9.923 longVel=15.578 latVel=0.257 slipVel=5.655 slipRatio=-0.363 slipAngle=0.016 normal=28913.943 longForce=-5181.305
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-2.336 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=6.507 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Suspension] FL=0.186902 FR=0.226636 RL=0.000000 RR=0.000000
+[DEBUG] [Wheel] FL=10.772444 FR=20.890825 RL=-2.335772 RR=6.507117
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=9.355 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=20.630 wheelSpeed=10.666 longVel=15.920 latVel=0.489 slipVel=5.255 slipRatio=-0.330 slipAngle=0.031 normal=18520.967 longForce=-4725.197
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-2.336 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=20.548 wheelSpeed=10.629 longVel=15.823 latVel=0.447 slipVel=5.194 slipRatio=-0.328 slipAngle=0.028 normal=23079.119 longForce=-4743.632
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=9.355 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=12.458 wheelSpeed=6.053 longVel=12.794 latVel=0.278 slipVel=6.741 slipRatio=-0.527 slipAngle=0.022 normal=8066.276 longForce=-5153.116
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-2.336 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=14.076 wheelSpeed=7.316 longVel=12.858 latVel=0.075 slipVel=5.541 slipRatio=-0.431 slipAngle=0.006 normal=5286.776 longForce=-4776.784
+[DEBUG] [Suspension] FL=0.000000 FR=0.361401 RL=0.000000 RR=0.209973
+[DEBUG] [Wheel] FL=9.354649 FR=12.288390 RL=-2.335772 RR=5.813472
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=9.355 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=11.966 wheelSpeed=6.023 longVel=11.784 latVel=0.154 slipVel=5.761 slipRatio=-0.489 slipAngle=0.013 normal=7044.162 longForce=-4977.536
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-2.336 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=5.813 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Energy] x=-20.939 y=3.627 z=9.704 vx=-11.486 vy=1.798 vz=-5.739 total=145789.969 potential=42695.977 linear=100851.195 angular=406.759 wheels=141.272 suspension=1694.758 suspensionPower=4894.200 suspensionResidual=7761.776
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=9.355 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=1.823 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-2.336 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=5.813 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=9.355 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=1.823 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-2.336 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=5.813 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Suspension] FL=0.000000 FR=0.032361 RL=0.000000 RR=0.000000
+[DEBUG] [Wheel] FL=9.354649 FR=1.822723 RL=-2.335772 RR=5.813472
+[DEBUG] [Performance] FPS=60 PhysicsHz=120
+[DEBUG] [Suspension] FL=0.000000 FR=0.164197 RL=0.000000 RR=0.000000
+[DEBUG] [Wheel] FL=-2.219426 FR=30.641533 RL=9.238303 RR=-5.760603
+[DEBUG] [Energy] x=-26.767 y=3.494 z=6.853 vx=-11.620 vy=-1.727 vz=-5.345 total=144927.328 potential=41128.781 linear=99937.977 angular=2568.416 wheels=1068.593 suspension=223.562 suspensionPower=0.000 suspensionResidual=775.499
+[DEBUG] [Suspension] FL=0.106335 FR=0.068982 RL=0.000000 RR=0.007825
+[DEBUG] [Wheel] FL=29.562187 FR=32.010662 RL=9.238303 RR=13.114996
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=15.902 wheelSpeed=13.739 longVel=13.471 latVel=-0.625 slipVel=-0.268 slipRatio=0.020 slipAngle=-0.046 normal=1107.853 longForce=1.107
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=15.724 wheelSpeed=13.683 longVel=13.397 latVel=-0.607 slipVel=-0.286 slipRatio=0.021 slipAngle=-0.045 normal=12437.506 longForce=29.106
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=15.740 wheelSpeed=13.670 longVel=13.417 latVel=-0.541 slipVel=-0.253 slipRatio=0.019 slipAngle=-0.040 normal=4391.123 longForce=11.465
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=16.046 wheelSpeed=13.849 longVel=13.556 latVel=-0.626 slipVel=-0.293 slipRatio=0.022 slipAngle=-0.046 normal=14214.996 longForce=33.919
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=0.551 wheelSpeed=0.067 longVel=10.669 latVel=-0.115 slipVel=10.602 slipRatio=-0.994 slipAngle=-0.011 normal=5620.210 longForce=-5190.214
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=9.973 wheelSpeed=4.655 longVel=10.735 latVel=-0.108 slipVel=6.080 slipRatio=-0.566 slipAngle=-0.010 normal=9693.932 longForce=-5288.189
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-10.662 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=3.986 wheelSpeed=2.534 longVel=10.706 latVel=-0.067 slipVel=8.172 slipRatio=-0.763 slipAngle=-0.006 normal=4795.486 longForce=-4533.406
+[DEBUG] [Suspension] FL=0.141492 FR=0.255933 RL=0.000000 RR=0.140759
+[DEBUG] [Wheel] FL=3.665293 FR=8.073657 RL=-10.661930 RR=10.814121
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=19.415 wheelSpeed=-0.048 longVel=9.583 latVel=0.006 slipVel=9.631 slipRatio=-1.005 slipAngle=0.001 normal=3565.959 longForce=-3440.721
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=7.854 wheelSpeed=3.964 longVel=9.712 latVel=0.051 slipVel=5.748 slipRatio=-0.592 slipAngle=0.005 normal=7574.410 longForce=-4971.360
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-10.662 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=11.117 wheelSpeed=-0.318 longVel=9.771 latVel=0.350 slipVel=10.089 slipRatio=-1.033 slipAngle=0.036 normal=102.706 longForce=-77.851
+[DEBUG] [Energy] x=-32.056 y=2.947 z=3.859 vx=-8.615 vy=0.311 vz=-5.673 total=100276.094 potential=34696.570 linear=63896.660 angular=184.698 wheels=63.347 suspension=1434.821 suspensionPower=-1790.030 suspensionResidual=6125.284
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-0.678 wheelSpeed=1.591 longVel=9.156 latVel=-0.039 slipVel=7.565 slipRatio=-0.826 slipAngle=-0.004 normal=3541.505 longForce=-3385.303
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=7.317 wheelSpeed=3.699 longVel=9.499 latVel=0.128 slipVel=5.800 slipRatio=-0.611 slipAngle=0.014 normal=8829.133 longForce=-5024.248
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-10.662 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=11.259 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=15.695 wheelSpeed=-0.354 longVel=8.582 latVel=0.025 slipVel=8.937 slipRatio=-1.041 slipAngle=0.003 normal=2214.277 longForce=-2130.916
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=6.416 wheelSpeed=3.242 longVel=9.127 latVel=0.188 slipVel=5.885 slipRatio=-0.645 slipAngle=0.021 normal=9366.727 longForce=-5098.081
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-10.662 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=11.259 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Suspension] FL=0.100842 FR=0.284314 RL=0.000000 RR=0.000000
+[DEBUG] [Wheel] FL=-1.599116 FR=6.219697 RL=-10.661930 RR=11.259326
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-1.407 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=5.800 wheelSpeed=2.923 longVel=8.841 latVel=0.225 slipVel=5.918 slipRatio=-0.669 slipAngle=0.025 normal=9025.022 longForce=-5119.852
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-10.662 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=11.259 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=20.699 wheelSpeed=11.555 longVel=8.727 latVel=-0.952 slipVel=-2.828 slipRatio=0.324 slipAngle=-0.109 normal=10629.354 longForce=833.606
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=10.052 wheelSpeed=-2.504 longVel=9.164 latVel=-1.268 slipVel=11.667 slipRatio=-1.273 slipAngle=-0.137 normal=2219.001 longForce=-675.473
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-10.662 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=11.259 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Performance] FPS=60 PhysicsHz=120
+[DEBUG] [Suspension] FL=0.133984 FR=0.192029 RL=0.000000 RR=0.000000
+[DEBUG] [Wheel] FL=2.768869 FR=7.266321 RL=-10.661930 RR=11.259326
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=9.401 wheelSpeed=-2.859 longVel=8.777 latVel=0.197 slipVel=11.636 slipRatio=-1.326 slipAngle=0.022 normal=1791.055 longForce=-1572.010
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=6.737 wheelSpeed=3.448 longVel=9.343 latVel=0.111 slipVel=5.894 slipRatio=-0.631 slipAngle=0.012 normal=6482.759 longForce=-5054.272
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-10.662 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=11.259 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Energy] x=-35.770 y=3.029 z=1.246 vx=-6.242 vy=-0.217 vz=-4.689 total=73904.094 potential=35661.254 linear=36594.273 angular=296.145 wheels=489.392 suspension=863.025 suspensionPower=-2594.041 suspensionResidual=-0.001
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=4.433 wheelSpeed=7.449 longVel=8.158 latVel=0.128 slipVel=0.709 slipRatio=-0.087 slipAngle=0.016 normal=2364.396 longForce=-489.407
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=5.660 wheelSpeed=2.871 longVel=8.711 latVel=0.119 slipVel=5.840 slipRatio=-0.670 slipAngle=0.014 normal=8512.431 longForce=-5046.422
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-10.662 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=11.259 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=11.976 wheelSpeed=-0.290 longVel=7.626 latVel=0.084 slipVel=7.916 slipRatio=-1.038 slipAngle=0.011 normal=461.288 longForce=-428.109
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=4.449 wheelSpeed=2.362 longVel=8.037 latVel=0.123 slipVel=5.675 slipRatio=-0.706 slipAngle=0.015 normal=11277.206 longForce=-4953.370
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-10.662 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=0.621 wheelSpeed=3.026 longVel=8.094 latVel=0.648 slipVel=5.068 slipRatio=-0.626 slipAngle=0.080 normal=7863.503 longForce=-2664.069
+[DEBUG] [Suspension] FL=0.063855 FR=0.296582 RL=0.000000 RR=0.070081
+[DEBUG] [Wheel] FL=-7.828555 FR=3.024630 RL=-10.661930 RR=3.118345
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=4.812 wheelSpeed=-4.803 longVel=6.303 latVel=0.240 slipVel=11.106 slipRatio=-1.762 slipAngle=0.038 normal=1480.130 longForce=-1235.141
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=0.813 wheelSpeed=0.541 longVel=6.189 latVel=0.267 slipVel=5.648 slipRatio=-0.913 slipAngle=0.043 normal=11508.671 longForce=-4941.247
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-10.662 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=17.217 wheelSpeed=-0.711 longVel=6.212 latVel=0.122 slipVel=6.922 slipRatio=-1.114 slipAngle=0.020 normal=3409.540 longForce=-3057.425
+[DEBUG] [Suspension] FL=0.140027 FR=0.171521 RL=0.092786 RR=0.048657
+[DEBUG] [Wheel] FL=30.841572 FR=28.006325 RL=14.238151 RR=11.896689
+[DEBUG] [Energy] x=-38.163 y=3.165 z=-0.800 vx=-4.182 vy=0.753 vz=-3.455 total=56841.199 potential=37257.141 linear=17995.641 angular=86.411 wheels=753.348 suspension=748.662 suspensionPower=-95.682 suspensionResidual=0.003
+[DEBUG] [Suspension] FL=0.060010 FR=0.126660 RL=0.117322 RR=0.095715
+[DEBUG] [Wheel] FL=12.757458 FR=15.614975 RL=11.031258 RR=11.064808
+[DEBUG] [Performance] FPS=60 PhysicsHz=120
+[DEBUG] [Suspension] FL=0.006177 FR=0.178479 RL=0.023938 RR=0.166760
+[DEBUG] [Wheel] FL=24.676580 FR=41.502075 RL=8.137348 RR=11.477951
+[DEBUG] [Energy] x=-39.914 y=3.518 z=-2.680 vx=-2.407 vy=0.669 vz=-4.241 total=58551.246 potential=41408.258 linear=14539.132 angular=531.593 wheels=1133.663 suspension=938.597 suspensionPower=2345.336 suspensionResidual=-0.001
+[DEBUG] [Suspension] FL=0.034375 FR=0.113110 RL=0.037305 RR=0.145154
+[DEBUG] [Wheel] FL=9.412747 FR=9.320366 RL=9.286462 RR=9.344884
+[DEBUG] [Suspension] FL=0.036755 FR=0.140576 RL=0.059277 RR=0.119702
+[DEBUG] [Wheel] FL=19.068396 FR=23.544565 RL=8.114895 RR=9.896802
+[DEBUG] [Energy] x=-40.877 y=3.637 z=-4.918 vx=-1.553 vy=0.041 vz=-4.539 total=57554.434 potential=42812.434 linear=13811.087 angular=82.171 wheels=292.233 suspension=556.509 suspensionPower=-3674.011 suspensionResidual=0.001
+[DEBUG] [Suspension] FL=0.088391 FR=0.115857 RL=0.105969 RR=0.068616
+[DEBUG] [Wheel] FL=25.379379 FR=31.735857 RL=8.271602 RR=9.630877
+[DEBUG] [Performance] FPS=60 PhysicsHz=120
+[DEBUG] [Suspension] FL=0.085461 FR=0.096082 RL=0.064404 RR=0.119702
+[DEBUG] [Wheel] FL=10.096420 FR=10.142440 RL=10.110226 RR=10.155571
+[DEBUG] [Energy] x=-41.509 y=3.602 z=-7.246 vx=-1.050 vy=-0.145 vz=-4.736 total=57505.227 potential=42397.930 linear=14130.010 angular=2.486 wheels=361.395 suspension=613.404 suspensionPower=-1510.358 suspensionResidual=0.000
+[DEBUG] [Suspension] FL=0.133069 FR=0.069897 RL=0.087476 RR=0.113843
+[DEBUG] [Wheel] FL=10.097892 FR=9.990293 RL=10.066714 RR=9.970792
+[DEBUG] [Suspension] FL=0.055432 FR=0.139478 RL=0.069348 RR=0.122998
+[DEBUG] [Wheel] FL=26.381807 FR=16.263334 RL=9.532862 RR=10.767804
+[DEBUG] [Energy] x=-41.960 y=3.564 z=-9.656 vx=-0.540 vy=-0.031 vz=-4.891 total=57563.051 potential=41960.984 linear=14527.148 angular=41.035 wheels=368.032 suspension=665.851 suspensionPower=-1369.193 suspensionResidual=0.001
+[DEBUG] [Suspension] FL=0.060376 FR=0.131787 RL=0.123181 RR=0.085278
+[DEBUG] [Wheel] FL=9.766596 FR=10.007205 RL=9.826402 RR=9.999415
+[DEBUG] [Performance] FPS=60 PhysicsHz=120
+[DEBUG] [Suspension] FL=0.092053 FR=0.108533 RL=0.117505 RR=0.077954
+[DEBUG] [Wheel] FL=10.185803 FR=10.254539 RL=10.180109 RR=10.271476
+[DEBUG] [Energy] x=-42.182 y=3.552 z=-12.155 vx=-0.330 vy=0.093 vz=-4.915 total=58142.270 potential=41816.172 linear=14564.283 angular=10.082 wheels=1086.024 suspension=665.710 suspensionPower=-15.239 suspensionResidual=-0.000
+[DEBUG] [Suspension] FL=0.067700 FR=0.066785 RL=0.156140 RR=0.113477
+[DEBUG] [Wheel] FL=82.414185 FR=89.272873 RL=20.100889 RR=21.784456
+[DEBUG] [Suspension] FL=0.064587 FR=0.000000 RL=0.174268 RR=0.144238
+[DEBUG] [Wheel] FL=97.300781 FR=190.347000 RL=12.205345 RR=12.480597
+[DEBUG] [Energy] x=-42.470 y=3.620 z=-15.255 vx=-0.729 vy=0.157 vz=-6.753 total=99567.188 potential=42617.090 linear=27695.518 angular=61.994 wheels=28480.129 suspension=712.454 suspensionPower=-657.188 suspensionResidual=0.001
+[DEBUG] [Suspension] FL=0.120801 FR=0.021924 RL=0.114941 RR=0.106519
+[DEBUG] [Wheel] FL=13.390557 FR=146.339508 RL=13.360359 RR=13.365487
+[DEBUG] [Performance] FPS=60 PhysicsHz=120
+[DEBUG] [Suspension] FL=0.043896 FR=0.049939 RL=0.145703 RR=0.121533
+[DEBUG] [Wheel] FL=82.678291 FR=78.428467 RL=24.672449 RR=24.616953
+[DEBUG] [Energy] x=-42.873 y=3.684 z=-18.955 vx=-0.686 vy=0.176 vz=-8.306 total=163117.500 potential=43363.773 linear=41695.172 angular=16.173 wheels=77139.328 suspension=903.058 suspensionPower=-1636.307 suspensionResidual=0.002
+[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.144605 RR=0.186169
+[DEBUG] [Wheel] FL=270.178284 FR=265.928436 RL=16.360615 RR=16.293318
+[DEBUG] [Suspension] FL=0.038953 FR=0.062939 RL=0.103772 RR=0.078137
+[DEBUG] [Wheel] FL=209.380417 FR=149.081268 RL=19.197052 RR=19.334587
+[DEBUG] [Energy] x=-43.185 y=3.365 z=-23.587 vx=-0.574 vy=-0.376 vz=-10.516 total=138124.297 potential=39610.598 linear=66634.984 angular=570.452 wheels=30286.822 suspension=1021.440 suspensionPower=-6039.337 suspensionResidual=136.507
+[DEBUG] [Suspension] FL=0.071729 FR=0.012402 RL=0.216382 RR=0.180676
+[DEBUG] [Wheel] FL=115.594559 FR=155.553680 RL=23.296425 RR=23.391861
+[DEBUG] [Suspension] FL=0.116772 FR=0.010022 RL=0.150098 RR=0.120435
+[DEBUG] [Wheel] FL=21.430546 FR=127.149673 RL=21.391909 RR=21.387817
+[DEBUG] [Performance] FPS=60 PhysicsHz=120
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=11.079 wheelSpeed=11.287 longVel=11.268 latVel=0.053 slipVel=-0.018 slipRatio=0.002 slipAngle=0.005 normal=3318.585 longForce=-34.245
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=73.484 wheelSpeed=43.934 longVel=11.331 latVel=0.057 slipVel=-32.603 slipRatio=2.877 slipAngle=0.005 normal=1299.535 longForce=1213.888
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=11.072 wheelSpeed=11.275 longVel=11.268 latVel=0.132 slipVel=-0.006 slipRatio=0.001 slipAngle=0.012 normal=3139.573 longForce=-41.705
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=11.043 wheelSpeed=11.257 longVel=11.327 latVel=0.137 slipVel=0.070 slipRatio=-0.006 slipAngle=0.012 normal=1222.207 longForce=-44.565
+[DEBUG] [Energy] x=-43.600 y=3.442 z=-29.225 vx=-1.090 vy=0.081 vz=-10.869 total=112967.805 potential=40517.465 linear=71596.523 angular=41.934 wheels=197.548 suspension=614.336 suspensionPower=-8815.914 suspensionResidual=274.540
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=8.399 wheelSpeed=4.216 longVel=10.193 latVel=0.260 slipVel=5.977 slipRatio=-0.586 slipAngle=0.026 normal=7679.749 longForce=-4996.228
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=6.847 wheelSpeed=4.496 longVel=10.164 latVel=0.259 slipVel=5.668 slipRatio=-0.558 slipAngle=0.025 normal=6437.840 longForce=-4079.213
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.085 wheelSpeed=3.229 longVel=10.195 latVel=0.258 slipVel=6.966 slipRatio=-0.683 slipAngle=0.025 normal=18.689 longForce=-13.371
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=6.659 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Suspension] FL=0.185437 FR=0.141858 RL=0.043347 RR=0.036572
+[DEBUG] [Wheel] FL=7.261584 FR=7.220498 RL=-5.084802 RR=9.416654
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=7.448 wheelSpeed=3.466 longVel=9.603 latVel=0.233 slipVel=6.137 slipRatio=-0.639 slipAngle=0.024 normal=7687.367 longForce=-5259.084
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=7.494 wheelSpeed=3.822 longVel=9.573 latVel=0.283 slipVel=5.751 slipRatio=-0.601 slipAngle=0.030 normal=8967.107 longForce=-4979.188
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.085 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=9.417 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=2.706 wheelSpeed=1.181 longVel=8.794 latVel=0.102 slipVel=7.613 slipRatio=-0.866 slipAngle=0.012 normal=5706.345 longForce=-5181.430
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=6.208 wheelSpeed=3.198 longVel=8.933 latVel=0.180 slipVel=5.735 slipRatio=-0.642 slipAngle=0.020 normal=8212.226 longForce=-4959.209
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.085 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-5.164 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=1.840 wheelSpeed=2.353 longVel=8.089 latVel=0.024 slipVel=5.736 slipRatio=-0.709 slipAngle=0.003 normal=3937.107 longForce=-3776.638
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=4.904 wheelSpeed=2.445 longVel=8.283 latVel=0.079 slipVel=5.839 slipRatio=-0.705 slipAngle=0.010 normal=6193.256 longForce=-5021.141
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.085 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-2.360 wheelSpeed=4.343 longVel=8.295 latVel=0.306 slipVel=3.952 slipRatio=-0.476 slipAngle=0.037 normal=457.554 longForce=-228.124
+[DEBUG] [Suspension] FL=0.176831 FR=0.233960 RL=0.000000 RR=0.007459
+[DEBUG] [Wheel] FL=1.840407 FR=4.904071 RL=-5.084802 RR=-2.360456
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=0.330 wheelSpeed=1.417 longVel=7.124 latVel=0.082 slipVel=5.707 slipRatio=-0.801 slipAngle=0.012 normal=4368.263 longForce=-3932.982
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=2.385 wheelSpeed=1.199 longVel=7.014 latVel=0.104 slipVel=5.815 slipRatio=-0.829 slipAngle=0.015 normal=6623.076 longForce=-5007.860
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.085 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-7.529 wheelSpeed=0.517 longVel=7.015 latVel=-0.014 slipVel=6.498 slipRatio=-0.926 slipAngle=-0.002 normal=1358.158 longForce=-1309.094
+[DEBUG] [Energy] x=-43.960 y=3.693 z=-33.582 vx=-0.234 vy=0.398 vz=-6.706 total=71760.422 potential=43474.555 linear=27112.457 angular=15.138 wheels=302.259 suspension=856.012 suspensionPower=2682.041 suspensionResidual=0.000
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-6.726 wheelSpeed=0.110 longVel=6.380 latVel=0.075 slipVel=6.270 slipRatio=-0.983 slipAngle=0.012 normal=2168.775 longForce=-1999.239
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=16.228 wheelSpeed=-1.390 longVel=6.280 latVel=0.082 slipVel=7.670 slipRatio=-1.221 slipAngle=0.013 normal=3453.916 longForce=-3213.694
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.085 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-1.986 wheelSpeed=3.305 longVel=6.302 latVel=0.002 slipVel=2.997 slipRatio=-0.476 slipAngle=0.000 normal=1343.737 longForce=-1296.569
+[DEBUG] [Suspension] FL=0.109998 FR=0.169324 RL=0.000000 RR=0.037122
+[DEBUG] [Wheel] FL=-4.112326 FR=17.341053 RL=-5.084802 RR=10.854259
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-3.045 wheelSpeed=0.336 longVel=6.054 latVel=0.072 slipVel=5.718 slipRatio=-0.944 slipAngle=0.012 normal=3692.728 longForce=-3394.019
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=17.019 wheelSpeed=-1.245 longVel=5.975 latVel=0.073 slipVel=7.220 slipRatio=-1.208 slipAngle=0.012 normal=3668.285 longForce=-3428.096
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.085 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=0.422 wheelSpeed=5.609 longVel=5.983 latVel=0.016 slipVel=0.374 slipRatio=-0.063 slipAngle=0.003 normal=1488.998 longForce=-338.397
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-0.411 wheelSpeed=0.015 longVel=5.632 latVel=0.011 slipVel=5.617 slipRatio=-0.997 slipAngle=0.002 normal=5236.022 longForce=-4813.672
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=0.103 wheelSpeed=9.945 longVel=5.577 latVel=0.012 slipVel=-4.367 slipRatio=0.783 slipAngle=0.002 normal=3804.390 longForce=3547.835
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=11.145 wheelSpeed=-2.683 longVel=5.616 latVel=-0.059 slipVel=8.299 slipRatio=-1.478 slipAngle=-0.010 normal=2260.938 longForce=-2154.403
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=9.579 wheelSpeed=-3.106 longVel=5.591 latVel=-0.035 slipVel=8.697 slipRatio=-1.555 slipAngle=-0.006 normal=1911.226 longForce=-1836.613
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-0.326 wheelSpeed=8.619 longVel=5.452 latVel=0.133 slipVel=-3.166 slipRatio=0.581 slipAngle=0.024 normal=5145.348 longForce=2592.063
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=10.911 wheelSpeed=-2.953 longVel=5.406 latVel=0.137 slipVel=8.358 slipRatio=-1.546 slipAngle=0.025 normal=2547.353 longForce=-2265.290
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=3.155 wheelSpeed=7.414 longVel=5.452 latVel=0.085 slipVel=-1.962 slipRatio=0.360 slipAngle=0.016 normal=65.978 longForce=42.859
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=9.432 wheelSpeed=-3.050 longVel=5.442 latVel=0.100 slipVel=8.491 slipRatio=-1.560 slipAngle=0.018 normal=1857.863 longForce=-1728.788
+[DEBUG] [Suspension] FL=0.148084 FR=0.128674 RL=0.045178 RR=0.059094
+[DEBUG] [Wheel] FL=-0.326050 FR=10.910605 RL=3.154884 RR=9.432453
+[DEBUG] [Performance] FPS=60 PhysicsHz=120
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-0.294 wheelSpeed=9.881 longVel=5.435 latVel=0.023 slipVel=-4.445 slipRatio=0.818 slipAngle=0.004 normal=5165.518 longForce=3670.078
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=12.241 wheelSpeed=-2.644 longVel=5.436 latVel=0.023 slipVel=8.079 slipRatio=-1.486 slipAngle=0.004 normal=2673.695 longForce=-2573.092
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-1.324 wheelSpeed=3.758 longVel=5.437 latVel=0.026 slipVel=1.679 slipRatio=-0.309 slipAngle=0.005 normal=1299.567 longForce=-1182.079
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-0.675 wheelSpeed=5.356 longVel=5.436 latVel=0.032 slipVel=0.080 slipRatio=-0.015 slipAngle=0.006 normal=904.654 longForce=-80.753
+[DEBUG] [Energy] x=-44.038 y=3.657 z=-36.578 vx=-0.323 vy=-0.302 vz=-5.312 total=60762.238 potential=43048.621 linear=17047.094 angular=3.972 wheels=92.279 suspension=570.269 suspensionPower=-350.999 suspensionResidual=0.000
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-0.361 wheelSpeed=10.115 longVel=5.403 latVel=0.111 slipVel=-4.712 slipRatio=0.872 slipAngle=0.020 normal=4978.729 longForce=3898.632
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=15.238 wheelSpeed=-0.302 longVel=5.318 latVel=0.110 slipVel=5.621 slipRatio=-1.057 slipAngle=0.021 normal=2133.778 longForce=-1844.388
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-0.603 wheelSpeed=7.211 longVel=5.405 latVel=0.009 slipVel=-1.806 slipRatio=0.334 slipAngle=0.002 normal=2066.969 longForce=1491.834
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-0.321 wheelSpeed=7.726 longVel=5.320 latVel=0.010 slipVel=-2.406 slipRatio=0.452 slipAngle=0.002 normal=1950.485 longForce=1814.197
+[DEBUG] [Suspension] FL=0.151563 FR=0.088025 RL=0.056348 RR=0.066235
+[DEBUG] [Wheel] FL=-0.374636 FR=1.479184 RL=-0.517887 RR=15.321804
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=0.147 wheelSpeed=9.509 longVel=5.274 latVel=0.181 slipVel=-4.235 slipRatio=0.803 slipAngle=0.034 normal=5024.684 longForce=3154.129
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=15.040 wheelSpeed=-0.005 longVel=5.178 latVel=0.181 slipVel=5.183 slipRatio=-1.001 slipAngle=0.035 normal=2071.594 longForce=-1501.426
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-0.860 wheelSpeed=6.830 longVel=5.273 latVel=0.064 slipVel=-1.557 slipRatio=0.295 slipAngle=0.012 normal=2631.146 longForce=1273.581
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-0.647 wheelSpeed=7.633 longVel=5.179 latVel=0.066 slipVel=-2.454 slipRatio=0.474 slipAngle=0.013 normal=2390.800 longForce=1874.988
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=0.718 wheelSpeed=2.753 longVel=4.623 latVel=-1.928 slipVel=1.870 slipRatio=-0.405 slipAngle=-0.395 normal=5936.194 longForce=-263.353
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-5.139 wheelSpeed=1.865 longVel=4.378 latVel=-1.795 slipVel=2.513 slipRatio=-0.574 slipAngle=-0.389 normal=2267.145 longForce=-156.735
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=1.596 wheelSpeed=7.868 longVel=4.978 latVel=0.188 slipVel=-2.890 slipRatio=0.581 slipAngle=0.038 normal=2240.644 longForce=1109.762
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-2.993 wheelSpeed=4.063 longVel=4.706 latVel=0.192 slipVel=0.643 slipRatio=-0.137 slipAngle=0.041 normal=1354.812 longForce=-196.567
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=3.318 wheelSpeed=2.883 longVel=5.118 latVel=-0.886 slipVel=2.236 slipRatio=-0.437 slipAngle=-0.171 normal=7398.465 longForce=-665.470
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=2.119 wheelSpeed=6.659 longVel=3.949 latVel=-0.251 slipVel=-2.710 slipRatio=0.686 slipAngle=-0.064 normal=1653.023 longForce=602.077
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=0.409 wheelSpeed=8.632 longVel=4.890 latVel=0.083 slipVel=-3.742 slipRatio=0.765 slipAngle=0.017 normal=2776.447 longForce=2286.200
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-0.460 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Suspension] FL=0.193677 FR=0.075208 RL=0.074292 RR=0.036023
+[DEBUG] [Wheel] FL=3.317739 FR=2.119370 RL=0.409134 RR=-0.460182
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=2.810 wheelSpeed=2.134 longVel=5.100 latVel=-0.598 slipVel=2.966 slipRatio=-0.582 slipAngle=-0.117 normal=7367.574 longForce=-1204.541
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=8.024 wheelSpeed=-2.613 longVel=3.673 latVel=0.180 slipVel=6.286 slipRatio=-1.711 slipAngle=0.049 normal=1723.785 longForce=-1352.044
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-1.063 wheelSpeed=8.144 longVel=4.738 latVel=-0.039 slipVel=-3.405 slipRatio=0.719 slipAngle=-0.008 normal=2775.579 longForce=2504.714
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-0.460 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Energy] x=-44.484 y=3.507 z=-38.972 vx=-1.828 vy=-0.245 vz=-3.752 total=53539.797 potential=41284.805 linear=10486.172 angular=579.587 wheels=168.279 suspension=1020.953 suspensionPower=-1660.562 suspensionResidual=0.002
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=3.783 wheelSpeed=2.008 longVel=5.023 latVel=-0.497 slipVel=3.015 slipRatio=-0.600 slipAngle=-0.099 normal=7989.686 longForce=-1515.413
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=5.166 wheelSpeed=-3.436 longVel=3.549 latVel=0.303 slipVel=6.985 slipRatio=-1.968 slipAngle=0.085 normal=857.929 longForce=-559.276
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=17.329 wheelSpeed=-0.164 longVel=4.632 latVel=-0.074 slipVel=4.796 slipRatio=-1.035 slipAngle=-0.016 normal=2900.026 longForce=-2640.050
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-0.460 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Suspension] FL=0.250256 FR=0.049939 RL=0.087476 RR=0.000000
+[DEBUG] [Wheel] FL=5.841130 FR=3.879494 RL=-1.905972 RR=-0.460182
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-4.276 wheelSpeed=3.333 longVel=4.271 latVel=2.043 slipVel=0.939 slipRatio=-0.220 slipAngle=0.446 normal=8805.962 longForce=-274.673
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=2.716 wheelSpeed=-4.523 longVel=2.577 latVel=2.035 slipVel=7.100 slipRatio=-2.755 slipAngle=0.669 normal=593.551 longForce=-81.213
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-0.498 wheelSpeed=7.679 longVel=4.259 latVel=-0.038 slipVel=-3.420 slipRatio=0.803 slipAngle=-0.009 normal=2048.943 longForce=1859.510
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-0.460 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Suspension] FL=0.159985 FR=0.082715 RL=0.075574 RR=0.062024
+[DEBUG] [Wheel] FL=9.099738 FR=8.980418 RL=9.058479 RR=9.010840
 [DEBUG] [Performance] FPS=58 PhysicsHz=120
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=10.480 wheelSpeed=-1.685 longVel=4.210 slipVel=5.895 normal=1401.052 longForce=-983.545
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=15.491 wheelSpeed=-1.502 longVel=4.285 slipVel=5.787 normal=4247.672 longForce=-2992.038
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=18.299 wheelSpeed=-1.149 longVel=4.211 slipVel=5.360 normal=4863.829 longForce=-3901.668
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-2.315 wheelSpeed=4.876 longVel=4.287 slipVel=-0.589 normal=1517.048 longForce=213.345
-[DEBUG] [Energy] x=-1.895 y=3.269 z=33.898 vx=-3.813 vy=-0.068 vz=1.802 total=50536.406 potential=38479.484 linear=10672.499 angular=2.188 wheels=686.385 suspension=695.846 suspensionPower=-880.854 suspensionResidual=0.000
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=9.960 wheelSpeed=-1.700 longVel=4.241 slipVel=5.941 normal=978.161 longForce=-771.457
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=16.508 wheelSpeed=-1.476 longVel=4.317 slipVel=5.793 normal=4316.881 longForce=-3411.069
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=20.009 wheelSpeed=-0.778 longVel=4.239 slipVel=5.016 normal=5477.130 longForce=-4321.174
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-2.862 wheelSpeed=4.366 longVel=4.319 slipVel=-0.046 normal=977.859 longForce=8.106
-[DEBUG] [Suspension] FL=0.067334 FR=0.135999 RL=0.158154 RR=0.034924
-[DEBUG] [Wheel] FL=9.931225 FR=16.902386 RL=19.980299 RR=-2.683482
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=11.460 wheelSpeed=-1.559 longVel=4.177 slipVel=5.736 normal=1354.361 longForce=-1298.747
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=18.674 wheelSpeed=-1.422 longVel=4.226 slipVel=5.648 normal=4494.246 longForce=-4302.022
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-2.898 wheelSpeed=8.118 longVel=4.173 slipVel=-3.945 normal=3534.723 longForce=3271.711
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-2.970 wheelSpeed=5.695 longVel=4.226 slipVel=-1.470 normal=1454.273 longForce=1205.278
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-7.645 wheelSpeed=0.167 longVel=4.186 slipVel=4.018 normal=2037.026 longForce=-1554.204
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=16.726 wheelSpeed=-0.687 longVel=4.186 slipVel=4.872 normal=3371.008 longForce=-2819.357
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-2.872 wheelSpeed=7.699 longVel=4.186 slipVel=-3.513 normal=4249.171 longForce=2897.281
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=6.649 wheelSpeed=-3.911 longVel=4.189 slipVel=8.100 normal=1392.814 longForce=-1253.151
-[DEBUG] [Suspension] FL=0.060925 FR=0.134900 RL=0.132703 RR=0.046643
-[DEBUG] [Wheel] FL=-2.481912 FR=-4.812582 RL=-3.129194 RR=12.069135
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-3.367 wheelSpeed=5.910 longVel=4.007 slipVel=-1.902 normal=2847.001 longForce=1561.985
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-3.250 wheelSpeed=7.534 longVel=4.015 slipVel=-3.519 normal=3653.016 longForce=2913.922
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-3.251 wheelSpeed=7.407 longVel=4.005 slipVel=-3.402 normal=4125.784 longForce=2806.056
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=11.922 wheelSpeed=-0.411 longVel=4.016 slipVel=4.427 normal=602.247 longForce=-505.995
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-2.705 wheelSpeed=7.814 longVel=4.177 slipVel=-3.637 normal=6398.323 longForce=2960.305
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-2.711 wheelSpeed=6.282 longVel=4.298 slipVel=-1.984 normal=2128.799 longForce=1598.983
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-2.799 wheelSpeed=7.204 longVel=4.237 slipVel=-2.967 normal=4476.625 longForce=2434.815
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=13.878 wheelSpeed=-0.070 longVel=4.300 slipVel=4.371 normal=1322.406 longForce=-1057.064
-[DEBUG] [Energy] x=-3.829 y=3.206 z=34.754 vx=-3.766 vy=0.042 vz=1.654 total=49412.738 potential=37740.223 linear=10153.378 angular=27.824 wheels=751.922 suspension=739.392 suspensionPower=-1331.162 suspensionResidual=0.000
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-2.682 wheelSpeed=8.368 longVel=4.196 slipVel=-4.172 normal=5953.378 longForce=3421.674
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-1.786 wheelSpeed=5.863 longVel=4.238 slipVel=-1.624 normal=1115.773 longForce=836.889
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-2.888 wheelSpeed=7.272 longVel=4.205 slipVel=-3.066 normal=3490.253 longForce=2532.637
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=8.327 wheelSpeed=-3.669 longVel=4.236 slipVel=7.905 normal=1860.022 longForce=-1768.149
-[DEBUG] [Suspension] FL=0.149365 FR=0.082715 RL=0.129590 RR=0.062939
-[DEBUG] [Wheel] FL=-2.731426 FR=-0.850062 RL=-2.981773 RR=12.354605
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-2.805 wheelSpeed=9.214 longVel=4.126 slipVel=-5.088 normal=5777.672 longForce=4198.527
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=13.393 wheelSpeed=-0.977 longVel=4.098 slipVel=5.076 normal=2086.844 longForce=-1637.858
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-3.132 wheelSpeed=6.019 longVel=4.126 slipVel=-1.893 normal=2488.053 longForce=1556.695
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-1.398 wheelSpeed=7.079 longVel=4.078 slipVel=-3.002 normal=2194.925 longForce=1720.633
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-2.913 wheelSpeed=8.237 longVel=4.133 slipVel=-4.105 normal=4980.795 longForce=3385.002
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-1.901 wheelSpeed=5.856 longVel=4.113 slipVel=-1.743 normal=1358.597 longForce=882.129
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-3.105 wheelSpeed=6.055 longVel=4.142 slipVel=-1.914 normal=1903.867 longForce=1581.199
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-1.832 wheelSpeed=7.336 longVel=4.095 slipVel=-3.241 normal=2295.413 longForce=2132.455
-[DEBUG] [Suspension] FL=0.154858 FR=0.055249 RL=0.081982 RR=0.092419
-[DEBUG] [Wheel] FL=-3.041504 FR=-0.143407 RL=-1.642463 RR=-0.820562
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-3.197 wheelSpeed=7.018 longVel=4.053 slipVel=-2.965 normal=3884.707 longForce=2445.676
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-0.059 wheelSpeed=6.804 longVel=4.070 slipVel=-2.735 normal=1145.457 longForce=904.175
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-0.544 wheelSpeed=7.127 longVel=4.095 slipVel=-3.032 normal=1946.002 longForce=1405.907
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-0.104 wheelSpeed=8.714 longVel=4.071 slipVel=-4.643 normal=2877.523 longForce=2581.881
+[DEBUG] [Energy] x=-45.535 y=3.372 z=-40.644 vx=-1.667 vy=-0.111 vz=-3.393 total=52151.855 potential=39700.742 linear=8581.479 angular=325.222 wheels=2800.730 suspension=743.682 suspensionPower=-4643.520 suspensionResidual=720.604
+[DEBUG] [Suspension] FL=0.067700 FR=0.149915 RL=0.000000 RR=0.168225
+[DEBUG] [Wheel] FL=29.364002 FR=43.426266 RL=7.905181 RR=9.598353
+[DEBUG] [Suspension] FL=0.000000 FR=0.164014 RL=0.000000 RR=0.214551
+[DEBUG] [Wheel] FL=29.364002 FR=15.271338 RL=7.905181 RR=10.527970
+[DEBUG] [Energy] x=-45.702 y=3.440 z=-42.656 vx=0.943 vy=0.419 vz=-4.147 total=54718.895 potential=40492.605 linear=10956.907 angular=899.681 wheels=1105.824 suspension=1263.878 suspensionPower=576.260 suspensionResidual=-0.005
+[DEBUG] [Suspension] FL=0.000000 FR=0.176282 RL=0.000000 RR=0.212720
+[DEBUG] [Wheel] FL=29.364002 FR=12.247444 RL=7.905181 RR=9.602813
+[DEBUG] [Suspension] FL=0.016248 FR=0.145520 RL=0.000000 RR=0.141309
+[DEBUG] [Wheel] FL=8.793756 FR=9.493285 RL=7.905181 RR=9.608515
 [DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-3.855 wheelSpeed=6.322 longVel=3.721 slipVel=-2.601 normal=4465.449 longForce=2130.571
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=13.543 wheelSpeed=-0.836 longVel=3.721 slipVel=4.557 normal=1791.857 longForce=-1572.614
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-4.141 wheelSpeed=1.163 longVel=3.686 slipVel=2.523 normal=5351.763 longForce=-2210.406
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-6.264 wheelSpeed=0.471 longVel=3.719 slipVel=3.248 normal=2280.769 longForce=-1893.440
-[DEBUG] [Energy] x=-5.577 y=3.262 z=35.602 vx=-3.135 vy=0.151 vz=1.577 total=46531.719 potential=38401.664 linear=7401.348 angular=7.786 wheels=59.160 suspension=661.762 suspensionPower=-1310.021 suspensionResidual=-0.000
-[DEBUG] [Suspension] FL=0.135083 FR=0.071729 RL=0.121167 RR=0.077405
-[DEBUG] [Wheel] FL=7.182674 FR=7.128232 RL=7.200619 RR=9.334922
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-4.839 wheelSpeed=3.409 longVel=3.295 slipVel=-0.114 normal=3455.033 longForce=36.008
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-4.692 wheelSpeed=3.475 longVel=3.349 slipVel=-0.126 normal=2070.969 longForce=29.060
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-4.817 wheelSpeed=3.435 longVel=3.286 slipVel=-0.149 normal=4772.593 longForce=48.987
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-4.658 wheelSpeed=3.469 longVel=3.351 slipVel=-0.119 normal=2010.767 longForce=9.673
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-5.319 wheelSpeed=4.890 longVel=3.015 slipVel=-1.876 normal=3948.709 longForce=1523.267
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-4.170 wheelSpeed=6.205 longVel=3.079 slipVel=-3.126 normal=2878.459 longForce=2164.116
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-4.305 wheelSpeed=6.043 longVel=3.026 slipVel=-3.017 normal=3538.833 longForce=2085.854
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=10.097 wheelSpeed=-1.949 longVel=3.083 slipVel=5.032 normal=1406.729 longForce=-1047.730
-[DEBUG] [Suspension] FL=0.112561 FR=0.093152 RL=0.124463 RR=0.069714
-[DEBUG] [Wheel] FL=-5.222039 FR=-3.621994 RL=-3.705423 RR=10.209220
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-4.991 wheelSpeed=6.091 longVel=3.120 slipVel=-2.970 normal=4733.201 longForce=2429.804
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-3.060 wheelSpeed=5.908 longVel=3.167 slipVel=-2.741 normal=1883.259 longForce=1426.827
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-4.962 wheelSpeed=5.594 longVel=3.134 slipVel=-2.459 normal=3359.079 longForce=1981.521
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=13.009 wheelSpeed=-0.960 longVel=3.177 slipVel=4.138 normal=1944.624 longForce=-1451.297
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-4.941 wheelSpeed=6.452 longVel=3.146 slipVel=-3.305 normal=4418.948 longForce=2717.620
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-0.836 wheelSpeed=6.640 longVel=3.149 slipVel=-3.491 normal=1449.449 longForce=1098.711
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-4.220 wheelSpeed=5.158 longVel=3.145 slipVel=-2.014 normal=2297.880 longForce=1279.808
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=14.566 wheelSpeed=-0.863 longVel=3.155 slipVel=4.018 normal=2567.604 longForce=-2040.425
-[DEBUG] [Energy] x=-7.094 y=3.372 z=36.397 vx=-2.789 vy=0.225 vz=1.479 total=46715.781 potential=39691.121 linear=6010.771 angular=11.891 wheels=415.332 suspension=586.666 suspensionPower=-56.104 suspensionResidual=-0.002
-[DEBUG] [Suspension] FL=0.133069 FR=0.068616 RL=0.087842 RR=0.091504
-[DEBUG] [Wheel] FL=-4.815785 FR=8.510699 RL=-4.611183 RR=15.823741
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-4.759 wheelSpeed=6.770 longVel=3.127 slipVel=-3.643 normal=4520.324 longForce=2911.271
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=10.144 wheelSpeed=-2.089 longVel=3.069 slipVel=5.158 normal=1547.881 longForce=-1186.908
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.192 wheelSpeed=4.148 longVel=3.128 slipVel=-1.019 normal=2175.704 longForce=826.606
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-5.771 wheelSpeed=0.201 longVel=3.069 slipVel=2.868 normal=3060.848 longForce=-2334.806
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-5.232 wheelSpeed=6.352 longVel=3.006 slipVel=-3.346 normal=4650.497 longForce=2751.046
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=11.667 wheelSpeed=-1.060 longVel=2.959 slipVel=4.019 normal=1333.454 longForce=-956.410
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.076 wheelSpeed=4.281 longVel=3.009 slipVel=-1.272 normal=1926.911 longForce=891.803
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-4.193 wheelSpeed=6.706 longVel=2.961 slipVel=-3.746 normal=3258.548 longForce=2606.344
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-5.340 wheelSpeed=6.466 longVel=2.950 slipVel=-3.516 normal=4745.295 longForce=2894.546
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=12.290 wheelSpeed=-0.619 longVel=2.937 slipVel=3.556 normal=1122.054 longForce=-844.773
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-4.588 wheelSpeed=4.735 longVel=2.956 slipVel=-1.779 normal=1985.936 longForce=1073.676
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-3.054 wheelSpeed=7.221 longVel=2.937 slipVel=-4.284 normal=3144.264 longForce=2559.232
-[DEBUG] [Suspension] FL=0.138745 FR=0.053784 RL=0.064038 RR=0.115491
-[DEBUG] [Wheel] FL=-5.357495 FR=12.331074 RL=-4.499537 RR=-3.025425
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-5.497 wheelSpeed=6.167 longVel=2.884 slipVel=-3.283 normal=4526.911 longForce=2704.390
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=12.460 wheelSpeed=-0.516 longVel=2.880 slipVel=3.396 normal=1111.277 longForce=-829.217
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-4.067 wheelSpeed=5.036 longVel=2.884 slipVel=-2.152 normal=2012.703 longForce=1108.762
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-2.675 wheelSpeed=7.543 longVel=2.881 slipVel=-4.662 normal=3333.245 longForce=2673.551
+[DEBUG] [Energy] x=-44.930 y=3.425 z=-44.677 vx=2.414 vy=0.348 vz=-3.623 total=55017.883 potential=40313.883 linear=11447.765 angular=692.049 wheels=1358.167 suspension=1206.019 suspensionPower=-1077.339 suspensionResidual=-0.003
+[DEBUG] [Suspension] FL=0.044263 FR=0.178845 RL=0.010205 RR=0.217480
+[DEBUG] [Wheel] FL=3.750369 FR=33.777363 RL=6.967515 RR=10.895185
+[DEBUG] [Suspension] FL=0.000000 FR=0.191113 RL=0.000000 RR=0.219128
+[DEBUG] [Wheel] FL=3.613484 FR=16.611567 RL=6.956618 RR=11.454938
+[DEBUG] [Energy] x=-43.244 y=3.688 z=-46.141 vx=3.813 vy=0.241 vz=-1.988 total=57538.738 potential=43421.023 linear=11129.199 angular=259.972 wheels=1933.425 suspension=795.118 suspensionPower=-4850.834 suspensionResidual=-0.003
+[DEBUG] [Suspension] FL=0.010571 FR=0.165845 RL=0.000000 RR=0.175183
+[DEBUG] [Wheel] FL=10.004433 FR=42.204281 RL=6.956618 RR=9.389303
+[DEBUG] [Suspension] FL=0.028516 FR=0.155591 RL=0.024854 RR=0.186902
+[DEBUG] [Wheel] FL=7.323913 FR=10.865889 RL=7.241369 RR=9.713501
 [DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-5.570 wheelSpeed=6.363 longVel=2.835 slipVel=-3.528 normal=4953.286 longForce=2905.408
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=12.459 wheelSpeed=-0.477 longVel=2.841 slipVel=3.318 normal=1093.528 longForce=-795.582
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-3.583 wheelSpeed=5.230 longVel=2.832 slipVel=-2.398 normal=2008.551 longForce=1067.656
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-2.194 wheelSpeed=7.742 longVel=2.842 slipVel=-4.900 normal=3394.088 longForce=2637.999
-[DEBUG] [Energy] x=-8.437 y=3.420 z=37.090 vx=-2.565 vy=0.011 vz=1.314 total=46101.125 potential=40264.035 linear=4982.673 angular=3.619 wheels=209.909 suspension=640.890 suspensionPower=-1438.346 suspensionResidual=-0.000
-[DEBUG] [Suspension] FL=0.142224 FR=0.047376 RL=0.078320 RR=0.124463
-[DEBUG] [Wheel] FL=-5.819497 FR=13.749289 RL=-5.923095 RR=-2.847006
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-5.989 wheelSpeed=5.784 longVel=2.632 slipVel=-3.152 normal=5045.859 longForce=2585.764
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-6.243 wheelSpeed=2.928 longVel=2.630 slipVel=-0.298 normal=1615.018 longForce=227.024
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-6.107 wheelSpeed=5.013 longVel=2.615 slipVel=-2.398 normal=3194.999 longForce=1977.410
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-2.978 wheelSpeed=6.638 longVel=2.627 slipVel=-4.011 normal=2502.485 longForce=2023.665
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-6.107 wheelSpeed=5.541 longVel=2.582 slipVel=-2.959 normal=4802.294 longForce=2425.942
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-4.032 wheelSpeed=5.485 longVel=2.585 slipVel=-2.900 normal=2335.689 longForce=1480.764
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.565 wheelSpeed=4.908 longVel=2.577 slipVel=-2.331 normal=3005.291 longForce=1651.550
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-1.039 wheelSpeed=7.062 longVel=2.587 slipVel=-4.474 normal=2132.127 longForce=1550.672
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-6.133 wheelSpeed=4.895 longVel=2.596 slipVel=-2.299 normal=4090.299 longForce=1878.629
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-3.432 wheelSpeed=5.976 longVel=2.636 slipVel=-3.340 normal=2366.099 longForce=1646.451
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-4.259 wheelSpeed=5.648 longVel=2.596 slipVel=-3.052 normal=3072.390 longForce=1725.515
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=7.667 wheelSpeed=-3.902 longVel=2.636 slipVel=6.538 normal=2091.473 longForce=-1683.616
-[DEBUG] [Suspension] FL=0.131970 FR=0.073376 RL=0.093152 RR=0.099377
-[DEBUG] [Wheel] FL=-6.162837 FR=-2.890730 RL=-4.093750 RR=9.623342
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-6.191 wheelSpeed=4.706 longVel=2.578 slipVel=-2.129 normal=3672.132 longForce=1740.929
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-2.274 wheelSpeed=6.644 longVel=2.630 slipVel=-4.013 normal=2450.239 longForce=1722.988
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-3.907 wheelSpeed=5.629 longVel=2.577 slipVel=-3.052 normal=3143.423 longForce=1555.546
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=11.096 wheelSpeed=-1.983 longVel=2.632 slipVel=4.615 normal=2312.805 longForce=-1506.742
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-6.287 wheelSpeed=4.478 longVel=2.533 slipVel=-1.944 normal=3616.393 longForce=1585.004
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-2.550 wheelSpeed=6.341 longVel=2.628 slipVel=-3.713 normal=2128.289 longForce=1580.137
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-2.723 wheelSpeed=6.411 longVel=2.534 slipVel=-3.877 normal=3166.149 longForce=1718.509
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=9.862 wheelSpeed=-2.573 longVel=2.630 slipVel=5.203 normal=2247.195 longForce=-1483.401
-[DEBUG] [Energy] x=-9.671 y=3.477 z=37.757 vx=-2.342 vy=0.103 vz=1.243 total=46148.953 potential=40933.945 linear=4223.217 angular=8.562 wheels=418.667 suspension=564.559 suspensionPower=-61.096 suspensionResidual=-0.001
-[DEBUG] [Suspension] FL=0.110181 FR=0.086743 RL=0.094983 RR=0.093884
-[DEBUG] [Wheel] FL=-6.327343 FR=-2.159678 RL=-2.210253 RR=9.456330
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-6.349 wheelSpeed=4.757 longVel=2.491 slipVel=-2.266 normal=3784.594 longForce=1853.067
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-2.104 wheelSpeed=6.543 longVel=2.596 slipVel=-3.947 normal=2162.376 longForce=1561.970
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-1.974 wheelSpeed=6.732 longVel=2.493 slipVel=-4.239 normal=3097.271 longForce=1671.411
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=9.284 wheelSpeed=-2.836 longVel=2.597 slipVel=5.433 normal=2266.514 longForce=-1460.638
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-6.355 wheelSpeed=4.848 longVel=2.488 slipVel=-2.360 normal=3682.122 longForce=1934.023
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-1.866 wheelSpeed=6.754 longVel=2.588 slipVel=-4.166 normal=2232.003 longForce=1642.492
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-1.206 wheelSpeed=6.862 longVel=2.489 slipVel=-4.373 normal=2631.702 longForce=1450.049
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=9.368 wheelSpeed=-3.017 longVel=2.589 slipVel=5.606 normal=2476.314 longForce=-1653.556
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-6.030 wheelSpeed=4.929 longVel=2.500 slipVel=-2.430 normal=3748.548 longForce=1863.770
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-0.782 wheelSpeed=7.110 longVel=2.594 slipVel=-4.516 normal=2145.227 longForce=1481.787
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-1.235 wheelSpeed=6.853 longVel=2.500 slipVel=-4.353 normal=2844.572 longForce=1454.472
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=9.488 wheelSpeed=-3.010 longVel=2.595 slipVel=5.605 normal=2672.108 longForce=-1699.403
-[DEBUG] [Suspension] FL=0.107251 FR=0.085828 RL=0.086743 RR=0.099927
-[DEBUG] [Wheel] FL=-5.975229 FR=-0.696720 RL=-1.239272 RR=9.492283
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-6.378 wheelSpeed=4.937 longVel=2.471 slipVel=-2.466 normal=3894.126 longForce=2021.391
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-0.772 wheelSpeed=6.902 longVel=2.570 slipVel=-4.332 normal=1806.285 longForce=1300.725
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-1.578 wheelSpeed=6.671 longVel=2.470 slipVel=-4.200 normal=2824.782 longForce=1445.575
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=9.737 wheelSpeed=-3.035 longVel=2.573 slipVel=5.608 normal=2813.175 longForce=-1828.991
+[DEBUG] [Energy] x=-41.178 y=3.941 z=-46.672 vx=4.048 vy=0.420 vz=-0.366 total=58769.965 potential=46392.844 linear=10016.613 angular=506.145 wheels=1179.366 suspension=674.995 suspensionPower=-1575.486 suspensionResidual=21.771
+[DEBUG] [Suspension] FL=0.043713 FR=0.144971 RL=0.020825 RR=0.151379
+[DEBUG] [Wheel] FL=5.324937 FR=33.269127 RL=6.469162 RR=9.576429
+[DEBUG] [Suspension] FL=0.000000 FR=0.172620 RL=0.000000 RR=0.198804
+[DEBUG] [Wheel] FL=4.179341 FR=14.992217 RL=6.469162 RR=10.320816
+[DEBUG] [Energy] x=-39.156 y=4.172 z=-46.174 vx=3.616 vy=0.522 vz=2.260 total=62588.355 potential=49111.441 linear=11073.814 angular=949.449 wheels=345.763 suspension=1107.886 suspensionPower=-487.987 suspensionResidual=-0.005
+[DEBUG] [Suspension] FL=0.000000 FR=0.181592 RL=0.000000 RR=0.202832
+[DEBUG] [Wheel] FL=4.179341 FR=15.136301 RL=6.469162 RR=9.825736
+[DEBUG] [Suspension] FL=0.000000 FR=0.129773 RL=0.000000 RR=0.133252
+[DEBUG] [Wheel] FL=4.179341 FR=16.540325 RL=6.469162 RR=9.913698
 [DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-6.384 wheelSpeed=4.989 longVel=2.465 slipVel=-2.524 normal=4038.053 longForce=2068.789
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-0.867 wheelSpeed=6.904 longVel=2.567 slipVel=-4.337 normal=1900.062 longForce=1342.902
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-1.631 wheelSpeed=6.563 longVel=2.462 slipVel=-4.101 normal=2810.701 longForce=1375.321
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=9.722 wheelSpeed=-3.038 longVel=2.567 slipVel=5.606 normal=2866.316 longForce=-1825.868
-[DEBUG] [Energy] x=-10.831 y=3.485 z=38.388 vx=-2.274 vy=-0.038 vz=1.248 total=45769.445 potential=41019.711 linear=4037.246 angular=5.114 wheels=128.389 suspension=578.986 suspensionPower=-645.459 suspensionResidual=-0.000
-[DEBUG] [Suspension] FL=0.114209 FR=0.078137 RL=0.081433 RR=0.115308
-[DEBUG] [Wheel] FL=-5.835404 FR=-0.151851 RL=-1.703372 RR=10.207735
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-5.564 wheelSpeed=5.513 longVel=2.427 slipVel=-3.085 normal=4211.587 longForce=2166.622
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=6.429 wheelSpeed=-4.284 longVel=2.497 slipVel=6.781 normal=1868.429 longForce=-1482.291
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-1.772 wheelSpeed=6.189 longVel=2.423 slipVel=-3.766 normal=2479.469 longForce=1112.518
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=10.227 wheelSpeed=-3.107 longVel=2.504 slipVel=5.610 normal=3412.263 longForce=-2103.264
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-2.809 wheelSpeed=7.274 longVel=2.444 slipVel=-4.830 normal=3873.329 longForce=2500.450
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=8.015 wheelSpeed=-3.256 longVel=2.468 slipVel=5.724 normal=1762.912 longForce=-1277.761
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-2.423 wheelSpeed=5.776 longVel=2.435 slipVel=-3.341 normal=2296.563 longForce=1037.530
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=10.549 wheelSpeed=-3.212 longVel=2.479 slipVel=5.690 normal=3509.770 longForce=-2334.292
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-2.243 wheelSpeed=7.681 longVel=2.449 slipVel=-5.231 normal=4030.646 longForce=2607.605
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=7.824 wheelSpeed=-3.276 longVel=2.455 slipVel=5.731 normal=1727.230 longForce=-1212.180
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-2.824 wheelSpeed=5.532 longVel=2.437 slipVel=-3.095 normal=2324.875 longForce=1000.079
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=10.632 wheelSpeed=-3.185 longVel=2.469 slipVel=5.654 normal=3516.601 longForce=-2347.504
-[DEBUG] [Suspension] FL=0.119336 FR=0.074841 RL=0.067517 RR=0.127209
-[DEBUG] [Wheel] FL=-2.198424 FR=7.802008 RL=-2.879429 RR=10.709183
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-2.669 wheelSpeed=7.367 longVel=2.478 slipVel=-4.889 normal=4052.834 longForce=2520.224
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=7.891 wheelSpeed=-3.231 longVel=2.488 slipVel=5.719 normal=1715.427 longForce=-1201.352
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-3.201 wheelSpeed=5.611 longVel=2.460 slipVel=-3.151 normal=2928.982 longForce=1233.542
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=10.606 wheelSpeed=-2.710 longVel=2.499 slipVel=5.209 normal=3058.422 longForce=-1923.631
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-3.120 wheelSpeed=6.900 longVel=2.489 slipVel=-4.411 normal=3937.507 longForce=2311.100
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=8.412 wheelSpeed=-3.092 longVel=2.499 slipVel=5.591 normal=1881.657 longForce=-1306.548
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-3.201 wheelSpeed=5.620 longVel=2.475 slipVel=-3.145 normal=2923.929 longForce=1241.957
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=10.681 wheelSpeed=-2.518 longVel=2.510 slipVel=5.028 normal=2877.468 longForce=-1790.551
-[DEBUG] [Energy] x=-12.010 y=3.462 z=38.987 vx=-2.374 vy=-0.087 vz=1.181 total=45905.098 potential=40751.809 linear=4222.685 angular=10.776 wheels=332.924 suspension=586.901 suspensionPower=98.332 suspensionResidual=0.001
-[DEBUG] [Suspension] FL=0.117322 FR=0.073926 RL=0.077039 RR=0.117505
-[DEBUG] [Wheel] FL=-3.722976 FR=8.553660 RL=-3.237716 RR=10.894487
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-4.108 wheelSpeed=6.523 longVel=2.488 slipVel=-4.035 normal=3914.456 longForce=2411.913
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=8.949 wheelSpeed=-2.738 longVel=2.509 slipVel=5.247 normal=1674.927 longForce=-1234.692
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-3.355 wheelSpeed=5.554 longVel=2.477 slipVel=-3.077 normal=2792.305 longForce=1251.276
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=11.035 wheelSpeed=-2.428 longVel=2.521 slipVel=4.949 normal=2880.754 longForce=-1865.474
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-4.398 wheelSpeed=6.243 longVel=2.520 slipVel=-3.724 normal=3908.653 longForce=2295.354
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=9.564 wheelSpeed=-2.537 longVel=2.564 slipVel=5.101 normal=1818.865 longForce=-1326.181
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-2.939 wheelSpeed=5.661 longVel=2.511 slipVel=-3.150 normal=2780.647 longForce=1164.175
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=10.526 wheelSpeed=-2.629 longVel=2.575 slipVel=5.204 normal=2919.556 longForce=-1819.871
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-4.848 wheelSpeed=5.823 longVel=2.601 slipVel=-3.221 normal=3707.626 longForce=2125.930
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=10.614 wheelSpeed=-2.217 longVel=2.670 slipVel=4.887 normal=2006.425 longForce=-1503.223
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-2.425 wheelSpeed=6.084 longVel=2.593 slipVel=-3.490 normal=2936.950 longForce=1307.491
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=10.056 wheelSpeed=-2.705 longVel=2.673 slipVel=5.377 normal=2693.746 longForce=-1680.963
-[DEBUG] [Suspension] FL=0.113477 FR=0.076855 RL=0.079602 RR=0.109814
-[DEBUG] [Wheel] FL=-4.794421 FR=10.689758 RL=-2.305888 RR=9.983425
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-4.696 wheelSpeed=6.231 longVel=2.663 slipVel=-3.568 normal=4313.890 longForce=2414.035
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=10.893 wheelSpeed=-2.045 longVel=2.756 slipVel=4.801 normal=2103.738 longForce=-1474.288
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-1.462 wheelSpeed=6.513 longVel=2.664 slipVel=-3.849 normal=3006.381 longForce=1261.967
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=9.551 wheelSpeed=-2.877 longVel=2.760 slipVel=5.636 normal=2772.164 longForce=-1611.387
+[DEBUG] [Energy] x=-37.635 y=4.223 z=-44.639 vx=2.220 vy=0.068 vz=3.809 total=63627.410 potential=49711.641 linear=11666.410 angular=572.082 wheels=626.636 suspension=1050.642 suspensionPower=-690.088 suspensionResidual=0.001
+[DEBUG] [Suspension] FL=0.025769 FR=0.182324 RL=0.025586 RR=0.188367
+[DEBUG] [Wheel] FL=2.787474 FR=23.334913 RL=6.398584 RR=10.150490
+[DEBUG] [Suspension] FL=0.054883 FR=0.035840 RL=0.157239 RR=0.117139
+[DEBUG] [Wheel] FL=76.979408 FR=128.213974 RL=18.209942 RR=41.079952
+[DEBUG] [Suspension] FL=0.017529 FR=0.000000 RL=0.177380 RR=0.150464
+[DEBUG] [Wheel] FL=255.700775 FR=336.547424 RL=19.899179 RR=20.835670
+[DEBUG] [Energy] x=-36.117 y=4.274 z=-42.420 vx=3.950 vy=-0.083 vz=5.280 total=245912.938 potential=50312.629 linear=26097.102 angular=41.672 wheels=168643.375 suspension=818.162 suspensionPower=-884.888 suspensionResidual=-0.001
+[DEBUG] [Suspension] FL=0.040967 FR=0.000000 RL=0.170789 RR=0.172620
+[DEBUG] [Wheel] FL=378.913208 FR=544.881165 RL=23.593821 RR=23.996071
 [DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-4.658 wheelSpeed=5.972 longVel=2.765 slipVel=-3.207 normal=3890.324 longForce=2173.718
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=11.417 wheelSpeed=-1.836 longVel=2.861 slipVel=4.697 normal=2098.750 longForce=-1519.316
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-1.048 wheelSpeed=6.640 longVel=2.766 slipVel=-3.874 normal=2792.645 longForce=1192.464
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=10.091 wheelSpeed=-2.842 longVel=2.865 slipVel=5.707 normal=3061.611 longForce=-1814.947
-[DEBUG] [Energy] x=-13.254 y=3.378 z=39.659 vx=-2.541 vy=-0.183 vz=1.453 total=45751.867 potential=39768.719 linear=5161.573 angular=2.067 wheels=228.595 suspension=590.912 suspensionPower=114.316 suspensionResidual=-0.000
-[DEBUG] [Suspension] FL=0.115308 FR=0.083630 RL=0.076489 RR=0.115125
-[DEBUG] [Wheel] FL=-4.008847 FR=11.020992 RL=-0.457150 RR=10.782040
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-3.167 wheelSpeed=6.756 longVel=2.884 slipVel=-3.872 normal=3665.440 longForce=2207.262
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=10.275 wheelSpeed=-2.525 longVel=2.949 slipVel=5.474 normal=2157.458 longForce=-1620.031
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-0.636 wheelSpeed=6.602 longVel=2.884 slipVel=-3.718 normal=2239.540 longForce=979.607
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=11.018 wheelSpeed=-2.761 longVel=2.952 slipVel=5.713 normal=3429.177 longForce=-2145.927
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-0.770 wheelSpeed=7.969 longVel=2.999 slipVel=-4.970 normal=3556.360 longForce=2218.966
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=10.842 wheelSpeed=-2.704 longVel=3.040 slipVel=5.744 normal=2892.033 longForce=-2022.885
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-0.944 wheelSpeed=6.357 longVel=2.999 slipVel=-3.358 normal=2253.022 longForce=900.484
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=11.412 wheelSpeed=-2.690 longVel=3.039 slipVel=5.729 normal=3629.467 longForce=-2254.634
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=0.054 wheelSpeed=8.340 longVel=3.098 slipVel=-5.241 normal=3193.191 longForce=2183.150
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=11.021 wheelSpeed=-2.607 longVel=3.142 slipVel=5.750 normal=2770.075 longForce=-2017.133
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-0.909 wheelSpeed=6.478 longVel=3.099 slipVel=-3.379 normal=2252.836 longForce=989.790
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=12.010 wheelSpeed=-2.591 longVel=3.135 slipVel=5.726 normal=3690.861 longForce=-2427.045
-[DEBUG] [Suspension] FL=0.104688 FR=0.098279 RL=0.062756 RR=0.129590
-[DEBUG] [Wheel] FL=10.800476 FR=11.038859 RL=-0.891536 RR=12.045731
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=12.162 wheelSpeed=-2.086 longVel=3.266 slipVel=5.353 normal=2910.224 longForce=-2056.906
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=10.859 wheelSpeed=-2.556 longVel=3.271 slipVel=5.828 normal=2666.737 longForce=-1902.563
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-2.078 wheelSpeed=6.180 longVel=3.270 slipVel=-2.909 normal=2711.963 longForce=1236.790
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=11.855 wheelSpeed=-2.427 longVel=3.257 slipVel=5.684 normal=3062.194 longForce=-2220.127
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=14.329 wheelSpeed=-1.447 longVel=3.420 slipVel=4.867 normal=4004.691 longForce=-2450.933
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=10.107 wheelSpeed=-2.438 longVel=3.386 slipVel=5.824 normal=2323.542 longForce=-1474.296
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-2.757 wheelSpeed=5.819 longVel=3.436 slipVel=-2.383 normal=3110.678 longForce=1219.207
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=13.472 wheelSpeed=-1.306 longVel=3.371 slipVel=4.677 normal=2921.615 longForce=-1951.110
-[DEBUG] [Suspension] FL=0.108899 FR=0.098462 RL=0.074841 RR=0.113293
-[DEBUG] [Wheel] FL=14.839816 FR=10.039185 RL=-3.899632 RR=15.980317
-[DEBUG] [Energy] x=-14.635 y=3.285 z=40.359 vx=-2.833 vy=-0.159 vz=1.352 total=45336.195 potential=38667.391 linear=5927.651 angular=20.823 wheels=119.234 suspension=601.093 suspensionPower=-148.935 suspensionResidual=0.001
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=14.917 wheelSpeed=-1.073 longVel=3.567 slipVel=4.641 normal=3676.193 longForce=-2379.036
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=10.052 wheelSpeed=-2.361 longVel=3.476 slipVel=5.837 normal=2040.325 longForce=-1382.923
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-4.235 wheelSpeed=4.982 longVel=3.567 slipVel=-1.415 normal=3940.970 longForce=1133.556
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-5.684 wheelSpeed=0.170 longVel=3.469 slipVel=3.298 normal=3149.946 longForce=-2404.206
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=15.708 wheelSpeed=-0.182 longVel=3.429 slipVel=3.611 normal=3756.115 longForce=-1947.841
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=10.917 wheelSpeed=-1.998 longVel=3.333 slipVel=5.330 normal=2282.999 longForce=-1442.302
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-4.503 wheelSpeed=5.252 longVel=3.433 slipVel=-1.819 normal=3320.802 longForce=1482.888
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-2.431 wheelSpeed=6.713 longVel=3.326 slipVel=-3.387 normal=2629.484 longForce=1855.761
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-2.322 wheelSpeed=6.563 longVel=3.328 slipVel=-3.235 normal=3607.877 longForce=1676.475
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=11.902 wheelSpeed=-1.944 longVel=3.326 slipVel=5.271 normal=2820.196 longForce=-1823.207
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-2.171 wheelSpeed=6.142 longVel=3.334 slipVel=-2.808 normal=3051.699 longForce=1244.756
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=8.473 wheelSpeed=-3.690 longVel=3.318 slipVel=7.008 normal=2385.019 longForce=-1854.111
-[DEBUG] [Suspension] FL=0.108899 FR=0.101758 RL=0.088208 RR=0.102673
-[DEBUG] [Wheel] FL=-1.778228 FR=11.285112 RL=-1.858209 RR=11.086607
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-0.625 wheelSpeed=7.791 longVel=3.299 slipVel=-4.492 normal=3421.124 longForce=2003.847
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=10.678 wheelSpeed=-2.374 longVel=3.353 slipVel=5.727 normal=2443.178 longForce=-1664.334
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-0.051 wheelSpeed=7.188 longVel=3.308 slipVel=-3.880 normal=2867.086 longForce=1233.697
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=11.749 wheelSpeed=-2.338 longVel=3.352 slipVel=5.690 normal=3396.071 longForce=-2096.124
+[DEBUG] [Suspension] FL=0.000000 FR=0.025586 RL=0.178845 RR=0.200269
+[DEBUG] [Wheel] FL=566.732300 FR=682.477722 RL=28.075293 RR=26.820488
+[DEBUG] [Energy] x=-33.642 y=4.229 z=-39.102 vx=5.702 vy=0.107 vz=7.782 total=847733.375 potential=49786.480 linear=55847.566 angular=14.112 wheels=740958.438 suspension=1126.741 suspensionPower=-2744.245 suspensionResidual=197.686
+[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.089490 RR=0.175549
+[DEBUG] [Wheel] FL=775.066040 FR=890.621460 RL=116.540672 RR=27.802891
+[DEBUG] [Suspension] FL=0.000000 FR=0.031445 RL=0.117688 RR=0.174268
+[DEBUG] [Wheel] FL=983.399780 FR=1008.238403 RL=141.038483 RR=32.639381
+[DEBUG] [Energy] x=-30.579 y=3.836 z=-34.600 vx=6.706 vy=-1.458 vz=10.324 total=2010963.375 potential=45153.434 linear=92206.492 angular=234.612 wheels=1872544.750 suspension=824.077 suspensionPower=-10005.997 suspensionResidual=313.170
+[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.322217 RR=0.093701
+[DEBUG] [Wheel] FL=1099.017822 FR=1215.686157 RL=34.161789 RR=101.326248
 [DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-0.313 wheelSpeed=8.339 longVel=3.248 slipVel=-5.091 normal=3584.015 longForce=2342.207
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=10.323 wheelSpeed=-2.486 longVel=3.289 slipVel=5.775 normal=2252.474 longForce=-1606.998
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=12.680 wheelSpeed=-0.841 longVel=3.258 slipVel=4.099 normal=2311.430 longForce=-1206.811
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=12.188 wheelSpeed=-2.445 longVel=3.290 slipVel=5.735 normal=3591.861 longForce=-2378.523
-[DEBUG] [Suspension] FL=0.108350 FR=0.094434 RL=0.070081 RR=0.122083
-[DEBUG] [Wheel] FL=12.532957 FR=9.730918 RL=-8.832206 RR=13.033637
-[DEBUG] [Energy] x=-16.040 y=3.252 z=41.109 vx=-2.705 vy=-0.021 vz=1.493 total=45057.723 potential=38279.695 linear=5730.262 angular=7.937 wheels=430.295 suspension=609.530 suspensionPower=-220.343 suspensionResidual=0.000
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=12.724 wheelSpeed=-2.547 longVel=3.255 slipVel=5.802 normal=3824.624 longForce=-2700.624
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=9.667 wheelSpeed=-2.613 longVel=3.251 slipVel=5.864 normal=2024.064 longForce=-1433.840
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-4.665 wheelSpeed=3.550 longVel=3.271 slipVel=-0.279 normal=1926.431 longForce=82.864
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=13.240 wheelSpeed=-2.550 longVel=3.253 slipVel=5.803 normal=3946.483 longForce=-2924.844
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=12.836 wheelSpeed=-2.117 longVel=3.183 slipVel=5.300 normal=3970.538 longForce=-2376.648
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=8.851 wheelSpeed=-2.676 longVel=3.148 slipVel=5.824 normal=1776.655 longForce=-1135.811
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-2.313 wheelSpeed=5.991 longVel=3.187 slipVel=-2.804 normal=2868.960 longForce=1175.396
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=13.274 wheelSpeed=-2.017 longVel=3.149 slipVel=5.166 normal=3684.575 longForce=-2478.910
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=11.817 wheelSpeed=-2.422 longVel=3.207 slipVel=5.630 normal=3604.810 longForce=-2199.474
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=10.158 wheelSpeed=-2.682 longVel=3.153 slipVel=5.835 normal=2727.838 longForce=-1708.569
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-3.176 wheelSpeed=5.343 longVel=3.210 slipVel=-2.133 normal=2743.328 longForce=988.580
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=14.443 wheelSpeed=-1.429 longVel=3.143 slipVel=4.572 normal=3657.760 longForce=-2475.584
-[DEBUG] [Suspension] FL=0.116040 FR=0.093701 RL=0.070630 RR=0.129773
-[DEBUG] [Wheel] FL=11.611767 FR=10.176787 RL=-3.202693 RR=14.578729
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=11.242 wheelSpeed=-2.581 longVel=3.196 slipVel=5.777 normal=3079.781 longForce=-2088.269
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=10.224 wheelSpeed=-2.683 longVel=3.148 slipVel=5.831 normal=2537.317 longForce=-1736.702
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-3.501 wheelSpeed=5.378 longVel=3.198 slipVel=-2.180 normal=2706.914 longForce=1158.827
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=15.198 wheelSpeed=-1.211 longVel=3.136 slipVel=4.347 normal=3580.260 longForce=-2614.186
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=11.094 wheelSpeed=-2.677 longVel=3.102 slipVel=5.779 normal=3047.160 longForce=-2106.322
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=9.912 wheelSpeed=-2.780 longVel=3.057 slipVel=5.837 normal=2411.385 longForce=-1684.773
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-3.665 wheelSpeed=5.206 longVel=3.105 slipVel=-2.101 normal=2552.058 longForce=1080.734
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=15.011 wheelSpeed=-1.462 longVel=3.047 slipVel=4.509 normal=3750.205 longForce=-2748.440
-[DEBUG] [Suspension] FL=0.095532 FR=0.098645 RL=0.069531 RR=0.129773
-[DEBUG] [Wheel] FL=10.011939 FR=10.547314 RL=-3.904672 RR=14.866121
-[DEBUG] [Energy] x=-17.362 y=3.303 z=41.841 vx=-2.514 vy=0.144 vz=1.334 total=44526.543 potential=38888.480 linear=4870.797 angular=2.886 wheels=169.679 suspension=594.699 suspensionPower=169.197 suspensionResidual=-0.000
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=10.062 wheelSpeed=-2.807 longVel=2.987 slipVel=5.794 normal=2323.099 longForce=-1772.975
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=10.653 wheelSpeed=-2.852 longVel=2.970 slipVel=5.822 normal=2676.539 longForce=-2067.127
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-3.829 wheelSpeed=5.340 longVel=2.991 slipVel=-2.349 normal=2589.769 longForce=1268.078
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=14.393 wheelSpeed=-1.612 longVel=2.965 slipVel=4.577 normal=3431.328 longForce=-2612.543
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=11.117 wheelSpeed=-2.203 longVel=2.909 slipVel=5.112 normal=2501.145 longForce=-1707.097
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=10.641 wheelSpeed=-2.891 longVel=2.904 slipVel=5.795 normal=2896.798 longForce=-2095.152
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-2.998 wheelSpeed=6.035 longVel=2.908 slipVel=-3.127 normal=3100.415 longForce=1509.192
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=11.913 wheelSpeed=-2.248 longVel=2.899 slipVel=5.147 normal=2961.850 longForce=-2091.511
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=12.329 wheelSpeed=-1.314 longVel=2.833 slipVel=4.147 normal=2450.170 longForce=-1463.315
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=10.873 wheelSpeed=-2.916 longVel=2.849 slipVel=5.765 normal=3136.691 longForce=-2216.865
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-2.294 wheelSpeed=6.703 longVel=2.827 slipVel=-3.876 normal=3542.534 longForce=1782.575
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=10.430 wheelSpeed=-2.513 longVel=2.843 slipVel=5.356 normal=2544.427 longForce=-1679.194
-[DEBUG] [Suspension] FL=0.077954 FR=0.112561 RL=0.086194 RR=0.107434
-[DEBUG] [Wheel] FL=12.437247 FR=10.945662 RL=-2.201623 RR=10.264932
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=13.097 wheelSpeed=-0.801 longVel=2.748 slipVel=3.549 normal=2318.978 longForce=-1352.034
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=10.620 wheelSpeed=-2.960 longVel=2.783 slipVel=5.743 normal=2884.257 longForce=-2147.422
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-1.855 wheelSpeed=7.224 longVel=2.740 slipVel=-4.483 normal=3750.210 longForce=2042.782
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=9.630 wheelSpeed=-2.736 longVel=2.782 slipVel=5.518 normal=2306.899 longForce=-1526.115
-[DEBUG] [Performance] FPS=60 PhysicsHz=119
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=13.340 wheelSpeed=-0.531 longVel=2.681 slipVel=3.212 normal=2302.689 longForce=-1223.595
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=11.168 wheelSpeed=-2.997 longVel=2.735 slipVel=5.733 normal=3305.935 longForce=-2415.888
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-1.362 wheelSpeed=7.534 longVel=2.672 slipVel=-4.862 normal=3941.261 longForce=2098.561
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=8.875 wheelSpeed=-2.910 longVel=2.732 slipVel=5.641 normal=2134.395 longForce=-1349.998
-[DEBUG] [Suspension] FL=0.068250 FR=0.122998 RL=0.106702 RR=0.093335
-[DEBUG] [Wheel] FL=12.889846 FR=11.074362 RL=-0.792993 RR=9.363337
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=12.553 wheelSpeed=-0.856 longVel=2.585 slipVel=3.442 normal=2189.745 longForce=-1164.601
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=11.237 wheelSpeed=-3.096 longVel=2.641 slipVel=5.737 normal=3569.015 longForce=-2529.943
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-0.788 wheelSpeed=7.676 longVel=2.579 slipVel=-5.097 normal=3710.382 longForce=1973.205
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=9.226 wheelSpeed=-3.148 longVel=2.643 slipVel=5.791 normal=2791.263 longForce=-1707.063
-[DEBUG] [Energy] x=-18.602 y=3.342 z=42.513 vx=-2.345 vy=0.078 vz=1.348 total=44688.297 potential=39346.219 linear=4392.666 angular=5.085 wheels=332.631 suspension=611.696 suspensionPower=-301.810 suspensionResidual=-0.000
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=12.560 wheelSpeed=-0.725 longVel=2.522 slipVel=3.248 normal=1965.945 longForce=-1054.529
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=11.331 wheelSpeed=-3.147 longVel=2.587 slipVel=5.734 normal=3581.178 longForce=-2614.360
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-0.885 wheelSpeed=7.522 longVel=2.519 slipVel=-5.003 normal=3515.406 longForce=1882.575
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=8.891 wheelSpeed=-3.202 longVel=2.591 slipVel=5.794 normal=2589.106 longForce=-1609.294
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=12.730 wheelSpeed=-0.675 longVel=2.470 slipVel=3.145 normal=1910.424 longForce=-1084.130
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=11.773 wheelSpeed=-3.196 longVel=2.540 slipVel=5.737 normal=3730.795 longForce=-2848.005
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-0.788 wheelSpeed=7.764 longVel=2.466 slipVel=-5.297 normal=3547.387 longForce=2051.435
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=8.708 wheelSpeed=-3.264 longVel=2.546 slipVel=5.809 normal=2457.908 longForce=-1583.843
-[DEBUG] [Suspension] FL=0.059277 FR=0.135266 RL=0.102490 RR=0.094251
-[DEBUG] [Wheel] FL=12.759379 FR=11.780169 RL=-0.776924 RR=8.653160
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=12.839 wheelSpeed=-0.756 longVel=2.451 slipVel=3.207 normal=1746.760 longForce=-1201.379
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=12.683 wheelSpeed=-3.221 longVel=2.519 slipVel=5.740 normal=3879.572 longForce=-3262.396
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=9.598 wheelSpeed=-3.429 longVel=2.451 slipVel=5.879 normal=2960.463 longForce=-2108.821
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=9.196 wheelSpeed=-3.293 longVel=2.523 slipVel=5.816 normal=2521.842 longForce=-1821.244
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=10.226 wheelSpeed=-2.020 longVel=2.545 slipVel=4.565 normal=1826.211 longForce=-1163.976
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=10.881 wheelSpeed=-3.283 longVel=2.544 slipVel=5.827 normal=3533.488 longForce=-2537.572
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=13.642 wheelSpeed=-1.209 longVel=2.541 slipVel=3.750 normal=3457.686 longForce=-1937.913
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=9.460 wheelSpeed=-3.317 longVel=2.549 slipVel=5.866 normal=2715.858 longForce=-1957.054
-[DEBUG] [Suspension] FL=0.057263 FR=0.138013 RL=0.096265 RR=0.092236
-[DEBUG] [Wheel] FL=9.922007 FR=10.481417 RL=14.317038 RR=10.040717
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=10.339 wheelSpeed=-2.253 longVel=2.510 slipVel=4.763 normal=2149.656 longForce=-1414.295
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=9.253 wheelSpeed=-3.344 longVel=2.470 slipVel=5.814 normal=2613.615 longForce=-1892.125
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=14.813 wheelSpeed=-0.573 longVel=2.505 slipVel=3.078 normal=3482.669 longForce=-1893.753
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=10.699 wheelSpeed=-2.723 longVel=2.492 slipVel=5.215 normal=2710.608 longForce=-1979.331
-[DEBUG] [Energy] x=-19.766 y=3.379 z=43.123 vx=-2.255 vy=0.005 vz=1.059 total=44175.121 potential=39781.723 linear=3724.795 angular=8.428 wheels=82.745 suspension=577.427 suspensionPower=208.248 suspensionResidual=0.001
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=11.628 wheelSpeed=-2.115 longVel=2.397 slipVel=4.513 normal=2954.789 longForce=-1851.823
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=9.341 wheelSpeed=-3.396 longVel=2.365 slipVel=5.761 normal=2788.407 longForce=-1974.466
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.826 wheelSpeed=3.848 longVel=2.392 slipVel=-1.456 normal=3219.209 longForce=841.690
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=11.449 wheelSpeed=-1.999 longVel=2.381 slipVel=4.380 normal=2538.321 longForce=-1677.489
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=12.715 wheelSpeed=-1.546 longVel=2.448 slipVel=3.994 normal=3132.901 longForce=-1828.792
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=8.988 wheelSpeed=-3.331 longVel=2.433 slipVel=5.764 normal=2483.940 longForce=-1764.643
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-4.121 wheelSpeed=5.508 longVel=2.443 slipVel=-3.065 normal=3311.035 longForce=1539.787
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=10.235 wheelSpeed=-2.479 longVel=2.445 slipVel=4.924 normal=2353.138 longForce=-1563.953
-[DEBUG] [Suspension] FL=0.081067 FR=0.112012 RL=0.092603 RR=0.092786
-[DEBUG] [Wheel] FL=12.800092 FR=8.889030 RL=-4.076337 RR=10.338590
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=12.709 wheelSpeed=-1.504 longVel=2.501 slipVel=4.004 normal=3267.618 longForce=-1789.522
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=8.595 wheelSpeed=-3.289 longVel=2.481 slipVel=5.770 normal=2296.074 longForce=-1558.132
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-3.882 wheelSpeed=5.553 longVel=2.496 slipVel=-3.057 normal=3342.014 longForce=1475.145
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=10.668 wheelSpeed=-2.483 longVel=2.492 slipVel=4.975 normal=2727.250 longForce=-1755.668
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=12.206 wheelSpeed=-1.781 longVel=2.516 slipVel=4.298 normal=3178.517 longForce=-1813.411
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=8.604 wheelSpeed=-3.279 longVel=2.502 slipVel=5.781 normal=2294.546 longForce=-1553.310
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-3.472 wheelSpeed=5.639 longVel=2.510 slipVel=-3.129 normal=3125.007 longForce=1372.660
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=10.478 wheelSpeed=-2.783 longVel=2.512 slipVel=5.295 normal=2966.612 longForce=-1933.822
+[DEBUG] [Suspension] FL=0.053418 FR=0.000000 RL=0.209790 RR=0.094617
+[DEBUG] [Wheel] FL=1181.458496 FR=1424.019897 RL=39.839916 RR=175.097794
+[DEBUG] [Energy] x=-26.351 y=3.386 z=-28.866 vx=9.690 vy=-0.676 vz=12.407 total=3408702.250 potential=39859.875 linear=148964.453 angular=191.430 wheels=3218251.000 suspension=1435.421 suspensionPower=-40954.820 suspensionResidual=1792.160
+[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.108167 RR=0.200452
+[DEBUG] [Wheel] FL=1389.792236 FR=1632.353638 RL=117.223480 RR=41.937145
+[DEBUG] [Suspension] FL=0.000000 FR=0.080884 RL=0.264722 RR=0.365063
+[DEBUG] [Wheel] FL=1598.125977 FR=1556.864746 RL=46.915829 RR=45.852310
+[DEBUG] [Energy] x=-21.318 y=3.226 z=-21.636 vx=10.116 vy=1.424 vz=16.238 total=4945471.000 potential=37982.301 linear=220825.188 angular=149.919 wheels=4683421.000 suspension=3092.270 suspensionPower=6482.623 suspensionResidual=1205.226
+[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.269849 RR=0.114941
+[DEBUG] [Wheel] FL=1701.135986 FR=1765.198486 RL=46.455360 RR=148.068604
 [DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Suspension] FL=0.092236 FR=0.099377 RL=0.089673 RR=0.104688
-[DEBUG] [Wheel] FL=12.104677 FR=8.549767 RL=-3.315242 RR=10.376860
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=12.040 wheelSpeed=-1.916 longVel=2.527 slipVel=4.443 normal=3272.670 longForce=-1858.083
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=8.570 wheelSpeed=-3.270 longVel=2.512 slipVel=5.782 normal=2305.472 longForce=-1530.140
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-3.314 wheelSpeed=5.721 longVel=2.520 slipVel=-3.201 normal=3214.962 longForce=1376.089
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=10.469 wheelSpeed=-2.822 longVel=2.523 slipVel=5.345 normal=3038.905 longForce=-1964.357
-[DEBUG] [Energy] x=-20.916 y=3.339 z=43.719 vx=-2.300 vy=-0.127 vz=1.309 total=44400.309 potential=39310.055 linear=4213.286 angular=5.190 wheels=307.523 suspension=564.255 suspensionPower=-12.539 suspensionResidual=-0.000
-[DEBUG] [Suspension] FL=0.067700 FR=0.146985 RL=0.022473 RR=0.146802
-[DEBUG] [Wheel] FL=1.889100 FR=20.690039 RL=-3.784651 RR=6.171019
-[DEBUG] [Suspension] FL=0.037122 FR=0.158337 RL=0.027051 RR=0.158704
-[DEBUG] [Wheel] FL=0.353418 FR=8.711691 RL=4.223605 RR=6.631079
-[DEBUG] [Energy] x=-22.215 y=3.307 z=43.949 vx=-2.823 vy=-0.042 vz=-0.101 total=44519.160 potential=38928.273 linear=4789.700 angular=22.370 wheels=116.706 suspension=662.109 suspensionPower=34.160 suspensionResidual=0.002
-[DEBUG] [Suspension] FL=0.070081 FR=0.129773 RL=0.086743 RR=0.098279
-[DEBUG] [Wheel] FL=1.915982 FR=21.365807 RL=4.616663 RR=7.021846
+[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.003613 RR=0.000000
+[DEBUG] [Wheel] FL=1819.191772 FR=1883.254272 RL=115.694077 RR=266.124146
+[DEBUG] [Energy] x=-15.712 y=3.699 z=-13.200 vx=11.326 vy=-0.939 vz=16.695 total=6531897.000 potential=43542.984 linear=244728.500 angular=124.269 wheels=6243497.000 suspension=3.783 suspensionPower=-49.983 suspensionResidual=-0.000
+[DEBUG] [Suspension] FL=0.149915 FR=0.000000 RL=0.315991 RR=0.000000
+[DEBUG] [Wheel] FL=1471.627319 FR=1883.254272 RL=45.164066 RR=266.124146
+[DEBUG] [Suspension] FL=0.000000 FR=0.104504 RL=0.000000 RR=0.229199
+[DEBUG] [Wheel] FL=1442.614502 FR=1717.301514 RL=41.491600 RR=42.657818
+[DEBUG] [Energy] x=-9.273 y=3.942 z=-4.451 vx=12.774 vy=1.715 vz=18.085 total=4715203.500 potential=46408.910 linear=295918.906 angular=573.032 wheels=4371218.000 suspension=1084.499 suspensionPower=-19314.148 suspensionResidual=-0.000
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=1431.040 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=1639.342 wheelSpeed=826.405 longVel=21.650 latVel=0.067 slipVel=-804.755 slipRatio=37.171 slipAngle=0.003 normal=879.705 longForce=822.523
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=29.918 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=31.990 wheelSpeed=22.019 longVel=21.653 latVel=0.201 slipVel=-0.367 slipRatio=0.017 slipAngle=0.009 normal=6945.251 longForce=205.418
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=1292.151 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=1462.081 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=6.769 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-10.819 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.119885
+[DEBUG] [Wheel] FL=1222.706665 FR=1392.636108 RL=6.769378 RR=-10.818654
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=1153.262 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=1323.192 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=6.769 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-10.819 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
 [DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Suspension] FL=0.030896 FR=0.161450 RL=0.050122 RR=0.151379
-[DEBUG] [Wheel] FL=-5.932510 FR=10.799344 RL=4.185730 RR=7.575184
-[DEBUG] [Energy] x=-23.691 y=3.274 z=43.767 vx=-2.987 vy=-0.021 vz=-1.120 total=46256.695 potential=38544.812 linear=6106.893 angular=532.491 wheels=253.295 suspension=819.207 suspensionPower=-630.419 suspensionResidual=-0.002
-[DEBUG] [Suspension] FL=0.044812 FR=0.162915 RL=0.021191 RR=0.175000
-[DEBUG] [Wheel] FL=-10.237841 FR=13.680347 RL=4.529867 RR=8.130294
-[DEBUG] [Suspension] FL=0.033459 FR=0.163647 RL=0.021924 RR=0.171155
-[DEBUG] [Wheel] FL=-12.030507 FR=13.783567 RL=4.948674 RR=8.899101
-[DEBUG] [Energy] x=-25.075 y=3.318 z=42.737 vx=-2.338 vy=0.110 vz=-2.840 total=49164.012 potential=39065.332 linear=8126.117 angular=749.881 wheels=413.379 suspension=809.303 suspensionPower=663.647 suspensionResidual=-0.000
-[DEBUG] [Suspension] FL=0.029797 FR=0.182507 RL=0.020276 RR=0.190930
-[DEBUG] [Wheel] FL=-12.659873 FR=15.016614 RL=5.118795 RR=9.148100
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=1014.373 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=1184.302 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=6.769 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-10.819 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Wheel] FL=956.502441 FR=1126.431885 RL=-4.804697 RR=0.755421
+[DEBUG] [Energy] x=-3.019 y=4.067 z=4.771 vx=12.259 vy=-2.102 vz=18.122 total=2304107.750 potential=47873.660 linear=289864.969 angular=976.936 wheels=1965392.250 suspension=0.000 suspensionPower=0.000 suspensionResidual=0.000
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=944.928 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=1114.858 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=6.769 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-10.819 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Wheel] FL=852.335571 FR=1022.265015 RL=6.769378 RR=-10.818654
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=806.039 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=975.969 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=6.769 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-10.819 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=667.150 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=837.079 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=6.769 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=-10.819 wheelSpeed=0.000 longVel=0.000 latVel=0.000 slipVel=0.000 slipRatio=0.000 slipAngle=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Wheel] FL=562.983154 FR=732.912598 RL=-4.804697 RR=0.755421
+[DEBUG] [Energy] x=2.906 y=3.389 z=13.162 vx=11.316 vy=-1.976 vz=15.619 total=1035672.500 potential=39894.004 linear=225544.156 angular=1513.309 wheels=768721.000 suspension=0.000 suspensionPower=0.000 suspensionResidual=0.000
+[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Wheel] FL=562.983154 FR=732.912598 RL=-4.804697 RR=0.755421
 [DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Suspension] FL=0.000000 FR=0.190564 RL=0.018262 RR=0.171338
-[DEBUG] [Wheel] FL=-12.659873 FR=13.766505 RL=5.204897 RR=9.500113
-[DEBUG] [Energy] x=-25.794 y=3.491 z=40.986 vx=-0.382 vy=0.345 vz=-3.892 total=52484.758 potential=41097.375 linear=9247.663 angular=851.837 wheels=402.021 suspension=885.864 suspensionPower=-187.629 suspensionResidual=-0.000
-[DEBUG] [Suspension] FL=0.000000 FR=0.179761 RL=0.024487 RR=0.168958
-[DEBUG] [Wheel] FL=-12.659873 FR=13.333077 RL=4.959833 RR=8.996320
-[DEBUG] [Suspension] FL=0.000000 FR=0.165295 RL=0.028149 RR=0.182690
-[DEBUG] [Wheel] FL=70.673470 FR=45.530937 RL=65.844620 RR=18.733229
-[DEBUG] [Energy] x=-25.385 y=3.648 z=38.928 vx=1.917 vy=0.293 vz=-4.587 total=95106.625 potential=42945.402 linear=14880.697 angular=609.554 wheels=35774.250 suspension=896.716 suspensionPower=-2110.728 suspensionResidual=-0.004
-[DEBUG] [Suspension] FL=0.000000 FR=0.049939 RL=0.099744 RR=0.215833
-[DEBUG] [Wheel] FL=279.006805 FR=221.345963 RL=64.443298 RR=19.657057
-[DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Suspension] FL=0.000000 FR=0.008008 RL=0.135815 RR=0.187634
-[DEBUG] [Wheel] FL=487.340546 FR=414.246033 RL=20.663679 RR=21.255867
-[DEBUG] [Energy] x=-24.048 y=3.702 z=35.981 vx=3.276 vy=-0.186 vz=-6.994 total=578993.938 potential=43579.445 linear=35809.414 angular=47.004 wheels=498773.406 suspension=784.669 suspensionPower=-227.904 suspensionResidual=-0.001
-[DEBUG] [Suspension] FL=0.015149 FR=0.040784 RL=0.169690 RR=0.167676
-[DEBUG] [Wheel] FL=661.480103 FR=538.908081 RL=24.995663 RR=26.969072
-[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.164929 RR=0.201917
-[DEBUG] [Wheel] FL=862.595703 FR=710.561951 RL=26.891008 RR=27.011707
-[DEBUG] [Energy] x=-22.019 y=3.651 z=31.696 vx=4.550 vy=-0.372 vz=-9.539 total=1509870.125 potential=42978.926 linear=67107.031 angular=123.343 wheels=1398965.875 suspension=695.049 suspensionPower=599.790 suspensionResidual=0.000
-[DEBUG] [Suspension] FL=0.022107 FR=0.005994 RL=0.085828 RR=0.085461
-[DEBUG] [Wheel] FL=1039.553223 FR=906.410583 RL=100.097168 RR=147.545456
-[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.151196 RR=0.200085
-[DEBUG] [Wheel] FL=1242.860107 FR=1076.012817 RL=57.819290 RR=32.866604
-[DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Energy] x=-19.394 y=3.074 z=26.174 vx=6.017 vy=-1.583 vz=-12.131 total=3011956.000 potential=36192.891 linear=111518.023 angular=57.934 wheels=2863483.500 suspension=703.847 suspensionPower=374.168 suspensionResidual=-0.001
-[DEBUG] [Suspension] FL=0.000000 FR=0.079053 RL=0.132153 RR=0.153394
-[DEBUG] [Wheel] FL=1451.193848 FR=1189.609985 RL=58.746395 RR=39.874798
-[DEBUG] [Suspension] FL=0.030713 FR=0.112012 RL=0.262524 RR=0.313977
-[DEBUG] [Wheel] FL=1577.625488 FR=1170.526855 RL=42.753139 RR=43.204391
-[DEBUG] [Energy] x=-15.483 y=2.911 z=19.177 vx=8.983 vy=1.789 vz=-14.951 total=3708144.750 potential=34273.770 linear=184450.047 angular=58.550 wheels=3487119.500 suspension=2243.006 suspensionPower=3074.121 suspensionResidual=13631.328
-[DEBUG] [Suspension] FL=0.021741 FR=0.000000 RL=0.161267 RR=0.128857
-[DEBUG] [Wheel] FL=1552.222168 FR=1163.848145 RL=32.266415 RR=32.824066
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=1422.344 wheelSpeed=719.771 longVel=17.936 slipVel=-701.836 normal=2599.567 longForce=2429.851
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=1142.846 wheelSpeed=579.464 longVel=17.620 slipVel=-561.844 normal=2083.990 longForce=1947.600
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=22.178 wheelSpeed=16.705 longVel=17.932 slipVel=1.226 normal=2434.245 longForce=-147.344
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=22.378 wheelSpeed=16.891 longVel=17.623 slipVel=0.732 normal=1751.431 longForce=-73.080
-[DEBUG] [Suspension] FL=0.056348 FR=0.039319 RL=0.040601 RR=0.024304
-[DEBUG] [Wheel] FL=1387.270142 FR=1057.098999 RL=11.712602 RR=-6.748237
-[DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=1231.080 wheelSpeed=623.615 longVel=18.680 slipVel=-604.935 normal=2116.588 longForce=1977.889
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=805.272 wheelSpeed=416.513 longVel=19.333 slipVel=-397.181 normal=7502.534 longForce=7004.911
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=25.674 wheelSpeed=12.806 longVel=18.659 slipVel=5.853 normal=6326.941 longForce=-5028.754
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=4.461 wheelSpeed=4.705 longVel=19.450 slipVel=14.745 normal=3008.822 longForce=-2863.975
-[DEBUG] [Energy] x=-10.889 y=3.255 z=11.468 vx=9.268 vy=0.618 vz=-15.355 total=1720489.500 potential=38320.133 linear=193242.406 angular=220.997 wheels=1487946.875 suspension=759.106 suspensionPower=-17494.045 suspensionResidual=-0.002
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=1023.440 wheelSpeed=523.497 longVel=18.132 slipVel=-505.365 normal=5534.714 longForce=5174.931
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=522.031 wheelSpeed=272.601 longVel=18.249 slipVel=-254.352 normal=5358.564 longForce=5010.157
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=20.898 wheelSpeed=9.151 longVel=18.152 slipVel=9.001 normal=6405.950 longForce=-6124.510
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=24.952 wheelSpeed=12.661 longVel=18.244 slipVel=5.583 normal=8466.043 longForce=-4840.438
-[DEBUG] [Suspension] FL=0.119153 FR=0.132703 RL=0.128674 RR=0.180493
-[DEBUG] [Wheel] FL=810.845703 FR=353.754700 RL=2.066907 RR=23.193438
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=749.937 wheelSpeed=385.136 longVel=17.595 slipVel=-367.541 normal=4049.503 longForce=3786.168
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=310.403 wheelSpeed=161.613 longVel=17.437 slipVel=-144.176 normal=577.472 longForce=539.853
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=14.546 wheelSpeed=8.927 longVel=17.590 slipVel=8.662 normal=3788.013 longForce=-3570.953
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=10.775 wheelSpeed=9.239 longVel=17.441 slipVel=8.202 normal=1780.766 longForce=-1673.258
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=552.195 wheelSpeed=282.710 longVel=16.549 slipVel=-266.161 normal=764.352 longForce=714.519
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=145.477 wheelSpeed=79.336 longVel=16.728 slipVel=-62.608 normal=753.101 longForce=700.901
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=14.510 wheelSpeed=-0.121 longVel=16.578 slipVel=16.699 normal=1425.291 longForce=-1373.136
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=2.544 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=346.418 wheelSpeed=185.010 longVel=17.294 slipVel=-167.716 normal=5570.293 longForce=5206.265
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-7.445 wheelSpeed=0.079 longVel=17.379 slipVel=17.300 normal=1822.714 longForce=-1715.482
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-11.515 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=4.739 wheelSpeed=-4.046 longVel=17.380 slipVel=21.426 normal=565.222 longForce=-543.247
-[DEBUG] [Suspension] FL=0.104138 FR=0.080151 RL=0.070630 RR=0.054517
-[DEBUG] [Wheel] FL=281.683228 FR=15.874353 RL=0.058753 RR=-0.329229
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=101.275 wheelSpeed=60.216 longVel=18.136 slipVel=-42.079 normal=3545.657 longForce=3275.598
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=8.929 wheelSpeed=5.704 longVel=17.455 slipVel=11.751 normal=4559.349 longForce=-3933.254
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=6.415 wheelSpeed=3.351 longVel=18.125 slipVel=14.774 normal=6941.274 longForce=-4878.763
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=10.273 wheelSpeed=-2.904 longVel=17.464 slipVel=20.369 normal=2440.788 longForce=-1947.616
-[DEBUG] [Energy] x=-6.242 y=3.811 z=3.878 vx=8.672 vy=0.809 vz=-14.542 total=218368.719 potential=44861.809 linear=172394.984 angular=69.531 wheels=481.968 suspension=560.423 suspensionPower=-2363.411 suspensionResidual=-0.000
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=5.332 wheelSpeed=4.078 longVel=15.817 slipVel=11.739 normal=4186.337 longForce=-3781.510
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=1.241 wheelSpeed=4.546 longVel=15.800 slipVel=11.254 normal=1765.772 longForce=-1609.344
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=11.152 wheelSpeed=-2.573 longVel=15.810 slipVel=18.383 normal=2154.227 longForce=-2042.516
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=3.268 wheelSpeed=-4.339 longVel=15.811 slipVel=20.149 normal=172.084 longForce=-160.812
-[DEBUG] [Suspension] FL=0.156323 FR=0.090955 RL=0.061108 RR=0.009839
-[DEBUG] [Wheel] FL=18.488436 FR=1.901268 RL=5.596744 RR=-4.748427
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=16.751 wheelSpeed=9.127 longVel=14.884 slipVel=5.757 normal=4863.190 longForce=-4352.265
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=11.438 wheelSpeed=8.256 longVel=14.824 slipVel=6.567 normal=3038.372 longForce=-2810.234
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.977 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=6.826 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=16.435 wheelSpeed=8.272 longVel=14.069 slipVel=5.797 normal=6867.114 longForce=-4987.415
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-9.246 wheelSpeed=0.158 longVel=14.014 slipVel=13.856 normal=910.176 longForce=-871.752
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.977 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=6.826 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-7.459 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=8.057 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.977 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=6.826 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Suspension] FL=0.067700 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Wheel] FL=4.115021 FR=-3.517078 RL=5.596744 RR=-4.748427
+[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Wheel] FL=562.983154 FR=732.912598 RL=-4.804697 RR=0.755421
+[DEBUG] [Energy] x=8.274 y=2.909 z=20.268 vx=9.447 vy=0.947 vz=11.878 total=941725.188 potential=34240.613 linear=138741.406 angular=22.186 wheels=768721.000 suspension=0.000 suspensionPower=0.000 suspensionResidual=0.000
+[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Wheel] FL=562.983154 FR=732.912598 RL=-4.804697 RR=0.755421
+[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Wheel] FL=562.983154 FR=732.912598 RL=-4.804697 RR=0.755421
+[DEBUG] [Energy] x=12.759 y=3.129 z=25.833 vx=8.191 vy=0.046 vz=9.996 total=905856.062 potential=36837.211 linear=100210.820 angular=87.034 wheels=768721.000 suspension=0.000 suspensionPower=0.000 suspensionResidual=0.000
+[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
+[DEBUG] [Wheel] FL=562.983154 FR=732.912598 RL=-4.804697 RR=0.755421
 [DEBUG] [Performance] FPS=59 PhysicsHz=120
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-7.459 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=8.057 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.977 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=6.826 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Energy] x=-2.279 y=3.677 z=-3.044 vx=7.509 vy=-2.203 vz=-13.317 total=187012.344 potential=43287.184 linear=143142.531 angular=508.774 wheels=69.968 suspension=3.871 suspensionPower=-1162.011 suspensionResidual=-0.001
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=14.759 wheelSpeed=7.604 longVel=13.544 slipVel=5.940 normal=7075.429 longForce=-5074.899
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=19.111 wheelSpeed=-1.759 longVel=13.627 slipVel=15.386 normal=5475.960 longForce=-5034.809
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.977 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=6.826 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Suspension] FL=0.135266 FR=0.071912 RL=0.000000 RR=0.000000
-[DEBUG] [Wheel] FL=12.691966 FR=4.877798 RL=5.596744 RR=-4.748427
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=11.955 wheelSpeed=6.103 longVel=12.403 slipVel=6.300 normal=8898.130 longForce=-5407.306
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-0.128 wheelSpeed=0.805 longVel=12.369 slipVel=11.563 normal=5171.563 longForce=-4649.097
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.977 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=6.826 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=8.682 wheelSpeed=4.527 longVel=11.626 slipVel=7.099 normal=13172.618 longForce=-6137.880
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=10.579 wheelSpeed=8.577 longVel=11.621 slipVel=3.044 normal=6193.078 longForce=-2633.474
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.977 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=6.826 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=-1.125 wheelSpeed=2.143 longVel=10.678 slipVel=8.535 normal=3797.992 longForce=-3589.132
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=6.487 wheelSpeed=-3.950 longVel=10.939 slipVel=14.889 normal=1766.971 longForce=-1668.491
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.977 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=6.826 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Suspension] FL=0.248059 FR=0.119336 RL=0.000000 RR=0.000000
-[DEBUG] [Wheel] FL=0.800365 FR=-0.275648 RL=5.596744 RR=-4.748427
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=0.557 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=-4.113 wheelSpeed=1.366 longVel=10.140 slipVel=8.774 normal=7907.307 longForce=-3659.443
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.977 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=6.826 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Energy] x=1.109 y=2.998 z=-9.194 vx=6.293 vy=0.226 vz=-10.345 total=128082.375 potential=35297.828 linear=88002.320 angular=4510.421 wheels=74.891 suspension=196.912 suspensionPower=0.000 suspensionResidual=179411.156
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=0.557 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=0.764 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.977 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=6.826 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
 [DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Wheel] FL=-11.016923 FR=-10.809909 RL=5.596744 RR=-4.748427
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=0.557 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=0.764 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.977 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=6.826 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
+[DEBUG] [Wheel] FL=562.983154 FR=732.912598 RL=-4.804697 RR=0.755421
+[DEBUG] [Energy] x=16.782 y=2.938 z=30.458 vx=7.691 vy=-0.755 vz=8.205 total=879596.438 potential=34582.070 linear=76223.219 angular=70.140 wheels=768721.000 suspension=0.000 suspensionPower=0.000 suspensionResidual=0.000
 [DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Wheel] FL=-11.016923 FR=-10.809909 RL=5.596744 RR=-4.748427
-[DEBUG] [Performance] FPS=59 PhysicsHz=120
-[DEBUG] [Energy] x=3.885 y=2.991 z=-14.062 vx=5.118 vy=-1.539 vz=-9.268 total=110586.398 potential=35215.414 linear=68676.656 angular=6431.438 wheels=262.888 suspension=0.000 suspensionPower=0.000 suspensionResidual=0.000
-[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Wheel] FL=-11.016923 FR=-10.809909 RL=5.596744 RR=-4.748427
-[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Wheel] FL=-11.016923 FR=-10.809909 RL=5.596744 RR=-4.748427
-[DEBUG] [Energy] x=6.278 y=2.332 z=-18.089 vx=4.245 vy=-1.193 vz=-6.674 total=66895.875 potential=27453.201 linear=38394.352 angular=785.426 wheels=262.888 suspension=0.000 suspensionPower=0.000 suspensionResidual=0.000
-[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Wheel] FL=-11.016923 FR=-10.809909 RL=5.596744 RR=-4.748427
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=0.557 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=0.764 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.977 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=6.826 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=0.557 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=0.764 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.977 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=6.826 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=0.557 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=0.764 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.977 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=6.826 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Wheel] FL=-11.016923 FR=-10.809909 RL=5.596744 RR=-4.748427
-[DEBUG] [Performance] FPS=60 PhysicsHz=120
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=0.557 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=0.764 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.977 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=6.826 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=0.557 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=0.764 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.977 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=6.826 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Energy] x=8.283 y=2.078 z=-20.608 vx=3.514 vy=0.269 vz=-3.221 total=38411.379 potential=24456.729 linear=13677.867 angular=13.897 wheels=262.888 suspension=0.000 suspensionPower=0.000 suspensionResidual=0.000
-[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Wheel] FL=-11.016923 FR=-10.809909 RL=5.596744 RR=-4.748427
-[DEBUG] [Brake] FL input=1.000 torque=2500.000 omega=0.557 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] FR input=1.000 torque=2500.000 omega=0.764 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RL input=1.000 torque=2500.000 omega=-5.977 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Brake] RR input=1.000 torque=2500.000 omega=6.826 wheelSpeed=0.000 longVel=0.000 slipVel=0.000 normal=0.000 longForce=0.000
-[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Wheel] FL=-11.016923 FR=-10.809909 RL=5.596744 RR=-4.748427
-[DEBUG] [Energy] x=9.832 y=2.128 z=-21.590 vx=2.279 vy=-0.017 vz=-0.858 total=28897.674 potential=25055.148 linear=3557.790 angular=21.845 wheels=262.888 suspension=0.000 suspensionPower=0.000 suspensionResidual=0.000
-[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Wheel] FL=-11.016923 FR=-10.809909 RL=5.596744 RR=-4.748427
-[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Wheel] FL=-11.016923 FR=-10.809909 RL=5.596744 RR=-4.748427
-[DEBUG] [Performance] FPS=59 PhysicsHz=120
-[DEBUG] [Energy] x=10.470 y=2.110 z=-21.786 vx=0.170 vy=-0.004 vz=-0.052 total=25123.260 potential=24839.051 linear=18.959 angular=2.361 wheels=262.888 suspension=0.000 suspensionPower=0.000 suspensionResidual=0.000
-[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Wheel] FL=-11.016923 FR=-10.809909 RL=5.596744 RR=-4.748427
-[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Wheel] FL=-11.016923 FR=-10.809909 RL=5.596744 RR=-4.748427
-[DEBUG] [Energy] x=10.478 y=2.108 z=-21.780 vx=0.011 vy=-0.002 vz=0.013 total=25083.561 potential=24820.473 linear=0.182 angular=0.017 wheels=262.888 suspension=0.000 suspensionPower=0.000 suspensionResidual=0.000
-[DEBUG] [RB] Sleeping
-[DEBUG] [Suspension] FL=0.000000 FR=0.000000 RL=0.000000 RR=0.000000
-[DEBUG] [Wheel] FL=-11.016923 FR=-10.809909 RL=5.596744 RR=-4.748427
+[DEBUG] [Wheel] FL=562.983154 FR=732.912598 RL=-4.804697 RR=0.755421
