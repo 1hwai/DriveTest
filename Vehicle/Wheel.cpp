@@ -261,20 +261,49 @@ void Wheel::IntegrateRotation(float deltaTime) {
     if (deltaTime <= 0.0f)
         return;
 
-    float brakeTorque = 0.0f;
+    const float angularVelocity = m_angularVelocity;
+    const float driveTorque = m_driveTorque;
 
-    if (std::abs(m_angularVelocity) > 0.0001f)
-        brakeTorque =
-            m_brakeTorque *
-            (m_angularVelocity > 0.0f ? 1.0f : -1.0f);
+    if (std::abs(angularVelocity) <= 0.0001f) {
+        if (std::abs(driveTorque) <= m_brakeTorque) {
+            m_angularVelocity = 0.0f;
+        } else {
+            const float brakeDirection =
+                driveTorque > 0.0f ? 1.0f : -1.0f;
 
-    const float netTorque =
-        m_driveTorque -
-        brakeTorque;
+            const float netTorque =
+                driveTorque -
+                m_brakeTorque * brakeDirection;
 
-    m_angularVelocity +=
-        (netTorque / m_inertia) *
-        deltaTime;
+            m_angularVelocity =
+                (netTorque / m_inertia) *
+                deltaTime;
+        }
+    } else {
+        const float brakeDirection =
+            angularVelocity > 0.0f ? 1.0f : -1.0f;
+
+        const float netTorque =
+            driveTorque -
+            m_brakeTorque * brakeDirection;
+
+        const float newAngularVelocity =
+            angularVelocity +
+            (netTorque / m_inertia) *
+            deltaTime;
+
+        if ((angularVelocity > 0.0f &&
+             newAngularVelocity < 0.0f &&
+             driveTorque <= m_brakeTorque) ||
+            (angularVelocity < 0.0f &&
+             newAngularVelocity > 0.0f &&
+             driveTorque >= -m_brakeTorque)) {
+            m_angularVelocity = 0.0f;
+        } else {
+            m_angularVelocity =
+                newAngularVelocity;
+        }
+    }
 
     if (std::abs(m_angularVelocity) < 0.0001f)
         m_angularVelocity = 0.0f;
@@ -284,7 +313,6 @@ void Wheel::IntegrateRotation(float deltaTime) {
 
     m_driveTorque = 0.0f;
 }
-
 bool Wheel::IsGrounded() const {
     return m_grounded;
 }
