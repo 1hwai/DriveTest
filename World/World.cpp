@@ -131,8 +131,8 @@ void World::UpdatePhysics(
         keyboard.IsDown(SDL_SCANCODE_S) ? 1.0f : 0.0f;
 
     const float steering =
-        (keyboard.IsDown(SDL_SCANCODE_D) ? 1.0f : 0.0f) -
-        (keyboard.IsDown(SDL_SCANCODE_A) ? 1.0f : 0.0f);
+        (keyboard.IsDown(SDL_SCANCODE_A) ? 1.0f : 0.0f) -
+        (keyboard.IsDown(SDL_SCANCODE_D) ? 1.0f : 0.0f);
 
     m_car.SetInput(
         throttle,
