@@ -65,6 +65,7 @@ private:
     float m_steeringAngle;
     float m_angularVelocity;
     float m_rotationAngle;
+    float m_tireReactionTorque;
 
     bool m_grounded;
     float m_suspensionLength;
