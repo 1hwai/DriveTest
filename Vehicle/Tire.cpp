@@ -221,21 +221,23 @@ Vec3 Tire::CalculateForce(
     }
 
     const float longitudinalForce =
-        -state.longitudinalSlipVelocity *
+        state.slipRatio *
         m_longitudinalStiffness;
 
     const float lateralForce =
-        -state.lateralVelocity *
+        -state.slipAngle *
         m_lateralStiffness;
 
-    const float slipSpeed =
-        std::max(
-            std::abs(state.longitudinalSlipVelocity),
-            std::abs(state.lateralVelocity)
+    const float combinedSlip =
+        std::sqrt(
+            state.slipRatio *
+                state.slipRatio +
+            state.slipAngle *
+                state.slipAngle
         );
 
     const float friction =
-        slipSpeed < 0.5f
+        combinedSlip < 0.05f
         ? m_staticFriction
         : m_dynamicFriction;
 
