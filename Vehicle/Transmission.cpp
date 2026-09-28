@@ -3,16 +3,43 @@
 #include <cmath>
 
 Transmission::Transmission()
-    : m_gearRatios{
-        3.50f,
-        2.10f,
-        1.50f,
-        1.10f,
-        0.85f
-    },
-    m_reverseRatio(3.20f),
-    m_finalDriveRatio(4.10f),
-    m_currentGear(1) {}
+    : Transmission(
+        {
+            3.50f,
+            2.10f,
+            1.50f,
+            1.10f,
+            0.85f
+        },
+        3.20f,
+        4.10f
+    ) {}
+
+Transmission::Transmission(
+    const std::vector<float>& gearRatios,
+    float reverseRatio,
+    float finalDriveRatio
+)
+    : m_gearRatios(gearRatios),
+    m_reverseRatio(reverseRatio),
+    m_finalDriveRatio(finalDriveRatio),
+    m_currentGear(1) {
+    SetGearRatios(gearRatios);
+}
+
+void Transmission::SetGearRatios(
+    const std::vector<float>& gearRatios
+) {
+    if (gearRatios.size() < 4)
+        return;
+
+    m_gearRatios = gearRatios;
+    m_currentGear =
+        std::min(
+            m_currentGear,
+            static_cast<int>(m_gearRatios.size())
+        );
+}
 
 void Transmission::ShiftUp() {
     const int maxGear =
