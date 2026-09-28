@@ -16,6 +16,7 @@ Wheel::Wheel()
     m_steeringAngle(0.0f),
     m_angularVelocity(0.0f),
     m_rotationAngle(0.0f),
+    m_tireReactionTorque(0.0f),
     m_grounded(false),
     m_suspensionLength(0.0f),
     m_compression(0.0f),
@@ -116,6 +117,7 @@ void Wheel::Update(
         m_hasPreviousCompression = false;
         m_contactNormal =
             Vec3(0.0f, 1.0f, 0.0f);
+        m_tireReactionTorque = 0.0f;
 
         m_worldPosition =
             worldMount +
@@ -148,6 +150,7 @@ void Wheel::Update(
     m_suspensionPower = 0.0f;
     m_suspensionResidual = 0.0f;
     m_force = 0.0f;
+    m_tireReactionTorque = 0.0f;
 
     if (m_compression > 0.0f &&
         denominator < -0.1f) {
@@ -247,11 +250,11 @@ void Wheel::ApplyTireForce(
     const Vec3 torque =
         radiusVector.Cross(force);
 
-    const float wheelTorque =
+    m_tireReactionTorque =
         torque.Dot(axle);
 
     m_driveTorque +=
-        wheelTorque;
+        m_tireReactionTorque;
 }
 
 void Wheel::IntegrateRotation(float deltaTime) {
@@ -312,6 +315,10 @@ float Wheel::GetAngularVelocity() const {
 
 float Wheel::GetRotationAngle() const {
     return m_rotationAngle;
+}
+
+float Wheel::GetTireReactionTorque() const {
+    return m_tireReactionTorque;
 }
 
 const Vec3& Wheel::GetWorldPosition() const {
