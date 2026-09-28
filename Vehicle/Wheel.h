@@ -50,6 +50,7 @@ public:
     float GetSuspensionResidual() const;
     float GetAngularVelocity() const;
     float GetRotationAngle() const;
+    float GetTireReactionTorque() const;
     const Vec3& GetWorldPosition() const;
     const Vec3& GetContactPoint() const;
     const Vec3& GetContactNormal() const;

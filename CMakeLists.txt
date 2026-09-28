@@ -104,6 +104,9 @@ if(DRIVETEST_BUILD_PHYSICS_DIAGNOSTICS)
         Vehicle/Wheel.cpp
         Vehicle/Suspension.cpp
         Vehicle/Tire.cpp
+        Vehicle/Engine.cpp
+        Vehicle/Transmission.cpp
+        Vehicle/Differential.cpp
 
         Core/Math/Vec3.cpp
         Core/Math/Mat3.cpp

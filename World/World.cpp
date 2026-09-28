@@ -124,6 +124,21 @@ void World::UpdatePhysics(
 ) {
     const Keyboard& keyboard = input.GetKeyboard();
 
+    if (m_cameraMode == CameraMode::Free) {
+        m_car.SetInput(
+            0.0f,
+            0.0f,
+            0.0f
+        );
+
+        m_car.UpdatePhysics(
+            *m_physicsWorld,
+            deltaTime
+        );
+
+        return;
+    }
+
     const float throttle =
         keyboard.IsDown(SDL_SCANCODE_W) ? 1.0f : 0.0f;
 
@@ -133,6 +148,12 @@ void World::UpdatePhysics(
     const float steering =
         (keyboard.IsDown(SDL_SCANCODE_A) ? 1.0f : 0.0f) -
         (keyboard.IsDown(SDL_SCANCODE_D) ? 1.0f : 0.0f);
+
+    if (keyboard.IsPressed(SDL_SCANCODE_E))
+        m_car.GetTransmission().ShiftUp();
+
+    if (keyboard.IsPressed(SDL_SCANCODE_Q))
+        m_car.GetTransmission().ShiftDown();
 
     m_car.SetInput(
         throttle,
@@ -184,6 +205,15 @@ void World::UpdatePhysics(
             std::to_string(rearLeft.GetAngularVelocity()) +
             " RR=" +
             std::to_string(rearRight.GetAngularVelocity())
+        );
+
+        Logger::Debug(
+            "[Powertrain] gear=" +
+            std::to_string(m_car.GetTransmission().GetGear()) +
+            " rpm=" +
+            std::to_string(m_car.GetEngine().GetRPM()) +
+            " torque=" +
+            std::to_string(m_car.GetEngine().GetTorque())
         );
     }
 }

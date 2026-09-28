@@ -6,6 +6,9 @@
 #include "Wheel.h"
 #include "Suspension.h"
 #include "Tire.h"
+#include "Engine.h"
+#include "Transmission.h"
+#include "Differential.h"
 
 class RigidBody;
 class PhysicsWorld;
@@ -50,6 +53,12 @@ public:
     RigidBody* GetChassis();
     const RigidBody* GetChassis() const;
 
+    Engine& GetEngine();
+    const Engine& GetEngine() const;
+
+    Transmission& GetTransmission();
+    const Transmission& GetTransmission() const;
+
 private:
     RigidBody* m_chassis;
     float m_throttle;
@@ -62,4 +71,8 @@ private:
     std::array<Wheel, WheelCount> m_wheels;
     std::array<Suspension, WheelCount> m_suspensions;
     std::array<Tire, WheelCount> m_tires;
+
+    Engine m_engine;
+    Transmission m_transmission;
+    Differential m_differential;
 };

@@ -46,27 +46,56 @@ void Car::UpdatePhysics(
         return;
 
     constexpr float MaxSteeringAngle = 0.5f;
-    constexpr float DriveTorque = 1500.0f;
     constexpr float BrakeTorque = 2500.0f;
 
+    const float rearLoadTorque =
+        m_differential.GetInputLoadTorque(
+            m_wheels[ToIndex(WheelIndex::RearLeft)].GetTireReactionTorque(),
+            m_wheels[ToIndex(WheelIndex::RearRight)].GetTireReactionTorque()
+        );
+
+    const float engineLoadTorque =
+        m_transmission.GetInputLoadTorque(
+            rearLoadTorque
+        );
+
+    m_engine.Update(
+        m_throttle,
+        engineLoadTorque,
+        deltaTime
+    );
+
+    const float transmissionTorque =
+        m_transmission.GetOutputTorque(
+            m_engine.GetTorque()
+        );
+
+    float leftDriveTorque = 0.0f;
+    float rightDriveTorque = 0.0f;
+
+    m_differential.DistributeTorque(
+        transmissionTorque,
+        leftDriveTorque,
+        rightDriveTorque
+    );
+
+    m_wheels[ToIndex(WheelIndex::FrontLeft)].SetSteeringAngle(
+        m_steering * MaxSteeringAngle
+    );
+    m_wheels[ToIndex(WheelIndex::FrontRight)].SetSteeringAngle(
+        m_steering * MaxSteeringAngle
+    );
+
+    m_wheels[ToIndex(WheelIndex::FrontLeft)].SetDriveTorque(0.0f);
+    m_wheels[ToIndex(WheelIndex::FrontRight)].SetDriveTorque(0.0f);
+    m_wheels[ToIndex(WheelIndex::RearLeft)].SetDriveTorque(
+        leftDriveTorque
+    );
+    m_wheels[ToIndex(WheelIndex::RearRight)].SetDriveTorque(
+        rightDriveTorque
+    );
+
     for (size_t i = 0; i < WheelCount; ++i) {
-        const WheelIndex index =
-            static_cast<WheelIndex>(i);
-
-        const bool frontWheel =
-            index == WheelIndex::FrontLeft ||
-            index == WheelIndex::FrontRight;
-
-        m_wheels[i].SetSteeringAngle(
-            frontWheel
-                ? m_steering * MaxSteeringAngle
-                : 0.0f
-        );
-
-        m_wheels[i].SetDriveTorque(
-            m_throttle * DriveTorque
-        );
-
         m_wheels[i].SetBrakeTorque(
             m_brake * BrakeTorque
         );
@@ -273,4 +302,20 @@ RigidBody* Car::GetChassis() {
 
 const RigidBody* Car::GetChassis() const {
     return m_chassis;
+}
+
+Engine& Car::GetEngine() {
+    return m_engine;
+}
+
+const Engine& Car::GetEngine() const {
+    return m_engine;
+}
+
+Transmission& Car::GetTransmission() {
+    return m_transmission;
+}
+
+const Transmission& Car::GetTransmission() const {
+    return m_transmission;
 }
