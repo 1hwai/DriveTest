@@ -5,6 +5,15 @@
 class Transmission {
 public:
     Transmission();
+    Transmission(
+        const std::vector<float>& gearRatios,
+        float reverseRatio,
+        float finalDriveRatio
+    );
+
+    void SetGearRatios(
+        const std::vector<float>& gearRatios
+    );
 
     void ShiftUp();
     void ShiftDown();
