@@ -29,4 +29,6 @@ private:
     float m_brake;
     bool m_shiftUpPressed;
     bool m_shiftDownPressed;
+    bool m_shiftUpPending;
+    bool m_shiftDownPending;
 };

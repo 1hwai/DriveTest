@@ -8,7 +8,9 @@ GamepadInput::GamepadInput()
     m_throttle(0.0f),
     m_brake(0.0f),
     m_shiftUpPressed(false),
-    m_shiftDownPressed(false) {}
+    m_shiftDownPressed(false),
+    m_shiftUpPending(false),
+    m_shiftDownPending(false) {}
 
 GamepadInput::~GamepadInput() {
     Close();
@@ -34,15 +36,11 @@ void GamepadInput::ProcessEvent(const SDL_Event& event) {
             event.gbutton.which != SDL_GetGamepadID(m_gamepad))
             break;
 
-        if (event.gbutton.button ==
-            SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER) {
-
-            m_shiftUpPressed = true;
+        if (event.gbutton.button == SDL_GAMEPAD_BUTTON_SOUTH) {
+            m_shiftUpPending = true;
         }
-        else if (event.gbutton.button ==
-            SDL_GAMEPAD_BUTTON_LEFT_SHOULDER) {
-
-            m_shiftDownPressed = true;
+        else if (event.gbutton.button == SDL_GAMEPAD_BUTTON_WEST) {
+            m_shiftDownPending = true;
         }
         break;
 
@@ -52,14 +50,16 @@ void GamepadInput::ProcessEvent(const SDL_Event& event) {
 }
 
 void GamepadInput::Update() {
-    m_shiftUpPressed = false;
-    m_shiftDownPressed = false;
+    m_shiftUpPressed = m_shiftUpPending;
+    m_shiftDownPressed = m_shiftDownPending;
+    m_shiftUpPending = false;
+    m_shiftDownPending = false;
 
     if (m_gamepad == nullptr)
         return;
 
     m_steering =
-        static_cast<float>(
+        -static_cast<float>(
             SDL_GetGamepadAxis(
                 m_gamepad,
                 SDL_GAMEPAD_AXIS_LEFTX
@@ -129,4 +129,6 @@ void GamepadInput::Close() {
     m_brake = 0.0f;
     m_shiftUpPressed = false;
     m_shiftDownPressed = false;
+    m_shiftUpPending = false;
+    m_shiftDownPending = false;
 }
