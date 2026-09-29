@@ -72,6 +72,14 @@ float Engine::GetLoadTorque() const {
     return m_loadTorque;
 }
 
+float Engine::GetIdleRPM() const {
+    return m_idleRPM;
+}
+
+float Engine::GetRedlineRPM() const {
+    return m_redlineRPM;
+}
+
 float Engine::GetTorqueAtRPM(float rpm) const {
     const float x = std::clamp(
         (rpm - m_idleRPM) /
