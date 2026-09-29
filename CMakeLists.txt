@@ -47,6 +47,7 @@ add_executable(DriveTest
     Input/InputManager.cpp
     Input/Keyboard.cpp
     Input/WheelInput.cpp
+    Input/GamepadInput.cpp
 
     Core/Math/Vec3.cpp
     Core/Math/Mat4.cpp
