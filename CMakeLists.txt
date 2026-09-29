@@ -12,6 +12,8 @@ find_package(imgui CONFIG REQUIRED)
 add_executable(DriveTest
     main.cpp
 
+    Audio/AudioSystem.cpp
+
     Core/Application.cpp
     Core/Time.cpp
     Core/SimulationController.cpp
