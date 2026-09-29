@@ -21,6 +21,7 @@ Engine::Engine()
 void Engine::Update(
     float throttle,
     float loadTorque,
+    float drivetrainTorque,
     float deltaTime
 ) {
     if (deltaTime <= 0.0f)
@@ -53,7 +54,8 @@ void Engine::Update(
 
     const float netTorque =
         m_torque -
-        m_loadTorque -
+        m_loadTorque +
+        drivetrainTorque -
         engineFrictionTorque;
 
     m_angularVelocity +=
