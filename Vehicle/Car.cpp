@@ -324,5 +324,10 @@ float Car::GetSpeedKmh() const {
     if (!m_chassis)
         return 0.0f;
 
-    return m_chassis->GetLinearVelocity().Length() * 3.6f;
+    const Vec3 velocity = m_chassis->GetLinearVelocity();
+
+    return std::sqrt(
+        velocity.x * velocity.x +
+        velocity.z * velocity.z
+    ) * 3.6f;
 }

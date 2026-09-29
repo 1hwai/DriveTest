@@ -29,23 +29,35 @@ void Engine::Update(
     throttle = std::clamp(throttle, 0.0f, 1.0f);
     m_loadTorque = std::max(0.0f, loadTorque);
 
+    const float idleAngularVelocity =
+        m_idleRPM * 2.0f * Pi / 60.0f;
+
+    const float redlineAngularVelocity =
+        m_redlineRPM * 2.0f * Pi / 60.0f;
+
     const float maxTorque =
         GetTorqueAtRPM(GetRPM());
 
     m_torque =
         maxTorque * throttle;
 
+    const float speedAboveIdle =
+        std::max(
+            0.0f,
+            m_angularVelocity - idleAngularVelocity
+        );
+
+    const float engineFrictionTorque =
+        18.0f +
+        speedAboveIdle * 0.03f;
+
     const float netTorque =
-        m_torque - m_loadTorque;
+        m_torque -
+        m_loadTorque -
+        engineFrictionTorque;
 
     m_angularVelocity +=
         (netTorque / m_inertia) * deltaTime;
-
-    const float idleAngularVelocity =
-        m_idleRPM * 2.0f * Pi / 60.0f;
-
-    const float redlineAngularVelocity =
-        m_redlineRPM * 2.0f * Pi / 60.0f;
 
     m_angularVelocity = std::clamp(
         m_angularVelocity,

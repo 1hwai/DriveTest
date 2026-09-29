@@ -71,8 +71,8 @@ bool World::Initialize(
 
     auto chassis = m_sceneFactory->CreateBox({
         "CarChassis",
-        Vec3(0.0f, 3.0f, 0.0f),
-        Vec3(2.0f, 0.45f, 1.25f),
+        Vec3(0.0f, 1.1f, 0.0f),
+        Vec3(0.95f, 0.40f, 2.20f),
         1190.0f,
         0.0f,
         0.5f
@@ -124,20 +124,6 @@ void World::UpdatePhysics(
 ) {
     const Keyboard& keyboard = input.GetKeyboard();
     const GamepadInput& gamepad = input.GetGamepadInput();
-
-    if (keyboard.IsPressed(SDL_SCANCODE_EQUALS) ||
-        keyboard.IsPressed(SDL_SCANCODE_KP_PLUS) ||
-        gamepad.IsShiftUpPressed()) {
-
-        m_car.GetTransmission().ShiftUp();
-    }
-
-    if (keyboard.IsPressed(SDL_SCANCODE_MINUS) ||
-        keyboard.IsPressed(SDL_SCANCODE_KP_MINUS) ||
-        gamepad.IsShiftDownPressed()) {
-
-        m_car.GetTransmission().ShiftDown();
-    }
 
     if (m_cameraMode == CameraMode::Free) {
         m_car.SetInput(
@@ -241,6 +227,21 @@ void World::Update(
     float deltaTime,
     const InputManager& input
 ) {
+    const Keyboard& keyboard = input.GetKeyboard();
+    const GamepadInput& gamepad = input.GetGamepadInput();
+
+    if (keyboard.IsPressed(SDL_SCANCODE_EQUALS) ||
+        keyboard.IsPressed(SDL_SCANCODE_KP_PLUS) ||
+        gamepad.IsShiftUpPressed()) {
+        m_car.GetTransmission().ShiftUp();
+    }
+
+    if (keyboard.IsPressed(SDL_SCANCODE_MINUS) ||
+        keyboard.IsPressed(SDL_SCANCODE_KP_MINUS) ||
+        gamepad.IsShiftDownPressed()) {
+        m_car.GetTransmission().ShiftDown();
+    }
+
     if (m_cameraMode == CameraMode::Free) {
         const Keyboard& keyboard = input.GetKeyboard();
         constexpr float cameraSpeed = 5.0f;
