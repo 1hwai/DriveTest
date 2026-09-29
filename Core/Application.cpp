@@ -12,9 +12,6 @@ bool Application::Initialize() {
     if (!m_renderer.Initialize())
         return false;
 
-    if (!m_audio.Initialize())
-        return false;
-
     if (!m_meshManager.CreateCube("cube"))
         return false;
 
@@ -33,6 +30,9 @@ bool Application::Initialize() {
         m_simulation,
         m_world
     ))
+        return false;
+
+    if (!m_audio.Initialize())
         return false;
 
     m_time.Reset();
