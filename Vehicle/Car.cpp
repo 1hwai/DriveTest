@@ -196,7 +196,8 @@ void Car::UpdatePhysics(
                 << " kappa=" << tire.GetSlipRatio()
                 << " alpha=" << tire.GetSlipAngle()
                 << " Fz=" << tire.GetNormalLoad()
-                << " Fx=" << tire.GetLongitudinalForce();
+                << " Fx=" << tire.GetLongitudinalForce()
+                << " Fy=" << tire.GetLateralForce();
 
             Logger::Debug(log.str());
         }
