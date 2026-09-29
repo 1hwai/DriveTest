@@ -14,6 +14,8 @@ public:
     float GetAngularVelocity() const;
     float GetTorque() const;
     float GetLoadTorque() const;
+    float GetIdleRPM() const;
+    float GetRedlineRPM() const;
 
 private:
     float GetTorqueAtRPM(float rpm) const;
