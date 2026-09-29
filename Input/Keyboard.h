@@ -16,4 +16,6 @@ public:
 private:
     bool m_current[SDL_SCANCODE_COUNT];
     bool m_previous[SDL_SCANCODE_COUNT];
+    bool m_pressed[SDL_SCANCODE_COUNT];
+    bool m_released[SDL_SCANCODE_COUNT];
 };
