@@ -41,6 +41,9 @@ public:
     Camera& GetCamera();
     const Camera& GetCamera() const;
 
+    Car& GetCar();
+    const Car& GetCar() const;
+
     void SetCameraMode(CameraMode mode);
     CameraMode GetCameraMode() const;
 
