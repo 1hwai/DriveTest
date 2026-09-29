@@ -39,8 +39,8 @@ bool World::Initialize(
 
     m_terrain =
         std::make_unique<Terrain>(
-            65,
-            100.0f,
+            513,
+            5000.0f,
             4.0f,
             0.035f,
             5,
@@ -123,12 +123,21 @@ void World::UpdatePhysics(
     const InputManager& input
 ) {
     const Keyboard& keyboard = input.GetKeyboard();
+    const GamepadInput& gamepad = input.GetGamepadInput();
 
-    if (keyboard.IsPressed(SDL_SCANCODE_EQUALS))
+    if (keyboard.IsPressed(SDL_SCANCODE_EQUALS) ||
+        keyboard.IsPressed(SDL_SCANCODE_KP_PLUS) ||
+        gamepad.IsShiftUpPressed()) {
+
         m_car.GetTransmission().ShiftUp();
+    }
 
-    if (keyboard.IsPressed(SDL_SCANCODE_MINUS))
+    if (keyboard.IsPressed(SDL_SCANCODE_MINUS) ||
+        keyboard.IsPressed(SDL_SCANCODE_KP_MINUS) ||
+        gamepad.IsShiftDownPressed()) {
+
         m_car.GetTransmission().ShiftDown();
+    }
 
     if (m_cameraMode == CameraMode::Free) {
         m_car.SetInput(
@@ -146,14 +155,24 @@ void World::UpdatePhysics(
     }
 
     const float throttle =
-        keyboard.IsDown(SDL_SCANCODE_W) ? 1.0f : 0.0f;
+        gamepad.IsConnected()
+            ? gamepad.GetThrottle()
+            : keyboard.IsDown(SDL_SCANCODE_W)
+                ? 1.0f
+                : 0.0f;
 
     const float brake =
-        keyboard.IsDown(SDL_SCANCODE_S) ? 1.0f : 0.0f;
+        gamepad.IsConnected()
+            ? gamepad.GetBrake()
+            : keyboard.IsDown(SDL_SCANCODE_S)
+                ? 1.0f
+                : 0.0f;
 
     const float steering =
-        (keyboard.IsDown(SDL_SCANCODE_A) ? 1.0f : 0.0f) -
-        (keyboard.IsDown(SDL_SCANCODE_D) ? 1.0f : 0.0f);
+        gamepad.IsConnected()
+            ? gamepad.GetSteering()
+            : (keyboard.IsDown(SDL_SCANCODE_A) ? 1.0f : 0.0f) -
+              (keyboard.IsDown(SDL_SCANCODE_D) ? 1.0f : 0.0f);
 
     m_car.SetInput(
         throttle,
