@@ -59,6 +59,8 @@ public:
     Transmission& GetTransmission();
     const Transmission& GetTransmission() const;
 
+    float GetSpeedKmh() const;
+
 private:
     RigidBody* m_chassis;
     float m_throttle;

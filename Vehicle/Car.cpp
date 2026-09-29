@@ -319,3 +319,10 @@ Transmission& Car::GetTransmission() {
 const Transmission& Car::GetTransmission() const {
     return m_transmission;
 }
+
+float Car::GetSpeedKmh() const {
+    if (!m_chassis)
+        return 0.0f;
+
+    return m_chassis->GetLinearVelocity().Length() * 3.6f;
+}

@@ -141,6 +141,143 @@ void DebugUI::Render() {
         ImGui::End();
     }
 
+    {
+        const float speedKmh =
+            m_world->GetCar().GetSpeedKmh();
+
+        constexpr float maxSpeed = 240.0f;
+        constexpr float radius = 78.0f;
+        constexpr float startAngle = 2.35619449f;
+        constexpr float endAngle = 7.06858347f;
+
+        ImGui::SetNextWindowPos(
+            ImVec2(
+                ImGui::GetMainViewport()->WorkPos.x +
+                    ImGui::GetMainViewport()->WorkSize.x - 210.0f,
+                ImGui::GetMainViewport()->WorkPos.y + 20.0f
+            ),
+            ImGuiCond_Always
+        );
+        ImGui::SetNextWindowSize(
+            ImVec2(190.0f, 190.0f),
+            ImGuiCond_Always
+        );
+        ImGui::SetNextWindowBgAlpha(0.75f);
+
+        ImGui::Begin(
+            "Speedometer",
+            nullptr,
+            ImGuiWindowFlags_NoDecoration |
+            ImGuiWindowFlags_NoSavedSettings |
+            ImGuiWindowFlags_NoInputs
+        );
+
+        ImDrawList* drawList = ImGui::GetWindowDrawList();
+        const ImVec2 windowPos = ImGui::GetWindowPos();
+        const ImVec2 center(
+            windowPos.x + 95.0f,
+            windowPos.y + 92.0f
+        );
+
+        drawList->AddCircle(
+            center,
+            radius,
+            IM_COL32(220, 220, 220, 255),
+            64,
+            3.0f
+        );
+
+        const float normalizedSpeed =
+            std::clamp(speedKmh / maxSpeed, 0.0f, 1.0f);
+
+        drawList->PathArcTo(
+            center,
+            radius - 5.0f,
+            startAngle,
+            endAngle,
+            64
+        );
+        drawList->PathStroke(
+            IM_COL32(255, 255, 255, 255),
+            0,
+            5.0f
+        );
+
+        for (int i = 0; i <= 12; ++i) {
+            const float t =
+                static_cast<float>(i) / 12.0f;
+            const float angle =
+                startAngle +
+                (endAngle - startAngle) * t;
+
+            const ImVec2 outer(
+                center.x + std::cos(angle) * (radius - 7.0f),
+                center.y + std::sin(angle) * (radius - 7.0f)
+            );
+            const ImVec2 inner(
+                center.x + std::cos(angle) * (radius - 17.0f),
+                center.y + std::sin(angle) * (radius - 17.0f)
+            );
+
+            drawList->AddLine(
+                outer,
+                inner,
+                IM_COL32(220, 220, 220, 255),
+                2.0f
+            );
+        }
+
+        const float needleAngle =
+            startAngle +
+            (endAngle - startAngle) * normalizedSpeed;
+
+        const ImVec2 needleEnd(
+            center.x + std::cos(needleAngle) * (radius - 22.0f),
+            center.y + std::sin(needleAngle) * (radius - 22.0f)
+        );
+
+        drawList->AddLine(
+            center,
+            needleEnd,
+            IM_COL32(255, 255, 255, 255),
+            4.0f
+        );
+        drawList->AddCircleFilled(
+            center,
+            6.0f,
+            IM_COL32(255, 255, 255, 255)
+        );
+
+        const std::string speedText =
+            std::to_string(static_cast<int>(std::round(speedKmh)));
+        const ImVec2 textSize =
+            ImGui::CalcTextSize(speedText.c_str());
+
+        drawList->AddText(
+            ImVec2(
+                center.x - textSize.x * 0.5f,
+                center.y + 25.0f
+            ),
+            IM_COL32(255, 255, 255, 255),
+            speedText.c_str()
+        );
+
+        const char* unit = "km/h";
+        const ImVec2 unitSize =
+            ImGui::CalcTextSize(unit);
+
+        drawList->AddText(
+            ImVec2(
+                center.x - unitSize.x * 0.5f,
+                center.y + 42.0f
+            ),
+            IM_COL32(190, 190, 190, 255),
+            unit
+        );
+
+        ImGui::End();
+    }
+
     if (m_showHierarchyWindow) {
         ImGui::Begin(
             "Hierarchy",

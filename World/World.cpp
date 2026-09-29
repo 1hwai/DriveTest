@@ -71,9 +71,9 @@ bool World::Initialize(
 
     auto chassis = m_sceneFactory->CreateBox({
         "CarChassis",
-        Vec3(0.0f, 5.0f, 0.0f),
-        Vec3(1.0f, 0.5f, 1.5f),
-        1200.0f,
+        Vec3(0.0f, 3.0f, 0.0f),
+        Vec3(2.0f, 0.45f, 1.25f),
+        1190.0f,
         0.0f,
         0.5f
     });
@@ -86,10 +86,10 @@ bool World::Initialize(
     AddObject(std::move(chassis));
 
     const Vec3 wheelPositions[WheelCount] = {
-        Vec3(-0.9f, -0.2f, 1.1f),
-        Vec3(0.9f, -0.2f, 1.1f),
-        Vec3(-0.9f, -0.2f, -1.1f),
-        Vec3(0.9f, -0.2f, -1.1f)
+        Vec3(-0.7325f, -0.25f, 1.262f),
+        Vec3(0.7325f, -0.25f, 1.262f),
+        Vec3(-0.751f, -0.25f, -1.262f),
+        Vec3(0.751f, -0.25f, -1.262f)
     };
 
     for (size_t i = 0; i < WheelCount; ++i) {
@@ -100,10 +100,10 @@ bool World::Initialize(
             wheelPositions[i]
         );
 
-        m_car.GetWheel(index).SetRadius(0.5f);
+        m_car.GetWheel(index).SetRadius(0.32f);
 
-        m_car.GetSuspension(index).SetRestLength(0.8f);
-        m_car.GetSuspension(index).SetMaxLength(1.0f);
+        m_car.GetSuspension(index).SetRestLength(0.45f);
+        m_car.GetSuspension(index).SetMaxLength(0.65f);
         m_car.GetSuspension(index).SetSpringRate(30000.0f);
         m_car.GetSuspension(index).SetDamperRate(4500.0f);
 
