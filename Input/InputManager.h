@@ -4,6 +4,7 @@
 
 #include "Keyboard.h"
 #include "WheelInput.h"
+#include "GamepadInput.h"
 
 class InputManager {
 public:
@@ -14,12 +15,14 @@ public:
 
     const Keyboard& GetKeyboard() const;
     const WheelInput& GetWheelInput() const;
+    const GamepadInput& GetGamepadInput() const;
 
     bool QuitRequested() const;
 
 private:
     Keyboard m_keyboard;
     WheelInput m_wheelInput;
+    GamepadInput m_gamepadInput;
 
     bool m_quitRequested;
 };
