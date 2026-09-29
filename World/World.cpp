@@ -124,6 +124,12 @@ void World::UpdatePhysics(
 ) {
     const Keyboard& keyboard = input.GetKeyboard();
 
+    if (keyboard.IsPressed(SDL_SCANCODE_EQUALS))
+        m_car.GetTransmission().ShiftUp();
+
+    if (keyboard.IsPressed(SDL_SCANCODE_MINUS))
+        m_car.GetTransmission().ShiftDown();
+
     if (m_cameraMode == CameraMode::Free) {
         m_car.SetInput(
             0.0f,
@@ -148,12 +154,6 @@ void World::UpdatePhysics(
     const float steering =
         (keyboard.IsDown(SDL_SCANCODE_A) ? 1.0f : 0.0f) -
         (keyboard.IsDown(SDL_SCANCODE_D) ? 1.0f : 0.0f);
-
-    if (keyboard.IsPressed(SDL_SCANCODE_E))
-        m_car.GetTransmission().ShiftUp();
-
-    if (keyboard.IsPressed(SDL_SCANCODE_Q))
-        m_car.GetTransmission().ShiftDown();
 
     m_car.SetInput(
         throttle,
@@ -402,6 +402,14 @@ Camera& World::GetCamera() {
 
 const Camera& World::GetCamera() const {
     return m_camera;
+}
+
+Car& World::GetCar() {
+    return m_car;
+}
+
+const Car& World::GetCar() const {
+    return m_car;
 }
 
 void World::SetCameraMode(CameraMode mode) {
