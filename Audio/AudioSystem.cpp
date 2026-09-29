@@ -1,6 +1,7 @@
 #include "AudioSystem.h"
 
 #include <SDL3/SDL_init.h>
+#include <SDL3/SDL_version.h>
 
 #include "../Core/Debug/Logger.h"
 #include "../Vehicle/Car.h"
@@ -50,6 +51,20 @@ AudioSystem::~AudioSystem() {
 }
 
 bool AudioSystem::Initialize() {
+    Logger::Debug(
+        std::string("[Audio] SDL version: ") +
+        std::to_string(SDL_MAJOR_VERSION) + "." +
+        std::to_string(SDL_MINOR_VERSION) + "." +
+        std::to_string(SDL_MICRO_VERSION)
+    );
+
+    const char* audioDriver = SDL_GetCurrentAudioDriver();
+
+    Logger::Debug(
+        std::string("[Audio] Current audio driver: ") +
+        (audioDriver ? audioDriver : "<none>")
+    );
+
     if (!SDL_InitSubSystem(SDL_INIT_AUDIO)) {
         Logger::Debug(
             std::string("[Audio] SDL audio init failed: ") +
@@ -81,6 +96,11 @@ bool AudioSystem::Initialize() {
         return true;
     }
 
+    Logger::Debug(
+        std::string("[Audio] Audio stream opened: ") +
+        (m_stream ? "yes" : "no")
+    );
+
     if (!SDL_ResumeAudioStreamDevice(m_stream)) {
         Logger::Debug(
             std::string("[Audio] Device resume failed: ") +
@@ -92,7 +112,12 @@ bool AudioSystem::Initialize() {
         return true;
     }
 
-    Logger::Debug("[Audio] Procedural vehicle audio initialized");
+    Logger::Debug(
+        std::string("[Audio] Procedural vehicle audio initialized, driver=") +
+        (SDL_GetCurrentAudioDriver() ?
+            SDL_GetCurrentAudioDriver() :
+            "<none>")
+    );
     return true;
 }
 
@@ -200,6 +225,27 @@ void AudioSystem::AudioCallback(
 
     std::array<float, MaxFramesPerChunk * Channels> buffer{};
 
+    static std::atomic<uint64_t> callbackCount{0};
+    static std::atomic<uint64_t> submittedBytes{0};
+
+    const uint64_t callbackIndex =
+        callbackCount.fetch_add(
+            1,
+            std::memory_order_relaxed
+        ) + 1;
+
+    if (callbackIndex == 1 ||
+        callbackIndex % 100 == 0) {
+        Logger::Debug(
+            std::string("[Audio] Callback count=") +
+            std::to_string(callbackIndex) +
+            " additionalBytes=" +
+            std::to_string(additionalAmount) +
+            " totalBytes=" +
+            std::to_string(totalAmount)
+        );
+    }
+
     int remaining =
         additionalAmount;
 
@@ -228,13 +274,38 @@ void AudioSystem::AudioCallback(
             frames
         );
 
-        SDL_PutAudioStreamData(
-            stream,
-            buffer.data(),
+        const int submitted =
             frames *
             Channels *
-            static_cast<int>(sizeof(float))
-        );
+            static_cast<int>(sizeof(float));
+
+        const bool putResult =
+            SDL_PutAudioStreamData(
+                stream,
+                buffer.data(),
+                submitted
+            );
+
+        if (!putResult) {
+            Logger::Debug(
+                std::string("[Audio] SDL_PutAudioStreamData failed: ") +
+                SDL_GetError()
+            );
+        }
+
+        const uint64_t totalSubmitted =
+            submittedBytes.fetch_add(
+                static_cast<uint64_t>(submitted),
+                std::memory_order_relaxed
+            ) + static_cast<uint64_t>(submitted);
+
+        if (callbackIndex == 1 ||
+            (totalSubmitted / 4096u) % 100u == 0u) {
+            Logger::Debug(
+                std::string("[Audio] Submitted bytes=") +
+                std::to_string(totalSubmitted)
+            );
+        }
 
         remaining -=
             frames *
@@ -267,6 +338,29 @@ void AudioSystem::GenerateAudio(
 
     const bool running =
         m_engineRunning.load(std::memory_order_relaxed);
+
+    static std::atomic<uint64_t> generateCount{0};
+    const uint64_t generateIndex =
+        generateCount.fetch_add(
+            1,
+            std::memory_order_relaxed
+        ) + 1;
+
+    if (generateIndex == 1 ||
+        generateIndex % 200 == 0) {
+        Logger::Debug(
+            std::string("[Audio] GenerateAudio rpm=") +
+            std::to_string(rpm) +
+            " torque=" +
+            std::to_string(engineTorque) +
+            " speed=" +
+            std::to_string(speedKmh) +
+            " slip=" +
+            std::to_string(maxSlip) +
+            " running=" +
+            (running ? "1" : "0")
+        );
+    }
 
     const float rpm01 =
         Clamp01(rpm / 7000.0f);
