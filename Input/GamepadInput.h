@@ -15,6 +15,7 @@ public:
     float GetSteering() const;
     float GetThrottle() const;
     float GetBrake() const;
+    float GetClutch() const;
 
     bool IsShiftUpPressed() const;
     bool IsShiftDownPressed() const;
@@ -27,6 +28,7 @@ private:
     float m_steering;
     float m_throttle;
     float m_brake;
+    float m_clutch;
     bool m_shiftUpPressed;
     bool m_shiftDownPressed;
     bool m_shiftUpPending;

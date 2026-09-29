@@ -33,7 +33,8 @@ public:
     void SetInput(
         float throttle,
         float brake,
-        float steering
+        float steering,
+        float clutch
     );
 
     void UpdatePhysics(
@@ -60,12 +61,14 @@ public:
     const Transmission& GetTransmission() const;
 
     float GetSpeedKmh() const;
+    float GetClutch() const;
 
 private:
     RigidBody* m_chassis;
     float m_throttle;
     float m_brake;
     float m_steering;
+    float m_clutch;
     float m_energyTimer;
     float m_brakeTimer;
     float m_tireTimer;

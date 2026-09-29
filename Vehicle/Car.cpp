@@ -20,6 +20,7 @@ Car::Car()
     m_throttle(0.0f),
     m_brake(0.0f),
     m_steering(0.0f),
+    m_clutch(0.0f),
     m_energyTimer(0.0f),
     m_brakeTimer(0.0f),
     m_tireTimer(0.0f) {}
@@ -31,11 +32,13 @@ void Car::SetChassis(RigidBody* chassis) {
 void Car::SetInput(
     float throttle,
     float brake,
-    float steering
+    float steering,
+    float clutch
 ) {
     m_throttle = std::clamp(throttle, 0.0f, 1.0f);
     m_brake = std::clamp(brake, 0.0f, 1.0f);
     m_steering = std::clamp(steering, -1.0f, 1.0f);
+    m_clutch = std::clamp(clutch, 0.0f, 1.0f);
 }
 
 void Car::UpdatePhysics(
@@ -47,26 +50,17 @@ void Car::UpdatePhysics(
 
     constexpr float MaxSteeringAngle = 0.5f;
     constexpr float BrakeTorque = 2500.0f;
-    constexpr float ClutchStiffness = 8.0f;
-    constexpr float MaxClutchTorque = 250.0f;
-
-    const float rearLoadTorque =
-        m_differential.GetInputLoadTorque(
-            m_wheels[ToIndex(WheelIndex::RearLeft)].GetTireReactionTorque(),
-            m_wheels[ToIndex(WheelIndex::RearRight)].GetTireReactionTorque()
-        );
-
-    const float engineLoadTorque =
-        m_transmission.GetInputLoadTorque(
-            rearLoadTorque
-        );
+    constexpr float ClutchStiffness = 15.0f;
+    constexpr float MaxClutchTorque = 320.0f;
 
     float drivetrainTorque = 0.0f;
 
     const float gearRatio =
         m_transmission.GetGearRatio();
 
-    if (std::abs(gearRatio) > 0.0001f) {
+    if (m_engine.IsRunning() &&
+        std::abs(gearRatio) > 0.0001f) {
+
         const float rearWheelAngularVelocity =
             0.5f * (
                 m_wheels[ToIndex(WheelIndex::RearLeft)].GetAngularVelocity() +
@@ -78,19 +72,8 @@ void Car::UpdatePhysics(
             gearRatio *
             m_transmission.GetFinalDriveRatio();
 
-        const float idleAngularVelocity =
-            m_engine.GetIdleRPM() *
-            2.0f *
-            3.14159265358979323846f /
-            60.0f;
-
         const float clutchEngagement =
-            std::clamp(
-                std::abs(targetEngineAngularVelocity) /
-                (idleAngularVelocity * 1.25f),
-                0.0f,
-                1.0f
-            );
+            1.0f - m_clutch;
 
         const float angularVelocityError =
             targetEngineAngularVelocity -
@@ -108,24 +91,13 @@ void Car::UpdatePhysics(
 
     m_engine.Update(
         m_throttle,
-        engineLoadTorque,
+        0.0f,
         drivetrainTorque,
         deltaTime
     );
 
-    const float transmissionTorque =
-        m_transmission.GetOutputTorque(
-            m_engine.GetTorque()
-        );
-
     float leftDriveTorque = 0.0f;
     float rightDriveTorque = 0.0f;
-
-    m_differential.DistributeTorque(
-        transmissionTorque,
-        leftDriveTorque,
-        rightDriveTorque
-    );
 
     const float clutchReactionTorque =
         -drivetrainTorque *
@@ -390,3 +362,8 @@ float Car::GetSpeedKmh() const {
         velocity.z * velocity.z
     ) * 3.6f;
 }
+
+float Car::GetClutch() const {
+    return m_clutch;
+}
+

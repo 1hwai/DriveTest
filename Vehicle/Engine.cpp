@@ -5,10 +5,13 @@
 
 namespace {
     constexpr float Pi = 3.14159265358979323846f;
+    constexpr float IdleControlGain = 8.0f;
+    constexpr float MaxIdleControlTorque = 60.0f;
 }
 
 Engine::Engine()
     : m_idleRPM(900.0f),
+    m_stallRPM(550.0f),
     m_redlineRPM(7000.0f),
     m_peakTorque(280.0f),
     m_inertia(0.25f),
@@ -16,7 +19,8 @@ Engine::Engine()
         900.0f * 2.0f * Pi / 60.0f
     ),
     m_torque(0.0f),
-    m_loadTorque(0.0f) {}
+    m_loadTorque(0.0f),
+    m_running(true) {}
 
 void Engine::Update(
     float throttle,
@@ -24,7 +28,7 @@ void Engine::Update(
     float drivetrainTorque,
     float deltaTime
 ) {
-    if (deltaTime <= 0.0f)
+    if (deltaTime <= 0.0f || !m_running)
         return;
 
     throttle = std::clamp(throttle, 0.0f, 1.0f);
@@ -32,6 +36,9 @@ void Engine::Update(
 
     const float idleAngularVelocity =
         m_idleRPM * 2.0f * Pi / 60.0f;
+
+    const float stallAngularVelocity =
+        m_stallRPM * 2.0f * Pi / 60.0f;
 
     const float redlineAngularVelocity =
         m_redlineRPM * 2.0f * Pi / 60.0f;
@@ -41,6 +48,17 @@ void Engine::Update(
 
     m_torque =
         maxTorque * throttle;
+
+    const float idleError =
+        idleAngularVelocity -
+        m_angularVelocity;
+
+    const float idleControlTorque =
+        std::clamp(
+            idleError * IdleControlGain,
+            0.0f,
+            MaxIdleControlTorque
+        );
 
     const float speedAboveIdle =
         std::max(
@@ -53,7 +71,8 @@ void Engine::Update(
         speedAboveIdle * 0.03f;
 
     const float netTorque =
-        m_torque -
+        m_torque +
+        idleControlTorque -
         m_loadTorque +
         drivetrainTorque -
         engineFrictionTorque;
@@ -61,11 +80,19 @@ void Engine::Update(
     m_angularVelocity +=
         (netTorque / m_inertia) * deltaTime;
 
-    m_angularVelocity = std::clamp(
-        m_angularVelocity,
-        idleAngularVelocity,
-        redlineAngularVelocity
-    );
+    if (m_angularVelocity <= stallAngularVelocity) {
+        m_angularVelocity = 0.0f;
+        m_torque = 0.0f;
+        m_loadTorque = 0.0f;
+        m_running = false;
+        return;
+    }
+
+    m_angularVelocity =
+        std::min(
+            m_angularVelocity,
+            redlineAngularVelocity
+        );
 }
 
 float Engine::GetRPM() const {
@@ -92,6 +119,10 @@ float Engine::GetIdleRPM() const {
 
 float Engine::GetRedlineRPM() const {
     return m_redlineRPM;
+}
+
+bool Engine::IsRunning() const {
+    return m_running;
 }
 
 float Engine::GetTorqueAtRPM(float rpm) const {

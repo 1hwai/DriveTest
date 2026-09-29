@@ -129,6 +129,7 @@ void World::UpdatePhysics(
         m_car.SetInput(
             0.0f,
             0.0f,
+            0.0f,
             0.0f
         );
 
@@ -160,10 +161,16 @@ void World::UpdatePhysics(
             : (keyboard.IsDown(SDL_SCANCODE_A) ? 1.0f : 0.0f) -
               (keyboard.IsDown(SDL_SCANCODE_D) ? 1.0f : 0.0f);
 
+    const float clutch =
+        gamepad.IsConnected()
+            ? gamepad.GetClutch()
+            : 0.0f;
+
     m_car.SetInput(
         throttle,
         brake,
-        steering
+        steering,
+        clutch
     );
 
     m_car.UpdatePhysics(
@@ -218,7 +225,11 @@ void World::UpdatePhysics(
             " rpm=" +
             std::to_string(m_car.GetEngine().GetRPM()) +
             " torque=" +
-            std::to_string(m_car.GetEngine().GetTorque())
+            std::to_string(m_car.GetEngine().GetTorque()) +
+            " clutch=" +
+            std::to_string(m_car.GetClutch()) +
+            " running=" +
+            std::to_string(m_car.GetEngine().IsRunning())
         );
     }
 }

@@ -17,11 +17,13 @@ public:
     float GetLoadTorque() const;
     float GetIdleRPM() const;
     float GetRedlineRPM() const;
+    bool IsRunning() const;
 
 private:
     float GetTorqueAtRPM(float rpm) const;
 
     float m_idleRPM;
+    float m_stallRPM;
     float m_redlineRPM;
     float m_peakTorque;
     float m_inertia;
@@ -29,4 +31,5 @@ private:
     float m_angularVelocity;
     float m_torque;
     float m_loadTorque;
+    bool m_running;
 };

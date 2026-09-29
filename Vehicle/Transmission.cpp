@@ -23,7 +23,7 @@ Transmission::Transmission(
     : m_gearRatios(gearRatios),
     m_reverseRatio(reverseRatio),
     m_finalDriveRatio(finalDriveRatio),
-    m_currentGear(1) {
+    m_currentGear(0) {
     SetGearRatios(gearRatios);
 }
 

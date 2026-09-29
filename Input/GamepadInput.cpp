@@ -7,6 +7,7 @@ GamepadInput::GamepadInput()
     m_steering(0.0f),
     m_throttle(0.0f),
     m_brake(0.0f),
+    m_clutch(0.0f),
     m_shiftUpPressed(false),
     m_shiftDownPressed(false),
     m_shiftUpPending(false),
@@ -82,9 +83,24 @@ void GamepadInput::Update() {
             )
         ) / 32767.0f;
 
+    constexpr float ClutchDeadzone = 8000.0f;
+
+    const float clutchAxis =
+        -static_cast<float>(
+            SDL_GetGamepadAxis(
+                m_gamepad,
+                SDL_GAMEPAD_AXIS_RIGHTY
+            )
+        );
+
+    m_clutch =
+        (clutchAxis - ClutchDeadzone) /
+        (32767.0f - ClutchDeadzone);
+
     m_steering = std::clamp(m_steering, -1.0f, 1.0f);
     m_throttle = std::clamp(m_throttle, 0.0f, 1.0f);
     m_brake = std::clamp(m_brake, 0.0f, 1.0f);
+    m_clutch = std::clamp(m_clutch, 0.0f, 1.0f);
 }
 
 bool GamepadInput::IsConnected() const {
@@ -101,6 +117,10 @@ float GamepadInput::GetThrottle() const {
 
 float GamepadInput::GetBrake() const {
     return m_brake;
+}
+
+float GamepadInput::GetClutch() const {
+    return m_clutch;
 }
 
 bool GamepadInput::IsShiftUpPressed() const {
@@ -127,6 +147,7 @@ void GamepadInput::Close() {
     m_steering = 0.0f;
     m_throttle = 0.0f;
     m_brake = 0.0f;
+    m_clutch = 0.0f;
     m_shiftUpPressed = false;
     m_shiftDownPressed = false;
     m_shiftUpPending = false;
