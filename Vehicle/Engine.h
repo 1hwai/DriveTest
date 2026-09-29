@@ -7,6 +7,7 @@ public:
     void Update(
         float throttle,
         float loadTorque,
+        float drivetrainTorque,
         float deltaTime
     );
 
