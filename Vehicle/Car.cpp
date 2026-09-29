@@ -47,6 +47,8 @@ void Car::UpdatePhysics(
 
     constexpr float MaxSteeringAngle = 0.5f;
     constexpr float BrakeTorque = 2500.0f;
+    constexpr float ClutchStiffness = 8.0f;
+    constexpr float MaxClutchTorque = 250.0f;
 
     const float rearLoadTorque =
         m_differential.GetInputLoadTorque(
@@ -59,9 +61,55 @@ void Car::UpdatePhysics(
             rearLoadTorque
         );
 
+    float drivetrainTorque = 0.0f;
+
+    const float gearRatio =
+        m_transmission.GetGearRatio();
+
+    if (std::abs(gearRatio) > 0.0001f) {
+        const float rearWheelAngularVelocity =
+            0.5f * (
+                m_wheels[ToIndex(WheelIndex::RearLeft)].GetAngularVelocity() +
+                m_wheels[ToIndex(WheelIndex::RearRight)].GetAngularVelocity()
+            );
+
+        const float targetEngineAngularVelocity =
+            rearWheelAngularVelocity *
+            gearRatio *
+            m_transmission.GetFinalDriveRatio();
+
+        const float idleAngularVelocity =
+            m_engine.GetIdleRPM() *
+            2.0f *
+            3.14159265358979323846f /
+            60.0f;
+
+        const float clutchEngagement =
+            std::clamp(
+                std::abs(targetEngineAngularVelocity) /
+                (idleAngularVelocity * 1.25f),
+                0.0f,
+                1.0f
+            );
+
+        const float angularVelocityError =
+            targetEngineAngularVelocity -
+            m_engine.GetAngularVelocity();
+
+        drivetrainTorque =
+            std::clamp(
+                angularVelocityError *
+                ClutchStiffness *
+                clutchEngagement,
+                -MaxClutchTorque,
+                MaxClutchTorque
+            );
+    }
+
     m_engine.Update(
         m_throttle,
         engineLoadTorque,
+        drivetrainTorque,
         deltaTime
     );
 
@@ -75,6 +123,17 @@ void Car::UpdatePhysics(
 
     m_differential.DistributeTorque(
         transmissionTorque,
+        leftDriveTorque,
+        rightDriveTorque
+    );
+
+    const float clutchReactionTorque =
+        -drivetrainTorque *
+        gearRatio *
+        m_transmission.GetFinalDriveRatio();
+
+    m_differential.DistributeTorque(
+        clutchReactionTorque,
         leftDriveTorque,
         rightDriveTorque
     );
