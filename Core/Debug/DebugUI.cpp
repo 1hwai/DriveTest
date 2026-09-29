@@ -91,6 +91,56 @@ void DebugUI::Render() {
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
 
+    {
+        const Car& car = m_world->GetCar();
+        const Engine& engine = car.GetEngine();
+        const int gear = car.GetTransmission().GetGear();
+        const float rpm = engine.GetRPM();
+        const float idleRPM = engine.GetIdleRPM();
+        const float redlineRPM = engine.GetRedlineRPM();
+
+        ImGui::SetNextWindowPos(
+            ImVec2(20.0f, 20.0f),
+            ImGuiCond_Always
+        );
+        ImGui::SetNextWindowBgAlpha(0.75f);
+
+        ImGui::Begin(
+            "Vehicle Telemetry",
+            nullptr,
+            ImGuiWindowFlags_NoDecoration |
+            ImGuiWindowFlags_AlwaysAutoResize |
+            ImGuiWindowFlags_NoSavedSettings
+        );
+
+        const char* gearText = "N";
+
+        if (gear > 0)
+            gearText = gear == 1 ? "1" :
+                gear == 2 ? "2" :
+                gear == 3 ? "3" :
+                gear == 4 ? "4" :
+                gear == 5 ? "5" : "?";
+        else if (gear < 0)
+            gearText = "R";
+
+        ImGui::Text("GEAR  %s", gearText);
+        ImGui::Text("RPM   %.0f / %.0f", rpm, redlineRPM);
+
+        const float rpmProgress =
+            (rpm - idleRPM) /
+            (redlineRPM - idleRPM);
+
+        ImGui::ProgressBar(
+            rpmProgress,
+            ImVec2(220.0f, 18.0f)
+        );
+
+        ImGui::Text("SHIFT  [+] Up   [-] Down");
+
+        ImGui::End();
+    }
+
     if (m_showHierarchyWindow) {
         ImGui::Begin(
             "Hierarchy",
