@@ -4,6 +4,7 @@
 #include "SimulationController.h"
 #include "Debug/DebugUI.h"
 #include "Debug/Performance.h"
+#include "../Audio/AudioSystem.h"
 #include "../Input/InputManager.h"
 #include "../Rendering/Renderer.h"
 #include "../World/World.h"
@@ -37,6 +38,7 @@ private:
     MeshManager m_meshManager;
     World m_world;
     PhysicsWorld m_physicsWorld;
+    AudioSystem m_audio;
 
     float m_physicsAccumulator;
 
