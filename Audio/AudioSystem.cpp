@@ -1,5 +1,7 @@
 #include "AudioSystem.h"
 
+#include <SDL3/SDL_init.h>
+
 #include "../Core/Debug/Logger.h"
 #include "../Vehicle/Car.h"
 
