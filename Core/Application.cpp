@@ -12,6 +12,9 @@ bool Application::Initialize() {
     if (!m_renderer.Initialize())
         return false;
 
+    if (!m_audio.Initialize())
+        return false;
+
     if (!m_meshManager.CreateCube("cube"))
         return false;
 
@@ -116,6 +119,10 @@ void Application::Update() {
         m_input
     );
 
+    m_audio.Update(
+        m_world.GetCar()
+    );
+
     m_performance.UpdateFrame(deltaTime);
 }
 
@@ -137,6 +144,7 @@ void Application::Shutdown() {
         return;
 
     m_debugUI.Shutdown();
+    m_audio.Shutdown();
     m_world.Shutdown();
     m_physicsWorld.Clear();
     m_meshManager.Clear();
