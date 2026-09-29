@@ -51,9 +51,9 @@ void Car::UpdatePhysics(
     constexpr float MaxSteeringAngle = 0.5f;
     constexpr float BrakeTorque = 2500.0f;
     constexpr float ClutchStiffness = 15.0f;
-    constexpr float MaxClutchTorque = 320.0f;
+    constexpr float MaxClutchTorque = 400.0f;
 
-    float drivetrainTorque = 0.0f;
+    float clutchTorque = 0.0f;
 
     const float gearRatio =
         m_transmission.GetGearRatio();
@@ -67,7 +67,7 @@ void Car::UpdatePhysics(
                 m_wheels[ToIndex(WheelIndex::RearRight)].GetAngularVelocity()
             );
 
-        const float targetEngineAngularVelocity =
+        const float drivetrainAngularVelocity =
             rearWheelAngularVelocity *
             gearRatio *
             m_transmission.GetFinalDriveRatio();
@@ -76,36 +76,39 @@ void Car::UpdatePhysics(
             1.0f - m_clutch;
 
         const float angularVelocityError =
-            targetEngineAngularVelocity -
+            drivetrainAngularVelocity -
             m_engine.GetAngularVelocity();
 
-        drivetrainTorque =
+        const float clutchCapacity =
+            MaxClutchTorque *
+            clutchEngagement;
+
+        clutchTorque =
             std::clamp(
                 angularVelocityError *
-                ClutchStiffness *
-                clutchEngagement,
-                -MaxClutchTorque,
-                MaxClutchTorque
+                ClutchStiffness,
+                -clutchCapacity,
+                clutchCapacity
             );
     }
 
     m_engine.Update(
         m_throttle,
         0.0f,
-        drivetrainTorque,
+        clutchTorque,
         deltaTime
     );
 
     float leftDriveTorque = 0.0f;
     float rightDriveTorque = 0.0f;
 
-    const float clutchReactionTorque =
-        -drivetrainTorque *
+    const float drivetrainTorque =
+        -clutchTorque *
         gearRatio *
         m_transmission.GetFinalDriveRatio();
 
     m_differential.DistributeTorque(
-        clutchReactionTorque,
+        drivetrainTorque,
         leftDriveTorque,
         rightDriveTorque
     );
@@ -366,4 +369,3 @@ float Car::GetSpeedKmh() const {
 float Car::GetClutch() const {
     return m_clutch;
 }
-
