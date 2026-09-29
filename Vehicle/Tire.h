@@ -45,6 +45,7 @@ public:
     float GetSlipAngle() const;
     float GetNormalLoad() const;
     float GetLongitudinalForce() const;
+    float GetLateralForce() const;
 
     TireState CalculateState(
         const RigidBody& body,
@@ -69,4 +70,5 @@ private:
 
     mutable TireState m_state;
     mutable float m_longitudinalForce;
+    mutable float m_lateralForce;
 };
