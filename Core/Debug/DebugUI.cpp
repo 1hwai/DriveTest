@@ -1,5 +1,8 @@
 #include "DebugUI.h"
 
+#include <algorithm>
+#include <cmath>
+
 #include "../SimulationController.h"
 #include "../../Core/Object.h"
 #include "../../Physics/RigidBody.h"
