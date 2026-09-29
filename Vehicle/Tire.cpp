@@ -26,7 +26,8 @@ Tire::Tire()
         Vec3(1.0f, 0.0f, 0.0f),
         Vec3(0.0f, 0.0f, 0.0f)
     },
-    m_longitudinalForce(0.0f) {}
+    m_longitudinalForce(0.0f),
+    m_lateralForce(0.0f) {}
 
 void Tire::SetStaticFriction(float friction) {
     m_staticFriction =
@@ -107,6 +108,10 @@ float Tire::GetNormalLoad() const {
 
 float Tire::GetLongitudinalForce() const {
     return m_longitudinalForce;
+}
+
+float Tire::GetLateralForce() const {
+    return m_lateralForce;
 }
 
 TireState Tire::CalculateState(
@@ -214,6 +219,7 @@ Vec3 Tire::CalculateForce(
     const TireState& state
 ) const {
     m_longitudinalForce = 0.0f;
+    m_lateralForce = 0.0f;
 
     if (!state.grounded ||
         state.normalLoad <= 0.0f) {
@@ -286,6 +292,8 @@ Vec3 Tire::CalculateForce(
 
     m_longitudinalForce =
         tireForce.Dot(state.forward);
+    m_lateralForce =
+        tireForce.Dot(state.lateral);
 
     return tireForce;
 }
