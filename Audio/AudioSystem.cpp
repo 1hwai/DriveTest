@@ -1,5 +1,6 @@
 #include "AudioSystem.h"
 
+#include <SDL3/SDL_audio.h>
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_version.h>
 
@@ -58,11 +59,32 @@ bool AudioSystem::Initialize() {
         std::to_string(SDL_MICRO_VERSION)
     );
 
-    const char* audioDriver = SDL_GetCurrentAudioDriver();
+    const int driverCount =
+        SDL_GetNumAudioDrivers();
 
     Logger::Debug(
-        std::string("[Audio] Current audio driver: ") +
-        (audioDriver ? audioDriver : "<none>")
+        std::string("[Audio] Available audio drivers: ") +
+        std::to_string(driverCount)
+    );
+
+    for (int i = 0; i < driverCount; ++i) {
+        const char* driver =
+            SDL_GetAudioDriver(i);
+
+        Logger::Debug(
+            std::string("[Audio] Driver[") +
+            std::to_string(i) +
+            "]: " +
+            (driver ? driver : "<none>")
+        );
+    }
+
+    const int initializedAudio =
+        SDL_WasInit(SDL_INIT_AUDIO);
+
+    Logger::Debug(
+        std::string("[Audio] Audio subsystem before init: ") +
+        (initializedAudio ? "initialized" : "not initialized")
     );
 
     if (!SDL_InitSubSystem(SDL_INIT_AUDIO)) {
@@ -71,6 +93,48 @@ bool AudioSystem::Initialize() {
             SDL_GetError()
         );
         return true;
+    }
+
+    const char* audioDriver =
+        SDL_GetCurrentAudioDriver();
+
+    Logger::Debug(
+        std::string("[Audio] Current audio driver after init: ") +
+        (audioDriver ? audioDriver : "<none>")
+    );
+
+    int deviceCount = 0;
+    SDL_AudioDeviceID* devices =
+        SDL_GetAudioPlaybackDevices(&deviceCount);
+
+    Logger::Debug(
+        std::string("[Audio] Playback device count: ") +
+        std::to_string(deviceCount)
+    );
+
+    if (devices) {
+        for (int i = 0; i < deviceCount; ++i) {
+            const char* name =
+                SDL_GetAudioDeviceName(devices[i]);
+
+            Logger::Debug(
+                std::string("[Audio] Playback device[") +
+                std::to_string(i) +
+                "]: " +
+                (name ? name : "<unnamed>") +
+                " id=" +
+                std::to_string(
+                    static_cast<unsigned int>(devices[i])
+                )
+            );
+        }
+
+        SDL_free(devices);
+    } else {
+        Logger::Debug(
+            std::string("[Audio] Playback device enumeration failed: ") +
+            SDL_GetError()
+        );
     }
 
     const SDL_AudioSpec spec = {
