@@ -8,8 +8,8 @@
 #include "../../Physics/RigidBody.h"
 #include "../../Physics/Collider.h"
 #include "../../Physics/Material.h"
-#include "../../World/World.h"
-#include "../../World/SceneSerializer.h"
+#include "../../Scene/Scene.h"
+#include "../../Scene/SceneSerializer.h"
 
 #include <imgui.h>
 #include <imgui_impl_sdl3.h>
@@ -17,7 +17,7 @@
 
 DebugUI::DebugUI()
     : m_simulation(nullptr),
-    m_world(nullptr),
+    m_scene(nullptr),
     m_initialized(false),
     m_showSimulationWindow(true),
     m_showHierarchyWindow(true),
@@ -31,7 +31,7 @@ bool DebugUI::Initialize(
     SDL_Window* window,
     SDL_GLContext context,
     SimulationController& simulation,
-    World& world
+    Scene& world
 ) {
     if (m_initialized ||
         window == nullptr ||
@@ -41,7 +41,7 @@ bool DebugUI::Initialize(
     }
 
     m_simulation = &simulation;
-    m_world = &world;
+    m_scene = &world;
 
     IMGUI_CHECKVERSION();
 
@@ -58,7 +58,7 @@ bool DebugUI::Initialize(
     )) {
         ImGui::DestroyContext();
         m_simulation = nullptr;
-        m_world = nullptr;
+        m_scene = nullptr;
         return false;
     }
 
@@ -66,7 +66,7 @@ bool DebugUI::Initialize(
         ImGui_ImplSDL3_Shutdown();
         ImGui::DestroyContext();
         m_simulation = nullptr;
-        m_world = nullptr;
+        m_scene = nullptr;
         return false;
     }
 
@@ -85,7 +85,7 @@ void DebugUI::ProcessEvent(const SDL_Event& event) {
 void DebugUI::Render() {
     if (!m_initialized ||
         m_simulation == nullptr ||
-        m_world == nullptr) {
+        m_scene == nullptr) {
 
         return;
     }
@@ -95,7 +95,7 @@ void DebugUI::Render() {
     ImGui::NewFrame();
 
     {
-        const Car& car = m_world->GetCar();
+        const Car& car = m_scene->GetCar();
         const Engine& engine = car.GetEngine();
         const int gear = car.GetTransmission().GetGear();
         const float rpm = engine.GetRPM();
@@ -146,7 +146,7 @@ void DebugUI::Render() {
 
     {
         const float speedKmh =
-            m_world->GetCar().GetSpeedKmh();
+            m_scene->GetCar().GetSpeedKmh();
 
         constexpr float maxSpeed = 240.0f;
         constexpr float radius = 78.0f;
@@ -288,7 +288,7 @@ void DebugUI::Render() {
         );
 
         const auto& objects =
-            m_world->GetObjects();
+            m_scene->GetObjects();
 
         for (size_t i = 0; i < objects.size(); ++i) {
             const Object* object = objects[i].get();
@@ -393,7 +393,7 @@ void DebugUI::Render() {
             Object* object = nullptr;
 
             if (objectType == 0) {
-                object = m_world->CreateBox({
+                object = m_scene->CreateBox({
                     name,
                     Vec3(
                         position[0],
@@ -411,7 +411,7 @@ void DebugUI::Render() {
                 });
             }
             else {
-                object = m_world->CreateSphere({
+                object = m_scene->CreateSphere({
                     name,
                     Vec3(
                         position[0],
@@ -427,7 +427,7 @@ void DebugUI::Render() {
 
             if (object != nullptr) {
                 const auto& objects =
-                    m_world->GetObjects();
+                    m_scene->GetObjects();
 
                 m_selectedObjectIndex =
                     static_cast<int>(objects.size()) - 1;
@@ -444,7 +444,7 @@ void DebugUI::Render() {
         );
 
         const auto& objects =
-            m_world->GetObjects();
+            m_scene->GetObjects();
 
         Object* selectedObject = nullptr;
 
@@ -468,12 +468,12 @@ void DebugUI::Render() {
             ImGui::Separator();
 
             if (ImGui::Button("Delete Object")) {
-                if (m_world->DestroyObject(selectedObject)) {
+                if (m_scene->DestroyObject(selectedObject)) {
                     if (m_selectedObjectIndex >=
-                        static_cast<int>(m_world->GetObjects().size())) {
+                        static_cast<int>(m_scene->GetObjects().size())) {
 
                         m_selectedObjectIndex =
-                            static_cast<int>(m_world->GetObjects().size()) - 1;
+                            static_cast<int>(m_scene->GetObjects().size()) - 1;
                     }
 
                     m_selectedObjectIndex = -1;
@@ -735,7 +735,7 @@ void DebugUI::Render() {
         ImGui::InputText("Path", m_scenePath, sizeof(m_scenePath));
 
         if (ImGui::Button("Save Scene"))
-            m_sceneStatus = SceneSerializer::Save(*m_world, m_scenePath)
+            m_sceneStatus = SceneSerializer::Save(*m_scene, m_scenePath)
                 ? "Scene saved."
                 : "Failed to save scene.";
 
@@ -744,7 +744,7 @@ void DebugUI::Render() {
         if (ImGui::Button("Load Scene")) {
             m_simulation->Pause();
             const bool loaded =
-                SceneSerializer::Load(*m_world, m_scenePath);
+                SceneSerializer::Load(*m_scene, m_scenePath);
 
             if (loaded)
                 m_selectedObjectIndex = -1;
@@ -765,13 +765,13 @@ void DebugUI::Render() {
         );
 
         bool chaseCamera =
-            m_world->GetCameraMode() == CameraMode::Chase;
+            m_scene->GetCameraMode() == CameraMode::Chase;
 
         if (ImGui::Checkbox(
             "Chase Camera",
             &chaseCamera
         )) {
-            m_world->SetCameraMode(
+            m_scene->SetCameraMode(
                 chaseCamera
                     ? CameraMode::Chase
                     : CameraMode::Free
@@ -837,7 +837,7 @@ void DebugUI::Shutdown() {
     ImGui::DestroyContext();
 
     m_simulation = nullptr;
-    m_world = nullptr;
+    m_scene = nullptr;
     m_selectedObjectIndex = -1;
     m_initialized = false;
 }
