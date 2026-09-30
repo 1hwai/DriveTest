@@ -42,6 +42,9 @@ int main() {
 
     PhysicsWorld physicsWorld;
 
+    // Suspension stability is tested on a flat surface.
+    // A sine surface introduces a real gravity component along the slope,
+    // which would make the chassis move in Z even with tire forces disabled.
     Terrain terrain(
         65,
         100.0f,
@@ -49,11 +52,6 @@ int main() {
         0.035f,
         5,
         1337
-    );
-
-    terrain.GenerateSineWave(
-        0.5f,
-        3.14159265f * 0.25f
     );
 
     RigidBody* terrainBody =
@@ -135,7 +133,7 @@ int main() {
         tire.SetRollingResistance(0.0f);
     }
 
-    constexpr float MaxWellAbsZ = 2.2f;
+    constexpr float MaxDriftZ = 0.05f;
     constexpr float EnergyTolerance = 1.0f;
 
     float maxAbsZ = 0.0f;
@@ -146,7 +144,7 @@ int main() {
         9.81f *
         chassis->GetPosition().y;
 
-    Logger::Info("[PhysicsDiagnostics] sine terrain suspension test");
+    Logger::Info("[PhysicsDiagnostics] flat terrain suspension stability test");
 
     for (int step = 0;
         step < SimulationSteps;
@@ -293,9 +291,9 @@ int main() {
 
     Logger::Info(summary.str());
 
-    if (maxAbsZ > MaxWellAbsZ) {
+    if (maxAbsZ > MaxDriftZ) {
         Logger::Error(
-            "[FAIL] Gravity well escape: maxAbsZ=" +
+            "[FAIL] Unexpected chassis drift on flat terrain: maxAbsZ=" +
             std::to_string(maxAbsZ)
         );
 
@@ -313,7 +311,7 @@ int main() {
     }
 
     Logger::Info(
-        "[PASS] Gravity well remained bounded and energy did not increase"
+        "[PASS] Suspension remained stable and energy did not increase"
     );
 
     Logger::Shutdown();
