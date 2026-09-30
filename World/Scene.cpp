@@ -191,8 +191,7 @@ void Scene::Update(
         m_car.GetTransmission().ShiftDown();
 
     if (m_cameraMode == CameraMode::Free) {
-        const Keyboard& keyboard = input.GetKeyboard();
-        constexpr float cameraSpeed = 5.0f;
+                constexpr float cameraSpeed = 5.0f;
 
         Vec3 movement(0.0f, 0.0f, 0.0f);
 
