@@ -50,68 +50,23 @@ void Car::UpdatePhysics(
 
     constexpr float MaxSteeringAngle = 0.5f;
     constexpr float BrakeTorque = 2500.0f;
-    constexpr float ClutchStiffness = 15.0f;
-    constexpr float MaxClutchTorque = 400.0f;
+    const float rearWheelAngularVelocity =
+        0.5f * (
+            m_wheels[ToIndex(WheelIndex::RearLeft)].GetAngularVelocity() +
+            m_wheels[ToIndex(WheelIndex::RearRight)].GetAngularVelocity()
+        );
 
-    float clutchTorque = 0.0f;
-
-    const float gearRatio =
-        m_transmission.GetGearRatio();
-
-    if (m_engine.IsRunning() &&
-        std::abs(gearRatio) > 0.0001f) {
-
-        const float rearWheelAngularVelocity =
-            0.5f * (
-                m_wheels[ToIndex(WheelIndex::RearLeft)].GetAngularVelocity() +
-                m_wheels[ToIndex(WheelIndex::RearRight)].GetAngularVelocity()
-            );
-
-        const float drivetrainAngularVelocity =
-            rearWheelAngularVelocity *
-            gearRatio *
-            m_transmission.GetFinalDriveRatio();
-
-        const float clutchEngagement =
-            1.0f - m_clutch;
-
-        const float angularVelocityError =
-            drivetrainAngularVelocity -
-            m_engine.GetAngularVelocity();
-
-        const float clutchCapacity =
-            MaxClutchTorque *
-            clutchEngagement;
-
-        clutchTorque =
-            std::clamp(
-                angularVelocityError *
-                ClutchStiffness,
-                -clutchCapacity,
-                clutchCapacity
-            );
-    }
-
-    m_engine.Update(
+    m_powertrain.Update(
         m_throttle,
-        0.0f,
-        clutchTorque,
+        m_clutch,
+        rearWheelAngularVelocity,
         deltaTime
     );
 
-    float leftDriveTorque = 0.0f;
-    float rightDriveTorque = 0.0f;
-
-    const float drivetrainTorque =
-        -clutchTorque *
-        gearRatio *
-        m_transmission.GetFinalDriveRatio();
-
-    m_differential.DistributeTorque(
-        drivetrainTorque,
-        leftDriveTorque,
-        rightDriveTorque
-    );
+    const float leftDriveTorque =
+        m_powertrain.GetLeftDriveTorque();
+    const float rightDriveTorque =
+        m_powertrain.GetRightDriveTorque();
 
     m_wheels[ToIndex(WheelIndex::FrontLeft)].SetSteeringAngle(
         m_steering * MaxSteeringAngle
@@ -340,19 +295,19 @@ const RigidBody* Car::GetChassis() const {
 }
 
 Engine& Car::GetEngine() {
-    return m_engine;
+    return m_powertrain.GetEngine();
 }
 
 const Engine& Car::GetEngine() const {
-    return m_engine;
+    return m_powertrain.GetEngine();
 }
 
 Transmission& Car::GetTransmission() {
-    return m_transmission;
+    return m_powertrain.GetTransmission();
 }
 
 const Transmission& Car::GetTransmission() const {
-    return m_transmission;
+    return m_powertrain.GetTransmission();
 }
 
 float Car::GetSpeedKmh() const {
