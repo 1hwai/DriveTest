@@ -8,8 +8,8 @@
 #include "../../Physics/RigidBody.h"
 #include "../../Physics/Collider.h"
 #include "../../Physics/Material.h"
-#include "../../Scene/Scene.h"
-#include "../../Scene/SceneSerializer.h"
+#include "../../World/Scene.h"
+#include "../../World/SceneSerializer.h"
 
 #include <imgui.h>
 #include <imgui_impl_sdl3.h>
@@ -31,7 +31,7 @@ bool DebugUI::Initialize(
     SDL_Window* window,
     SDL_GLContext context,
     SimulationController& simulation,
-    Scene& world
+    Scene& scene
 ) {
     if (m_initialized ||
         window == nullptr ||
@@ -41,7 +41,7 @@ bool DebugUI::Initialize(
     }
 
     m_simulation = &simulation;
-    m_scene = &world;
+    m_scene = &scene;
 
     IMGUI_CHECKVERSION();
 
