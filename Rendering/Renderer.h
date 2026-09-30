@@ -4,7 +4,7 @@
 
 #include "Shader.h"
 #include "DebugRenderer.h"
-#include "../Scene/Scene.h"
+#include "../World/Scene.h"
 
 class Renderer {
 public:
