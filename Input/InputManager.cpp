@@ -4,8 +4,7 @@ InputManager::InputManager()
     : m_keyboard(),
     m_wheelInput(),
     m_gamepadInput(),
-    m_quitRequested(false),
-    m_vehicleInput{} {}
+    m_quitRequested(false) {}
 
 void InputManager::ProcessEvent(const SDL_Event& event) {
     if (event.type == SDL_EVENT_QUIT)
@@ -19,8 +18,7 @@ void InputManager::Update() {
     m_keyboard.Update();
     m_wheelInput.Update();
     m_gamepadInput.Update();
-
-
+}
 
 const Keyboard& InputManager::GetKeyboard() const {
     return m_keyboard;
@@ -72,10 +70,6 @@ VehicleInput InputManager::GetVehicleInput() const {
         m_gamepadInput.IsShiftDownPressed();
 
     return input;
-}
-
-
-    return m_vehicleInput;
 }
 
 bool InputManager::QuitRequested() const {
