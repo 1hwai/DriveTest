@@ -1,6 +1,6 @@
 #include "SceneSerializer.h"
 
-#include "World.h"
+#include "Scene.h"
 #include "../Core/Object.h"
 #include "../Physics/Collider.h"
 #include "../Physics/RigidBody.h"
@@ -34,7 +34,7 @@ namespace {
 }
 
 bool SceneSerializer::Save(
-    const World& world,
+    const Scene& world,
     const std::string& path
 ) {
     const std::filesystem::path filePath(path);
@@ -145,7 +145,7 @@ bool SceneSerializer::Save(
 }
 
 bool SceneSerializer::Load(
-    World& world,
+    Scene& world,
     const std::string& path
 ) {
     std::ifstream file(path);
