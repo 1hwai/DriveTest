@@ -4,7 +4,7 @@
 #include <string>
 
 class SimulationController;
-class World;
+class Scene;
 
 class DebugUI {
 public:
@@ -14,7 +14,7 @@ public:
         SDL_Window* window,
         SDL_GLContext context,
         SimulationController& simulation,
-        World& world
+        Scene& scene
     );
 
     void ProcessEvent(const SDL_Event& event);
@@ -23,7 +23,7 @@ public:
 
 private:
     SimulationController* m_simulation;
-    World* m_world;
+    Scene* m_scene;
 
     bool m_initialized;
     bool m_showSimulationWindow;
