@@ -18,7 +18,7 @@ bool Application::Initialize() {
     if (!m_meshManager.CreateSphere("sphere"))
         return false;
 
-    if (!m_world.Initialize(
+    if (!m_scene.Initialize(
         m_meshManager,
         m_physicsWorld
     ))
@@ -28,7 +28,7 @@ bool Application::Initialize() {
         m_renderer.GetWindow(),
         m_renderer.GetContext(),
         m_simulation,
-        m_world
+        m_scene
     ))
         return false;
 
@@ -60,7 +60,7 @@ int Application::Run() {
 }
 
 void Application::Render() {
-    m_renderer.Render(m_world);
+    m_renderer.Render(m_scene);
     m_debugUI.Render();
     m_renderer.Present();
 }
@@ -79,7 +79,7 @@ void Application::Update() {
     while (m_physicsAccumulator >= PhysicsFixedDeltaTime &&
         physicsStepsThisFrame < MaxPhysicsStepsPerFrame) {
 
-        m_world.UpdatePhysics(
+        m_scene.UpdatePhysics(
             PhysicsFixedDeltaTime,
             m_input
         );
@@ -102,7 +102,7 @@ void Application::Update() {
     }
 
     if (m_simulation.ConsumeSingleStep()) {
-        m_world.UpdatePhysics(
+        m_scene.UpdatePhysics(
             PhysicsFixedDeltaTime,
             m_input
         );
@@ -114,13 +114,13 @@ void Application::Update() {
         m_performance.RecordPhysicsStep();
     }
 
-    m_world.Update(
+    m_scene.Update(
         deltaTime,
         m_input
     );
 
     m_audio.Update(
-        m_world.GetCar()
+        m_scene.GetCar()
     );
 
     m_performance.UpdateFrame(deltaTime);
@@ -145,7 +145,7 @@ void Application::Shutdown() {
 
     m_debugUI.Shutdown();
     m_audio.Shutdown();
-    m_world.Shutdown();
+    m_scene.Shutdown();
     m_physicsWorld.Clear();
     m_meshManager.Clear();
     m_renderer.Shutdown();
