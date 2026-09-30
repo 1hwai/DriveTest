@@ -48,12 +48,35 @@ jobs:
       - name: Run diagnostics
         working-directory: build
         run: |
-          ./DriveTestPhysicsDiagnostics > run.log 2>&1
-          ./DriveTestVehicleDiagnostics >> run.log 2>&1
-          cat Logs/physics_diagnostics.log
-          cat Logs/vehicle_diagnostics.log
+          set +e
+
+          ./DriveTestPhysicsDiagnostics > physics_run.log 2>&1
+          physics_status=$?
+
+          ./DriveTestVehicleDiagnostics > vehicle_run.log 2>&1
+          vehicle_status=$?
+
+          {
+            echo "===== PhysicsDiagnostics ====="
+            cat physics_run.log
+            cat Logs/physics_diagnostics.log
+            echo "===== VehicleDiagnostics ====="
+            cat vehicle_run.log
+            cat Logs/vehicle_diagnostics.log
+          } | tee run.log
+
           test -s Logs/physics_diagnostics.log
+          physics_log_status=$?
+
           test -s Logs/vehicle_diagnostics.log
+          vehicle_log_status=$?
+
+          if [ "$physics_status" -ne 0 ] ||
+             [ "$vehicle_status" -ne 0 ] ||
+             [ "$physics_log_status" -ne 0 ] ||
+             [ "$vehicle_log_status" -ne 0 ]; then
+            exit 1
+          fi
 
       - name: Upload physics logs
         if: always()
