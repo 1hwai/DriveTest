@@ -195,21 +195,37 @@ TireState Tire::CalculateState(
         state.longitudinalVelocity -
         state.wheelSurfaceSpeed;
 
-    constexpr float SlipVelocityEpsilon = 0.1f;
+    constexpr float SlipReferenceSpeed = 1.0f;
+    constexpr float LowSpeedThreshold = 0.5f;
+
+    const float longitudinalSpeed =
+        std::abs(state.longitudinalVelocity);
 
     state.slipRatio =
         (state.wheelSurfaceSpeed -
          state.longitudinalVelocity) /
         std::max(
-            std::abs(state.longitudinalVelocity),
-            SlipVelocityEpsilon
+            longitudinalSpeed,
+            SlipReferenceSpeed
         );
 
-    state.slipAngle =
-        std::atan2(
-            state.lateralVelocity,
-            std::abs(state.longitudinalVelocity)
+    const float contactSpeed =
+        std::sqrt(
+            state.longitudinalVelocity *
+                state.longitudinalVelocity +
+            state.lateralVelocity *
+                state.lateralVelocity
         );
+
+    if (contactSpeed < LowSpeedThreshold) {
+        state.slipAngle = 0.0f;
+    } else {
+        state.slipAngle =
+            std::atan2(
+                state.lateralVelocity,
+                longitudinalSpeed
+            );
+    }
 
     m_state = state;
     return state;
@@ -230,9 +246,25 @@ Vec3 Tire::CalculateForce(
         state.slipRatio *
         m_longitudinalStiffness;
 
+    const float contactSpeed =
+        std::sqrt(
+            state.longitudinalVelocity *
+                state.longitudinalVelocity +
+            state.lateralVelocity *
+                state.lateralVelocity
+        );
+
+    const float lateralSpeedFactor =
+        std::clamp(
+            contactSpeed / 2.0f,
+            0.0f,
+            1.0f
+        );
+
     const float lateralForce =
         -state.slipAngle *
-        m_lateralStiffness;
+        m_lateralStiffness *
+        lateralSpeedFactor;
 
     const float combinedSlip =
         std::sqrt(
