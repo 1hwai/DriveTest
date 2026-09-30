@@ -157,6 +157,7 @@ if(DRIVETEST_BUILD_VEHICLE_DIAGNOSTICS)
         Physics/Material.cpp
 
         Vehicle/Car.cpp
+        Vehicle/Powertrain.cpp
         Vehicle/Wheel.cpp
         Vehicle/Suspension.cpp
         Vehicle/Tire.cpp
