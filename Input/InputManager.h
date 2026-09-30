@@ -17,7 +17,7 @@ public:
     const Keyboard& GetKeyboard() const;
     const WheelInput& GetWheelInput() const;
     const GamepadInput& GetGamepadInput() const;
-    const VehicleInput& GetVehicleInput() const;
+    VehicleInput GetVehicleInput() const;
 
     bool QuitRequested() const;
 
@@ -27,5 +27,4 @@ private:
     GamepadInput m_gamepadInput;
 
     bool m_quitRequested;
-    VehicleInput m_vehicleInput;
 };
