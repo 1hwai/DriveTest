@@ -2,10 +2,10 @@
 
 #include <string>
 
-class World;
+class Scene;
 
 class SceneSerializer {
 public:
-    static bool Save(const World& world, const std::string& path);
-    static bool Load(World& world, const std::string& path);
+    static bool Save(const Scene& world, const std::string& path);
+    static bool Load(Scene& world, const std::string& path);
 };
