@@ -123,6 +123,18 @@ int main() {
         Vec3(0.9f, -0.2f, -1.1f)
     );
 
+    // This diagnostic is for suspension stability only. Tire forces are
+    // tested by VehicleDiagnostics and would otherwise turn the gravity-well
+    // test into a combined suspension+tire test.
+    for (size_t i = 0; i < WheelCount; ++i) {
+        Tire& tire = car.GetTire(static_cast<WheelIndex>(i));
+        tire.SetStaticFriction(0.0f);
+        tire.SetDynamicFriction(0.0f);
+        tire.SetLongitudinalStiffness(0.0f);
+        tire.SetLateralStiffness(0.0f);
+        tire.SetRollingResistance(0.0f);
+    }
+
     constexpr float MaxWellAbsZ = 2.2f;
     constexpr float EnergyTolerance = 1.0f;
 
