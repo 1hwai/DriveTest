@@ -8,7 +8,7 @@
 #include "Tire.h"
 #include "Engine.h"
 #include "Transmission.h"
-#include "Differential.h"
+#include "Powertrain.h"
 
 class RigidBody;
 class PhysicsWorld;
@@ -79,5 +79,5 @@ private:
 
     Engine m_engine;
     Transmission m_transmission;
-    Differential m_differential;
+    Powertrain m_powertrain;
 };
