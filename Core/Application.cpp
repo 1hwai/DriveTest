@@ -81,7 +81,7 @@ void Application::Update() {
 
         m_scene.UpdatePhysics(
             PhysicsFixedDeltaTime,
-            m_input
+            m_input.GetVehicleInput()
         );
 
         m_physicsWorld.Step(
@@ -104,7 +104,7 @@ void Application::Update() {
     if (m_simulation.ConsumeSingleStep()) {
         m_scene.UpdatePhysics(
             PhysicsFixedDeltaTime,
-            m_input
+            m_input.GetVehicleInput()
         );
 
         m_physicsWorld.Step(
@@ -116,7 +116,8 @@ void Application::Update() {
 
     m_scene.Update(
         deltaTime,
-        m_input
+        m_input.GetKeyboard(),
+        m_input.GetVehicleInput()
     );
 
     m_audio.Update(
