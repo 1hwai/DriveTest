@@ -37,19 +37,23 @@ jobs:
             -DCMAKE_BUILD_TYPE=Debug \
             -DCMAKE_TOOLCHAIN_FILE=$RUNNER_TEMP/vcpkg/scripts/buildsystems/vcpkg.cmake \
             -DDRIVETEST_BUILD_PHYSICS_DIAGNOSTICS=ON \
+            -DDRIVETEST_BUILD_VEHICLE_DIAGNOSTICS=ON \
             2>&1 | tee configure.log
 
-      - name: Build physics diagnostics
+      - name: Build diagnostics
         run: |
           set -o pipefail
-          cmake --build build --target DriveTestPhysicsDiagnostics -j2 2>&1 | tee build.log
+          cmake --build build --target DriveTestPhysicsDiagnostics DriveTestVehicleDiagnostics -j2 2>&1 | tee build.log
 
-      - name: Run physics diagnostics
+      - name: Run diagnostics
         working-directory: build
         run: |
           ./DriveTestPhysicsDiagnostics > run.log 2>&1
+          ./DriveTestVehicleDiagnostics >> run.log 2>&1
           cat Logs/physics_diagnostics.log
+          cat Logs/vehicle_diagnostics.log
           test -s Logs/physics_diagnostics.log
+          test -s Logs/vehicle_diagnostics.log
 
       - name: Upload physics logs
         if: always()
@@ -61,4 +65,5 @@ jobs:
             build.log
             build/run.log
             build/Logs/physics_diagnostics.log
+            build/Logs/vehicle_diagnostics.log
           if-no-files-found: warn
