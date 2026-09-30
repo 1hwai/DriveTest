@@ -274,19 +274,49 @@ Vec3 Tire::CalculateForce(
                 state.slipAngle
         );
 
+    constexpr float FrictionTransitionSlip = 0.05f;
+
+    const float frictionBlend =
+        std::clamp(
+            combinedSlip / FrictionTransitionSlip,
+            0.0f,
+            1.0f
+        );
+
     const float friction =
-        combinedSlip < 0.05f
-        ? m_staticFriction
-        : m_dynamicFriction;
+        m_staticFriction +
+        (m_dynamicFriction - m_staticFriction) *
+        frictionBlend;
 
     const float maxForce =
         friction *
         state.normalLoad;
 
+    float rollingResistanceForce = 0.0f;
+
+    const float longitudinalSpeedSq =
+        state.longitudinalVelocity *
+        state.longitudinalVelocity;
+
+    if (longitudinalSpeedSq > 0.000001f) {
+        const float longitudinalSpeed =
+            std::sqrt(longitudinalSpeedSq);
+
+        rollingResistanceForce =
+            -state.longitudinalVelocity /
+            longitudinalSpeed *
+            m_rollingResistance *
+            state.normalLoad;
+    }
+
+    float totalLongitudinalForce =
+        longitudinalForce +
+        rollingResistanceForce;
+
     const float forceMagnitude =
         std::sqrt(
-            longitudinalForce *
-                longitudinalForce +
+            totalLongitudinalForce *
+                totalLongitudinalForce +
             lateralForce *
                 lateralForce
         );
@@ -300,32 +330,20 @@ Vec3 Tire::CalculateForce(
             forceMagnitude;
     }
 
-    Vec3 tireForce =
-        state.forward *
-            (longitudinalForce * forceScale) +
-        state.lateral *
-            (lateralForce * forceScale);
+    totalLongitudinalForce *= forceScale;
 
-    const float longitudinalSpeedSq =
-        state.longitudinalVelocity *
-        state.longitudinalVelocity;
+    const float finalLateralForce =
+        lateralForce *
+        forceScale;
 
-    if (longitudinalSpeedSq > 0.000001f) {
-        const float longitudinalSpeed =
-            std::sqrt(longitudinalSpeedSq);
-
-        tireForce +=
-            state.forward *
-            (-state.longitudinalVelocity /
-             longitudinalSpeed *
-             m_rollingResistance *
-             state.normalLoad);
-    }
+    const Vec3 tireForce =
+        state.forward * totalLongitudinalForce +
+        state.lateral * finalLateralForce;
 
     m_longitudinalForce =
-        tireForce.Dot(state.forward);
+        totalLongitudinalForce;
     m_lateralForce =
-        tireForce.Dot(state.lateral);
+        finalLateralForce;
 
     return tireForce;
 }
