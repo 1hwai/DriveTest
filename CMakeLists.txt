@@ -133,6 +133,57 @@ if(DRIVETEST_BUILD_PHYSICS_DIAGNOSTICS)
 endif()
 
 
+option(
+    DRIVETEST_BUILD_VEHICLE_DIAGNOSTICS
+    "Build the headless vehicle diagnostics executable"
+    OFF
+)
+
+if(DRIVETEST_BUILD_VEHICLE_DIAGNOSTICS)
+    add_executable(DriveTestVehicleDiagnostics
+        Tests/VehicleDiagnostics.cpp
+
+        Core/Debug/Logger.cpp
+
+        Physics/RigidBody.cpp
+        Physics/Collision.cpp
+        Physics/Collider.cpp
+        Physics/Contact.cpp
+        Physics/Solver.cpp
+        Physics/PhysicsWorld.cpp
+        Physics/Terrain.cpp
+        Physics/Material.cpp
+
+        Vehicle/Car.cpp
+        Vehicle/Wheel.cpp
+        Vehicle/Suspension.cpp
+        Vehicle/Tire.cpp
+        Vehicle/Engine.cpp
+        Vehicle/Transmission.cpp
+        Vehicle/Differential.cpp
+
+        Core/Math/Vec3.cpp
+        Core/Math/Mat3.cpp
+        Core/Math/Mat4.cpp
+        Core/Math/Quaternion.cpp
+        Core/Math/Transform.cpp
+    )
+
+    target_include_directories(
+        DriveTestVehicleDiagnostics
+        PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}"
+    )
+
+    enable_testing()
+
+    add_test(
+        NAME VehicleDiagnostics
+        COMMAND DriveTestVehicleDiagnostics
+    )
+endif()
+
+
 if(WIN32)
     target_link_libraries(DriveTest PRIVATE
         opengl32
