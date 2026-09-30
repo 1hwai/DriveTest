@@ -145,6 +145,74 @@ namespace {
             car.GetTransmission().ShiftDown();
     }
 
+    bool RunTireModelDiagnostics() {
+        Tire tire;
+        const float normalLoad = 4000.0f;
+        const float maxForce = tire.GetDynamicFriction() * normalLoad;
+
+        TireState state{
+            true,
+            normalLoad,
+            10.0f,
+            2.0f,
+            12.0f,
+            -2.0f,
+            0.2f,
+            0.15f,
+            Vec3(0.0f, 0.0f, 1.0f),
+            Vec3(1.0f, 0.0f, 0.0f),
+            Vec3(0.0f, 0.0f, 0.0f)
+        };
+
+        const Vec3 force =
+            tire.CalculateForce(state);
+
+        const float forceMagnitude =
+            force.Length();
+
+        if (!std::isfinite(forceMagnitude) ||
+            forceMagnitude > maxForce + 0.001f) {
+            Logger::Error(
+                "[FAIL] TireModel friction limit exceeded"
+            );
+            return false;
+        }
+
+        if (tire.GetLongitudinalForce() <= 0.0f ||
+            tire.GetLateralForce() >= 0.0f) {
+            Logger::Error(
+                "[FAIL] TireModel force directions are incorrect"
+            );
+            return false;
+        }
+
+        state.slipRatio = 0.0f;
+        state.slipAngle = 0.0f;
+        state.longitudinalVelocity = 10.0f;
+        state.lateralVelocity = 0.0f;
+        state.wheelSurfaceSpeed = 10.0f;
+
+        const Vec3 rollingForce =
+            tire.CalculateForce(state);
+
+        const float expectedRollingForce =
+            -tire.GetRollingResistance() *
+            normalLoad;
+
+        if (std::abs(
+                rollingForce.Dot(state.forward) -
+                expectedRollingForce
+            ) > 0.001f) {
+            Logger::Error(
+                "[FAIL] TireModel rolling resistance is incorrect"
+            );
+            return false;
+        }
+
+        Logger::Info("[PASS] Tire model diagnostics");
+        return true;
+    }
+
     bool RunScenario(
         const char* name,
         VehicleTestInput (*inputFunction)(float),
@@ -286,7 +354,7 @@ namespace {
 int main() {
     Logger::Initialize("Logs/vehicle_diagnostics.log");
 
-    bool passed = true;
+    bool passed = RunTireModelDiagnostics();
 
     passed = RunScenario(
         "Neutral",
