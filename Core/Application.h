@@ -7,7 +7,7 @@
 #include "../Audio/AudioSystem.h"
 #include "../Input/InputManager.h"
 #include "../Rendering/Renderer.h"
-#include "../World/World.h"
+#include "../World/Scene.h"
 #include "../Rendering/MeshManager.h"
 #include "../Physics/PhysicsWorld.h"
 
@@ -36,7 +36,7 @@ private:
 
     Renderer m_renderer;
     MeshManager m_meshManager;
-    World m_world;
+    Scene m_scene;
     PhysicsWorld m_physicsWorld;
     AudioSystem m_audio;
 
