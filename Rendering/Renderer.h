@@ -4,7 +4,7 @@
 
 #include "Shader.h"
 #include "DebugRenderer.h"
-#include "../World/World.h"
+#include "../Scene/Scene.h"
 
 class Renderer {
 public:
@@ -12,7 +12,7 @@ public:
     ~Renderer();
 
     bool Initialize();
-    void Render(const World& world);
+    void Render(const Scene& world);
     void Present();
     void Shutdown();
 
