@@ -31,12 +31,13 @@ public:
 
     void UpdatePhysics(
         float deltaTime,
-        const InputManager& input
+        const VehicleInput& input
     );
 
     void Update(
         float deltaTime,
-        const InputManager& input
+        const Keyboard& keyboard,
+        const VehicleInput& input
     );
 
     Camera& GetCamera();
