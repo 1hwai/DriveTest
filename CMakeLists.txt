@@ -32,6 +32,7 @@ add_executable(DriveTest
     Physics/Material.cpp
 
     Vehicle/Car.cpp
+    Vehicle/Powertrain.cpp
     Vehicle/Wheel.cpp
     Vehicle/Suspension.cpp
     Vehicle/Tire.cpp
@@ -59,7 +60,7 @@ add_executable(DriveTest
 
     Core/Debug/Logger.cpp
 
-    World/World.cpp
+    World/Scene.cpp
     World/SceneFactory.cpp
     World/SceneSerializer.cpp
 
@@ -104,6 +105,7 @@ if(DRIVETEST_BUILD_PHYSICS_DIAGNOSTICS)
         Physics/Material.cpp
 
         Vehicle/Car.cpp
+        Vehicle/Powertrain.cpp
         Vehicle/Wheel.cpp
         Vehicle/Suspension.cpp
         Vehicle/Tire.cpp
