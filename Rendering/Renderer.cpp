@@ -99,7 +99,7 @@ bool Renderer::Initialize() {
     return true;
 }
 
-void Renderer::Render(const World& world) {
+void Renderer::Render(const Scene& world) {
     if (m_context == nullptr)
         return;
 
