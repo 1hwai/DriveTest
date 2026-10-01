@@ -338,6 +338,14 @@ namespace {
 
         Logger::Info(summary.str());
 
+        if (maxSlipRatio > 2.001f) {
+            Logger::Error(
+                std::string("[FAIL] ") + name +
+                " low-speed slip ratio exceeded bound"
+            );
+            return false;
+        }
+
         if (minUpDot < 0.25f) {
             Logger::Error(
                 std::string("[FAIL] ") + name +
