@@ -22,6 +22,20 @@ Engine::Engine()
     m_loadTorque(0.0f),
     m_running(true) {}
 
+void Engine::Configure(float idleRPM, float stallRPM, float redlineRPM, float peakTorque, float inertia) {
+    if (idleRPM <= stallRPM || redlineRPM <= idleRPM || peakTorque < 0.0f || inertia <= 0.0f)
+        return;
+    m_idleRPM = idleRPM;
+    m_stallRPM = stallRPM;
+    m_redlineRPM = redlineRPM;
+    m_peakTorque = peakTorque;
+    m_inertia = inertia;
+    m_angularVelocity = m_idleRPM * 2.0f * Pi / 60.0f;
+    m_torque = 0.0f;
+    m_loadTorque = 0.0f;
+    m_running = true;
+}
+
 void Engine::Update(
     float throttle,
     float loadTorque,
