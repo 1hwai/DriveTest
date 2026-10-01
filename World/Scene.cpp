@@ -4,6 +4,7 @@
 
 #include <cmath>
 #include <string>
+#include <iostream>
 
 namespace {
     constexpr float CameraRotationSpeed = 1.5f;
@@ -30,6 +31,16 @@ bool Scene::Initialize(
     PhysicsWorld& physicsWorld
 ) {
     m_physicsWorld = &physicsWorld;
+
+    VehicleConfig vehicleConfig;
+    std::string configError;
+    const std::string configPath =
+        std::string(DRIVETEST_PROJECT_ROOT) + "/Assets/Vehicles/TestCar/vehicle.ini";
+    if (!vehicleConfig.Load(configPath, configError)) {
+        Logger::Error(configError);
+        return false;
+    }
+    m_car.ApplyConfig(vehicleConfig);
 
     m_sceneFactory =
         std::make_unique<SceneFactory>(
@@ -85,6 +96,7 @@ bool Scene::Initialize(
 
     chassis->SetScenePersistent(false);
     chassis->SetColor(Vec3(0.72f, 0.08f, 0.06f));
+    chassis->SetMesh(nullptr);
     m_carChassisObject = chassis.get();
     m_car.SetChassis(chassis->GetRigidBody());
     AddObject(std::move(chassis));
@@ -324,6 +336,16 @@ void Scene::Update(
     if (m_carChassisObject) {
         const Quaternion& chassisRotation =
             m_carChassisObject->GetTransform().rotation;
+
+        for (const VehicleVisualPart& part : m_carBodyParts) {
+            if (!part.object)
+                continue;
+            Transform& transform = part.object->GetTransform();
+            transform.position = m_carChassisObject->GetTransform().position +
+                chassisRotation * part.localPosition;
+            transform.rotation = chassisRotation;
+            transform.scale = part.scale;
+        }
 
         for (size_t i = 0; i < WheelCount; ++i) {
             if (!m_wheelObjects[i])
