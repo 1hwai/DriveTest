@@ -213,6 +213,155 @@ namespace {
         return true;
     }
 
+    bool RunTireGripCurveDiagnostics() {
+        Tire tire;
+        const float normalLoad = 4000.0f;
+        const float rollingResistance =
+            tire.GetRollingResistance() *
+            normalLoad;
+
+        float peakLongitudinalForce = 0.0f;
+        float peakLongitudinalSlip = 0.0f;
+        float previousLongitudinalForce = 0.0f;
+        bool longitudinalFellAfterPeak = false;
+
+        for (int i = 0; i <= 100; ++i) {
+            const float slip = i * 0.01f;
+
+            TireState state{
+                true,
+                normalLoad,
+                20.0f,
+                0.0f,
+                20.0f * (1.0f + slip),
+                20.0f - 20.0f * (1.0f + slip),
+                slip,
+                0.0f,
+                Vec3(0.0f, 0.0f, 1.0f),
+                Vec3(1.0f, 0.0f, 0.0f),
+                Vec3(0.0f, 0.0f, 0.0f)
+            };
+
+            const float force =
+                tire.GetLongitudinalForce();
+
+            const Vec3 tireForce =
+                tire.CalculateForce(state);
+
+            const float longitudinalForce =
+                tireForce.Dot(state.forward) +
+                rollingResistance;
+
+            if (!std::isfinite(longitudinalForce)) {
+                Logger::Error(
+                    "[FAIL] TireGripCurve longitudinal force is not finite"
+                );
+                return false;
+            }
+
+            if (longitudinalForce > peakLongitudinalForce) {
+                peakLongitudinalForce = longitudinalForce;
+                peakLongitudinalSlip = slip;
+            }
+
+            if (slip > 0.0f &&
+                slip <= 0.12f &&
+                longitudinalForce + 0.5f < previousLongitudinalForce) {
+                Logger::Error(
+                    "[FAIL] TireGripCurve longitudinal rise is not monotonic"
+                );
+                return false;
+            }
+
+            if (slip >= 0.20f &&
+                longitudinalForce < peakLongitudinalForce * 0.98f)
+                longitudinalFellAfterPeak = true;
+
+            previousLongitudinalForce = longitudinalForce;
+        }
+
+        if (peakLongitudinalSlip < 0.08f ||
+            peakLongitudinalSlip > 0.16f ||
+            !longitudinalFellAfterPeak) {
+            Logger::Error(
+                "[FAIL] TireGripCurve longitudinal peak/falloff is incorrect"
+            );
+            return false;
+        }
+
+        float peakLateralForce = 0.0f;
+        float peakLateralAngle = 0.0f;
+        float previousLateralForce = 0.0f;
+        bool lateralFellAfterPeak = false;
+
+        for (int i = 0; i <= 80; ++i) {
+            const float angle =
+                i * (0.70f / 80.0f);
+
+            TireState state{
+                true,
+                normalLoad,
+                20.0f,
+                std::tan(angle) * 20.0f,
+                20.0f,
+                20.0f,
+                0.0f,
+                angle,
+                Vec3(0.0f, 0.0f, 1.0f),
+                Vec3(1.0f, 0.0f, 0.0f),
+                Vec3(0.0f, 0.0f, 0.0f)
+            };
+
+            const Vec3 tireForce =
+                tire.CalculateForce(state);
+
+            const float lateralForce =
+                -tireForce.Dot(state.lateral);
+
+            if (!std::isfinite(lateralForce)) {
+                Logger::Error(
+                    "[FAIL] TireGripCurve lateral force is not finite"
+                );
+                return false;
+            }
+
+            if (lateralForce > peakLateralForce) {
+                peakLateralForce = lateralForce;
+                peakLateralAngle = angle;
+            }
+
+            if (angle > 0.0f &&
+                angle <= 0.105f &&
+                lateralForce + 0.5f < previousLateralForce) {
+                Logger::Error(
+                    "[FAIL] TireGripCurve lateral rise is not monotonic"
+                );
+                return false;
+            }
+
+            if (angle >= 0.20f &&
+                lateralForce < peakLateralForce * 0.98f)
+                lateralFellAfterPeak = true;
+
+            previousLateralForce = lateralForce;
+        }
+
+        if (peakLateralAngle < 0.08f ||
+            peakLateralAngle > 0.14f ||
+            !lateralFellAfterPeak) {
+            Logger::Error(
+                "[FAIL] TireGripCurve lateral peak/falloff is incorrect"
+            );
+            return false;
+        }
+
+        Logger::Info(
+            "[PASS] Tire grip curve diagnostics"
+        );
+
+        return true;
+    }
+
     bool RunScenario(
         const char* name,
         VehicleTestInput (*inputFunction)(float),
@@ -363,6 +512,8 @@ int main() {
     Logger::Initialize("Logs/vehicle_diagnostics.log");
 
     bool passed = RunTireModelDiagnostics();
+
+    passed = RunTireGripCurveDiagnostics() && passed;
 
     passed = RunScenario(
         "Neutral",
