@@ -62,6 +62,13 @@ public:
     ) const;
 
 private:
+    float CalculateGripForce(
+        float slip,
+        float normalLoad,
+        float peakSlip,
+        float stiffness
+    ) const;
+
     float m_staticFriction;
     float m_dynamicFriction;
     float m_longitudinalStiffness;
