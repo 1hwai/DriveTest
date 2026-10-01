@@ -131,6 +131,7 @@ if(DRIVETEST_BUILD_PHYSICS_DIAGNOSTICS)
     add_test(
         NAME PhysicsDiagnostics
         COMMAND DriveTestPhysicsDiagnostics
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
     )
 endif()
 
@@ -183,6 +184,7 @@ if(DRIVETEST_BUILD_VEHICLE_DIAGNOSTICS)
     add_test(
         NAME VehicleDiagnostics
         COMMAND DriveTestVehicleDiagnostics
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
     )
 endif()
 
