@@ -124,8 +124,8 @@ bool Scene::Initialize(
     const Vec3 bodyColor(0.72f, 0.08f, 0.06f);
     const Vec3 glassColor(0.055f, 0.09f, 0.12f);
     const Vec3 trimColor(0.12f, 0.12f, 0.12f);
-    addBodyPart("CarHood", Vec3(0.0f, 0.02f, 1.67f), Vec3(1.68f, 0.18f, 0.92f), bodyColor);
-    addBodyPart("CarRearDeck", Vec3(0.0f, 0.02f, -1.67f), Vec3(1.68f, 0.18f, 0.92f), bodyColor);
+    addBodyPart("CarHood", Vec3(0.0f, 0.12f, 1.67f), Vec3(1.68f, 0.18f, 0.92f), bodyColor);
+    addBodyPart("CarRearDeck", Vec3(0.0f, 0.12f, -1.67f), Vec3(1.68f, 0.18f, 0.92f), bodyColor);
     addBodyPart("CarFloor", Vec3(0.0f, -0.13f, 0.0f), Vec3(1.48f, 0.14f, 1.12f), bodyColor);
     addBodyPart("CarCabin", Vec3(0.0f, 0.25f, 0.0f), Vec3(1.43f, 0.42f, 1.30f), bodyColor);
     addBodyPart("CarRoof", Vec3(0.0f, 0.49f, -0.02f), Vec3(1.20f, 0.12f, 0.78f), bodyColor);
@@ -137,10 +137,14 @@ bool Scene::Initialize(
     addBodyPart("CarRearBumper", Vec3(0.0f, -0.14f, -2.13f), Vec3(1.76f, 0.13f, 0.14f), trimColor);
     addBodyPart("CarLeftSill", Vec3(-0.79f, -0.15f, 0.0f), Vec3(0.12f, 0.16f, 1.05f), bodyColor);
     addBodyPart("CarRightSill", Vec3(0.79f, -0.15f, 0.0f), Vec3(0.12f, 0.16f, 1.05f), bodyColor);
-    for (float z : {1.25f, -1.25f}) {
-        addBodyPart("CarLeftFender", Vec3(-0.76f, 0.16f, z), Vec3(0.18f, 0.12f, 0.62f), bodyColor);
-        addBodyPart("CarRightFender", Vec3(0.76f, 0.16f, z), Vec3(0.18f, 0.12f, 0.62f), bodyColor);
-    }
+    const float frontZ = 0.5f * (vehicleConfig.wheelPositions[0].z + vehicleConfig.wheelPositions[1].z);
+    const float rearZ = 0.5f * (vehicleConfig.wheelPositions[2].z + vehicleConfig.wheelPositions[3].z);
+    const float leftX = 0.5f * (vehicleConfig.wheelPositions[0].x + vehicleConfig.wheelPositions[2].x);
+    const float rightX = 0.5f * (vehicleConfig.wheelPositions[1].x + vehicleConfig.wheelPositions[3].x);
+    addBodyPart("CarLeftFenderFront", Vec3(leftX, 0.16f, frontZ), Vec3(0.18f, 0.12f, 0.62f), bodyColor);
+    addBodyPart("CarRightFenderFront", Vec3(rightX, 0.16f, frontZ), Vec3(0.18f, 0.12f, 0.62f), bodyColor);
+    addBodyPart("CarLeftFenderRear", Vec3(leftX, 0.16f, rearZ), Vec3(0.18f, 0.12f, 0.62f), bodyColor);
+    addBodyPart("CarRightFenderRear", Vec3(rightX, 0.16f, rearZ), Vec3(0.18f, 0.12f, 0.62f), bodyColor);
 
     return true;
 }
