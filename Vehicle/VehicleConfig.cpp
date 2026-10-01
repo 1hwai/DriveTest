@@ -2,6 +2,7 @@
 #include <cctype>
 #include <cstdlib>
 #include <fstream>
+#include <cmath>
 #include <sstream>
 #include <unordered_map>
 
@@ -15,7 +16,7 @@ std::string Trim(const std::string& value) {
 bool ParseFloat(const std::string& text, float& value) {
     char* end = nullptr;
     value = std::strtof(text.c_str(), &end);
-    if (end == text.c_str()) return false;
+    if (end == text.c_str() || !std::isfinite(value)) return false;
     while (*end && std::isspace(static_cast<unsigned char>(*end))) ++end;
     return *end == '\0';
 }
