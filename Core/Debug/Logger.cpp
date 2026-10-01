@@ -93,7 +93,13 @@ namespace Logger {
         if (g_logFile.is_open())
             g_logFile.close();
 
-        const std::filesystem::path logPath(filePath);
+        std::filesystem::path logPath(filePath);
+
+#ifdef DRIVETEST_PROJECT_ROOT
+        if (logPath.is_relative())
+            logPath = std::filesystem::path(DRIVETEST_PROJECT_ROOT) / logPath;
+#endif
+
         const std::filesystem::path directory = logPath.parent_path();
 
         if (!directory.empty())
