@@ -67,6 +67,10 @@ add_executable(DriveTest
     External/glad-generated/src/gl.c
 )
 
+target_compile_definitions(DriveTest PRIVATE
+    DRIVETEST_PROJECT_ROOT="${CMAKE_SOURCE_DIR}"
+)
+
 target_link_libraries(DriveTest PRIVATE
     SDL3::SDL3
     imgui::imgui
@@ -126,6 +130,10 @@ if(DRIVETEST_BUILD_PHYSICS_DIAGNOSTICS)
         "${CMAKE_CURRENT_SOURCE_DIR}"
     )
 
+    target_compile_definitions(DriveTestPhysicsDiagnostics PRIVATE
+        DRIVETEST_PROJECT_ROOT="${CMAKE_SOURCE_DIR}"
+    )
+
     enable_testing()
 
     add_test(
@@ -177,6 +185,10 @@ if(DRIVETEST_BUILD_VEHICLE_DIAGNOSTICS)
         DriveTestVehicleDiagnostics
         PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}"
+    )
+
+    target_compile_definitions(DriveTestVehicleDiagnostics PRIVATE
+        DRIVETEST_PROJECT_ROOT="${CMAKE_SOURCE_DIR}"
     )
 
     enable_testing()
