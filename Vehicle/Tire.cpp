@@ -89,7 +89,10 @@ float Tire::CalculateGripForce(
     const float peakForce =
         m_staticFriction * normalLoad;
     const float slidingForce =
-        m_dynamicFriction * normalLoad;
+        std::min(
+            m_dynamicFriction * normalLoad,
+            peakForce * 0.82f
+        );
 
     const float x =
         std::abs(slip) / peakSlip;
