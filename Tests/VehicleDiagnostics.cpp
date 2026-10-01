@@ -242,9 +242,6 @@ namespace {
                 Vec3(0.0f, 0.0f, 0.0f)
             };
 
-            const float force =
-                tire.GetLongitudinalForce();
-
             const Vec3 tireForce =
                 tire.CalculateForce(state);
 
@@ -355,9 +352,19 @@ namespace {
             return false;
         }
 
-        Logger::Info(
-            "[PASS] Tire grip curve diagnostics"
-        );
+        std::ostringstream log;
+        log << std::fixed << std::setprecision(3)
+            << "[TireGripCurve] longitudinalPeakSlip="
+            << peakLongitudinalSlip
+            << " lateralPeakAngle="
+            << peakLateralAngle
+            << " longitudinalPeakForce="
+            << peakLongitudinalForce
+            << " lateralPeakForce="
+            << peakLateralForce;
+
+        Logger::Info(log.str());
+        Logger::Info("[PASS] Tire grip curve diagnostics");
 
         return true;
     }
