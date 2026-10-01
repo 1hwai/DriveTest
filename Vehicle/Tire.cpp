@@ -197,17 +197,24 @@ TireState Tire::CalculateState(
 
     constexpr float SlipReferenceSpeed = 1.0f;
     constexpr float LowSpeedThreshold = 0.5f;
+    constexpr float SlipAngleReferenceSpeed = 1.0f;
 
     const float longitudinalSpeed =
         std::abs(state.longitudinalVelocity);
 
+    const float slipSpeedReference =
+        std::max(
+            {
+                longitudinalSpeed,
+                std::abs(state.wheelSurfaceSpeed),
+                SlipReferenceSpeed
+            }
+        );
+
     state.slipRatio =
         (state.wheelSurfaceSpeed -
          state.longitudinalVelocity) /
-        std::max(
-            longitudinalSpeed,
-            SlipReferenceSpeed
-        );
+        slipSpeedReference;
 
     const float contactSpeed =
         std::sqrt(
@@ -223,7 +230,10 @@ TireState Tire::CalculateState(
         state.slipAngle =
             std::atan2(
                 state.lateralVelocity,
-                longitudinalSpeed
+                std::max(
+                    longitudinalSpeed,
+                    SlipAngleReferenceSpeed
+                )
             );
     }
 
@@ -254,9 +264,13 @@ Vec3 Tire::CalculateForce(
                 state.lateralVelocity
         );
 
+    constexpr float LateralForceFadeStart = 0.25f;
+    constexpr float LateralForceFadeEnd = 1.0f;
+
     const float lateralSpeedFactor =
         std::clamp(
-            contactSpeed / 2.0f,
+            (contactSpeed - LateralForceFadeStart) /
+            (LateralForceFadeEnd - LateralForceFadeStart),
             0.0f,
             1.0f
         );
