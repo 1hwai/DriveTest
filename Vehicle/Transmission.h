@@ -10,6 +10,7 @@ public:
         float reverseRatio,
         float finalDriveRatio
     );
+    void Configure(const std::vector<float>& gearRatios, float reverseRatio, float finalDriveRatio);
 
     void SetGearRatios(
         const std::vector<float>& gearRatios
