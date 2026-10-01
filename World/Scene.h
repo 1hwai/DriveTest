@@ -75,5 +75,11 @@ private:
     Object* m_carChassisObject;
     std::array<Object*, WheelCount> m_wheelObjects;
 
+    struct VehicleVisualPart {
+        Object* object;
+        Vec3 localPosition;
+        Vec3 scale;
+    };
+    std::vector<VehicleVisualPart> m_carBodyParts;
     float m_suspensionDebugTimer;
 };
