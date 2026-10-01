@@ -483,6 +483,7 @@ Object* Scene::CreateSphere(const SphereSettings& settings) {
 void Scene::ClearObjects() {
     if (!m_physicsWorld) {
         m_objects.clear();
+        m_carBodyParts.clear();
         m_car.SetChassis(nullptr);
         m_carChassisObject = nullptr;
         m_wheelObjects.fill(nullptr);
@@ -501,6 +502,7 @@ void Scene::ClearObjects() {
     }
 
     m_objects.clear();
+    m_carBodyParts.clear();
     m_car.SetChassis(nullptr);
     m_carChassisObject = nullptr;
     m_wheelObjects.fill(nullptr);
@@ -529,6 +531,13 @@ bool Scene::DestroyObject(Object* object) {
         if (object == m_carChassisObject) {
             m_car.SetChassis(nullptr);
             m_carChassisObject = nullptr;
+        }
+
+        for (auto partIt = m_carBodyParts.begin(); partIt != m_carBodyParts.end();) {
+            if (partIt->object == object)
+                partIt = m_carBodyParts.erase(partIt);
+            else
+                ++partIt;
         }
 
         for (size_t i = 0; i < WheelCount; ++i) {
