@@ -9,6 +9,7 @@
 #include "../Physics/PhysicsWorld.h"
 #include "../Physics/RigidBody.h"
 #include "../Vehicle/Car.h"
+#include "../Vehicle/VehicleConfig.h"
 
 namespace {
     constexpr float FixedDeltaTime = 1.0f / 120.0f;
@@ -26,32 +27,26 @@ namespace {
         PhysicsWorld physicsWorld;
         RigidBody* chassis;
         Car car;
+        VehicleConfig config;
+        bool configLoaded;
+        std::string configError;
 
         VehicleTestRig()
-            : chassis(nullptr) {
+            : chassis(nullptr), configLoaded(false) {
             Collider* ground = physicsWorld.CreateCollider();
             ground->SetShape(ColliderShape::Plane);
             ground->SetPlaneHeight(0.0f);
 
+            configLoaded = config.Load(
+                std::string(DRIVETEST_PROJECT_ROOT) + "/Assets/Vehicles/TestCar/vehicle.ini",
+                configError
+            );
             chassis = physicsWorld.CreateRigidBody();
-            chassis->SetMass(1200.0f);
-            chassis->SetBoxInertia(Vec3(1.9f, 0.8f, 2.6f));
-            chassis->SetPosition(Vec3(0.0f, 0.95f, 0.0f));
+            chassis->SetMass(config.mass);
+            chassis->SetBoxInertia(config.colliderHalfExtents * 2.0f);
+            chassis->SetPosition(Vec3(0.0f, config.initialHeight, 0.0f));
             car.SetChassis(chassis);
-
-            ConfigureWheel(WheelIndex::FrontLeft, Vec3(-0.75f, -0.25f, 1.15f));
-            ConfigureWheel(WheelIndex::FrontRight, Vec3(0.75f, -0.25f, 1.15f));
-            ConfigureWheel(WheelIndex::RearLeft, Vec3(-0.75f, -0.25f, -1.15f));
-            ConfigureWheel(WheelIndex::RearRight, Vec3(0.75f, -0.25f, -1.15f));
-        }
-
-        void ConfigureWheel(WheelIndex index, const Vec3& position) {
-            car.GetWheel(index).SetLocalPosition(position);
-            car.GetWheel(index).SetRadius(0.32f);
-            car.GetSuspension(index).SetRestLength(0.45f);
-            car.GetSuspension(index).SetMaxLength(0.65f);
-            car.GetSuspension(index).SetSpringRate(30000.0f);
-            car.GetSuspension(index).SetDamperRate(4500.0f);
+            car.ApplyConfig(config);
         }
     };
 
@@ -375,6 +370,10 @@ namespace {
         int (*gearFunction)(float)
     ) {
         VehicleTestRig rig;
+        if (!rig.configLoaded) {
+            Logger::Error("[FAIL] Vehicle config: " + rig.configError);
+            return false;
+        }
         ShiftToGear(rig.car, gearFunction(0.0f));
 
         float maxSpeed = 0.0f;
