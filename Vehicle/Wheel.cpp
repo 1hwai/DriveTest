@@ -176,9 +176,10 @@ void Wheel::Update(
             suspension.GetSpringRate() *
             m_compression;
 
-        const float damperForce =
-            suspension.GetDamperRate() *
-            compressionVelocity;
+        const float damperRate = compressionVelocity >= 0.0f
+            ? suspension.GetCompressionDamperRate()
+            : suspension.GetReboundDamperRate();
+        const float damperForce = damperRate * compressionVelocity;
 
         m_force =
             std::max(
@@ -199,9 +200,7 @@ void Wheel::Update(
             compressionVelocity;
 
         const float damperPower =
-            suspension.GetDamperRate() *
-            compressionVelocity *
-            compressionVelocity;
+            damperRate * compressionVelocity * compressionVelocity;
 
         m_suspensionPower =
             suspensionForce.Dot(
