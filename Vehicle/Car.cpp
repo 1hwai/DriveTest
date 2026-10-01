@@ -23,10 +23,45 @@ Car::Car()
     m_clutch(0.0f),
     m_energyTimer(0.0f),
     m_brakeTimer(0.0f),
-    m_tireTimer(0.0f) {}
+    m_tireTimer(0.0f),
+    m_brakeTorque(2500.0f),
+    m_maxSteeringAngle(0.5f) {}
 
 void Car::SetChassis(RigidBody* chassis) {
     m_chassis = chassis;
+}
+
+void Car::ApplyConfig(const VehicleConfig& config) {
+    m_brakeTorque = config.brakeTorque;
+    m_maxSteeringAngle = config.maxSteeringAngle;
+
+    for (size_t i = 0; i < WheelCount; ++i) {
+        m_wheels[i].SetLocalPosition(config.wheelPositions[i]);
+        m_wheels[i].SetRadius(config.wheelRadius);
+        m_wheels[i].SetInertia(config.wheelInertia);
+
+        Suspension& suspension = m_suspensions[i];
+        suspension.SetRestLength(config.suspensionRestLength);
+        suspension.SetBumpTravel(config.suspensionBumpTravel);
+        suspension.SetReboundTravel(config.suspensionReboundTravel);
+        suspension.SetSpringRate(i < 2 ? config.frontSpringRate : config.rearSpringRate);
+        suspension.SetCompressionDamperRate(i < 2 ? config.frontCompressionDamping : config.rearCompressionDamping);
+        suspension.SetReboundDamperRate(i < 2 ? config.frontReboundDamping : config.rearReboundDamping);
+
+        m_tires[i].SetStaticFriction(config.staticFriction);
+        m_tires[i].SetDynamicFriction(config.dynamicFriction);
+        m_tires[i].SetLongitudinalStiffness(config.longitudinalStiffness);
+        m_tires[i].SetLateralStiffness(config.lateralStiffness);
+        m_tires[i].SetRollingResistance(config.rollingResistance);
+    }
+
+    m_powertrain.GetEngine().Configure(
+        config.idleRPM, config.stallRPM, config.redlineRPM,
+        config.peakTorque, config.engineInertia
+    );
+    m_powertrain.GetTransmission().Configure(
+        config.gearRatios, config.reverseRatio, config.finalDriveRatio
+    );
 }
 
 void Car::SetInput(
@@ -48,8 +83,6 @@ void Car::UpdatePhysics(
     if (!m_chassis)
         return;
 
-    constexpr float MaxSteeringAngle = 0.5f;
-    constexpr float BrakeTorque = 2500.0f;
     const float rearWheelAngularVelocity =
         0.5f * (
             m_wheels[ToIndex(WheelIndex::RearLeft)].GetAngularVelocity() +
@@ -69,7 +102,7 @@ void Car::UpdatePhysics(
         m_powertrain.GetRightDriveTorque();
 
     m_wheels[ToIndex(WheelIndex::FrontLeft)].SetSteeringAngle(
-        m_steering * MaxSteeringAngle
+        m_steering * m_maxSteeringAngle
     );
     m_wheels[ToIndex(WheelIndex::FrontRight)].SetSteeringAngle(
         m_steering * MaxSteeringAngle
@@ -86,7 +119,7 @@ void Car::UpdatePhysics(
 
     for (size_t i = 0; i < WheelCount; ++i) {
         m_wheels[i].SetBrakeTorque(
-            m_brake * BrakeTorque
+            m_brake * m_brakeTorque
         );
     }
 
