@@ -10,8 +10,8 @@
 Tire::Tire()
     : m_staticFriction(1.10f),
     m_dynamicFriction(0.95f),
-    m_longitudinalStiffness(9000.0f),
-    m_lateralStiffness(11000.0f),
+    m_longitudinalStiffness(36000.0f),
+    m_lateralStiffness(42000.0f),
     m_rollingResistance(0.015f),
     m_state{
         false,
@@ -72,6 +72,65 @@ float Tire::GetLateralStiffness() const {
 
 float Tire::GetRollingResistance() const {
     return m_rollingResistance;
+}
+
+float Tire::CalculateGripForce(
+    float slip,
+    float normalLoad,
+    float peakSlip,
+    float stiffness
+) const {
+    if (normalLoad <= 0.0f ||
+        peakSlip <= 0.0f ||
+        stiffness <= 0.0f ||
+        std::abs(slip) <= 0.000001f)
+        return 0.0f;
+
+    const float peakForce =
+        m_staticFriction * normalLoad;
+    const float slidingForce =
+        m_dynamicFriction * normalLoad;
+
+    const float x =
+        std::abs(slip) / peakSlip;
+
+    const float initialSlope =
+        std::clamp(
+            stiffness * peakSlip / peakForce,
+            0.5f,
+            1.2f
+        );
+
+    float forceFactor;
+
+    if (x <= 1.0f) {
+        const float x2 = x * x;
+        const float x3 = x2 * x;
+
+        forceFactor =
+            (initialSlope - 2.0f) * x3 +
+            (3.0f - 2.0f * initialSlope) * x2 +
+            initialSlope * x;
+    } else {
+        const float t =
+            std::clamp(x - 1.0f, 0.0f, 1.0f);
+        const float smoothStep =
+            t * t * (3.0f - 2.0f * t);
+
+        forceFactor =
+            1.0f +
+            (slidingForce / peakForce - 1.0f) *
+            smoothStep;
+    }
+
+    const float forceMagnitude =
+        peakForce *
+        std::max(0.0f, forceFactor);
+
+    return std::copysign(
+        forceMagnitude,
+        slip
+    );
 }
 
 const TireState& Tire::GetState() const {
@@ -252,9 +311,15 @@ Vec3 Tire::CalculateForce(
         return Vec3(0.0f, 0.0f, 0.0f);
     }
 
+    constexpr float PeakSlipRatio = 0.12f;
+
     const float longitudinalForce =
-        state.slipRatio *
-        m_longitudinalStiffness;
+        CalculateGripForce(
+            state.slipRatio,
+            state.normalLoad,
+            PeakSlipRatio,
+            m_longitudinalStiffness
+        );
 
     const float contactSpeed =
         std::sqrt(
@@ -275,9 +340,15 @@ Vec3 Tire::CalculateForce(
             1.0f
         );
 
+    constexpr float PeakSlipAngle = 0.105f;
+
     const float lateralForce =
-        -state.slipAngle *
-        m_lateralStiffness *
+        -CalculateGripForce(
+            state.slipAngle,
+            state.normalLoad,
+            PeakSlipAngle,
+            m_lateralStiffness
+        ) *
         lateralSpeedFactor;
 
     const float combinedSlip =
