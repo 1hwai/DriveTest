@@ -27,6 +27,16 @@ Transmission::Transmission(
     SetGearRatios(gearRatios);
 }
 
+void Transmission::Configure(const std::vector<float>& gearRatios, float reverseRatio, float finalDriveRatio) {
+    if (gearRatios.size() < 4 || reverseRatio <= 0.0f || finalDriveRatio <= 0.0f)
+        return;
+    for (float ratio : gearRatios) if (ratio <= 0.0f) return;
+    m_reverseRatio = reverseRatio;
+    m_finalDriveRatio = finalDriveRatio;
+    m_currentGear = 0;
+    SetGearRatios(gearRatios);
+}
+
 void Transmission::SetGearRatios(
     const std::vector<float>& gearRatios
 ) {
