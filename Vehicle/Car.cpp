@@ -105,7 +105,7 @@ void Car::UpdatePhysics(
         m_steering * m_maxSteeringAngle
     );
     m_wheels[ToIndex(WheelIndex::FrontRight)].SetSteeringAngle(
-        m_steering * MaxSteeringAngle
+        m_steering * m_maxSteeringAngle
     );
 
     m_wheels[ToIndex(WheelIndex::FrontLeft)].SetDriveTorque(0.0f);
