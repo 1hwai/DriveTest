@@ -9,6 +9,7 @@
 #include "Engine.h"
 #include "Transmission.h"
 #include "Powertrain.h"
+#include "VehicleConfig.h"
 
 class RigidBody;
 class PhysicsWorld;
@@ -29,6 +30,7 @@ public:
     Car();
 
     void SetChassis(RigidBody* chassis);
+    void ApplyConfig(const VehicleConfig& config);
 
     void SetInput(
         float throttle,
@@ -75,6 +77,8 @@ private:
     float m_energyTimer;
     float m_brakeTimer;
     float m_tireTimer;
+    float m_brakeTorque;
+    float m_maxSteeringAngle;
 
     std::array<Wheel, WheelCount> m_wheels;
     std::array<Suspension, WheelCount> m_suspensions;
