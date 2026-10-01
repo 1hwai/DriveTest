@@ -5,12 +5,11 @@ in vec3 vWorldNormal;
 
 uniform vec3 uLightDirection;
 uniform vec3 uCameraPosition;
+uniform vec3 uBaseColor;
 
 out vec4 FragColor;
 
 void main() {
-    const vec3 baseColor = vec3(1.0);
-
     vec3 normal = normalize(vWorldNormal);
     vec3 lightDirection = normalize(-uLightDirection);
 
@@ -26,8 +25,8 @@ void main() {
         pow(max(dot(normal, halfVector), 0.0), 32.0);
 
     vec3 color =
-        baseColor * (0.18 + diffuse * 0.72) +
-        vec3(0.18) * specular;
+        uBaseColor * (0.28 + diffuse * 0.82) +
+        vec3(0.22) * specular;
 
-    FragColor = vec4(color, 1.0);
+    FragColor = vec4(min(color, vec3(1.0)), 1.0);
 }

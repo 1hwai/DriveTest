@@ -19,6 +19,12 @@ public:
     void SetName(const std::string& name);
     const std::string& GetName() const;
 
+    void SetColor(const Vec3& color);
+    const Vec3& GetColor() const;
+
+    void SetScenePersistent(bool persistent);
+    bool IsScenePersistent() const;
+
     void SetMesh(Mesh* mesh);
 
     Mesh* GetMesh();
@@ -37,6 +43,8 @@ public:
 private:
     Transform m_transform;
     std::string m_name;
+    Vec3 m_color;
+    bool m_scenePersistent;
     Mesh* m_mesh;
     RigidBody* m_rigidBody;
     Collider* m_collider;

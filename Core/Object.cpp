@@ -3,6 +3,8 @@
 Object::Object()
     : m_transform(),
     m_name("Object"),
+    m_color(1.0f, 1.0f, 1.0f),
+    m_scenePersistent(true),
     m_mesh(nullptr),
     m_rigidBody(nullptr),
     m_collider(nullptr) {}
@@ -21,6 +23,22 @@ void Object::SetName(const std::string& name) {
 
 const std::string& Object::GetName() const {
     return m_name;
+}
+
+void Object::SetColor(const Vec3& color) {
+    m_color = color;
+}
+
+const Vec3& Object::GetColor() const {
+    return m_color;
+}
+
+void Object::SetScenePersistent(bool persistent) {
+    m_scenePersistent = persistent;
+}
+
+bool Object::IsScenePersistent() const {
+    return m_scenePersistent;
 }
 
 void Object::SetMesh(Mesh* mesh) {

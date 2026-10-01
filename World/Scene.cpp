@@ -67,6 +67,8 @@ bool Scene::Initialize(
     if (!ground)
         return false;
 
+    ground->SetScenePersistent(false);
+    ground->SetColor(Vec3(0.24f, 0.48f, 0.19f));
     AddObject(std::move(ground));
 
     auto chassis = m_sceneFactory->CreateBox({
@@ -81,6 +83,8 @@ bool Scene::Initialize(
     if (!chassis)
         return false;
 
+    chassis->SetScenePersistent(false);
+    chassis->SetColor(Vec3(0.72f, 0.08f, 0.06f));
     m_carChassisObject = chassis.get();
     m_car.SetChassis(chassis->GetRigidBody());
     AddObject(std::move(chassis));
@@ -109,6 +113,8 @@ bool Scene::Initialize(
 
         auto wheel = std::make_unique<Object>();
         wheel->SetName("CarWheel");
+        wheel->SetScenePersistent(false);
+        wheel->SetColor(Vec3(0.07f, 0.07f, 0.07f));
         wheel->SetMesh(meshManager.Get("wheel"));
         AddObject(std::move(wheel));
 
@@ -500,6 +506,27 @@ bool Scene::DestroyObject(Object* object) {
     }
 
     return false;
+}
+
+void Scene::ClearPersistentObjects() {
+    for (auto it = m_objects.begin(); it != m_objects.end();) {
+        Object* object = it->get();
+
+        if (!object || !object->IsScenePersistent()) {
+            ++it;
+            continue;
+        }
+
+        if (m_physicsWorld) {
+            if (Collider* collider = object->GetCollider())
+                m_physicsWorld->DestroyCollider(collider);
+
+            if (RigidBody* body = object->GetRigidBody())
+                m_physicsWorld->DestroyRigidBody(body);
+        }
+
+        it = m_objects.erase(it);
+    }
 }
 
 void Scene::Shutdown() {

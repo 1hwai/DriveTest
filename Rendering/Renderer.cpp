@@ -114,7 +114,7 @@ void Renderer::Render(const Scene& world) {
 
     glViewport(0, 0, width, height);
 
-    glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+    glClearColor(0.38f, 0.67f, 0.94f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     m_shader.Use();
@@ -146,6 +146,7 @@ void Renderer::Render(const Scene& world) {
             object->GetTransform().GetMatrix();
 
         m_shader.SetMat4("uModel", model);
+        m_shader.SetVec3("uBaseColor", object->GetColor());
         m_shader.SetMat3(
             "uNormalMatrix",
             GetNormalMatrix(model)

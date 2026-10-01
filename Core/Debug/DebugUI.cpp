@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdio>
 
 #include "../SimulationController.h"
 #include "../../Core/Object.h"
@@ -25,7 +26,14 @@ DebugUI::DebugUI()
     m_showCreateWindow(true),
     m_showSceneWindow(true),
     m_selectedObjectIndex(-1),
-    m_scenePath("Scenes/Test.scene") {}
+    m_scenePath{} {
+    std::snprintf(
+        m_scenePath,
+        sizeof(m_scenePath),
+        "%s",
+        "Scenes/Test.scene"
+    );
+}
 
 bool DebugUI::Initialize(
     SDL_Window* window,

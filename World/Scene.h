@@ -58,6 +58,7 @@ public:
     Object* CreateSphere(const SphereSettings& settings);
     bool DestroyObject(Object* object);
     void ClearObjects();
+    void ClearPersistentObjects();
 
     void Shutdown();
 

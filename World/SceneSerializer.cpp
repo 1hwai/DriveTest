@@ -12,45 +12,57 @@
 #include <vector>
 
 namespace {
-    constexpr const char* SceneHeader = "DRIVETEST_SCENE 1";
+    constexpr const char* SceneHeaderV1 = "DRIVETEST_SCENE 1";
+    constexpr const char* SceneHeader = "DRIVETEST_SCENE 2";
 
-    bool ReadVec3(std::istream& stream, Vec3& value) {
-        return static_cast<bool>(
-            stream >> value.x >> value.y >> value.z
-        );
+    std::filesystem::path ResolveScenePath(const std::string& path) {
+        std::filesystem::path filePath(path);
+
+#ifdef DRIVETEST_PROJECT_ROOT
+        if (filePath.is_relative())
+            filePath = std::filesystem::path(DRIVETEST_PROJECT_ROOT) / filePath;
+#endif
+
+        return filePath;
     }
 
-    bool ReadQuaternion(
-        std::istream& stream,
-        Quaternion& value
-    ) {
+    bool IsSerializable(const Object& object) {
+        if (!object.IsScenePersistent())
+            return false;
+
+        const RigidBody* body = object.GetRigidBody();
+        const Collider* collider = object.GetCollider();
+
+        if (!body || !collider)
+            return false;
+
+        return collider->GetShape() == ColliderShape::Box ||
+            collider->GetShape() == ColliderShape::Sphere;
+    }
+
+    bool ReadVec3(std::istream& stream, Vec3& value) {
+        return static_cast<bool>(stream >> value.x >> value.y >> value.z);
+    }
+
+    bool ReadQuaternion(std::istream& stream, Quaternion& value) {
         return static_cast<bool>(
-            stream >> value.w >>
-            value.x >>
-            value.y >>
-            value.z
+            stream >> value.w >> value.x >> value.y >> value.z
         );
     }
 }
 
-bool SceneSerializer::Save(
-    const Scene& world,
-    const std::string& path
-) {
-    const std::filesystem::path filePath(path);
+bool SceneSerializer::Save(const Scene& world, const std::string& path) {
+    const std::filesystem::path filePath = ResolveScenePath(path);
 
     if (filePath.has_parent_path()) {
         std::error_code error;
-        std::filesystem::create_directories(
-            filePath.parent_path(),
-            error
-        );
+        std::filesystem::create_directories(filePath.parent_path(), error);
 
         if (error)
             return false;
     }
 
-    std::ofstream file(path);
+    std::ofstream file(filePath);
 
     if (!file)
         return false;
@@ -63,27 +75,26 @@ bool SceneSerializer::Save(
     const Vec3& cameraRotation = camera.GetRotation();
 
     file << "CAMERA\n";
-    file << cameraPosition.x << ' '
-         << cameraPosition.y << ' '
-         << cameraPosition.z << '\n';
-    file << cameraRotation.x << ' '
-         << cameraRotation.y << ' '
-         << cameraRotation.z << '\n';
+    file << cameraPosition.x << ' ' << cameraPosition.y << ' ' << cameraPosition.z << '\n';
+    file << cameraRotation.x << ' ' << cameraRotation.y << ' ' << cameraRotation.z << '\n';
 
     const auto& objects = world.GetObjects();
+    size_t serializableCount = 0;
 
-    file << "OBJECTS " << objects.size() << '\n';
+    for (const auto& object : objects) {
+        if (object && IsSerializable(*object))
+            ++serializableCount;
+    }
+
+    file << "OBJECTS " << serializableCount << '\n';
 
     for (const auto& objectPtr : objects) {
-        if (!objectPtr)
+        if (!objectPtr || !IsSerializable(*objectPtr))
             continue;
 
         const Object& object = *objectPtr;
         const RigidBody* body = object.GetRigidBody();
         const Collider* collider = object.GetCollider();
-
-        if (!body || !collider)
-            return false;
 
         file << "OBJECT\n";
         file << "NAME " << std::quoted(object.GetName()) << '\n';
@@ -92,71 +103,47 @@ bool SceneSerializer::Save(
         const Quaternion& rotation = body->GetOrientation();
         const Vec3& linearVelocity = body->GetLinearVelocity();
         const Vec3& angularVelocity = body->GetAngularVelocity();
+        const Vec3& color = object.GetColor();
 
-        file << "POSITION "
-             << position.x << ' '
-             << position.y << ' '
-             << position.z << '\n';
-
-        file << "ROTATION "
-             << rotation.w << ' '
-             << rotation.x << ' '
-             << rotation.y << ' '
-             << rotation.z << '\n';
-
-        file << "LINEAR_VELOCITY "
-             << linearVelocity.x << ' '
-             << linearVelocity.y << ' '
-             << linearVelocity.z << '\n';
-
-        file << "ANGULAR_VELOCITY "
-             << angularVelocity.x << ' '
-             << angularVelocity.y << ' '
-             << angularVelocity.z << '\n';
-
+        file << "POSITION " << position.x << ' ' << position.y << ' ' << position.z << '\n';
+        file << "ROTATION " << rotation.w << ' ' << rotation.x << ' ' << rotation.y << ' ' << rotation.z << '\n';
+        file << "LINEAR_VELOCITY " << linearVelocity.x << ' ' << linearVelocity.y << ' ' << linearVelocity.z << '\n';
+        file << "ANGULAR_VELOCITY " << angularVelocity.x << ' ' << angularVelocity.y << ' ' << angularVelocity.z << '\n';
         file << "MASS " << body->GetMass() << '\n';
 
         const Material& material = collider->GetMaterial();
-
-        file << "MATERIAL "
-             << material.GetRestitution() << ' '
-             << material.GetFriction() << '\n';
+        file << "MATERIAL " << material.GetRestitution() << ' ' << material.GetFriction() << '\n';
+        file << "COLOR " << color.x << ' ' << color.y << ' ' << color.z << '\n';
 
         if (collider->GetShape() == ColliderShape::Box) {
-            const Vec3& halfExtents =
-                collider->GetHalfExtents();
-
-            file << "SHAPE BOX "
-                 << halfExtents.x << ' '
-                 << halfExtents.y << ' '
-                 << halfExtents.z << '\n';
+            const Vec3& halfExtents = collider->GetHalfExtents();
+            file << "SHAPE BOX " << halfExtents.x << ' ' << halfExtents.y << ' ' << halfExtents.z << '\n';
         }
         else {
-            file << "SHAPE SPHERE "
-                 << collider->GetRadius() << '\n';
+            file << "SHAPE SPHERE " << collider->GetRadius() << '\n';
         }
 
         file << "END_OBJECT\n";
     }
 
     file << "END_SCENE\n";
+    file.flush();
 
     return static_cast<bool>(file);
 }
 
-bool SceneSerializer::Load(
-    Scene& world,
-    const std::string& path
-) {
-    std::ifstream file(path);
+bool SceneSerializer::Load(Scene& world, const std::string& path) {
+    const std::filesystem::path filePath = ResolveScenePath(path);
+    std::ifstream file(filePath);
 
     if (!file)
         return false;
 
     std::string header;
     std::getline(file, header);
+    const bool hasColor = header == SceneHeader;
 
-    if (header != SceneHeader)
+    if (!hasColor && header != SceneHeaderV1)
         return false;
 
     std::string token;
@@ -167,16 +154,13 @@ bool SceneSerializer::Load(
     Vec3 cameraPosition;
     Vec3 cameraRotation;
 
-    if (!ReadVec3(file, cameraPosition) ||
-        !ReadVec3(file, cameraRotation)) {
+    if (!ReadVec3(file, cameraPosition) || !ReadVec3(file, cameraRotation))
         return false;
-    }
 
     if (!(file >> token) || token != "OBJECTS")
         return false;
 
     size_t objectCount = 0;
-
     if (!(file >> objectCount))
         return false;
 
@@ -186,6 +170,7 @@ bool SceneSerializer::Load(
         Quaternion rotation;
         Vec3 linearVelocity;
         Vec3 angularVelocity;
+        Vec3 color = Vec3(1.0f, 1.0f, 1.0f);
         float mass = 0.0f;
         float restitution = 0.0f;
         float friction = 0.5f;
@@ -203,40 +188,30 @@ bool SceneSerializer::Load(
 
         LoadedObject loaded;
 
-        if (!(file >> token) || token != "NAME")
+        if (!(file >> token) || token != "NAME" || !(file >> std::quoted(loaded.name)))
             return false;
 
-        if (!(file >> std::quoted(loaded.name)))
+        if (!(file >> token) || token != "POSITION" || !ReadVec3(file, loaded.position))
             return false;
 
-        if (!(file >> token) || token != "POSITION" ||
-            !ReadVec3(file, loaded.position)) {
+        if (!(file >> token) || token != "ROTATION" || !ReadQuaternion(file, loaded.rotation))
             return false;
-        }
 
-        if (!(file >> token) || token != "ROTATION" ||
-            !ReadQuaternion(file, loaded.rotation)) {
+        if (!(file >> token) || token != "LINEAR_VELOCITY" || !ReadVec3(file, loaded.linearVelocity))
             return false;
-        }
 
-        if (!(file >> token) || token != "LINEAR_VELOCITY" ||
-            !ReadVec3(file, loaded.linearVelocity)) {
+        if (!(file >> token) || token != "ANGULAR_VELOCITY" || !ReadVec3(file, loaded.angularVelocity))
             return false;
-        }
 
-        if (!(file >> token) || token != "ANGULAR_VELOCITY" ||
-            !ReadVec3(file, loaded.angularVelocity)) {
+        if (!(file >> token) || token != "MASS" || !(file >> loaded.mass))
             return false;
-        }
 
-        if (!(file >> token) || token != "MASS" ||
-            !(file >> loaded.mass)) {
+        if (!(file >> token) || token != "MATERIAL" || !(file >> loaded.restitution >> loaded.friction))
             return false;
-        }
 
-        if (!(file >> token) || token != "MATERIAL" ||
-            !(file >> loaded.restitution >> loaded.friction)) {
-            return false;
+        if (hasColor) {
+            if (!(file >> token) || token != "COLOR" || !ReadVec3(file, loaded.color))
+                return false;
         }
 
         if (!(file >> token) || token != "SHAPE")
@@ -248,13 +223,11 @@ bool SceneSerializer::Load(
 
         if (shape == "BOX") {
             loaded.shape = ColliderShape::Box;
-
             if (!ReadVec3(file, loaded.halfExtents))
                 return false;
         }
         else if (shape == "SPHERE") {
             loaded.shape = ColliderShape::Sphere;
-
             if (!(file >> loaded.radius))
                 return false;
         }
@@ -271,8 +244,7 @@ bool SceneSerializer::Load(
     if (!(file >> token) || token != "END_SCENE")
         return false;
 
-    world.ClearObjects();
-
+    world.ClearPersistentObjects();
     world.GetCamera().SetPosition(cameraPosition);
     world.GetCamera().SetRotation(cameraRotation);
 
@@ -281,30 +253,23 @@ bool SceneSerializer::Load(
 
         if (loaded.shape == ColliderShape::Box) {
             object = world.CreateBox({
-                loaded.name,
-                loaded.position,
-                loaded.halfExtents,
-                loaded.mass,
-                loaded.restitution,
-                loaded.friction
+                loaded.name, loaded.position, loaded.halfExtents,
+                loaded.mass, loaded.restitution, loaded.friction
             });
         }
         else {
             object = world.CreateSphere({
-                loaded.name,
-                loaded.position,
-                loaded.radius,
-                loaded.mass,
-                loaded.restitution,
-                loaded.friction
+                loaded.name, loaded.position, loaded.radius,
+                loaded.mass, loaded.restitution, loaded.friction
             });
         }
 
         if (!object)
             return false;
 
-        RigidBody* body = object->GetRigidBody();
+        object->SetColor(loaded.color);
 
+        RigidBody* body = object->GetRigidBody();
         body->SetOrientation(loaded.rotation);
         body->SetLinearVelocity(loaded.linearVelocity);
         body->SetAngularVelocity(loaded.angularVelocity);
