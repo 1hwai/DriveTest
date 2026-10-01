@@ -84,9 +84,9 @@ bool Scene::Initialize(
 
     auto chassis = m_sceneFactory->CreateBox({
         "CarChassis",
-        Vec3(0.0f, 1.1f, 0.0f),
-        Vec3(0.95f, 0.40f, 2.20f),
-        1190.0f,
+        Vec3(0.0f, vehicleConfig.initialHeight, 0.0f),
+        vehicleConfig.colliderHalfExtents,
+        vehicleConfig.mass,
         0.0f,
         0.5f
     });
@@ -101,36 +101,45 @@ bool Scene::Initialize(
     m_car.SetChassis(chassis->GetRigidBody());
     AddObject(std::move(chassis));
 
-    const Vec3 wheelPositions[WheelCount] = {
-        Vec3(-0.7325f, -0.25f, 1.262f),
-        Vec3(0.7325f, -0.25f, 1.262f),
-        Vec3(-0.751f, -0.25f, -1.262f),
-        Vec3(0.751f, -0.25f, -1.262f)
-    };
-
     for (size_t i = 0; i < WheelCount; ++i) {
-        const WheelIndex index =
-            static_cast<WheelIndex>(i);
-
-        m_car.GetWheel(index).SetLocalPosition(
-            wheelPositions[i]
-        );
-
-        m_car.GetWheel(index).SetRadius(0.32f);
-
-        m_car.GetSuspension(index).SetRestLength(0.45f);
-        m_car.GetSuspension(index).SetMaxLength(0.65f);
-        m_car.GetSuspension(index).SetSpringRate(30000.0f);
-        m_car.GetSuspension(index).SetDamperRate(4500.0f);
-
         auto wheel = std::make_unique<Object>();
         wheel->SetName("CarWheel");
         wheel->SetScenePersistent(false);
         wheel->SetColor(Vec3(0.07f, 0.07f, 0.07f));
         wheel->SetMesh(meshManager.Get("wheel"));
         AddObject(std::move(wheel));
-
         m_wheelObjects[i] = m_objects.back().get();
+    }
+
+    const auto addBodyPart = [&](const char* name, const Vec3& position, const Vec3& size, const Vec3& color) {
+        auto part = std::make_unique<Object>();
+        part->SetName(name);
+        part->SetScenePersistent(false);
+        part->SetColor(color);
+        part->SetMesh(meshManager.Get("cube"));
+        AddObject(std::move(part));
+        m_carBodyParts.push_back({m_objects.back().get(), position, size});
+    };
+
+    const Vec3 bodyColor(0.72f, 0.08f, 0.06f);
+    const Vec3 glassColor(0.055f, 0.09f, 0.12f);
+    const Vec3 trimColor(0.12f, 0.12f, 0.12f);
+    addBodyPart("CarHood", Vec3(0.0f, 0.02f, 1.67f), Vec3(1.68f, 0.18f, 0.92f), bodyColor);
+    addBodyPart("CarRearDeck", Vec3(0.0f, 0.02f, -1.67f), Vec3(1.68f, 0.18f, 0.92f), bodyColor);
+    addBodyPart("CarFloor", Vec3(0.0f, -0.13f, 0.0f), Vec3(1.48f, 0.14f, 1.12f), bodyColor);
+    addBodyPart("CarCabin", Vec3(0.0f, 0.25f, 0.0f), Vec3(1.43f, 0.42f, 1.30f), bodyColor);
+    addBodyPart("CarRoof", Vec3(0.0f, 0.49f, -0.02f), Vec3(1.20f, 0.12f, 0.78f), bodyColor);
+    addBodyPart("CarFrontGlass", Vec3(0.0f, 0.39f, 0.665f), Vec3(1.10f, 0.20f, 0.025f), glassColor);
+    addBodyPart("CarRearGlass", Vec3(0.0f, 0.39f, -0.665f), Vec3(1.10f, 0.20f, 0.025f), glassColor);
+    addBodyPart("CarLeftWindow", Vec3(-0.72f, 0.31f, 0.0f), Vec3(0.025f, 0.22f, 0.82f), glassColor);
+    addBodyPart("CarRightWindow", Vec3(0.72f, 0.31f, 0.0f), Vec3(0.025f, 0.22f, 0.82f), glassColor);
+    addBodyPart("CarFrontBumper", Vec3(0.0f, -0.14f, 2.13f), Vec3(1.76f, 0.13f, 0.14f), trimColor);
+    addBodyPart("CarRearBumper", Vec3(0.0f, -0.14f, -2.13f), Vec3(1.76f, 0.13f, 0.14f), trimColor);
+    addBodyPart("CarLeftSill", Vec3(-0.79f, -0.15f, 0.0f), Vec3(0.12f, 0.16f, 1.05f), bodyColor);
+    addBodyPart("CarRightSill", Vec3(0.79f, -0.15f, 0.0f), Vec3(0.12f, 0.16f, 1.05f), bodyColor);
+    for (float z : {1.25f, -1.25f}) {
+        addBodyPart("CarLeftFender", Vec3(-0.76f, 0.16f, z), Vec3(0.18f, 0.12f, 0.62f), bodyColor);
+        addBodyPart("CarRightFender", Vec3(0.76f, 0.16f, z), Vec3(0.18f, 0.12f, 0.62f), bodyColor);
     }
 
     return true;
