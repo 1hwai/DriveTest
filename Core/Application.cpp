@@ -132,6 +132,21 @@ void Application::ProcessEvents() {
 
     while (SDL_PollEvent(&event)) {
         m_debugUI.ProcessEvent(event);
+
+        if (event.type == SDL_EVENT_WINDOW_MAXIMIZED &&
+            event.window.windowID == SDL_GetWindowID(m_renderer.GetWindow())) {
+            m_renderer.SetFullscreen(true);
+        }
+        else if (event.type == SDL_EVENT_WINDOW_RESTORED &&
+            event.window.windowID == SDL_GetWindowID(m_renderer.GetWindow())) {
+            m_renderer.SetFullscreen(false);
+        }
+        else if (event.type == SDL_EVENT_KEY_DOWN &&
+            event.key.key == SDLK_F11 &&
+            !event.key.repeat) {
+            m_renderer.SetFullscreen(!m_renderer.IsFullscreen());
+        }
+
         m_input.ProcessEvent(event);
     }
 

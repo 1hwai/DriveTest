@@ -61,6 +61,9 @@ public:
     const Transmission& GetTransmission() const;
 
     float GetSpeedKmh() const;
+    float GetThrottle() const;
+    float GetBrake() const;
+    float GetSteering() const;
     float GetClutch() const;
 
 private:

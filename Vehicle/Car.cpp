@@ -322,6 +322,18 @@ float Car::GetSpeedKmh() const {
     ) * 3.6f;
 }
 
+float Car::GetThrottle() const {
+    return m_throttle;
+}
+
+float Car::GetBrake() const {
+    return m_brake;
+}
+
+float Car::GetSteering() const {
+    return m_steering;
+}
+
 float Car::GetClutch() const {
     return m_clutch;
 }

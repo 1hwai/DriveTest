@@ -289,6 +289,158 @@ void DebugUI::Render() {
         ImGui::End();
     }
 
+
+    {
+        const Car& car = m_scene->GetCar();
+        const ImGuiViewport* viewport = ImGui::GetMainViewport();
+        const float bottom = viewport->WorkPos.y + viewport->WorkSize.y;
+
+        ImGui::SetNextWindowPos(
+            ImVec2(viewport->WorkPos.x + 20.0f, bottom - 150.0f),
+            ImGuiCond_Always
+        );
+        ImGui::SetNextWindowBgAlpha(0.75f);
+        ImGui::Begin(
+            "Debug Input",
+            nullptr,
+            ImGuiWindowFlags_NoDecoration |
+            ImGuiWindowFlags_AlwaysAutoResize |
+            ImGuiWindowFlags_NoSavedSettings |
+            ImGuiWindowFlags_NoInputs
+        );
+
+        ImGui::TextUnformatted("DEBUG / INPUT");
+        ImGui::Text("Throttle");
+        ImGui::SameLine(90.0f);
+        ImGui::ProgressBar(car.GetThrottle(), ImVec2(130.0f, 14.0f), "");
+        ImGui::Text("Brake");
+        ImGui::SameLine(90.0f);
+        ImGui::ProgressBar(car.GetBrake(), ImVec2(130.0f, 14.0f), "");
+        ImGui::Text("Clutch");
+        ImGui::SameLine(90.0f);
+        ImGui::ProgressBar(car.GetClutch(), ImVec2(130.0f, 14.0f), "");
+        ImGui::Text("Steering  %+0.2f", car.GetSteering());
+        ImGui::End();
+    }
+
+    {
+        const Car& car = m_scene->GetCar();
+        const RigidBody* chassis = car.GetChassis();
+        const Vec3 velocity = chassis != nullptr
+            ? chassis->GetLinearVelocity()
+            : Vec3();
+        const ImGuiViewport* viewport = ImGui::GetMainViewport();
+        const float panelWidth = 280.0f;
+        const float bottom = viewport->WorkPos.y + viewport->WorkSize.y;
+
+        ImGui::SetNextWindowPos(
+            ImVec2(
+                viewport->WorkPos.x + viewport->WorkSize.x * 0.5f - panelWidth * 0.5f,
+                bottom - 128.0f
+            ),
+            ImGuiCond_Always
+        );
+        ImGui::SetNextWindowSize(ImVec2(panelWidth, 108.0f), ImGuiCond_Always);
+        ImGui::SetNextWindowBgAlpha(0.75f);
+        ImGui::Begin(
+            "Debug Velocity",
+            nullptr,
+            ImGuiWindowFlags_NoDecoration |
+            ImGuiWindowFlags_NoSavedSettings |
+            ImGuiWindowFlags_NoInputs
+        );
+
+        ImGui::TextUnformatted("DEBUG / WORLD VELOCITY (m/s)");
+        ImGui::Text("Vx %+.2f   Vy %+.2f   Vz %+.2f",
+            velocity.x, velocity.y, velocity.z);
+
+        ImDrawList* drawList = ImGui::GetWindowDrawList();
+        const ImVec2 windowPos = ImGui::GetWindowPos();
+        const ImVec2 origin(windowPos.x + panelWidth * 0.5f, windowPos.y + 77.0f);
+        drawList->AddLine(
+            ImVec2(origin.x - 48.0f, origin.y),
+            ImVec2(origin.x + 48.0f, origin.y),
+            IM_COL32(130, 130, 130, 180),
+            1.0f
+        );
+        drawList->AddLine(
+            ImVec2(origin.x, origin.y - 20.0f),
+            ImVec2(origin.x, origin.y + 20.0f),
+            IM_COL32(130, 130, 130, 180),
+            1.0f
+        );
+        const float vectorScale = 3.0f;
+        const float dx = velocity.x * vectorScale;
+        const float dy = velocity.z * vectorScale;
+        const float vectorLength = std::sqrt(dx * dx + dy * dy);
+        const float scale = vectorLength > 45.0f ? 45.0f / vectorLength : 1.0f;
+        const ImVec2 vectorEnd(origin.x + dx * scale, origin.y + dy * scale);
+        drawList->AddLine(origin, vectorEnd, IM_COL32(255, 220, 80, 255), 3.0f);
+        drawList->AddCircleFilled(vectorEnd, 3.5f, IM_COL32(255, 220, 80, 255));
+        drawList->AddText(ImVec2(origin.x + 51.0f, origin.y - 7.0f),
+            IM_COL32(220, 220, 220, 255), "X");
+        drawList->AddText(ImVec2(origin.x - 4.0f, origin.y + 20.0f),
+            IM_COL32(220, 220, 220, 255), "Z");
+        ImGui::End();
+    }
+
+    {
+        const Car& car = m_scene->GetCar();
+        const RigidBody* chassis = car.GetChassis();
+        const ImGuiViewport* viewport = ImGui::GetMainViewport();
+        const float panelSize = 126.0f;
+        const float bottom = viewport->WorkPos.y + viewport->WorkSize.y;
+        const Mat3 rotation = chassis != nullptr
+            ? chassis->GetOrientation().ToMat3()
+            : Mat3::Identity();
+
+        ImGui::SetNextWindowPos(
+            ImVec2(
+                viewport->WorkPos.x + viewport->WorkSize.x - panelSize - 20.0f,
+                bottom - panelSize - 10.0f
+            ),
+            ImGuiCond_Always
+        );
+        ImGui::SetNextWindowSize(ImVec2(panelSize, panelSize), ImGuiCond_Always);
+        ImGui::SetNextWindowBgAlpha(0.75f);
+        ImGui::Begin(
+            "Debug Basis",
+            nullptr,
+            ImGuiWindowFlags_NoDecoration |
+            ImGuiWindowFlags_NoSavedSettings |
+            ImGuiWindowFlags_NoInputs
+        );
+
+        ImGui::TextUnformatted("DEBUG / CAR AXES");
+        ImDrawList* drawList = ImGui::GetWindowDrawList();
+        const ImVec2 windowPos = ImGui::GetWindowPos();
+        const ImVec2 origin(windowPos.x + panelSize * 0.5f, windowPos.y + 79.0f);
+        const Vec3 axes[3] = {
+            rotation * Vec3(1.0f, 0.0f, 0.0f),
+            rotation * Vec3(0.0f, 1.0f, 0.0f),
+            rotation * Vec3(0.0f, 0.0f, 1.0f)
+        };
+        const ImU32 colors[3] = {
+            IM_COL32(245, 85, 85, 255),
+            IM_COL32(90, 235, 120, 255),
+            IM_COL32(90, 155, 255, 255)
+        };
+        const char* labels[3] = { "X", "Y", "Z" };
+
+        drawList->AddCircleFilled(origin, 3.0f, IM_COL32(235, 235, 235, 255));
+        for (int i = 0; i < 3; ++i) {
+            const float projectedX = axes[i].x - axes[i].z * 0.45f;
+            const float projectedY = -axes[i].y + axes[i].z * 0.35f;
+            const ImVec2 end(
+                origin.x + projectedX * 32.0f,
+                origin.y + projectedY * 32.0f
+            );
+            drawList->AddLine(origin, end, colors[i], 2.5f);
+            drawList->AddText(ImVec2(end.x + 3.0f, end.y - 7.0f), colors[i], labels[i]);
+        }
+        ImGui::End();
+    }
+
     if (m_showHierarchyWindow) {
         ImGui::Begin(
             "Hierarchy",

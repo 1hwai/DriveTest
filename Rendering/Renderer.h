@@ -14,6 +14,8 @@ public:
     bool Initialize();
     void Render(const Scene& world);
     void Present();
+    void SetFullscreen(bool fullscreen);
+    bool IsFullscreen() const;
     void Shutdown();
 
     SDL_Window* GetWindow() const;
@@ -22,6 +24,7 @@ public:
 private:
     SDL_Window* m_window;
     SDL_GLContext m_context;
+    bool m_fullscreen;
 
     Shader m_shader;
     DebugRenderer m_debugRenderer;

@@ -20,7 +20,8 @@ namespace {
 
 Renderer::Renderer()
     : m_window(nullptr),
-    m_context(nullptr) {}
+    m_context(nullptr),
+    m_fullscreen(false) {}
 
 Renderer::~Renderer() {
     Shutdown();
@@ -44,7 +45,7 @@ bool Renderer::Initialize() {
         "DriveTest",
         1280,
         720,
-        SDL_WINDOW_OPENGL
+        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
     );
 
     if (m_window == nullptr) {
@@ -171,6 +172,18 @@ SDL_Window* Renderer::GetWindow() const {
 
 SDL_GLContext Renderer::GetContext() const {
     return m_context;
+}
+
+void Renderer::SetFullscreen(bool fullscreen) {
+    if (m_window == nullptr || m_fullscreen == fullscreen)
+        return;
+
+    if (SDL_SetWindowFullscreen(m_window, fullscreen))
+        m_fullscreen = fullscreen;
+}
+
+bool Renderer::IsFullscreen() const {
+    return m_fullscreen;
 }
 
 void Renderer::Shutdown() {
