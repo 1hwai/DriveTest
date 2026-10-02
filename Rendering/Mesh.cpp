@@ -357,7 +357,7 @@ bool Mesh::CreateCylinder(int segments) {
     }
     for (int i = 0; i < segments; ++i) {
         const unsigned int a = static_cast<unsigned int>(i * 2);
-        indices.insert(indices.end(), {a, a + 2, a + 1, a + 1, a + 2, a + 3});
+        indices.insert(indices.end(), {a, a + 1, a + 2, a + 1, a + 3, a + 2});
     }
     glGenVertexArrays(1, &m_vao);
     glGenBuffers(1, &m_vbo);
@@ -383,7 +383,7 @@ bool Mesh::CreateFoliageBillboard(bool shrub) {
         {{ 0.5f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
         {{-0.5f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}}
     };
-    const unsigned int indices[] = {0, 1, 2, 0, 2, 3};
+    const unsigned int indices[] = {0, 1, 2, 0, 2, 3, 2, 1, 0, 3, 2, 0};
     Submesh submesh;
     glGenVertexArrays(1, &submesh.vao);
     glGenBuffers(1, &submesh.vbo);
@@ -396,7 +396,7 @@ bool Mesh::CreateFoliageBillboard(bool shrub) {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     ConfigureVertexAttributes();
     glBindVertexArray(0);
-    submesh.indexCount = 6;
+    submesh.indexCount = 12;
 
     constexpr int width = 64, height = 128;
     std::vector<unsigned char> pixels(width * height * 4, 0);
