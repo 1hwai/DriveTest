@@ -10,6 +10,8 @@
 #include <memory>
 #include <utility>
 
+TestTrack::~TestTrack() = default;
+
 bool TestTrack::Initialize(MeshManager& meshManager, SceneFactory& sceneFactory) {
     if (m_terrain || m_road)
         return false;
