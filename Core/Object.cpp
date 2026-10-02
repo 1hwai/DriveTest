@@ -1,9 +1,13 @@
 #include "Object.h"
 
+#include <algorithm>
+
 Object::Object()
     : m_transform(),
     m_name("Object"),
     m_color(1.0f, 1.0f, 1.0f),
+    m_renderSurface(RenderSurface::Standard),
+    m_surfaceBlend(0.0f),
     m_scenePersistent(true),
     m_mesh(nullptr),
     m_billboard(false),
@@ -32,6 +36,22 @@ void Object::SetColor(const Vec3& color) {
 
 const Vec3& Object::GetColor() const {
     return m_color;
+}
+
+void Object::SetRenderSurface(RenderSurface surface) {
+    m_renderSurface = surface;
+}
+
+RenderSurface Object::GetRenderSurface() const {
+    return m_renderSurface;
+}
+
+void Object::SetSurfaceBlend(float blend) {
+    m_surfaceBlend = std::clamp(blend, 0.0f, 1.0f);
+}
+
+float Object::GetSurfaceBlend() const {
+    return m_surfaceBlend;
 }
 
 void Object::SetScenePersistent(bool persistent) {
