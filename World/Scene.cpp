@@ -1,5 +1,5 @@
 #include "Scene.h"
-#include "RoadsideScenery.h"
+#include "TestTrack.h"
 
 #include "../Core/Debug/Logger.h"
 
@@ -49,31 +49,6 @@ bool Scene::Initialize(
             physicsWorld
         );
 
-    m_terrain =
-        std::make_unique<Terrain>(
-            1025,
-            10000.0f,
-            35.0f,
-            0.0015f,
-            5,
-            1337
-        );
-
-
-    if (!meshManager.CreateTerrain(
-        "terrain",
-        *m_terrain
-    ))
-        return false;
-
-    m_road = std::make_unique<Road>();
-
-    if (!m_road->GenerateTestCourse(*m_terrain, 12.0f, 0.25f))
-        return false;
-
-    if (!meshManager.CreateRoad("road", *m_road))
-        return false;
-
     const std::string carModelPath = std::string(DRIVETEST_PROJECT_ROOT) + "/Assets/Vehicles/subaru_impreza.glb";
     if (!meshManager.LoadFromFile("impreza_body", carModelPath) ||
         !meshManager.LoadFromFile("impreza_wheel", carModelPath, true)) {
@@ -81,41 +56,18 @@ bool Scene::Initialize(
         return false;
     }
 
-    auto ground =
-        m_sceneFactory->CreateTerrain({
-            "Terrain",
-            0.0f,
-            0.5f
-        }, *m_terrain);
-
-    if (!ground)
+    m_track = std::make_unique<TestTrack>();
+    if (!m_track->Initialize(meshManager, *m_sceneFactory))
         return false;
 
-    ground->SetScenePersistent(false);
-    ground->SetColor(Vec3(0.24f, 0.48f, 0.19f));
-    AddObject(std::move(ground));
-
-    auto road = m_sceneFactory->CreateRoad({
-        "TestRoad",
-        0.0f,
-        0.85f
-    }, *m_road);
-
-    if (!road)
-        return false;
-
-    road->SetScenePersistent(false);
-    road->SetColor(Vec3(0.16f, 0.17f, 0.18f));
-    AddObject(std::move(road));
-
-    for (auto& object : RoadsideScenery::Create(meshManager, *m_terrain, *m_road))
+    for (auto& object : m_track->TakeObjects())
         AddObject(std::move(object));
 
     auto chassis = m_sceneFactory->CreateBox({
         "CarChassis",
         Vec3(
             0.0f,
-            m_terrain->GetHeight(0.0f, 0.0f) + vehicleConfig.spawnClearance,
+            m_track->GetTerrain().GetHeight(0.0f, 0.0f) + vehicleConfig.spawnClearance,
             0.0f
         ),
         vehicleConfig.colliderHalfExtents,
@@ -585,7 +537,7 @@ void Scene::ClearPersistentObjects() {
 
 void Scene::Shutdown() {
     ClearObjects();
-    m_road.reset();
+    m_track.reset();
     m_sceneFactory.reset();
     m_physicsWorld = nullptr;
 }
