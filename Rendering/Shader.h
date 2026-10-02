@@ -19,6 +19,7 @@ public:
     void SetMat4(const char* name, const Mat4& matrix);
     void SetMat3(const char* name, const Mat3& matrix);
     void SetVec3(const char* name, const Vec3& vector);
+    void SetInt(const char* name, int value);
 
 private:
     int GetUniformLocation(const char* name);
