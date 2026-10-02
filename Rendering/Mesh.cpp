@@ -343,6 +343,113 @@ bool Mesh::CreateSphere(int segments, int rings) {
 }
 
 
+bool Mesh::CreateCylinder(int segments) {
+    Destroy();
+    segments = std::max(6, segments);
+    std::vector<Vertex> vertices;
+    std::vector<unsigned int> indices;
+    const float pi = 3.14159265358979f;
+    for (int i = 0; i <= segments; ++i) {
+        const float angle = 2.0f * pi * static_cast<float>(i) / segments;
+        const float x = std::cos(angle), z = std::sin(angle);
+        vertices.push_back({{x * 0.5f, -0.5f, z * 0.5f}, {x, 0.0f, z}, {static_cast<float>(i) / segments, 0.0f}});
+        vertices.push_back({{x * 0.5f, 0.5f, z * 0.5f}, {x, 0.0f, z}, {static_cast<float>(i) / segments, 1.0f}});
+    }
+    for (int i = 0; i < segments; ++i) {
+        const unsigned int a = static_cast<unsigned int>(i * 2);
+        indices.insert(indices.end(), {a, a + 2, a + 1, a + 1, a + 2, a + 3});
+    }
+    glGenVertexArrays(1, &m_vao);
+    glGenBuffers(1, &m_vbo);
+    glGenBuffers(1, &m_ebo);
+    if (!m_vao || !m_vbo || !m_ebo) { Destroy(); return false; }
+    glBindVertexArray(m_vao);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<long>(vertices.size() * sizeof(Vertex)), vertices.data(), GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<long>(indices.size() * sizeof(unsigned int)), indices.data(), GL_STATIC_DRAW);
+    ConfigureVertexAttributes();
+    glBindVertexArray(0);
+    m_indexCount = static_cast<unsigned int>(indices.size());
+    m_indexed = true;
+    return true;
+}
+
+bool Mesh::CreateFoliageBillboard(bool shrub) {
+    Destroy();
+    const Vertex vertices[] = {
+        {{-0.5f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
+        {{ 0.5f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},
+        {{ 0.5f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+        {{-0.5f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}}
+    };
+    const unsigned int indices[] = {0, 1, 2, 0, 2, 3};
+    Submesh submesh;
+    glGenVertexArrays(1, &submesh.vao);
+    glGenBuffers(1, &submesh.vbo);
+    glGenBuffers(1, &submesh.ebo);
+    if (!submesh.vao || !submesh.vbo || !submesh.ebo) { Destroy(); return false; }
+    glBindVertexArray(submesh.vao);
+    glBindBuffer(GL_ARRAY_BUFFER, submesh.vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, submesh.ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    ConfigureVertexAttributes();
+    glBindVertexArray(0);
+    submesh.indexCount = 6;
+
+    constexpr int width = 64, height = 128;
+    std::vector<unsigned char> pixels(width * height * 4, 0);
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            const float nx = (x + 0.5f) / width * 2.0f - 1.0f;
+            const float ny = (y + 0.5f) / height;
+            bool visible = false;
+            unsigned char red = 38, green = 100, blue = 36;
+            if (!shrub) {
+                if (ny < 0.23f && std::abs(nx) < 0.065f) {
+                    visible = true; red = 91; green = 61; blue = 36;
+                } else if (ny >= 0.18f) {
+                    const float layer = std::fmod(ny * 5.2f, 1.0f);
+                    visible = std::abs(nx) < std::max(0.08f, (1.0f - ny) * 0.78f) && layer < 0.84f;
+                    const int variation = ((x * 17 + y * 31) % 23) - 11;
+                    red = static_cast<unsigned char>(std::clamp(25 + variation, 8, 55));
+                    green = static_cast<unsigned char>(std::clamp(82 + variation * 2, 45, 125));
+                    blue = static_cast<unsigned char>(std::clamp(27 + variation / 2, 12, 45));
+                }
+            } else {
+                const float dx = nx * 0.92f, dy = (ny - 0.36f) * 1.75f;
+                visible = dx * dx + dy * dy < 0.82f ||
+                    (nx + 0.25f) * (nx + 0.25f) + (ny - 0.48f) * (ny - 0.48f) < 0.16f ||
+                    (nx - 0.25f) * (nx - 0.25f) + (ny - 0.48f) * (ny - 0.48f) < 0.16f;
+                const int variation = ((x * 13 + y * 7) % 21) - 10;
+                red = static_cast<unsigned char>(std::clamp(32 + variation, 15, 58));
+                green = static_cast<unsigned char>(std::clamp(95 + variation * 2, 55, 135));
+                blue = static_cast<unsigned char>(std::clamp(28 + variation / 2, 12, 45));
+            }
+            if (visible) {
+                const size_t offset = (static_cast<size_t>(y) * width + x) * 4;
+                pixels[offset] = red; pixels[offset + 1] = green; pixels[offset + 2] = blue; pixels[offset + 3] = 255;
+            }
+        }
+    }
+    glGenTextures(1, &submesh.texture);
+    if (!submesh.texture) {
+        glDeleteBuffers(1, &submesh.ebo); glDeleteBuffers(1, &submesh.vbo); glDeleteVertexArrays(1, &submesh.vao);
+        Destroy(); return false;
+    }
+    glBindTexture(GL_TEXTURE_2D, submesh.texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    m_textures.push_back(submesh.texture);
+    m_submeshes.push_back(submesh);
+    return true;
+}
+
 bool Mesh::CreateWheel(int segments, int widthSegments) {
     Destroy();
 
