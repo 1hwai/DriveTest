@@ -375,6 +375,36 @@ bool Mesh::CreateCylinder(int segments) {
     return true;
 }
 
+bool Mesh::CreateDisc(int segments) {
+    Destroy();
+    segments = std::max(12, segments);
+    std::vector<Vertex> vertices;
+    std::vector<unsigned int> indices;
+    vertices.push_back({{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.5f, 0.5f}});
+    const float pi = 3.14159265358979f;
+    for (int i = 0; i < segments; ++i) {
+        const float angle = 2.0f * pi * static_cast<float>(i) / segments;
+        const float x = std::cos(angle), y = std::sin(angle);
+        vertices.push_back({{x * 0.5f, y * 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {x * 0.5f + 0.5f, y * 0.5f + 0.5f}});
+    }
+    for (int i = 0; i < segments; ++i)
+        indices.insert(indices.end(), {0u, static_cast<unsigned int>(i + 1), static_cast<unsigned int>((i + 1) % segments + 1)});
+    glGenVertexArrays(1, &m_vao);
+    glGenBuffers(1, &m_vbo);
+    glGenBuffers(1, &m_ebo);
+    if (!m_vao || !m_vbo || !m_ebo) { Destroy(); return false; }
+    glBindVertexArray(m_vao);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<long>(vertices.size() * sizeof(Vertex)), vertices.data(), GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<long>(indices.size() * sizeof(unsigned int)), indices.data(), GL_STATIC_DRAW);
+    ConfigureVertexAttributes();
+    glBindVertexArray(0);
+    m_indexCount = static_cast<unsigned int>(indices.size());
+    m_indexed = true;
+    return true;
+}
+
 bool Mesh::CreateFoliageBillboard(bool shrub) {
     Destroy();
     const Vertex vertices[] = {
