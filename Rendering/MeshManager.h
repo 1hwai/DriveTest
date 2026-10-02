@@ -17,6 +17,7 @@ public:
     bool CreateTriangle(const std::string& name);
     bool CreateSphere(const std::string& name);
     bool CreateCylinder(const std::string& name);
+    bool CreateDisc(const std::string& name);
     bool CreateFoliageBillboard(const std::string& name, bool shrub = false);
     bool CreateWheel(const std::string& name);
     bool LoadFromFile(const std::string& name, const std::string& path, bool wheelOnly = false);
