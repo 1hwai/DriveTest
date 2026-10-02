@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "TestTrack.h"
+#include "../Physics/Terrain.h"
 
 #include "../Core/Debug/Logger.h"
 

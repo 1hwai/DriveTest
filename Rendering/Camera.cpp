@@ -12,7 +12,7 @@ Camera::Camera()
     m_fovY(60.0f * PI / 180.0f),
     m_aspectRatio(16.0f / 9.0f),
     m_nearPlane(0.1f),
-    m_farPlane(100.0f) {}
+    m_farPlane(10000.0f) {}
 
 void Camera::SetPosition(const Vec3& position) {
     m_position = position;
