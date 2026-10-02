@@ -22,6 +22,7 @@ public:
     bool CreateFoliageBillboard(const std::string& name, bool shrub = false);
     bool CreateWheel(const std::string& name);
     bool LoadFromFile(const std::string& name, const std::string& path, bool wheelOnly = false);
+    bool LoadTexture(const std::string& name, const std::string& path, bool removeBackground = false, bool secondary = false);
     bool CreateTerrain(const std::string& name, const Terrain& terrain);
     bool CreateRoad(const std::string& name, const Road& road);
     bool CreateRoadSection(const std::string& name, const Road& road, std::size_t firstSegment, std::size_t endSegment);
