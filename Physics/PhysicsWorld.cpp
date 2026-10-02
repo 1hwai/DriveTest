@@ -1,4 +1,5 @@
 #include "PhysicsWorld.h"
+#include "Road.h"
 
 #include "Terrain.h"
 
@@ -619,6 +620,35 @@ bool PhysicsWorld::Raycast(
                     closestDistance,
                     candidate
                 );
+        }
+        else if (collider->GetShape() ==
+            ColliderShape::Road) {
+
+            const Road* road = collider->GetRoad();
+
+            if (road) {
+                float distance;
+                Vec3 point;
+                Vec3 normal;
+
+                candidateHit = road->Raycast(
+                    normalizedRay.origin,
+                    normalizedRay.direction,
+                    closestDistance,
+                    distance,
+                    point,
+                    normal
+                );
+
+                if (candidateHit) {
+                    candidate.hit = true;
+                    candidate.distance = distance;
+                    candidate.point = point;
+                    candidate.normal = normal;
+                    candidate.collider = const_cast<Collider*>(collider.get());
+                    candidate.rigidBody = const_cast<RigidBody*>(body);
+                }
+            }
         }
 
         if (!candidateHit)
