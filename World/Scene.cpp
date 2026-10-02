@@ -86,7 +86,7 @@ bool Scene::Initialize(
         "CarChassis",
         Vec3(
             0.0f,
-            m_terrain->GetHeight(0.0f, 0.0f) + vehicleConfig.initialHeight,
+            m_terrain->GetHeight(0.0f, 0.0f) + vehicleConfig.spawnClearance,
             0.0f
         ),
         vehicleConfig.colliderHalfExtents,
