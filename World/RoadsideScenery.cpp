@@ -71,8 +71,8 @@ std::vector<std::unique_ptr<Object>> RoadsideScenery::Create(
             const float treeGround = terrain.GetHeight(treeX, treeZ);
             if (!std::isfinite(treeGround)) continue;
 
-            if (i % 6 == 0) {
-                const float height = 9.0f + static_cast<float>((i / 6 + side * 2) % 5);
+            if (i % 4 == 0) {
+                const float height = 9.0f + static_cast<float>((i / 4 + side * 2) % 5);
                 addScenery("RoadsideTreeBillboard", treeMesh,
                     Vec3(treeX, treeGround, treeZ), Vec3(height * 0.58f, height, 1.0f),
                     white, Quaternion(), true);
