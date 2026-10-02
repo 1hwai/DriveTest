@@ -569,6 +569,32 @@ bool Mesh::CreateTerrain(const Terrain& terrain) {
 }
 
 
+
+bool Mesh::CreateImprezaGlass() {
+    Destroy();
+    std::vector<Vertex> vertices;
+    const auto tri=[&](const Vec3& a,const Vec3& b,const Vec3& c) {
+        Vec3 n=(b-a).Cross(c-a).Normalized();
+        vertices.push_back({{a.x,a.y,a.z},{n.x,n.y,n.z}});
+        vertices.push_back({{b.x,b.y,b.z},{n.x,n.y,n.z}});
+        vertices.push_back({{c.x,c.y,c.z},{n.x,n.y,n.z}});
+    };
+    const auto quad=[&](const Vec3& a,const Vec3& b,const Vec3& c,const Vec3& d){tri(a,b,c);tri(a,c,d);};
+    quad({-.59f,.43f,.80f},{.59f,.43f,.80f},{.47f,.73f,.36f},{-.47f,.73f,.36f});
+    quad({-.47f,.73f,-.63f},{.47f,.73f,-.63f},{.60f,.43f,-.91f},{-.60f,.43f,-.91f});
+    quad({-.825f,.25f,.73f},{-.635f,.69f,.34f},{-.635f,.69f,-.57f},{-.825f,.25f,-.82f});
+    quad({.825f,.25f,.73f},{.825f,.25f,-.82f},{.635f,.69f,-.57f},{.635f,.69f,.34f});
+    glGenVertexArrays(1,&m_vao); glGenBuffers(1,&m_vbo);
+    if(!m_vao||!m_vbo){Destroy();return false;}
+    glBindVertexArray(m_vao); glBindBuffer(GL_ARRAY_BUFFER,m_vbo);
+    glBufferData(GL_ARRAY_BUFFER,static_cast<long>(vertices.size()*sizeof(Vertex)),vertices.data(),GL_STATIC_DRAW);
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(Vertex),reinterpret_cast<void*>(offsetof(Vertex,position))); glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(Vertex),reinterpret_cast<void*>(offsetof(Vertex,normal))); glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER,0); glBindVertexArray(0);
+    m_vertexCount=static_cast<unsigned int>(vertices.size()); m_indexCount=0; m_indexed=false;
+    return true;
+}
+
 bool Mesh::CreateRoad(const Road& road) {
     Destroy();
 
