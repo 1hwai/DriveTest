@@ -10,6 +10,7 @@ class Terrain;
 
 class TestTrack {
 public:
+    ~TestTrack();
     bool Initialize(MeshManager& meshManager, SceneFactory& sceneFactory);
 
     const Terrain& GetTerrain() const;
