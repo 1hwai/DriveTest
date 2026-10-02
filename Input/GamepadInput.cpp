@@ -1,6 +1,7 @@
 #include "GamepadInput.h"
 
 #include <algorithm>
+#include <cmath>
 
 GamepadInput::GamepadInput()
     : m_gamepad(nullptr),
@@ -59,13 +60,28 @@ void GamepadInput::Update() {
     if (m_gamepad == nullptr)
         return;
 
-    m_steering =
+    constexpr float SteeringDeadzone = 0.15f;
+
+    const float rawSteering =
         -static_cast<float>(
             SDL_GetGamepadAxis(
                 m_gamepad,
                 SDL_GAMEPAD_AXIS_LEFTX
             )
         ) / 32767.0f;
+
+    const float steeringMagnitude = std::abs(rawSteering);
+    if (steeringMagnitude <= SteeringDeadzone) {
+        m_steering = 0.0f;
+    }
+    else {
+        m_steering =
+            std::copysign(
+                (steeringMagnitude - SteeringDeadzone) /
+                (1.0f - SteeringDeadzone),
+                rawSteering
+            );
+    }
 
     m_throttle =
         static_cast<float>(
