@@ -16,8 +16,8 @@ void Powertrain::Update(
     float drivenWheelAngularVelocity,
     float deltaTime
 ) {
-    constexpr float ClutchStiffness = 15.0f;
-    constexpr float MaxClutchTorque = 400.0f;
+    constexpr float ClutchStiffness = 4.0f;
+    constexpr float MaxClutchTorque = 180.0f;
 
     float clutchTorque = 0.0f;
     const float gearRatio = m_transmission.GetGearRatio();
