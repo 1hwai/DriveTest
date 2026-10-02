@@ -108,6 +108,7 @@ if(DRIVETEST_BUILD_PHYSICS_DIAGNOSTICS)
         Physics/Solver.cpp
         Physics/PhysicsWorld.cpp
         Physics/Terrain.cpp
+        Physics/Road.cpp
         Physics/Material.cpp
 
         Vehicle/Car.cpp
@@ -165,6 +166,7 @@ if(DRIVETEST_BUILD_VEHICLE_DIAGNOSTICS)
         Physics/Solver.cpp
         Physics/PhysicsWorld.cpp
         Physics/Terrain.cpp
+        Physics/Road.cpp
         Physics/Material.cpp
 
         Vehicle/Car.cpp
