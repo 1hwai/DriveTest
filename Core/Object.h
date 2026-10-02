@@ -8,6 +8,15 @@
 class RigidBody;
 class Collider;
 
+enum class RenderSurface {
+    Standard,
+    Terrain,
+    Tarmac,
+    Gravel,
+    Transition,
+    Rock
+};
+
 class Object {
 public:
     Object();
@@ -21,6 +30,11 @@ public:
 
     void SetColor(const Vec3& color);
     const Vec3& GetColor() const;
+
+    void SetRenderSurface(RenderSurface surface);
+    RenderSurface GetRenderSurface() const;
+    void SetSurfaceBlend(float blend);
+    float GetSurfaceBlend() const;
 
     void SetScenePersistent(bool persistent);
     bool IsScenePersistent() const;
@@ -46,6 +60,8 @@ private:
     Transform m_transform;
     std::string m_name;
     Vec3 m_color;
+    RenderSurface m_renderSurface;
+    float m_surfaceBlend;
     bool m_scenePersistent;
     Mesh* m_mesh;
     bool m_billboard;
