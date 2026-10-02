@@ -12,6 +12,7 @@ public:
     bool CreateCube();
     bool CreateSphere(int segments = 16, int rings = 12);
     bool CreateWheel(int segments = 32, int widthSegments = 8);
+    bool CreateImprezaBody();
     bool CreateTerrain(const Terrain& terrain);
     bool CreateRoad(const Road& road);
 
