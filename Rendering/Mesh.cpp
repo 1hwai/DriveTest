@@ -4,6 +4,7 @@
 #include "../Physics/Road.h"
 
 #include <glad/gl.h>
+#include <algorithm>
 #include <cstddef>
 #include <vector>
 #include <cmath>
