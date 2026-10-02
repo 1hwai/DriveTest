@@ -1,6 +1,7 @@
 #include "Mesh.h"
 
 #include "../Physics/Terrain.h"
+#include "../Physics/Road.h"
 
 #include <glad/gl.h>
 #include <cstddef>
@@ -503,6 +504,85 @@ bool Mesh::CreateTerrain(const Terrain& terrain) {
         indices.data(),
         GL_STATIC_DRAW
     );
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, position)));
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, normal)));
+    glEnableVertexAttribArray(1);
+
+    glBindVertexArray(0);
+
+    m_vertexCount = 0;
+    m_indexCount = static_cast<unsigned int>(indices.size());
+    m_indexed = true;
+    return true;
+}
+
+
+bool Mesh::CreateRoad(const Road& road) {
+    Destroy();
+
+    const std::vector<Vec3>& leftEdge = road.GetLeftEdge();
+    const std::vector<Vec3>& rightEdge = road.GetRightEdge();
+
+    if (leftEdge.size() < 2 || leftEdge.size() != rightEdge.size())
+        return false;
+
+    std::vector<Vertex> vertices;
+    std::vector<unsigned int> indices;
+    vertices.reserve(leftEdge.size() * 2);
+    indices.reserve(road.GetSegmentCount() * 6);
+
+    for (size_t i = 0; i < leftEdge.size(); ++i) {
+        const size_t previousIndex = i == 0 ? i : i - 1;
+        const size_t nextIndex = std::min(i + 1, leftEdge.size() - 1);
+        const Vec3 tangent =
+            (leftEdge[nextIndex] + rightEdge[nextIndex]) -
+            (leftEdge[previousIndex] + rightEdge[previousIndex]);
+        const Vec3 width = rightEdge[i] - leftEdge[i];
+        Vec3 normal = tangent.Cross(width).Normalized();
+
+        if (normal.y < 0.0f)
+            normal = -normal;
+
+        vertices.push_back({
+            {leftEdge[i].x, leftEdge[i].y, leftEdge[i].z},
+            {normal.x, normal.y, normal.z}
+        });
+        vertices.push_back({
+            {rightEdge[i].x, rightEdge[i].y, rightEdge[i].z},
+            {normal.x, normal.y, normal.z}
+        });
+    }
+
+    for (size_t i = 0; i < road.GetSegmentCount(); ++i) {
+        const unsigned int left = static_cast<unsigned int>(i * 2);
+        const unsigned int right = left + 1;
+        const unsigned int nextLeft = left + 2;
+        const unsigned int nextRight = left + 3;
+
+        indices.push_back(left);
+        indices.push_back(nextLeft);
+        indices.push_back(right);
+        indices.push_back(right);
+        indices.push_back(nextLeft);
+        indices.push_back(nextRight);
+    }
+
+    glGenVertexArrays(1, &m_vao);
+    glGenBuffers(1, &m_vbo);
+    glGenBuffers(1, &m_ebo);
+
+    if (m_vao == 0 || m_vbo == 0 || m_ebo == 0) {
+        Destroy();
+        return false;
+    }
+
+    glBindVertexArray(m_vao);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<long>(vertices.size() * sizeof(Vertex)), vertices.data(), GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<long>(indices.size() * sizeof(unsigned int)), indices.data(), GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, position)));
     glEnableVertexAttribArray(0);
