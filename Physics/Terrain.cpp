@@ -19,7 +19,7 @@ namespace {
     }
 }
 
-Terrain::Terrain(int resolution, float size, float heightScale, float noiseScale, int octaves, unsigned int seed, const std::vector<std::pair<float, float>>& elevationProfile)
+Terrain::Terrain(int resolution, float size, float heightScale, float noiseScale, int octaves, unsigned int seed, const std::vector<std::pair<float, float>>& elevationProfile, const std::vector<TerrainBump>& bumps)
     : m_resolution(std::max(2, resolution)),
     m_size(std::max(1.0f, size)),
     m_heightScale(std::max(0.0f, heightScale)),
@@ -27,6 +27,7 @@ Terrain::Terrain(int resolution, float size, float heightScale, float noiseScale
     m_octaves(std::max(1, octaves)),
     m_seed(seed),
     m_elevationProfile(elevationProfile),
+    m_bumps(bumps),
     m_heights(static_cast<size_t>(std::max(2, resolution)) * static_cast<size_t>(std::max(2, resolution)), 0.0f) {
     std::sort(m_elevationProfile.begin(), m_elevationProfile.end(),
         [](const auto& a, const auto& b) { return a.first < b.first; });
@@ -37,7 +38,7 @@ Terrain::Terrain(int resolution, float size, float heightScale, float noiseScale
             const float worldZ = -m_size * 0.5f + m_size * static_cast<float>(z) / static_cast<float>(m_resolution - 1);
 
             m_heights[static_cast<size_t>(z) * m_resolution + x] =
-                SampleNoise(worldX, worldZ) * m_heightScale + SampleElevationProfile(worldZ);
+                SampleNoise(worldX, worldZ) * m_heightScale + SampleElevationProfile(worldZ) + SampleBumps(worldX, worldZ);
         }
     }
 }
@@ -65,6 +66,23 @@ float Terrain::SampleElevationProfile(float z) const {
     return 0.5f * (2.0f * h1 + (-h0 + h2) * t +
         (2.0f * h0 - 5.0f * h1 + 4.0f * h2 - h3) * t2 +
         (-h0 + 3.0f * h1 - 3.0f * h2 + h3) * t3);
+}
+
+float Terrain::SampleBumps(float x, float z) const {
+    float height = 0.0f;
+    for (const TerrainBump& bump : m_bumps) {
+        if (bump.radius <= Epsilon)
+            continue;
+        const float dx = x - bump.x;
+        const float dz = z - bump.z;
+        const float distance = std::sqrt(dx * dx + dz * dz);
+        if (distance >= bump.radius)
+            continue;
+        const float t = distance / bump.radius;
+        const float weight = 0.5f * (1.0f + std::cos(3.14159265359f * t));
+        height += bump.height * weight;
+    }
+    return height;
 }
 
 int Terrain::GetResolution() const {
