@@ -148,6 +148,14 @@ void DebugUI::Render() {
         );
 
         ImGui::Text("SHIFT  [+] Up   [-] Down");
+        if (!engine.IsRunning()) {
+            ImGui::Spacing();
+            if (ImGui::Button("START ENGINE", ImVec2(220.0f, 32.0f)))
+                m_scene->GetCar().GetEngine().Start();
+        }
+        else {
+            ImGui::TextUnformatted("ENGINE RUNNING");
+        }
 
         ImGui::End();
     }
