@@ -208,6 +208,31 @@ bool Scene::Initialize(
                     Vec3(0.82f, 0.82f, 0.06f), red, signRotation);
                 addScenery("SpeedLimitSignFace", signDiscMesh, signCenter - outward * 0.04f,
                     Vec3(0.68f, 0.68f, 0.06f), white, signRotation);
+
+                const Vec3 digitCenter = signCenter - outward * 0.08f;
+                const Vec3 digitColor(0.08f, 0.08f, 0.08f);
+                const auto addDigitSegment = [&](float x, float y, bool horizontal) {
+                    const Vec3 localPosition(x, y, 0.04f);
+                    const Vec3 segmentScale = horizontal
+                        ? Vec3(0.13f, 0.035f, 0.025f)
+                        : Vec3(0.035f, 0.12f, 0.025f);
+                    addScenery("SpeedLimitSignDigit", cubeMesh,
+                        digitCenter + signRotation * localPosition,
+                        segmentScale, digitColor, signRotation);
+                };
+
+                addDigitSegment(-0.13f, 0.15f, true);
+                addDigitSegment(-0.20f, 0.075f, false);
+                addDigitSegment(-0.13f, 0.0f, true);
+                addDigitSegment(-0.20f, -0.075f, false);
+                addDigitSegment(-0.13f, -0.15f, true);
+                addDigitSegment(-0.06f, -0.075f, false);
+                addDigitSegment(0.13f, 0.15f, true);
+                addDigitSegment(0.06f, 0.075f, false);
+                addDigitSegment(0.20f, 0.075f, false);
+                addDigitSegment(0.06f, -0.075f, false);
+                addDigitSegment(0.20f, -0.075f, false);
+                addDigitSegment(0.13f, -0.15f, true);
             }
         }
     }
