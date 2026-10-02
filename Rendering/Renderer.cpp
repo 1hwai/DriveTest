@@ -159,6 +159,8 @@ void Renderer::Render(const Scene& world) {
             GetNormalMatrix(model)
         );
 
+        m_shader.SetInt("uSurfaceType", static_cast<int>(object->GetRenderSurface()));
+        m_shader.SetFloat("uSurfaceBlend", object->GetSurfaceBlend());
         mesh->Draw(m_shader, object->GetColor());
     }
 
