@@ -66,12 +66,21 @@ bool Road::GenerateTestCourse(const Terrain& terrain, float width, float surface
         Vec3(0.0f, 0.0f, -300.0f),
         Vec3(0.0f, 0.0f, -150.0f),
         Vec3(0.0f, 0.0f, 0.0f),
-        Vec3(0.0f, 0.2f, 100.0f),
-        Vec3(35.0f, 1.5f, 220.0f),
-        Vec3(-35.0f, 3.0f, 340.0f),
-        Vec3(0.0f, 1.0f, 460.0f),
-        Vec3(0.0f, 0.0f, 600.0f),
-        Vec3(0.0f, 0.0f, 750.0f)
+        Vec3(0.0f, 0.2f, 180.0f),
+        Vec3(45.0f, 1.5f, 360.0f),
+        Vec3(-55.0f, 3.0f, 560.0f),
+        Vec3(30.0f, 1.0f, 760.0f),
+        Vec3(100.0f, 0.0f, 980.0f),
+        Vec3(20.0f, 0.0f, 1200.0f),
+        Vec3(-80.0f, 0.0f, 1430.0f),
+        Vec3(-120.0f, 0.0f, 1650.0f),
+        Vec3(0.0f, 0.0f, 1870.0f),
+        Vec3(80.0f, 0.0f, 2100.0f),
+        Vec3(30.0f, 0.0f, 2350.0f),
+        Vec3(-40.0f, 0.0f, 2600.0f),
+        Vec3(0.0f, 0.0f, 2850.0f),
+        Vec3(50.0f, 0.0f, 3100.0f),
+        Vec3(0.0f, 0.0f, 3350.0f)
     };
 
     std::vector<Vec3> centerline;
