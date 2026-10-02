@@ -1,4 +1,5 @@
 #include "Collider.h"
+#include "Road.h"
 
 Collider::Collider()
     : m_shape(ColliderShape::Box),
@@ -6,6 +7,7 @@ Collider::Collider()
     m_radius(0.5f),
     m_planeHeight(0.0f),
     m_terrain(nullptr),
+    m_road(nullptr),
     m_rigidBody(nullptr) {}
 
 void Collider::SetShape(ColliderShape shape) {
@@ -48,6 +50,15 @@ void Collider::SetTerrain(const Terrain* terrain) {
 
 const Terrain* Collider::GetTerrain() const {
     return m_terrain;
+}
+
+
+void Collider::SetRoad(const Road* road) {
+    m_road = road;
+}
+
+const Road* Collider::GetRoad() const {
+    return m_road;
 }
 
 void Collider::SetRigidBody(
