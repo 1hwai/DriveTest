@@ -181,3 +181,9 @@ void Shader::SetInt(const char* name, int value) {
     if (location != -1)
         glUniform1i(location, value);
 }
+
+void Shader::SetFloat(const char* name, float value) {
+    const int location = GetUniformLocation(name);
+    if (location != -1)
+        glUniform1f(location, value);
+}
