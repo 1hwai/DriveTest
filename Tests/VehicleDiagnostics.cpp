@@ -44,7 +44,7 @@ namespace {
             chassis = physicsWorld.CreateRigidBody();
             chassis->SetMass(config.mass);
             chassis->SetBoxInertia(config.colliderHalfExtents * 2.0f);
-            chassis->SetPosition(Vec3(0.0f, config.initialHeight, 0.0f));
+            chassis->SetPosition(Vec3(0.0f, config.spawnClearance, 0.0f));
             car.SetChassis(chassis);
             car.ApplyConfig(config);
         }
