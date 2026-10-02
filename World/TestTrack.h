@@ -7,6 +7,7 @@ class MeshManager;
 class SceneFactory;
 class Object;
 class Terrain;
+class Road;
 
 class TestTrack {
 public:
@@ -18,6 +19,6 @@ public:
 
 private:
     std::unique_ptr<Terrain> m_terrain;
-    std::unique_ptr<class Road> m_road;
+    std::unique_ptr<Road> m_road;
     std::vector<std::unique_ptr<Object>> m_objects;
 };
