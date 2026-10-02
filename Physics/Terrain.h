@@ -4,9 +4,16 @@
 #include <utility>
 #include "../Core/Math/Vec3.h"
 
+struct TerrainBump {
+    float x;
+    float z;
+    float radius;
+    float height;
+};
+
 class Terrain {
 public:
-    Terrain(int resolution = 65, float size = 100.0f, float heightScale = 4.0f, float noiseScale = 0.035f, int octaves = 5, unsigned int seed = 1337, const std::vector<std::pair<float, float>>& elevationProfile = {});
+    Terrain(int resolution = 65, float size = 100.0f, float heightScale = 4.0f, float noiseScale = 0.035f, int octaves = 5, unsigned int seed = 1337, const std::vector<std::pair<float, float>>& elevationProfile = {}, const std::vector<TerrainBump>& bumps = {});
 
     int GetResolution() const;
     float GetSize() const;
@@ -25,6 +32,7 @@ private:
     float Gradient(int ix, int iz, float x, float z) const;
     float SampleNoise(float x, float z) const;
     float SampleElevationProfile(float z) const;
+    float SampleBumps(float x, float z) const;
 
     int m_resolution;
     float m_size;
@@ -33,5 +41,6 @@ private:
     int m_octaves;
     unsigned int m_seed;
     std::vector<std::pair<float, float>> m_elevationProfile;
+    std::vector<TerrainBump> m_bumps;
     std::vector<float> m_heights;
 };
