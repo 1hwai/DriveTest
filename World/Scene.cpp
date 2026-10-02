@@ -65,6 +65,14 @@ bool Scene::Initialize(
     ))
         return false;
 
+    m_road = std::make_unique<Road>();
+
+    if (!m_road->GenerateTestCourse(*m_terrain, 12.0f, 0.08f))
+        return false;
+
+    if (!meshManager.CreateRoad("road", *m_road))
+        return false;
+
     if (!meshManager.CreateWheel("wheel"))
         return false;
 
@@ -81,6 +89,19 @@ bool Scene::Initialize(
     ground->SetScenePersistent(false);
     ground->SetColor(Vec3(0.24f, 0.48f, 0.19f));
     AddObject(std::move(ground));
+
+    auto road = m_sceneFactory->CreateRoad({
+        "TestRoad",
+        0.0f,
+        0.85f
+    }, *m_road);
+
+    if (!road)
+        return false;
+
+    road->SetScenePersistent(false);
+    road->SetColor(Vec3(0.16f, 0.17f, 0.18f));
+    AddObject(std::move(road));
 
     auto chassis = m_sceneFactory->CreateBox({
         "CarChassis",
@@ -579,6 +600,7 @@ void Scene::ClearPersistentObjects() {
 
 void Scene::Shutdown() {
     ClearObjects();
+    m_road.reset();
     m_sceneFactory.reset();
     m_physicsWorld = nullptr;
 }
