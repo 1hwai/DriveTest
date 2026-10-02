@@ -17,6 +17,7 @@ public:
     bool CreateTriangle(const std::string& name);
     bool CreateSphere(const std::string& name);
     bool CreateWheel(const std::string& name);
+    bool CreateImprezaBody(const std::string& name);
     bool CreateTerrain(const std::string& name, const Terrain& terrain);
     bool CreateRoad(const std::string& name, const Road& road);
 
