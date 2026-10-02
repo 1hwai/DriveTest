@@ -53,7 +53,7 @@ bool Scene::Initialize(
             513,
             5000.0f,
             4.0f,
-            0.035f,
+            0.0025f,
             5,
             1337
         );
@@ -84,7 +84,11 @@ bool Scene::Initialize(
 
     auto chassis = m_sceneFactory->CreateBox({
         "CarChassis",
-        Vec3(0.0f, vehicleConfig.initialHeight, 0.0f),
+        Vec3(
+            0.0f,
+            m_terrain->GetHeight(0.0f, 0.0f) + vehicleConfig.initialHeight,
+            0.0f
+        ),
         vehicleConfig.colliderHalfExtents,
         vehicleConfig.mass,
         0.0f,
