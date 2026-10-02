@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 TestTrack::~TestTrack() = default;
 
@@ -16,7 +17,14 @@ bool TestTrack::Initialize(MeshManager& meshManager, SceneFactory& sceneFactory)
     if (m_terrain || m_road)
         return false;
 
-    m_terrain = std::make_unique<Terrain>(1025, 10000.0f, 35.0f, 0.0015f, 5, 1337);
+    const std::vector<std::pair<float, float>> elevationProfile = {
+        {-500.0f, 0.0f}, {-300.0f, 0.0f}, {0.0f, 0.0f}, {180.0f, 12.0f},
+        {360.0f, 38.0f}, {560.0f, 8.0f}, {760.0f, 0.0f}, {980.0f, 3.0f},
+        {1200.0f, 28.0f}, {1430.0f, 48.0f}, {1650.0f, 10.0f}, {1870.0f, 0.0f},
+        {2100.0f, 18.0f}, {2350.0f, 35.0f}, {2600.0f, 5.0f}, {2850.0f, 0.0f},
+        {3100.0f, 22.0f}, {3350.0f, 42.0f}, {3600.0f, 4.0f}, {4000.0f, 0.0f}
+    };
+    m_terrain = std::make_unique<Terrain>(1025, 10000.0f, 35.0f, 0.0015f, 5, 1337, elevationProfile);
     if (!meshManager.CreateTerrain("terrain", *m_terrain))
         return false;
 
