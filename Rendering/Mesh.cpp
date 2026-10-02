@@ -835,7 +835,7 @@ bool Mesh::CreateTerrain(const Terrain& terrain) {
             vertices.push_back({
                 {worldX, heights[static_cast<size_t>(z) * resolution + x], worldZ},
                 {normal.x, normal.y, normal.z},
-                {worldX * 0.08f, worldZ * 0.08f}
+                {worldX * 0.25f, worldZ * 0.25f}
             });
         }
     }
@@ -917,7 +917,21 @@ bool Mesh::CreateRoadSection(const Road& road, size_t firstSegment, size_t endSe
     vertices.reserve((endSegment - firstSegment + 1) * 2);
     indices.reserve((endSegment - firstSegment) * 6);
 
+    float distanceAlongRoad = 0.0f;
+    for (size_t i = 1; i <= firstSegment; ++i) {
+        const Vec3 previousCenter = (leftEdge[i - 1] + rightEdge[i - 1]) * 0.5f;
+        const Vec3 currentCenter = (leftEdge[i] + rightEdge[i]) * 0.5f;
+        distanceAlongRoad += (currentCenter - previousCenter).Length();
+    }
+
+    constexpr float RoadTextureTileLength = 3.0f;
     for (size_t i = firstSegment; i <= endSegment; ++i) {
+        if (i > firstSegment) {
+            const Vec3 previousCenter = (leftEdge[i - 1] + rightEdge[i - 1]) * 0.5f;
+            const Vec3 currentCenter = (leftEdge[i] + rightEdge[i]) * 0.5f;
+            distanceAlongRoad += (currentCenter - previousCenter).Length();
+        }
+
         const size_t previousIndex = i == 0 ? i : i - 1;
         const size_t nextIndex = std::min(i + 1, leftEdge.size() - 1);
         const Vec3 tangent = (leftEdge[nextIndex] + rightEdge[nextIndex]) -
@@ -926,8 +940,8 @@ bool Mesh::CreateRoadSection(const Road& road, size_t firstSegment, size_t endSe
         Vec3 normal = tangent.Cross(width).Normalized();
         if (normal.y < 0.0f)
             normal = -normal;
-        vertices.push_back({{leftEdge[i].x, leftEdge[i].y, leftEdge[i].z}, {normal.x, normal.y, normal.z}, {0.0f, static_cast<float>(i) * 0.25f}});
-        vertices.push_back({{rightEdge[i].x, rightEdge[i].y, rightEdge[i].z}, {normal.x, normal.y, normal.z}, {1.0f, static_cast<float>(i) * 0.25f}});
+        vertices.push_back({{leftEdge[i].x, leftEdge[i].y, leftEdge[i].z}, {normal.x, normal.y, normal.z}, {0.0f, distanceAlongRoad / RoadTextureTileLength}});
+        vertices.push_back({{rightEdge[i].x, rightEdge[i].y, rightEdge[i].z}, {normal.x, normal.y, normal.z}, {1.0f, distanceAlongRoad / RoadTextureTileLength}});
     }
 
     for (size_t i = 0; i < endSegment - firstSegment; ++i) {
