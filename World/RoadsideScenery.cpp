@@ -71,17 +71,17 @@ std::vector<std::unique_ptr<Object>> RoadsideScenery::Create(
             const float treeGround = terrain.GetHeight(treeX, treeZ);
             if (!std::isfinite(treeGround)) continue;
 
-            if (i % 24 == 0) {
-                const float height = 9.0f + static_cast<float>((i / 24 + side * 2) % 4);
+            if (i % 6 == 0) {
+                const float height = 9.0f + static_cast<float>((i / 6 + side * 2) % 5);
                 addScenery("RoadsideTreeBillboard", treeMesh,
                     Vec3(treeX, treeGround, treeZ), Vec3(height * 0.58f, height, 1.0f),
                     white, Quaternion(), true);
             }
 
-            if (i % 10 == 0) {
+            if (i % 6 == 0) {
                 const float shrubX = edge.x + outward.x * 3.8f;
                 const float shrubZ = edge.z + outward.z * 3.8f;
-                const float shrubGround = m_terrain->GetHeight(shrubX, shrubZ);
+                const float shrubGround = terrain.GetHeight(shrubX, shrubZ);
                 if (std::isfinite(shrubGround)) {
                     const Vec3 shrubPosition(shrubX, shrubGround, shrubZ);
                     const Quaternion crossed = Quaternion::FromAxisAngle(Vec3(0.0f, 1.0f, 0.0f), 1.57079632679f);
