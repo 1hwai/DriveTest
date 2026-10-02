@@ -1,12 +1,36 @@
 #include "Terrain.h"
 
 #include <algorithm>
+#include <array>
+#include <utility>
 #include <cmath>
 #include <cstdint>
 #include <limits>
 
 namespace {
     constexpr float Epsilon = 0.000001f;
+    float SampleRallyElevation(float z) {
+        static constexpr std::array<std::pair<float, float>, 20> profile = {{
+            {-500.0f, 0.0f}, {-300.0f, 0.0f}, {0.0f, 0.0f}, {180.0f, 12.0f},
+            {360.0f, 38.0f}, {560.0f, 8.0f}, {760.0f, 0.0f}, {980.0f, 3.0f},
+            {1200.0f, 28.0f}, {1430.0f, 48.0f}, {1650.0f, 10.0f}, {1870.0f, 0.0f},
+            {2100.0f, 18.0f}, {2350.0f, 35.0f}, {2600.0f, 5.0f}, {2850.0f, 0.0f},
+            {3100.0f, 22.0f}, {3350.0f, 42.0f}, {3600.0f, 4.0f}, {4000.0f, 0.0f}
+        }};
+        if (z <= profile.front().first) return profile.front().second;
+        if (z >= profile.back().first) return profile.back().second;
+        size_t i = 0;
+        while (i + 1 < profile.size() && z > profile[i + 1].first) ++i;
+        const auto [z1, h1] = profile[i];
+        const auto [z2, h2] = profile[i + 1];
+        const float t = (z - z1) / (z2 - z1);
+        const float h0 = i > 0 ? profile[i - 1].second : h1;
+        const float h3 = i + 2 < profile.size() ? profile[i + 2].second : h2;
+        const float t2 = t * t, t3 = t2 * t;
+        return 0.5f * (2.0f * h1 + (-h0 + h2) * t +
+            (2.0f * h0 - 5.0f * h1 + 4.0f * h2 - h3) * t2 +
+            (-h0 + 3.0f * h1 - 3.0f * h2 + h3) * t3);
+    }
 
     unsigned int Hash(int x, int z, unsigned int seed) {
         std::uint32_t h = static_cast<std::uint32_t>(x) * 374761393u;
@@ -33,7 +57,7 @@ Terrain::Terrain(int resolution, float size, float heightScale, float noiseScale
             const float worldZ = -m_size * 0.5f + m_size * static_cast<float>(z) / static_cast<float>(m_resolution - 1);
 
             m_heights[static_cast<size_t>(z) * m_resolution + x] =
-                SampleNoise(worldX, worldZ) * m_heightScale;
+                SampleNoise(worldX, worldZ) * m_heightScale + SampleRallyElevation(worldZ);
         }
     }
 }
