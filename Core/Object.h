@@ -26,6 +26,8 @@ public:
     bool IsScenePersistent() const;
 
     void SetMesh(Mesh* mesh);
+    void SetBillboard(bool billboard);
+    bool IsBillboard() const;
 
     Mesh* GetMesh();
     const Mesh* GetMesh() const;
@@ -46,6 +48,7 @@ private:
     Vec3 m_color;
     bool m_scenePersistent;
     Mesh* m_mesh;
+    bool m_billboard;
     RigidBody* m_rigidBody;
     Collider* m_collider;
 };
