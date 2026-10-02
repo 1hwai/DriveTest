@@ -192,6 +192,35 @@ bool Scene::Initialize(
                 addScenery("SpeedLimitSignFace", sphereMesh,
                     signCenter - outward * 0.025f,
                     Vec3(0.68f, 0.68f, 0.2f), Vec3(0.95f, 0.95f, 0.9f), signRotation);
+
+                // Seven-segment "60" on the sign face, built from tiny cubes.
+                const Vec3 digitCenter = signCenter - outward * 0.025f;
+                const Vec3 digitColor(0.08f, 0.08f, 0.08f);
+                const auto addDigitSegment = [&](float x, float y, bool horizontal) {
+                    const Vec3 localPosition(x, y, 0.12f);
+                    const Vec3 segmentScale = horizontal
+                        ? Vec3(0.13f, 0.035f, 0.025f)
+                        : Vec3(0.035f, 0.12f, 0.025f);
+                    addScenery("SpeedLimitSignDigit", cubeMesh,
+                        digitCenter + signRotation * localPosition,
+                        segmentScale, digitColor, signRotation);
+                };
+
+                // Digit 6: top, upper-left, middle, lower-left, bottom, lower-right.
+                addDigitSegment(-0.13f, 0.15f, true);
+                addDigitSegment(-0.20f, 0.075f, false);
+                addDigitSegment(-0.13f, 0.0f, true);
+                addDigitSegment(-0.20f, -0.075f, false);
+                addDigitSegment(-0.13f, -0.15f, true);
+                addDigitSegment(-0.06f, -0.075f, false);
+
+                // Digit 0: all segments except the middle.
+                addDigitSegment(0.13f, 0.15f, true);
+                addDigitSegment(0.06f, 0.075f, false);
+                addDigitSegment(0.20f, 0.075f, false);
+                addDigitSegment(0.06f, -0.075f, false);
+                addDigitSegment(0.20f, -0.075f, false);
+                addDigitSegment(0.13f, -0.15f, true);
             }
         }
     }
