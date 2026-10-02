@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+TestTrack::TestTrack() = default;
 TestTrack::~TestTrack() = default;
 
 bool TestTrack::Initialize(MeshManager& meshManager, SceneFactory& sceneFactory) {
