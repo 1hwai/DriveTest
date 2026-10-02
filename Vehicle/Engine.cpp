@@ -36,6 +36,13 @@ void Engine::Configure(float idleRPM, float stallRPM, float redlineRPM, float pe
     m_running = true;
 }
 
+void Engine::Start() {
+    m_angularVelocity = m_idleRPM * 2.0f * Pi / 60.0f;
+    m_torque = 0.0f;
+    m_loadTorque = 0.0f;
+    m_running = true;
+}
+
 void Engine::Update(
     float throttle,
     float loadTorque,
