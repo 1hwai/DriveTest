@@ -95,7 +95,7 @@ std::vector<std::unique_ptr<Object>> RoadsideScenery::Create(
             if (i % 10 == 0) {
                 const float postX = edge.x + outward.x * 0.9f;
                 const float postZ = edge.z + outward.z * 0.9f;
-                const float postGround = m_terrain->GetHeight(postX, postZ);
+                const float postGround = terrain.GetHeight(postX, postZ);
                 if (std::isfinite(postGround))
                     addScenery("RoadsideWoodPost", cubeMesh,
                         Vec3(postX, postGround + 0.42f, postZ),
@@ -106,7 +106,7 @@ std::vector<std::unique_ptr<Object>> RoadsideScenery::Create(
             if (side == 0 && ((i >= leftEdge.size() / 3 && i < leftEdge.size() / 3 + 2) || (i >= (leftEdge.size() * 2) / 3 && i < (leftEdge.size() * 2) / 3 + 2))) {
                 const float signX = edge.x + outward.x * 2.0f;
                 const float signZ = edge.z + outward.z * 2.0f;
-                const float signGround = m_terrain->GetHeight(signX, signZ);
+                const float signGround = terrain.GetHeight(signX, signZ);
                 if (!std::isfinite(signGround)) continue;
                 const float yaw = std::atan2(-outward.x, -outward.z);
                 const Quaternion signRotation = Quaternion::FromAxisAngle(Vec3(0.0f, 1.0f, 0.0f), yaw);
