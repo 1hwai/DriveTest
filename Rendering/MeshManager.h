@@ -24,8 +24,8 @@ public:
     bool LoadFromFile(const std::string& name, const std::string& path, bool wheelOnly = false);
     bool CreateTerrain(const std::string& name, const Terrain& terrain);
     bool CreateRoad(const std::string& name, const Road& road);
-    bool CreateRoadSection(const std::string& name, const Road& road, size_t firstSegment, size_t endSegment);
-    bool CreateRoadsideWall(const std::string& name, const Terrain& terrain, const Road& road, bool leftSide, size_t firstSegment, size_t endSegment, float offset, float wallHeight);
+    bool CreateRoadSection(const std::string& name, const Road& road, std::size_t firstSegment, std::size_t endSegment);
+    bool CreateRoadsideWall(const std::string& name, const Terrain& terrain, const Road& road, bool leftSide, std::size_t firstSegment, std::size_t endSegment, float offset, float wallHeight);
 
     Mesh* Get(const std::string& name);
     const Mesh* Get(const std::string& name) const;
