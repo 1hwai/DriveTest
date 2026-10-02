@@ -77,6 +77,8 @@ bool Scene::Initialize(
         return false;
     if (!meshManager.CreateImprezaBody("impreza_body"))
         return false;
+    if (!meshManager.CreateImprezaGlass("impreza_glass"))
+        return false;
 
     auto ground =
         m_sceneFactory->CreateTerrain({
@@ -145,6 +147,14 @@ bool Scene::Initialize(
     carBody->SetColor(Vec3(0.02f, 0.17f, 0.82f));
     carBody->SetMesh(meshManager.Get("impreza_body"));
     AddObject(std::move(carBody));
+    m_carBodyParts.push_back({m_objects.back().get(), Vec3(0.0f, 0.0f, 0.0f), Vec3(1.0f, 1.0f, 1.0f)});
+    
+    auto carGlass = std::make_unique<Object>();
+    carGlass->SetName("1998 Impreza Glass");
+    carGlass->SetScenePersistent(false);
+    carGlass->SetColor(Vec3(0.025f, 0.045f, 0.065f));
+    carGlass->SetMesh(meshManager.Get("impreza_glass"));
+    AddObject(std::move(carGlass));
     m_carBodyParts.push_back({m_objects.back().get(), Vec3(0.0f, 0.0f, 0.0f), Vec3(1.0f, 1.0f, 1.0f)});
 
 
