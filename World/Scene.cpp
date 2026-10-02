@@ -73,11 +73,10 @@ bool Scene::Initialize(
     if (!meshManager.CreateRoad("road", *m_road))
         return false;
 
-    if (!meshManager.CreateWheel("wheel"))
-        return false;
     const std::string carModelPath = std::string(DRIVETEST_PROJECT_ROOT) + "/Assets/Vehicles/subaru_impreza.glb";
-    if (!meshManager.LoadFromFile("impreza_body", carModelPath)) {
-        Logger::Error("Failed to load Subaru Impreza model: " + carModelPath);
+    if (!meshManager.LoadFromFile("impreza_body", carModelPath) ||
+        !meshManager.LoadFromFile("impreza_wheel", carModelPath, true)) {
+        Logger::Error("Failed to load Subaru Impreza body or wheel mesh: " + carModelPath);
         return false;
     }
 
@@ -135,8 +134,8 @@ bool Scene::Initialize(
         auto wheel = std::make_unique<Object>();
         wheel->SetName("CarWheel");
         wheel->SetScenePersistent(false);
-        wheel->SetColor(Vec3(0.07f, 0.07f, 0.07f));
-        wheel->SetMesh(meshManager.Get("wheel"));
+        wheel->SetColor(Vec3(1.0f, 1.0f, 1.0f));
+        wheel->SetMesh(meshManager.Get("impreza_wheel"));
         AddObject(std::move(wheel));
         m_wheelObjects[i] = m_objects.back().get();
     }
@@ -145,7 +144,7 @@ bool Scene::Initialize(
     auto carBody = std::make_unique<Object>();
     carBody->SetName("1998 Impreza 22B Body");
     carBody->SetScenePersistent(false);
-    carBody->SetColor(Vec3(0.03f, 0.16f, 0.72f));
+    carBody->SetColor(Vec3(1.0f, 1.0f, 1.0f));
     carBody->SetMesh(meshManager.Get("impreza_body"));
     AddObject(std::move(carBody));
     m_carBodyParts.push_back({m_objects.back().get(), Vec3(0.0f, 0.0f, 0.0f), Vec3(1.0f, 1.0f, 1.0f)});
