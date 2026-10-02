@@ -22,6 +22,7 @@ public:
     bool CreateFoliageBillboard(bool shrub = false);
     bool CreateWheel(int segments = 32, int widthSegments = 8);
     bool LoadFromFile(const std::string& path, bool wheelOnly = false);
+    bool LoadTexture(const std::string& path, bool removeBackground = false, bool secondary = false);
     bool CreateTerrain(const Terrain& terrain);
     bool CreateRoad(const Road& road);
     bool CreateRoadSection(const Road& road, std::size_t firstSegment, std::size_t endSegment);
@@ -47,6 +48,8 @@ private:
     unsigned int m_vertexCount;
     unsigned int m_indexCount;
     bool m_indexed;
+    unsigned int m_materialTexture;
+    unsigned int m_secondaryTexture;
     std::vector<Submesh> m_submeshes;
     std::vector<unsigned int> m_textures;
 };
