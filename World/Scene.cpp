@@ -50,10 +50,10 @@ bool Scene::Initialize(
 
     m_terrain =
         std::make_unique<Terrain>(
-            513,
-            5000.0f,
-            14.0f,
-            0.0025f,
+            1025,
+            10000.0f,
+            35.0f,
+            0.0015f,
             5,
             1337
         );
@@ -67,7 +67,7 @@ bool Scene::Initialize(
 
     m_road = std::make_unique<Road>();
 
-    if (!m_road->GenerateTestCourse(*m_terrain, 12.0f, 0.015f))
+    if (!m_road->GenerateTestCourse(*m_terrain, 12.0f, 0.25f))
         return false;
 
     if (!meshManager.CreateRoad("road", *m_road))
