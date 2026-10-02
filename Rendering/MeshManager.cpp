@@ -69,6 +69,15 @@ bool MeshManager::CreateCylinder(const std::string& name)
     return true;
 }
 
+bool MeshManager::CreateDisc(const std::string& name)
+{
+    if (m_meshes.find(name) != m_meshes.end()) return false;
+    auto mesh = std::make_unique<Mesh>();
+    if (!mesh->CreateDisc()) return false;
+    m_meshes.emplace(name, std::move(mesh));
+    return true;
+}
+
 bool MeshManager::CreateFoliageBillboard(const std::string& name, bool shrub)
 {
     if (m_meshes.find(name) != m_meshes.end()) return false;
