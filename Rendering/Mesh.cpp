@@ -8,6 +8,10 @@
 #include <cstddef>
 #include <vector>
 #include <cmath>
+#include <cfloat>
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
 
 namespace {
     struct Vertex {
@@ -427,51 +431,93 @@ bool Mesh::CreateWheel(int segments, int widthSegments) {
 
 
 
-bool Mesh::CreateImprezaBody() {
+
+bool Mesh::LoadFromFile(const std::string& path) {
     Destroy();
-    struct Section { float z, width, bottom, shoulder, top, roofWidth; };
-    const Section sections[] = {
-        {-2.12f,.76f,-.28f,.10f,.38f,.69f},{-1.78f,.84f,-.30f,.13f,.43f,.73f},
-        {-1.22f,.88f,-.30f,.17f,.47f,.74f},{-.62f,.82f,-.29f,.19f,.79f,.62f},
-        {.35f,.82f,-.29f,.19f,.79f,.62f},{.92f,.87f,-.29f,.17f,.48f,.73f},
-        {1.55f,.84f,-.29f,.13f,.43f,.72f},{2.10f,.77f,-.26f,.08f,.36f,.67f}
-    };
+
+    Assimp::Importer importer;
+    const aiScene* importedScene = importer.ReadFile(
+        path,
+        aiProcess_Triangulate |
+        aiProcess_GenSmoothNormals |
+        aiProcess_JoinIdenticalVertices |
+        aiProcess_PreTransformVertices |
+        aiProcess_ImproveCacheLocality
+    );
+
+    if (importedScene == nullptr || importedScene->mNumMeshes == 0)
+        return false;
+
     std::vector<Vertex> vertices;
-    const auto tri=[&](const Vec3& a,const Vec3& b,const Vec3& c) {
-        Vec3 n=(b-a).Cross(c-a).Normalized();
-        vertices.push_back({{a.x,a.y,a.z},{n.x,n.y,n.z}});
-        vertices.push_back({{b.x,b.y,b.z},{n.x,n.y,n.z}});
-        vertices.push_back({{c.x,c.y,c.z},{n.x,n.y,n.z}});
-    };
-    const auto ring=[](const Section& s) {
-        return std::vector<Vec3>{{-s.width,s.bottom,s.z},{s.width,s.bottom,s.z},
-            {s.width,s.shoulder,s.z},{s.roofWidth,s.top,s.z},
-            {-s.roofWidth,s.top,s.z},{-s.width,s.shoulder,s.z}};
-    };
-    std::vector<std::vector<Vec3>> rings;
-    for(const Section& s:sections) rings.push_back(ring(s));
-    for(size_t i=0;i+1<rings.size();++i) for(size_t j=0;j<rings[i].size();++j) {
-        size_t k=(j+1)%rings[i].size();
-        const Vec3& a=rings[i][j]; const Vec3& b=rings[i][k];
-        const Vec3& c=rings[i+1][j]; const Vec3& d=rings[i+1][k];
-        tri(a,b,c); tri(b,d,c);
+    std::vector<unsigned int> indices;
+    aiVector3D minimum(FLT_MAX, FLT_MAX, FLT_MAX);
+    aiVector3D maximum(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+
+    for (unsigned int meshIndex = 0; meshIndex < importedScene->mNumMeshes; ++meshIndex) {
+        const aiMesh* source = importedScene->mMeshes[meshIndex];
+        const unsigned int baseVertex = static_cast<unsigned int>(vertices.size());
+
+        for (unsigned int i = 0; i < source->mNumVertices; ++i) {
+            const aiVector3D& p = source->mVertices[i];
+            const aiVector3D n = source->HasNormals() ? source->mNormals[i] : aiVector3D(0.0f, 1.0f, 0.0f);
+            vertices.push_back({{p.x, p.y, p.z}, {n.x, n.y, n.z}});
+            minimum.x = std::min(minimum.x, p.x);
+            minimum.y = std::min(minimum.y, p.y);
+            minimum.z = std::min(minimum.z, p.z);
+            maximum.x = std::max(maximum.x, p.x);
+            maximum.y = std::max(maximum.y, p.y);
+            maximum.z = std::max(maximum.z, p.z);
+        }
+
+        for (unsigned int faceIndex = 0; faceIndex < source->mNumFaces; ++faceIndex) {
+            const aiFace& face = source->mFaces[faceIndex];
+            for (unsigned int i = 0; i < face.mNumIndices; ++i)
+                indices.push_back(baseVertex + face.mIndices[i]);
+        }
     }
-    for(size_t j=1;j+1<rings.front().size();++j) tri(rings.front()[0],rings.front()[j],rings.front()[j+1]);
-    for(size_t j=1;j+1<rings.back().size();++j) tri(rings.back()[0],rings.back()[j+1],rings.back()[j]);
-    tri({-.22f,.405f,1.08f},{.22f,.405f,1.08f},{.17f,.49f,1.54f});
-    tri({-.22f,.405f,1.08f},{.17f,.49f,1.54f},{-.17f,.49f,1.54f});
-    tri({-.72f,.40f,-1.76f},{-.66f,.77f,-1.72f},{-.60f,.77f,-1.65f});
-    tri({.72f,.40f,-1.76f},{.60f,.77f,-1.65f},{.66f,.77f,-1.72f});
-    tri({-.91f,.77f,-1.82f},{.91f,.77f,-1.82f},{.88f,.84f,-2.10f});
-    tri({-.91f,.77f,-1.82f},{.88f,.84f,-2.10f},{-.88f,.84f,-2.10f});
-    glGenVertexArrays(1,&m_vao); glGenBuffers(1,&m_vbo);
-    if(!m_vao||!m_vbo){Destroy();return false;}
-    glBindVertexArray(m_vao); glBindBuffer(GL_ARRAY_BUFFER,m_vbo);
-    glBufferData(GL_ARRAY_BUFFER,static_cast<long>(vertices.size()*sizeof(Vertex)),vertices.data(),GL_STATIC_DRAW);
-    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(Vertex),reinterpret_cast<void*>(offsetof(Vertex,position))); glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(Vertex),reinterpret_cast<void*>(offsetof(Vertex,normal))); glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER,0); glBindVertexArray(0);
-    m_vertexCount=static_cast<unsigned int>(vertices.size()); m_indexCount=0; m_indexed=false;
+
+    const float width = maximum.x - minimum.x;
+    const float height = maximum.y - minimum.y;
+    const float depth = maximum.z - minimum.z;
+    const float horizontalLength = std::max(width, depth);
+    if (vertices.empty() || indices.empty() || horizontalLength <= 0.001f || height <= 0.001f)
+        return false;
+
+    // Normalize unknown source units to a roughly 4.4 m car and align the tire bottoms with the simulated wheels.
+    const float scale = 4.4f / horizontalLength;
+    for (Vertex& vertex : vertices) {
+        vertex.position[0] = (vertex.position[0] - (minimum.x + maximum.x) * 0.5f) * scale;
+        vertex.position[1] = (vertex.position[1] - minimum.y) * scale - 0.74f;
+        vertex.position[2] = (vertex.position[2] - (minimum.z + maximum.z) * 0.5f) * scale;
+        Vec3 normal(vertex.normal[0], vertex.normal[1], vertex.normal[2]);
+        normal = normal.Normalized();
+        vertex.normal[0] = normal.x;
+        vertex.normal[1] = normal.y;
+        vertex.normal[2] = normal.z;
+    }
+
+    glGenVertexArrays(1, &m_vao);
+    glGenBuffers(1, &m_vbo);
+    glGenBuffers(1, &m_ebo);
+    if (m_vao == 0 || m_vbo == 0 || m_ebo == 0) {
+        Destroy();
+        return false;
+    }
+
+    glBindVertexArray(m_vao);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<long>(vertices.size() * sizeof(Vertex)), vertices.data(), GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<long>(indices.size() * sizeof(unsigned int)), indices.data(), GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, position)));
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, normal)));
+    glEnableVertexAttribArray(1);
+    glBindVertexArray(0);
+
+    m_vertexCount = 0;
+    m_indexCount = static_cast<unsigned int>(indices.size());
+    m_indexed = true;
     return true;
 }
 
