@@ -1,11 +1,12 @@
 #pragma once
 
 #include <vector>
+#include <utility>
 #include "../Core/Math/Vec3.h"
 
 class Terrain {
 public:
-    Terrain(int resolution = 65, float size = 100.0f, float heightScale = 4.0f, float noiseScale = 0.035f, int octaves = 5, unsigned int seed = 1337);
+    Terrain(int resolution = 65, float size = 100.0f, float heightScale = 4.0f, float noiseScale = 0.035f, int octaves = 5, unsigned int seed = 1337, const std::vector<std::pair<float, float>>& elevationProfile = {});
 
     int GetResolution() const;
     float GetSize() const;
@@ -23,6 +24,7 @@ private:
     float Lerp(float a, float b, float t) const;
     float Gradient(int ix, int iz, float x, float z) const;
     float SampleNoise(float x, float z) const;
+    float SampleElevationProfile(float z) const;
 
     int m_resolution;
     float m_size;
@@ -30,5 +32,6 @@ private:
     float m_noiseScale;
     int m_octaves;
     unsigned int m_seed;
+    std::vector<std::pair<float, float>> m_elevationProfile;
     std::vector<float> m_heights;
 };
