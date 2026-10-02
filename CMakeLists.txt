@@ -66,6 +66,7 @@ add_executable(DriveTest
 
     World/Scene.cpp
     World/RoadsideScenery.cpp
+    World/TestTrack.cpp
     World/SceneFactory.cpp
     World/SceneSerializer.cpp
 
