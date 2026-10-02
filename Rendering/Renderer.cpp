@@ -147,13 +147,12 @@ void Renderer::Render(const Scene& world) {
             object->GetTransform().GetMatrix();
 
         m_shader.SetMat4("uModel", model);
-        m_shader.SetVec3("uBaseColor", object->GetColor());
         m_shader.SetMat3(
             "uNormalMatrix",
             GetNormalMatrix(model)
         );
 
-        mesh->Draw();
+        mesh->Draw(m_shader, object->GetColor());
     }
 
     m_debugRenderer.Render(world.GetCamera());
