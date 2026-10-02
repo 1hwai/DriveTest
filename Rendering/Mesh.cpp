@@ -44,10 +44,6 @@ namespace {
         return name.rfind("Wheel.", 0) == 0 && name.find("_wheel_0") != std::string::npos;
     }
 
-    bool IsWheelAssemblyMesh(const aiMesh* mesh) {
-        return std::string(mesh->mName.C_Str()).find("_wheel_0") != std::string::npos;
-    }
-
     void ConfigureVertexAttributes() {
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, position)));
         glEnableVertexAttribArray(0);
@@ -550,7 +546,7 @@ bool Mesh::LoadFromFile(const std::string& path, bool wheelOnly) {
         if (wheelOnly) {
             if (!IsWheelMesh(source) || loadedWheel) continue;
             loadedWheel = true;
-        } else if (IsWheelAssemblyMesh(source)) {
+        } else if (IsWheelMesh(source)) {
             continue;
         }
 
