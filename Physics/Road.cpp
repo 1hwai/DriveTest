@@ -74,11 +74,6 @@ bool Road::GenerateTestCourse(const Terrain& terrain, float width, float surface
         Vec3(0.0f, 0.0f, 750.0f)
     };
 
-    const float baseHeight = terrain.GetHeight(0.0f, 0.0f);
-
-    if (!std::isfinite(baseHeight))
-        return false;
-
     std::vector<Vec3> centerline;
     centerline.reserve((controlPoints.size() - 1) * SamplesPerSegment + 1);
 
@@ -91,10 +86,7 @@ bool Road::GenerateTestCourse(const Terrain& terrain, float width, float surface
         for (int sample = 0; sample < SamplesPerSegment; ++sample) {
             const float t = static_cast<float>(sample) / SamplesPerSegment;
             Vec3 point = CatmullRom(p0, p1, p2, p3, t);
-            point.y = std::max(
-                baseHeight + point.y + surfaceOffset,
-                terrain.GetHeight(point.x, point.z) + surfaceOffset
-            );
+            point.y = terrain.GetHeight(point.x, point.z) + surfaceOffset;
 
             if (!std::isfinite(point.y))
                 return false;
@@ -104,10 +96,7 @@ bool Road::GenerateTestCourse(const Terrain& terrain, float width, float surface
     }
 
     Vec3 finalPoint = controlPoints.back();
-    finalPoint.y = std::max(
-        baseHeight + finalPoint.y + surfaceOffset,
-        terrain.GetHeight(finalPoint.x, finalPoint.z) + surfaceOffset
-    );
+    finalPoint.y = terrain.GetHeight(finalPoint.x, finalPoint.z) + surfaceOffset;
 
     if (!std::isfinite(finalPoint.y))
         return false;
@@ -130,14 +119,8 @@ bool Road::GenerateTestCourse(const Terrain& terrain, float width, float surface
         const Vec3 right(tangent.z, 0.0f, -tangent.x);
         Vec3 leftPoint = centerline[i] - right * halfWidth;
         Vec3 rightPoint = centerline[i] + right * halfWidth;
-        leftPoint.y = std::max(
-            centerline[i].y,
-            terrain.GetHeight(leftPoint.x, leftPoint.z) + surfaceOffset
-        );
-        rightPoint.y = std::max(
-            centerline[i].y,
-            terrain.GetHeight(rightPoint.x, rightPoint.z) + surfaceOffset
-        );
+        leftPoint.y = terrain.GetHeight(leftPoint.x, leftPoint.z) + surfaceOffset;
+        rightPoint.y = terrain.GetHeight(rightPoint.x, rightPoint.z) + surfaceOffset;
 
         if (!std::isfinite(leftPoint.y) || !std::isfinite(rightPoint.y))
             return false;
