@@ -8,6 +8,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(SDL3 CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
+find_package(assimp CONFIG REQUIRED)
 
 add_executable(DriveTest
     main.cpp
@@ -76,6 +77,7 @@ target_compile_definitions(DriveTest PRIVATE
 target_link_libraries(DriveTest PRIVATE
     SDL3::SDL3
     imgui::imgui
+    assimp::assimp
 )
 
 add_custom_command(TARGET DriveTest POST_BUILD
