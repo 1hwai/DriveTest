@@ -52,7 +52,7 @@ bool Scene::Initialize(
         std::make_unique<Terrain>(
             513,
             5000.0f,
-            4.0f,
+            14.0f,
             0.0025f,
             5,
             1337
