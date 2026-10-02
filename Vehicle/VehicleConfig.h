@@ -6,7 +6,7 @@
 
 struct VehicleConfig {
     float mass = 1190.0f;
-    float initialHeight = 0.78f;
+    float spawnClearance = 0.78f;
     Vec3 colliderHalfExtents = Vec3(0.90f, 0.34f, 2.15f);
     std::array<Vec3, 4> wheelPositions = {
         Vec3(-0.76f, -0.10f, 1.25f), Vec3(0.76f, -0.10f, 1.25f),
