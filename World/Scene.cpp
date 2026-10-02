@@ -67,7 +67,7 @@ bool Scene::Initialize(
 
     m_road = std::make_unique<Road>();
 
-    if (!m_road->GenerateTestCourse(*m_terrain, 12.0f, 0.08f))
+    if (!m_road->GenerateTestCourse(*m_terrain, 12.0f, 0.015f))
         return false;
 
     if (!meshManager.CreateRoad("road", *m_road))
@@ -106,6 +106,95 @@ bool Scene::Initialize(
     road->SetScenePersistent(false);
     road->SetColor(Vec3(0.16f, 0.17f, 0.18f));
     AddObject(std::move(road));
+
+    // Static roadside props: these are visual-only and have no physics bodies.
+    Mesh* cubeMesh = meshManager.Get("cube");
+    Mesh* sphereMesh = meshManager.Get("sphere");
+
+    const auto addScenery = [this](const std::string& name, Mesh* mesh,
+        const Vec3& position, const Vec3& scale, const Vec3& color,
+        const Quaternion& rotation = Quaternion()) {
+        if (!mesh)
+            return;
+
+        auto object = std::make_unique<Object>();
+        object->SetName(name);
+        object->SetScenePersistent(false);
+        object->SetMesh(mesh);
+        object->SetColor(color);
+        object->GetTransform().position = position;
+        object->GetTransform().scale = scale;
+        object->GetTransform().rotation = rotation;
+        AddObject(std::move(object));
+    };
+
+    const std::vector<Vec3>& leftEdge = m_road->GetLeftEdge();
+    const std::vector<Vec3>& rightEdge = m_road->GetRightEdge();
+    const Vec3 treeTrunkColor(0.25f, 0.16f, 0.08f);
+    const Vec3 treeFoliageColor(0.08f, 0.24f, 0.07f);
+    const Vec3 postColor(0.72f, 0.62f, 0.42f);
+
+    for (size_t i = 0; i < leftEdge.size(); i += 2) {
+        const Vec3 center(
+            (leftEdge[i].x + rightEdge[i].x) * 0.5f,
+            (leftEdge[i].y + rightEdge[i].y) * 0.5f,
+            (leftEdge[i].z + rightEdge[i].z) * 0.5f
+        );
+        Vec3 leftOutward = leftEdge[i] - center;
+        Vec3 rightOutward = rightEdge[i] - center;
+        leftOutward.y = 0.0f;
+        rightOutward.y = 0.0f;
+
+        if (leftOutward.LengthSquared() > 0.0001f)
+            leftOutward = leftOutward.Normalized();
+        if (rightOutward.LengthSquared() > 0.0001f)
+            rightOutward = rightOutward.Normalized();
+
+        for (int side = 0; side < 2; ++side) {
+            const Vec3 outward = side == 0 ? leftOutward : rightOutward;
+            const Vec3 edge = side == 0 ? leftEdge[i] : rightEdge[i];
+            const float terrainHeight = m_terrain->GetHeight(edge.x + outward.x * 7.0f, edge.z + outward.z * 7.0f);
+
+            if (!std::isfinite(terrainHeight))
+                continue;
+
+            // Tall rally-style trees, placed well clear of the road.
+            if (i % 4 == 0) {
+                const float height = 8.0f + static_cast<float>((i / 4 + side * 3) % 4);
+                const Vec3 treePosition(edge.x + outward.x * 7.0f, terrainHeight + height * 0.5f, edge.z + outward.z * 7.0f);
+                addScenery("RoadsideTreeTrunk", cubeMesh, treePosition,
+                    Vec3(0.45f, height, 0.45f), treeTrunkColor);
+                addScenery("RoadsideTreeCrown", sphereMesh,
+                    treePosition + Vec3(0.0f, height * 0.42f, 0.0f),
+                    Vec3(4.0f, 5.0f, 4.0f), treeFoliageColor);
+            }
+
+            // Small wooden rally stakes along both road edges.
+            const float postHeight = 0.85f;
+            const Vec3 postPosition(edge.x + outward.x * 0.9f,
+                m_terrain->GetHeight(edge.x + outward.x * 0.9f, edge.z + outward.z * 0.9f) + postHeight * 0.5f,
+                edge.z + outward.z * 0.9f);
+            addScenery("RoadsideWoodPost", cubeMesh, postPosition,
+                Vec3(0.12f, postHeight, 0.12f), postColor);
+
+            // Red-bordered circular speed-limit signs, roughly every 100 metres.
+            if (i % 12 == 0) {
+                const Vec3 signBase(edge.x + outward.x * 2.0f,
+                    m_terrain->GetHeight(edge.x + outward.x * 2.0f, edge.z + outward.z * 2.0f),
+                    edge.z + outward.z * 2.0f);
+                const float yaw = std::atan2(-outward.x, -outward.z);
+                const Quaternion signRotation = Quaternion::FromAxisAngle(Vec3(0.0f, 1.0f, 0.0f), yaw);
+                const Vec3 signCenter = signBase + Vec3(0.0f, 2.15f, 0.0f);
+                addScenery("SpeedLimitSignPole", cubeMesh,
+                    signBase + Vec3(0.0f, 1.05f, 0.0f), Vec3(0.12f, 2.1f, 0.12f), postColor);
+                addScenery("SpeedLimitSignRedRim", sphereMesh, signCenter,
+                    Vec3(0.85f, 0.85f, 0.18f), Vec3(0.8f, 0.04f, 0.03f), signRotation);
+                addScenery("SpeedLimitSignFace", sphereMesh,
+                    signCenter - outward * 0.025f,
+                    Vec3(0.68f, 0.68f, 0.2f), Vec3(0.95f, 0.95f, 0.9f), signRotation);
+            }
+        }
+    }
 
     auto chassis = m_sceneFactory->CreateBox({
         "CarChassis",
