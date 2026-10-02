@@ -4,6 +4,7 @@ class Engine {
 public:
     Engine();
     void Configure(float idleRPM, float stallRPM, float redlineRPM, float peakTorque, float inertia);
+    void Start();
 
     void Update(
         float throttle,
