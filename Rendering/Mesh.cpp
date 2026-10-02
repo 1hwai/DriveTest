@@ -872,47 +872,42 @@ bool Mesh::CreateTerrain(const Terrain& terrain) {
 
 
 bool Mesh::CreateRoad(const Road& road) {
-    Destroy();
+    return CreateRoadSection(road, 0, road.GetSegmentCount());
+}
 
+bool Mesh::CreateRoadSection(const Road& road, size_t firstSegment, size_t endSegment) {
+    Destroy();
     const std::vector<Vec3>& leftEdge = road.GetLeftEdge();
     const std::vector<Vec3>& rightEdge = road.GetRightEdge();
-
-    if (leftEdge.size() < 2 || leftEdge.size() != rightEdge.size())
+    const size_t segmentCount = road.GetSegmentCount();
+    firstSegment = std::min(firstSegment, segmentCount);
+    endSegment = std::min(endSegment, segmentCount);
+    if (firstSegment >= endSegment || leftEdge.size() < 2 || leftEdge.size() != rightEdge.size())
         return false;
 
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
-    vertices.reserve(leftEdge.size() * 2);
-    indices.reserve(road.GetSegmentCount() * 6);
+    vertices.reserve((endSegment - firstSegment + 1) * 2);
+    indices.reserve((endSegment - firstSegment) * 6);
 
-    for (size_t i = 0; i < leftEdge.size(); ++i) {
+    for (size_t i = firstSegment; i <= endSegment; ++i) {
         const size_t previousIndex = i == 0 ? i : i - 1;
         const size_t nextIndex = std::min(i + 1, leftEdge.size() - 1);
-        const Vec3 tangent =
-            (leftEdge[nextIndex] + rightEdge[nextIndex]) -
+        const Vec3 tangent = (leftEdge[nextIndex] + rightEdge[nextIndex]) -
             (leftEdge[previousIndex] + rightEdge[previousIndex]);
         const Vec3 width = rightEdge[i] - leftEdge[i];
         Vec3 normal = tangent.Cross(width).Normalized();
-
         if (normal.y < 0.0f)
             normal = -normal;
-
-        vertices.push_back({
-            {leftEdge[i].x, leftEdge[i].y, leftEdge[i].z},
-            {normal.x, normal.y, normal.z}
-        });
-        vertices.push_back({
-            {rightEdge[i].x, rightEdge[i].y, rightEdge[i].z},
-            {normal.x, normal.y, normal.z}
-        });
+        vertices.push_back({{leftEdge[i].x, leftEdge[i].y, leftEdge[i].z}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
+        vertices.push_back({{rightEdge[i].x, rightEdge[i].y, rightEdge[i].z}, {normal.x, normal.y, normal.z}, {1.0f, 0.0f}});
     }
 
-    for (size_t i = 0; i < road.GetSegmentCount(); ++i) {
+    for (size_t i = 0; i < endSegment - firstSegment; ++i) {
         const unsigned int left = static_cast<unsigned int>(i * 2);
         const unsigned int right = left + 1;
         const unsigned int nextLeft = left + 2;
         const unsigned int nextRight = left + 3;
-
         indices.push_back(left);
         indices.push_back(nextLeft);
         indices.push_back(right);
@@ -924,25 +919,93 @@ bool Mesh::CreateRoad(const Road& road) {
     glGenVertexArrays(1, &m_vao);
     glGenBuffers(1, &m_vbo);
     glGenBuffers(1, &m_ebo);
-
     if (m_vao == 0 || m_vbo == 0 || m_ebo == 0) {
         Destroy();
         return false;
     }
-
     glBindVertexArray(m_vao);
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     glBufferData(GL_ARRAY_BUFFER, static_cast<long>(vertices.size() * sizeof(Vertex)), vertices.data(), GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<long>(indices.size() * sizeof(unsigned int)), indices.data(), GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, position)));
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, normal)));
-    glEnableVertexAttribArray(1);
-
+    ConfigureVertexAttributes();
     glBindVertexArray(0);
+    m_vertexCount = 0;
+    m_indexCount = static_cast<unsigned int>(indices.size());
+    m_indexed = true;
+    return true;
+}
 
+bool Mesh::CreateRoadsideWall(const Terrain& terrain, const Road& road, bool leftSide, size_t firstSegment, size_t endSegment, float offset, float wallHeight) {
+    Destroy();
+    const std::vector<Vec3>& leftEdge = road.GetLeftEdge();
+    const std::vector<Vec3>& rightEdge = road.GetRightEdge();
+    const size_t segmentCount = road.GetSegmentCount();
+    firstSegment = std::min(firstSegment, segmentCount);
+    endSegment = std::min(endSegment, segmentCount);
+    if (firstSegment >= endSegment || leftEdge.size() < 2 || leftEdge.size() != rightEdge.size())
+        return false;
+
+    std::vector<Vertex> vertices;
+    std::vector<unsigned int> indices;
+    vertices.reserve((endSegment - firstSegment + 1) * 4);
+    indices.reserve((endSegment - firstSegment) * 6);
+
+    for (size_t i = firstSegment; i <= endSegment; ++i) {
+        const Vec3 center = (leftEdge[i] + rightEdge[i]) * 0.5f;
+        const Vec3 edge = leftSide ? leftEdge[i] : rightEdge[i];
+        Vec3 outward = edge - center;
+        outward.y = 0.0f;
+        if (outward.LengthSquared() < 0.0001f)
+            outward = Vec3(leftSide ? -1.0f : 1.0f, 0.0f, 0.0f);
+        else
+            outward = outward.Normalized();
+
+        const float x = edge.x + outward.x * offset;
+        const float z = edge.z + outward.z * offset;
+        const float ground = terrain.GetHeight(x, z);
+        if (!std::isfinite(ground))
+            return false;
+
+        const float variation = 0.68f + 0.18f * std::sin(static_cast<float>(i) * 0.37f) +
+            0.12f * std::sin(static_cast<float>(i) * 0.113f + (leftSide ? 1.7f : 0.3f));
+        const float top = ground + wallHeight * variation;
+        const Vec3 tangent = (leftEdge[std::min(i + 1, segmentCount)] + rightEdge[std::min(i + 1, segmentCount)]) -
+            (leftEdge[i == 0 ? i : i - 1] + rightEdge[i == 0 ? i : i - 1]);
+        Vec3 normal = leftSide ? tangent.Cross(Vec3(0.0f, 1.0f, 0.0f)) : Vec3(0.0f, 1.0f, 0.0f).Cross(tangent);
+        normal.y = 0.0f;
+        normal = normal.Normalized();
+
+        vertices.push_back({{x, ground, z}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
+        vertices.push_back({{x, top, z}, {normal.x, normal.y, normal.z}, {0.0f, 1.0f}});
+    }
+
+    for (size_t i = 0; i < endSegment - firstSegment; ++i) {
+        const unsigned int bottomA = static_cast<unsigned int>(i * 2);
+        const unsigned int topA = bottomA + 1;
+        const unsigned int bottomB = bottomA + 2;
+        const unsigned int topB = bottomA + 3;
+        if (leftSide) {
+            indices.insert(indices.end(), {bottomA, bottomB, topA, bottomB, topB, topA});
+        } else {
+            indices.insert(indices.end(), {bottomA, topA, bottomB, bottomB, topA, topB});
+        }
+    }
+
+    glGenVertexArrays(1, &m_vao);
+    glGenBuffers(1, &m_vbo);
+    glGenBuffers(1, &m_ebo);
+    if (m_vao == 0 || m_vbo == 0 || m_ebo == 0) {
+        Destroy();
+        return false;
+    }
+    glBindVertexArray(m_vao);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<long>(vertices.size() * sizeof(Vertex)), vertices.data(), GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<long>(indices.size() * sizeof(unsigned int)), indices.data(), GL_STATIC_DRAW);
+    ConfigureVertexAttributes();
+    glBindVertexArray(0);
     m_vertexCount = 0;
     m_indexCount = static_cast<unsigned int>(indices.size());
     m_indexed = true;
