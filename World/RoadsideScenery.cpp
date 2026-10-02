@@ -21,7 +21,9 @@ std::vector<std::unique_ptr<Object>> RoadsideScenery::Create(
     if (!meshManager.CreateCylinder("cylinder") ||
         !meshManager.CreateDisc("sign_disc") ||
         !meshManager.CreateFoliageBillboard("tree_billboard") ||
-        !meshManager.CreateFoliageBillboard("shrub_billboard", true))
+        !meshManager.CreateFoliageBillboard("shrub_billboard", true) ||
+        !meshManager.LoadTexture("tree_billboard", "Assets/nature/tree_basic.jpeg", true) ||
+        !meshManager.LoadTexture("shrub_billboard", "Assets/nature/bush.jpeg", true))
         return {};
 
     Mesh* cubeMesh = meshManager.Get("cube");
