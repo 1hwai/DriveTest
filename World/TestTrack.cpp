@@ -39,7 +39,8 @@ bool TestTrack::Initialize(MeshManager& meshManager, SceneFactory& sceneFactory)
     };
 
     m_terrain = std::make_unique<Terrain>(1025, 10000.0f, 35.0f, 0.0015f, 5, 1337, elevationProfile, bumps);
-    if (!meshManager.CreateTerrain("terrain", *m_terrain))
+    if (!meshManager.CreateTerrain("terrain", *m_terrain) ||
+        !meshManager.LoadTexture("terrain", "Assets/road/dirt.jpg"))
         return false;
 
     m_road = std::make_unique<Road>();
@@ -69,6 +70,19 @@ bool TestTrack::Initialize(MeshManager& meshManager, SceneFactory& sceneFactory)
     const auto addRoadVisual = [&](const std::string& name, size_t first, size_t end, RenderSurface surface, float blend) {
         if (first >= end || !meshManager.CreateRoadSection(name, *m_road, first, end))
             return false;
+
+        bool textureLoaded = false;
+        if (surface == RenderSurface::Tarmac) {
+            textureLoaded = meshManager.LoadTexture(name, "Assets/road/asphalt.jpg");
+        } else if (surface == RenderSurface::Transition) {
+            textureLoaded = meshManager.LoadTexture(name, "Assets/road/asphalt.jpg") &&
+                meshManager.LoadTexture(name, "Assets/road/dirt.jpg", false, true);
+        } else if (surface == RenderSurface::Gravel) {
+            textureLoaded = meshManager.LoadTexture(name, "Assets/road/dirt.jpg");
+        }
+        if (!textureLoaded)
+            return false;
+
         auto object = std::make_unique<Object>();
         object->SetName(name);
         object->SetScenePersistent(false);
