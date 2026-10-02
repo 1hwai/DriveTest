@@ -119,6 +119,11 @@ bool MeshManager::LoadFromFile(const std::string& name, const std::string& path,
     return true;
 }
 
+bool MeshManager::LoadTexture(const std::string& name, const std::string& path, bool removeBackground, bool secondary) {
+    Mesh* mesh = Get(name);
+    return mesh != nullptr && mesh->LoadTexture(path, removeBackground, secondary);
+}
+
 bool MeshManager::CreateTerrain(const std::string& name, const Terrain& terrain) {
     if (m_meshes.find(name) != m_meshes.end())
         return false;
