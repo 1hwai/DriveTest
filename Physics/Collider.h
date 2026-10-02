@@ -5,12 +5,14 @@
 
 class RigidBody;
 class Terrain;
+class Road;
 
 enum class ColliderShape {
     Box,
     Sphere,
     Plane,
-    Terrain
+    Terrain,
+    Road
 };
 
 class Collider {
@@ -36,6 +38,9 @@ public:
     void SetTerrain(const Terrain* terrain);
     const Terrain* GetTerrain() const;
 
+    void SetRoad(const Road* road);
+    const Road* GetRoad() const;
+
     void SetRigidBody(RigidBody* rigidBody);
 
     RigidBody* GetRigidBody();
@@ -50,6 +55,7 @@ private:
     float m_radius;
     float m_planeHeight;
     const Terrain* m_terrain;
+    const Road* m_road;
     RigidBody* m_rigidBody;
     Material m_material;
 };
