@@ -5,6 +5,7 @@
 #include "../Physics/PhysicsWorld.h"
 #include "../Physics/RigidBody.h"
 #include "../Physics/Terrain.h"
+#include "../Physics/Road.h"
 #include "../Rendering/Mesh.h"
 #include "../Rendering/MeshManager.h"
 
@@ -171,3 +172,32 @@ std::unique_ptr<Object> SceneFactory::CreateTerrain(
 
     return object;
 }
+
+std::unique_ptr<Object> SceneFactory::CreateRoad(
+    const RoadSettings& settings,
+    const Road& road
+) {
+    Mesh* mesh = m_meshManager.Get("road");
+
+    if (mesh == nullptr)
+        return nullptr;
+
+    auto object = std::make_unique<Object>();
+    object->SetName(settings.name);
+    object->SetMesh(mesh);
+
+    RigidBody* body = m_physicsWorld.CreateRigidBody();
+    body->SetMass(0.0f);
+
+    Collider* collider = m_physicsWorld.CreateCollider();
+    collider->SetShape(ColliderShape::Road);
+    collider->SetRoad(&road);
+    collider->SetRigidBody(body);
+    collider->GetMaterial().SetRestitution(settings.restitution);
+    collider->GetMaterial().SetFriction(settings.friction);
+
+    object->SetRigidBody(body);
+    object->SetCollider(collider);
+    return object;
+}
+
