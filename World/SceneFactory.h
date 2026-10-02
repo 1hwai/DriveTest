@@ -9,6 +9,7 @@ class MeshManager;
 class PhysicsWorld;
 class Object;
 class Terrain;
+class Road;
 
 struct BoxSettings {
     std::string name;
@@ -39,6 +40,12 @@ struct TerrainSettings {
     float friction;
 };
 
+struct RoadSettings {
+    std::string name;
+    float restitution;
+    float friction;
+};
+
 class SceneFactory {
 public:
     SceneFactory(
@@ -61,6 +68,11 @@ public:
     std::unique_ptr<Object> CreateTerrain(
         const TerrainSettings& settings,
         const Terrain& terrain
+    );
+
+    std::unique_ptr<Object> CreateRoad(
+        const RoadSettings& settings,
+        const Road& road
     );
 
 private:
