@@ -73,7 +73,7 @@ bool VehicleConfig::Load(const std::string& path, std::string& error) {
 
 #define READ(key, target) do { const auto it = values.find(key); if (it != values.end()) target = it->second; } while (false)
     READ("mass", mass);
-    READ("initialHeight", initialHeight);
+    READ("spawnClearance", spawnClearance);
     READ("ColliderHalfExtentsX", colliderHalfExtents.x);
     READ("ColliderHalfExtentsY", colliderHalfExtents.y);
     READ("ColliderHalfExtentsZ", colliderHalfExtents.z);
@@ -110,7 +110,7 @@ bool VehicleConfig::Load(const std::string& path, std::string& error) {
 
     if (!gears.empty()) gearRatios = gears;
     const char* known[] = {
-        "mass","initialHeight","ColliderHalfExtentsX","ColliderHalfExtentsY","ColliderHalfExtentsZ",
+        "mass","spawnClearance","ColliderHalfExtentsX","ColliderHalfExtentsY","ColliderHalfExtentsZ",
         "wheelRadius","wheelInertia","suspensionRestLength","suspensionBumpTravel","suspensionReboundTravel",
         "frontSpringRate","rearSpringRate","frontCompressionDamping","frontReboundDamping","rearCompressionDamping","rearReboundDamping",
         "staticFriction","dynamicFriction","longitudinalStiffness","lateralStiffness","rollingResistance","brakeTorque","maxSteeringAngle",
@@ -127,7 +127,7 @@ bool VehicleConfig::Load(const std::string& path, std::string& error) {
 }
 
 bool VehicleConfig::Validate(std::string& error) const {
-    if (mass <= 0.0f || initialHeight <= 0.0f ||
+    if (mass <= 0.0f || spawnClearance <= 0.0f ||
         colliderHalfExtents.x <= 0.0f || colliderHalfExtents.y <= 0.0f || colliderHalfExtents.z <= 0.0f ||
         wheelRadius <= 0.0f || wheelInertia <= 0.0f) {
         error = "Mass, height, collider dimensions and wheel values must be positive";
