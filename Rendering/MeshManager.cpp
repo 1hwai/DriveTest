@@ -2,6 +2,7 @@
 
 #include "Mesh.h"
 #include "../Physics/Terrain.h"
+#include "../Physics/Road.h"
 
 MeshManager::~MeshManager() = default;
 
@@ -91,6 +92,20 @@ bool MeshManager::CreateTerrain(const std::string& name, const Terrain& terrain)
         std::move(mesh)
     );
 
+    return true;
+}
+
+
+bool MeshManager::CreateRoad(const std::string& name, const Road& road) {
+    if (m_meshes.find(name) != m_meshes.end())
+        return false;
+
+    auto mesh = std::make_unique<Mesh>();
+
+    if (!mesh->CreateRoad(road))
+        return false;
+
+    m_meshes.emplace(name, std::move(mesh));
     return true;
 }
 
