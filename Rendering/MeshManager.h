@@ -6,6 +6,7 @@
 
 class Mesh;
 class Terrain;
+class Road;
 
 class MeshManager {
 public:
@@ -17,6 +18,7 @@ public:
     bool CreateSphere(const std::string& name);
     bool CreateWheel(const std::string& name);
     bool CreateTerrain(const std::string& name, const Terrain& terrain);
+    bool CreateRoad(const std::string& name, const Road& road);
 
     Mesh* Get(const std::string& name);
     const Mesh* Get(const std::string& name) const;
