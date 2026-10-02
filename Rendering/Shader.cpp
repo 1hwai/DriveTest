@@ -176,3 +176,8 @@ void Shader::SetVec3(const char* name, const Vec3& vector) {
         vector.z
     );
 }
+void Shader::SetInt(const char* name, int value) {
+    const int location = GetUniformLocation(name);
+    if (location != -1)
+        glUniform1i(location, value);
+}
