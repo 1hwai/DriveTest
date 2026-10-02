@@ -32,7 +32,7 @@ bool TestTrack::Initialize(MeshManager& meshManager, SceneFactory& sceneFactory)
     const std::vector<TerrainBump> bumps = {
         {52.0f, 835.0f, 26.0f, 1.8f},
         {74.0f, 905.0f, 22.0f, -0.8f},
-        {-108.0f, 1735.0f, 24.0f, 1.4f},
+        {-75.0f, 1735.0f, 24.0f, 1.4f},
         {-18.0f, 2690.0f, 25.0f, 1.6f},
         {22.0f, 2970.0f, 21.0f, -0.7f},
         {42.0f, 3030.0f, 24.0f, 1.2f}
