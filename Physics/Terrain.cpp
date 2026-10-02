@@ -145,7 +145,14 @@ float Terrain::GetHeight(float x, float z) const {
     const float h01 = HeightAt(x0, z0 + 1);
     const float h11 = HeightAt(x0 + 1, z0 + 1);
 
-    return Lerp(Lerp(h00, h10, tx), Lerp(h01, h11, tx), tz);
+    // Match the exact triangle split used by Mesh::CreateTerrain.
+    // Bilinear interpolation can place road vertices above or below the rendered terrain.
+    if (tx + tz <= 1.0f)
+        return h00 + (h10 - h00) * tx + (h01 - h00) * tz;
+
+    return h11 +
+        (h01 - h11) * (1.0f - tx) +
+        (h10 - h11) * (1.0f - tz);
 }
 
 Vec3 Terrain::GetNormal(float x, float z) const {
