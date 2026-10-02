@@ -80,12 +80,12 @@ bool MeshManager::CreateWheel(const std::string& name)
 
 
 
-bool MeshManager::LoadFromFile(const std::string& name, const std::string& path) {
+bool MeshManager::LoadFromFile(const std::string& name, const std::string& path, bool wheelOnly) {
     if (m_meshes.find(name) != m_meshes.end())
         return false;
 
     auto mesh = std::make_unique<Mesh>();
-    if (!mesh->LoadFromFile(path))
+    if (!mesh->LoadFromFile(path, wheelOnly))
         return false;
 
     m_meshes.emplace(name, std::move(mesh));
