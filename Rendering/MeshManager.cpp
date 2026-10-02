@@ -150,6 +150,26 @@ bool MeshManager::CreateRoad(const std::string& name, const Road& road) {
     return true;
 }
 
+bool MeshManager::CreateRoadSection(const std::string& name, const Road& road, size_t firstSegment, size_t endSegment) {
+    if (m_meshes.find(name) != m_meshes.end())
+        return false;
+    auto mesh = std::make_unique<Mesh>();
+    if (!mesh->CreateRoadSection(road, firstSegment, endSegment))
+        return false;
+    m_meshes.emplace(name, std::move(mesh));
+    return true;
+}
+
+bool MeshManager::CreateRoadsideWall(const std::string& name, const Terrain& terrain, const Road& road, bool leftSide, size_t firstSegment, size_t endSegment, float offset, float wallHeight) {
+    if (m_meshes.find(name) != m_meshes.end())
+        return false;
+    auto mesh = std::make_unique<Mesh>();
+    if (!mesh->CreateRoadsideWall(terrain, road, leftSide, firstSegment, endSegment, offset, wallHeight))
+        return false;
+    m_meshes.emplace(name, std::move(mesh));
+    return true;
+}
+
 Mesh* MeshManager::Get(const std::string& name)
 {
     auto it = m_meshes.find(name);
