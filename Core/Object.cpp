@@ -6,6 +6,7 @@ Object::Object()
     m_color(1.0f, 1.0f, 1.0f),
     m_scenePersistent(true),
     m_mesh(nullptr),
+    m_billboard(false),
     m_rigidBody(nullptr),
     m_collider(nullptr) {}
 
@@ -39,6 +40,14 @@ void Object::SetScenePersistent(bool persistent) {
 
 bool Object::IsScenePersistent() const {
     return m_scenePersistent;
+}
+
+void Object::SetBillboard(bool billboard) {
+    m_billboard = billboard;
+}
+
+bool Object::IsBillboard() const {
+    return m_billboard;
 }
 
 void Object::SetMesh(Mesh* mesh) {
