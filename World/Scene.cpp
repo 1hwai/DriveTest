@@ -75,6 +75,8 @@ bool Scene::Initialize(
 
     if (!meshManager.CreateWheel("wheel"))
         return false;
+    if (!meshManager.CreateImprezaBody("impreza_body"))
+        return false;
 
     auto ground =
         m_sceneFactory->CreateTerrain({
@@ -136,40 +138,15 @@ bool Scene::Initialize(
         m_wheelObjects[i] = m_objects.back().get();
     }
 
-    const auto addBodyPart = [&](const char* name, const Vec3& position, const Vec3& size, const Vec3& color) {
-        auto part = std::make_unique<Object>();
-        part->SetName(name);
-        part->SetScenePersistent(false);
-        part->SetColor(color);
-        part->SetMesh(meshManager.Get("cube"));
-        AddObject(std::move(part));
-        m_carBodyParts.push_back({m_objects.back().get(), position, size});
-    };
 
-    const Vec3 bodyColor(0.72f, 0.08f, 0.06f);
-    const Vec3 glassColor(0.055f, 0.09f, 0.12f);
-    const Vec3 trimColor(0.12f, 0.12f, 0.12f);
-    addBodyPart("CarHood", Vec3(0.0f, 0.12f, 1.67f), Vec3(1.68f, 0.18f, 0.92f), bodyColor);
-    addBodyPart("CarRearDeck", Vec3(0.0f, 0.12f, -1.67f), Vec3(1.68f, 0.18f, 0.92f), bodyColor);
-    addBodyPart("CarFloor", Vec3(0.0f, -0.13f, 0.0f), Vec3(1.48f, 0.14f, 1.12f), bodyColor);
-    addBodyPart("CarCabin", Vec3(0.0f, 0.25f, 0.0f), Vec3(1.43f, 0.42f, 1.30f), bodyColor);
-    addBodyPart("CarRoof", Vec3(0.0f, 0.49f, -0.02f), Vec3(1.20f, 0.12f, 0.78f), bodyColor);
-    addBodyPart("CarFrontGlass", Vec3(0.0f, 0.39f, 0.665f), Vec3(1.10f, 0.20f, 0.025f), glassColor);
-    addBodyPart("CarRearGlass", Vec3(0.0f, 0.39f, -0.665f), Vec3(1.10f, 0.20f, 0.025f), glassColor);
-    addBodyPart("CarLeftWindow", Vec3(-0.72f, 0.31f, 0.0f), Vec3(0.025f, 0.22f, 0.82f), glassColor);
-    addBodyPart("CarRightWindow", Vec3(0.72f, 0.31f, 0.0f), Vec3(0.025f, 0.22f, 0.82f), glassColor);
-    addBodyPart("CarFrontBumper", Vec3(0.0f, -0.14f, 2.13f), Vec3(1.76f, 0.13f, 0.14f), trimColor);
-    addBodyPart("CarRearBumper", Vec3(0.0f, -0.14f, -2.13f), Vec3(1.76f, 0.13f, 0.14f), trimColor);
-    addBodyPart("CarLeftSill", Vec3(-0.79f, -0.15f, 0.0f), Vec3(0.12f, 0.16f, 1.05f), bodyColor);
-    addBodyPart("CarRightSill", Vec3(0.79f, -0.15f, 0.0f), Vec3(0.12f, 0.16f, 1.05f), bodyColor);
-    const float frontZ = 0.5f * (vehicleConfig.wheelPositions[0].z + vehicleConfig.wheelPositions[1].z);
-    const float rearZ = 0.5f * (vehicleConfig.wheelPositions[2].z + vehicleConfig.wheelPositions[3].z);
-    const float leftX = 0.5f * (vehicleConfig.wheelPositions[0].x + vehicleConfig.wheelPositions[2].x);
-    const float rightX = 0.5f * (vehicleConfig.wheelPositions[1].x + vehicleConfig.wheelPositions[3].x);
-    addBodyPart("CarLeftFenderFront", Vec3(leftX, 0.16f, frontZ), Vec3(0.18f, 0.12f, 0.62f), bodyColor);
-    addBodyPart("CarRightFenderFront", Vec3(rightX, 0.16f, frontZ), Vec3(0.18f, 0.12f, 0.62f), bodyColor);
-    addBodyPart("CarLeftFenderRear", Vec3(leftX, 0.16f, rearZ), Vec3(0.18f, 0.12f, 0.62f), bodyColor);
-    addBodyPart("CarRightFenderRear", Vec3(rightX, 0.16f, rearZ), Vec3(0.18f, 0.12f, 0.62f), bodyColor);
+    auto carBody = std::make_unique<Object>();
+    carBody->SetName("1998 Impreza 22B Body");
+    carBody->SetScenePersistent(false);
+    carBody->SetColor(Vec3(0.02f, 0.17f, 0.82f));
+    carBody->SetMesh(meshManager.Get("impreza_body"));
+    AddObject(std::move(carBody));
+    m_carBodyParts.push_back({m_objects.back().get(), Vec3(0.0f, 0.0f, 0.0f), Vec3(1.0f, 1.0f, 1.0f)});
+
 
     return true;
 }
