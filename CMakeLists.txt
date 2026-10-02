@@ -89,6 +89,12 @@ add_custom_command(TARGET DriveTest POST_BUILD
         "$<TARGET_FILE_DIR:DriveTest>/Shaders"
 )
 
+add_custom_command(TARGET DriveTest POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_CURRENT_SOURCE_DIR}/Assets"
+        "$<TARGET_FILE_DIR:DriveTest>/Assets"
+)
+
 target_include_directories(DriveTest PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/External/glad-generated/include"
     "${STB_IMAGE_INCLUDE_DIR}"
