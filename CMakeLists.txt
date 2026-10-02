@@ -9,6 +9,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 find_package(SDL3 CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(assimp CONFIG REQUIRED)
+find_path(STB_IMAGE_INCLUDE_DIR stb_image.h REQUIRED)
 
 add_executable(DriveTest
     main.cpp
@@ -88,6 +89,7 @@ add_custom_command(TARGET DriveTest POST_BUILD
 
 target_include_directories(DriveTest PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/External/glad-generated/include"
+    "${STB_IMAGE_INCLUDE_DIR}"
 )
 
 
