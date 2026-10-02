@@ -78,6 +78,15 @@ bool MeshManager::CreateWheel(const std::string& name)
     return true;
 }
 
+
+bool MeshManager::CreateImprezaBody(const std::string& name) {
+    if(m_meshes.find(name)!=m_meshes.end()) return false;
+    auto mesh=std::make_unique<Mesh>();
+    if(!mesh->CreateImprezaBody()) return false;
+    m_meshes.emplace(name,std::move(mesh));
+    return true;
+}
+
 bool MeshManager::CreateTerrain(const std::string& name, const Terrain& terrain) {
     if (m_meshes.find(name) != m_meshes.end())
         return false;
