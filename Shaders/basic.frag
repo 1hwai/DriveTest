@@ -28,8 +28,11 @@ void main() {
         pow(max(dot(normal, halfVector), 0.0), 32.0);
 
     vec3 albedo = uBaseColor;
-    if (uUseTexture != 0)
-        albedo *= texture(uBaseColorTexture, vTexCoord).rgb;
+    if (uUseTexture != 0) {
+        vec4 texel = texture(uBaseColorTexture, vTexCoord);
+        if (texel.a < 0.15) discard;
+        albedo *= texel.rgb;
+    }
 
     vec3 color =
         albedo * (0.28 + diffuse * 0.82) +
