@@ -109,6 +109,7 @@ bool Scene::Initialize(
 
     // Lightweight roadside vegetation and sparse rally signage.
     if (!meshManager.CreateCylinder("cylinder") ||
+        !meshManager.CreateDisc("sign_disc") ||
         !meshManager.CreateFoliageBillboard("tree_billboard") ||
         !meshManager.CreateFoliageBillboard("shrub_billboard", true))
         return false;
@@ -117,7 +118,7 @@ bool Scene::Initialize(
     Mesh* cylinderMesh = meshManager.Get("cylinder");
     Mesh* treeMesh = meshManager.Get("tree_billboard");
     Mesh* shrubMesh = meshManager.Get("shrub_billboard");
-    Mesh* sphereMesh = meshManager.Get("sphere");
+    Mesh* signDiscMesh = meshManager.Get("sign_disc");
 
     const auto addScenery = [this](const std::string& name, Mesh* mesh,
         const Vec3& position, const Vec3& scale, const Vec3& color,
@@ -203,10 +204,10 @@ bool Scene::Initialize(
                 const Vec3 signCenter = signBase + Vec3(0.0f, 2.15f, 0.0f);
                 addScenery("SpeedLimitSignPole", cylinderMesh,
                     signBase + Vec3(0.0f, 1.05f, 0.0f), Vec3(0.10f, 2.1f, 0.10f), postColor);
-                addScenery("SpeedLimitSignRedRim", sphereMesh, signCenter,
-                    Vec3(0.82f, 0.82f, 0.12f), red, signRotation);
-                addScenery("SpeedLimitSignFace", sphereMesh, signCenter - outward * 0.035f,
-                    Vec3(0.68f, 0.68f, 0.14f), white, signRotation);
+                addScenery("SpeedLimitSignRedRim", signDiscMesh, signCenter,
+                    Vec3(0.82f, 0.82f, 0.06f), red, signRotation);
+                addScenery("SpeedLimitSignFace", signDiscMesh, signCenter - outward * 0.04f,
+                    Vec3(0.68f, 0.68f, 0.06f), white, signRotation);
             }
         }
     }
