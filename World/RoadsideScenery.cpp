@@ -52,6 +52,25 @@ std::vector<std::unique_ptr<Object>> RoadsideScenery::Create(
     const Vec3 white(0.95f, 0.95f, 0.9f);
     const Vec3 red(0.8f, 0.04f, 0.03f);
 
+    const size_t segmentCount = road.GetSegmentCount();
+    const size_t leftWallStart = segmentCount * 27 / 100;
+    const size_t leftWallEnd = segmentCount * 43 / 100;
+    const size_t rightWallStart = segmentCount * 56 / 100;
+    const size_t rightWallEnd = segmentCount * 72 / 100;
+    if (!meshManager.CreateRoadsideWall("left_rock_wall", terrain, road, true, leftWallStart, leftWallEnd, 10.0f, 9.0f) ||
+        !meshManager.CreateRoadsideWall("right_rock_wall", terrain, road, false, rightWallStart, rightWallEnd, 10.0f, 8.0f))
+        return {};
+
+    for (const std::string& wallName : {std::string("left_rock_wall"), std::string("right_rock_wall")}) {
+        auto wall = std::make_unique<Object>();
+        wall->SetName(wallName == "left_rock_wall" ? "LeftRockCut" : "RightRockCut");
+        wall->SetScenePersistent(false);
+        wall->SetMesh(meshManager.Get(wallName));
+        wall->SetColor(Vec3(1.0f, 1.0f, 1.0f));
+        wall->SetRenderSurface(RenderSurface::Rock);
+        objects.push_back(std::move(wall));
+    }
+
     for (size_t i = 0; i < leftEdge.size(); i += 2) {
         const Vec3 center((leftEdge[i].x + rightEdge[i].x) * 0.5f,
             (leftEdge[i].y + rightEdge[i].y) * 0.5f,
