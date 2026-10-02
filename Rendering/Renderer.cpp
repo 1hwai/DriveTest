@@ -4,6 +4,8 @@
 #include <glad/gl.h>
 #include <SDL3/SDL_opengl.h>
 #include <iostream>
+#include <cmath>
+#include "../Core/Math/Transform.h"
 
 namespace {
     Mat3 GetNormalMatrix(const Mat4& model) {
@@ -143,8 +145,13 @@ void Renderer::Render(const Scene& world) {
         if (mesh == nullptr)
             continue;
 
-        const Mat4 model =
-            object->GetTransform().GetMatrix();
+        Transform renderTransform = object->GetTransform();
+        if (object->IsBillboard()) {
+            const Vec3 toCamera = world.GetCamera().GetPosition() - renderTransform.position;
+            const float yaw = std::atan2(toCamera.x, toCamera.z);
+            renderTransform.rotation = Quaternion::FromAxisAngle(Vec3(0.0f, 1.0f, 0.0f), yaw);
+        }
+        const Mat4 model = renderTransform.GetMatrix();
 
         m_shader.SetMat4("uModel", model);
         m_shader.SetMat3(
