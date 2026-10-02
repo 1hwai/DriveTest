@@ -192,7 +192,7 @@ bool Scene::Initialize(
             }
 
             // Exactly two speed-limit signs along the test route.
-            if (side == 0 && (i == leftEdge.size() / 3 || i == (leftEdge.size() * 2) / 3)) {
+            if (side == 0 && ((i >= leftEdge.size() / 3 && i < leftEdge.size() / 3 + 2) || (i >= (leftEdge.size() * 2) / 3 && i < (leftEdge.size() * 2) / 3 + 2))) {
                 const float signX = edge.x + outward.x * 2.0f;
                 const float signZ = edge.z + outward.z * 2.0f;
                 const float signGround = m_terrain->GetHeight(signX, signZ);
