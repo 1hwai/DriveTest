@@ -61,6 +61,8 @@ Mesh::Mesh()
     m_vertexCount(0),
     m_indexCount(0),
     m_indexed(false),
+    m_materialTexture(0),
+    m_secondaryTexture(0),
     m_submeshes(),
     m_textures() {}
 
@@ -414,69 +416,93 @@ bool Mesh::CreateFoliageBillboard(bool shrub) {
         {{-0.5f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}}
     };
     const unsigned int indices[] = {0, 1, 2, 0, 2, 3, 2, 1, 0, 3, 2, 0};
-    Submesh submesh;
-    glGenVertexArrays(1, &submesh.vao);
-    glGenBuffers(1, &submesh.vbo);
-    glGenBuffers(1, &submesh.ebo);
-    if (!submesh.vao || !submesh.vbo || !submesh.ebo) { Destroy(); return false; }
-    glBindVertexArray(submesh.vao);
-    glBindBuffer(GL_ARRAY_BUFFER, submesh.vbo);
+    (void)shrub;
+
+    glGenVertexArrays(1, &m_vao);
+    glGenBuffers(1, &m_vbo);
+    glGenBuffers(1, &m_ebo);
+    if (!m_vao || !m_vbo || !m_ebo) {
+        Destroy();
+        return false;
+    }
+
+    glBindVertexArray(m_vao);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, submesh.ebo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     ConfigureVertexAttributes();
     glBindVertexArray(0);
-    submesh.indexCount = 12;
 
-    constexpr int width = 64, height = 128;
-    std::vector<unsigned char> pixels(width * height * 4, 0);
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
-            const float nx = (x + 0.5f) / width * 2.0f - 1.0f;
-            const float ny = (y + 0.5f) / height;
-            bool visible = false;
-            unsigned char red = 38, green = 100, blue = 36;
-            if (!shrub) {
-                if (ny < 0.23f && std::abs(nx) < 0.065f) {
-                    visible = true; red = 91; green = 61; blue = 36;
-                } else if (ny >= 0.18f) {
-                    const float layer = std::fmod(ny * 5.2f, 1.0f);
-                    visible = std::abs(nx) < std::max(0.08f, (1.0f - ny) * 0.78f) && layer < 0.84f;
-                    const int variation = ((x * 17 + y * 31) % 23) - 11;
-                    red = static_cast<unsigned char>(std::clamp(25 + variation, 8, 55));
-                    green = static_cast<unsigned char>(std::clamp(82 + variation * 2, 45, 125));
-                    blue = static_cast<unsigned char>(std::clamp(27 + variation / 2, 12, 45));
-                }
-            } else {
-                const float dx = nx * 0.92f, dy = (ny - 0.36f) * 1.75f;
-                visible = dx * dx + dy * dy < 0.82f ||
-                    (nx + 0.25f) * (nx + 0.25f) + (ny - 0.48f) * (ny - 0.48f) < 0.16f ||
-                    (nx - 0.25f) * (nx - 0.25f) + (ny - 0.48f) * (ny - 0.48f) < 0.16f;
-                const int variation = ((x * 13 + y * 7) % 21) - 10;
-                red = static_cast<unsigned char>(std::clamp(32 + variation, 15, 58));
-                green = static_cast<unsigned char>(std::clamp(95 + variation * 2, 55, 135));
-                blue = static_cast<unsigned char>(std::clamp(28 + variation / 2, 12, 45));
-            }
-            if (visible) {
-                const size_t offset = (static_cast<size_t>(y) * width + x) * 4;
-                pixels[offset] = red; pixels[offset + 1] = green; pixels[offset + 2] = blue; pixels[offset + 3] = 255;
+    m_indexCount = 12;
+    m_indexed = true;
+    return true;
+}
+
+bool Mesh::LoadTexture(const std::string& path, bool removeBackground, bool secondary) {
+    int width = 0, height = 0, channels = 0;
+    stbi_uc* pixels = stbi_load(path.c_str(), &width, &height, &channels, STBI_rgb_alpha);
+    if (!pixels || width <= 0 || height <= 0) {
+        if (pixels) stbi_image_free(pixels);
+        return false;
+    }
+
+    const size_t rowBytes = static_cast<size_t>(width) * 4;
+    std::vector<unsigned char> row(rowBytes);
+    for (int y = 0; y < height / 2; ++y) {
+        unsigned char* top = pixels + static_cast<size_t>(y) * rowBytes;
+        unsigned char* bottom = pixels + static_cast<size_t>(height - 1 - y) * rowBytes;
+        std::copy(top, top + rowBytes, row.begin());
+        std::copy(bottom, bottom + rowBytes, top);
+        std::copy(row.begin(), row.end(), bottom);
+    }
+
+    if (removeBackground) {
+        const auto corner = [&](int x, int y, int channel) {
+            return pixels[(static_cast<size_t>(y) * width + x) * 4 + channel];
+        };
+        float background[3] = {};
+        const int cornerX[4] = {0, width - 1, 0, width - 1};
+        const int cornerY[4] = {0, 0, height - 1, height - 1};
+        for (int i = 0; i < 4; ++i)
+            for (int c = 0; c < 3; ++c)
+                background[c] += corner(cornerX[i], cornerY[i], c) * 0.25f;
+
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                unsigned char* pixel = pixels + (static_cast<size_t>(y) * width + x) * 4;
+                const float dr = pixel[0] - background[0];
+                const float dg = pixel[1] - background[1];
+                const float db = pixel[2] - background[2];
+                const float distance = std::sqrt(dr * dr + dg * dg + db * db);
+                const float alpha = std::clamp((distance - 24.0f) / 36.0f, 0.0f, 1.0f);
+                pixel[3] = static_cast<unsigned char>(alpha * 255.0f);
             }
         }
     }
-    glGenTextures(1, &submesh.texture);
-    if (!submesh.texture) {
-        glDeleteBuffers(1, &submesh.ebo); glDeleteBuffers(1, &submesh.vbo); glDeleteVertexArrays(1, &submesh.vao);
-        Destroy(); return false;
+
+    unsigned int texture = 0;
+    glGenTextures(1, &texture);
+    if (texture == 0) {
+        stbi_image_free(pixels);
+        return false;
     }
-    glBindTexture(GL_TEXTURE_2D, submesh.texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, removeBackground ? GL_CLAMP_TO_EDGE : GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, removeBackground ? GL_CLAMP_TO_EDGE : GL_REPEAT);
     glBindTexture(GL_TEXTURE_2D, 0);
-    m_textures.push_back(submesh.texture);
-    m_submeshes.push_back(submesh);
+    stbi_image_free(pixels);
+
+    if (secondary)
+        m_secondaryTexture = texture;
+    else
+        m_materialTexture = texture;
+    m_textures.push_back(texture);
     return true;
 }
 
@@ -808,7 +834,8 @@ bool Mesh::CreateTerrain(const Terrain& terrain) {
 
             vertices.push_back({
                 {worldX, heights[static_cast<size_t>(z) * resolution + x], worldZ},
-                {normal.x, normal.y, normal.z}
+                {normal.x, normal.y, normal.z},
+                {worldX * 0.08f, worldZ * 0.08f}
             });
         }
     }
@@ -899,8 +926,8 @@ bool Mesh::CreateRoadSection(const Road& road, size_t firstSegment, size_t endSe
         Vec3 normal = tangent.Cross(width).Normalized();
         if (normal.y < 0.0f)
             normal = -normal;
-        vertices.push_back({{leftEdge[i].x, leftEdge[i].y, leftEdge[i].z}, {normal.x, normal.y, normal.z}, {0.0f, 0.0f}});
-        vertices.push_back({{rightEdge[i].x, rightEdge[i].y, rightEdge[i].z}, {normal.x, normal.y, normal.z}, {1.0f, 0.0f}});
+        vertices.push_back({{leftEdge[i].x, leftEdge[i].y, leftEdge[i].z}, {normal.x, normal.y, normal.z}, {0.0f, static_cast<float>(i) * 0.25f}});
+        vertices.push_back({{rightEdge[i].x, rightEdge[i].y, rightEdge[i].z}, {normal.x, normal.y, normal.z}, {1.0f, static_cast<float>(i) * 0.25f}});
     }
 
     for (size_t i = 0; i < endSegment - firstSegment; ++i) {
@@ -1022,14 +1049,26 @@ void Mesh::Draw() const {
 
 void Mesh::Draw(Shader& shader, const Vec3& color) const {
     if (m_submeshes.empty()) {
-        shader.SetInt("uUseTexture", 0);
         shader.SetVec3("uBaseColor", color);
+        shader.SetInt("uBaseColorTexture", 0);
+        shader.SetInt("uSecondaryTexture", 1);
+        shader.SetInt("uUseTexture", m_materialTexture != 0 ? 1 : 0);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, m_materialTexture);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, m_secondaryTexture);
         Draw();
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        shader.SetInt("uUseTexture", 0);
         return;
     }
+
     glActiveTexture(GL_TEXTURE0);
     for (const Submesh& submesh : m_submeshes) {
         shader.SetVec3("uBaseColor", Vec3(color.x * submesh.baseColor.x, color.y * submesh.baseColor.y, color.z * submesh.baseColor.z));
+        shader.SetInt("uBaseColorTexture", 0);
         shader.SetInt("uUseTexture", submesh.texture != 0 ? 1 : 0);
         glBindTexture(GL_TEXTURE_2D, submesh.texture);
         glBindVertexArray(submesh.vao);
@@ -1055,4 +1094,6 @@ void Mesh::Destroy() {
     m_vertexCount = 0;
     m_indexCount = 0;
     m_indexed = false;
+    m_materialTexture = 0;
+    m_secondaryTexture = 0;
 }
