@@ -79,20 +79,16 @@ bool MeshManager::CreateWheel(const std::string& name)
 }
 
 
-bool MeshManager::CreateImprezaBody(const std::string& name) {
-    if(m_meshes.find(name)!=m_meshes.end()) return false;
-    auto mesh=std::make_unique<Mesh>();
-    if(!mesh->CreateImprezaBody()) return false;
-    m_meshes.emplace(name,std::move(mesh));
-    return true;
-}
 
+bool MeshManager::LoadFromFile(const std::string& name, const std::string& path) {
+    if (m_meshes.find(name) != m_meshes.end())
+        return false;
 
-bool MeshManager::CreateImprezaGlass(const std::string& name) {
-    if(m_meshes.find(name)!=m_meshes.end()) return false;
-    auto mesh=std::make_unique<Mesh>();
-    if(!mesh->CreateImprezaGlass()) return false;
-    m_meshes.emplace(name,std::move(mesh));
+    auto mesh = std::make_unique<Mesh>();
+    if (!mesh->LoadFromFile(path))
+        return false;
+
+    m_meshes.emplace(name, std::move(mesh));
     return true;
 }
 
