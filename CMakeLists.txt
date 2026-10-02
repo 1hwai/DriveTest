@@ -65,6 +65,7 @@ add_executable(DriveTest
     Core/Debug/Logger.cpp
 
     World/Scene.cpp
+    World/RoadsideScenery.cpp
     World/SceneFactory.cpp
     World/SceneSerializer.cpp
 
