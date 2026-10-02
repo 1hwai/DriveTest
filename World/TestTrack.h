@@ -11,6 +11,7 @@ class Road;
 
 class TestTrack {
 public:
+    TestTrack();
     ~TestTrack();
     bool Initialize(MeshManager& meshManager, SceneFactory& sceneFactory);
 
