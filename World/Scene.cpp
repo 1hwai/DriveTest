@@ -348,7 +348,7 @@ void Scene::Update(
             const Quaternion wheelSpin =
                 Quaternion::FromAxisAngle(
                     Vec3(1.0f, 0.0f, 0.0f),
-                    -wheelAngle
+                    wheelAngle
                 );
 
             m_wheelObjects[i]->GetTransform().rotation =
