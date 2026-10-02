@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include "Shader.h"
 
 #include "../Physics/Terrain.h"
 #include "../Physics/Road.h"
@@ -9,6 +10,10 @@
 #include <vector>
 #include <cmath>
 #include <cfloat>
+#include <string>
+#include <unordered_map>
+#include <assimp/material.h>
+#include <stb_image.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
@@ -17,7 +22,39 @@ namespace {
     struct Vertex {
         float position[3];
         float normal[3];
+        float texCoord[2];
     };
+
+    struct NodeMesh {
+        const aiMesh* mesh;
+        aiMatrix4x4 transform;
+    };
+
+    void CollectNodeMeshes(const aiScene* scene, const aiNode* node, const aiMatrix4x4& parentTransform, std::vector<NodeMesh>& output) {
+        const aiMatrix4x4 transform = parentTransform * node->mTransformation;
+        for (unsigned int i = 0; i < node->mNumMeshes; ++i)
+            output.push_back({scene->mMeshes[node->mMeshes[i]], transform});
+        for (unsigned int i = 0; i < node->mNumChildren; ++i)
+            CollectNodeMeshes(scene, node->mChildren[i], transform, output);
+    }
+
+    bool IsWheelMesh(const aiMesh* mesh) {
+        const std::string name = mesh->mName.C_Str();
+        return name.rfind("Wheel.", 0) == 0 && name.find("_wheel_0") != std::string::npos;
+    }
+
+    bool IsWheelAssemblyMesh(const aiMesh* mesh) {
+        return std::string(mesh->mName.C_Str()).find("_wheel_0") != std::string::npos;
+    }
+
+    void ConfigureVertexAttributes() {
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, position)));
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, normal)));
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, texCoord)));
+        glEnableVertexAttribArray(2);
+    }
 }
 
 Mesh::Mesh()
@@ -26,7 +63,9 @@ Mesh::Mesh()
     m_ebo(0),
     m_vertexCount(0),
     m_indexCount(0),
-    m_indexed(false) {}
+    m_indexed(false),
+    m_submeshes(),
+    m_textures() {}
 
 Mesh::~Mesh() {
     Destroy();
@@ -432,35 +471,23 @@ bool Mesh::CreateWheel(int segments, int widthSegments) {
 
 
 
-bool Mesh::LoadFromFile(const std::string& path) {
+bool Mesh::LoadFromFile(const std::string& path, bool wheelOnly) {
     Destroy();
-
     Assimp::Importer importer;
-    const aiScene* importedScene = importer.ReadFile(
-        path,
-        aiProcess_Triangulate |
-        aiProcess_GenSmoothNormals |
-        aiProcess_JoinIdenticalVertices |
-        aiProcess_PreTransformVertices |
-        aiProcess_ImproveCacheLocality
-    );
-
-    if (importedScene == nullptr || importedScene->mNumMeshes == 0)
+    const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality);
+    if (scene == nullptr || scene->mRootNode == nullptr || scene->mNumMeshes == 0)
         return false;
 
-    std::vector<Vertex> vertices;
-    std::vector<unsigned int> indices;
+    std::vector<NodeMesh> sourceMeshes;
+    CollectNodeMeshes(scene, scene->mRootNode, aiMatrix4x4(), sourceMeshes);
+    if (sourceMeshes.empty())
+        return false;
+
     aiVector3D minimum(FLT_MAX, FLT_MAX, FLT_MAX);
     aiVector3D maximum(-FLT_MAX, -FLT_MAX, -FLT_MAX);
-
-    for (unsigned int meshIndex = 0; meshIndex < importedScene->mNumMeshes; ++meshIndex) {
-        const aiMesh* source = importedScene->mMeshes[meshIndex];
-        const unsigned int baseVertex = static_cast<unsigned int>(vertices.size());
-
-        for (unsigned int i = 0; i < source->mNumVertices; ++i) {
-            const aiVector3D& p = source->mVertices[i];
-            const aiVector3D n = source->HasNormals() ? source->mNormals[i] : aiVector3D(0.0f, 1.0f, 0.0f);
-            vertices.push_back({{p.x, p.y, p.z}, {n.x, n.y, n.z}});
+    for (const NodeMesh& item : sourceMeshes) {
+        for (unsigned int i = 0; i < item.mesh->mNumVertices; ++i) {
+            const aiVector3D p = item.transform * item.mesh->mVertices[i];
             minimum.x = std::min(minimum.x, p.x);
             minimum.y = std::min(minimum.y, p.y);
             minimum.z = std::min(minimum.z, p.z);
@@ -468,57 +495,151 @@ bool Mesh::LoadFromFile(const std::string& path) {
             maximum.y = std::max(maximum.y, p.y);
             maximum.z = std::max(maximum.z, p.z);
         }
+    }
+    const float horizontalLength = std::max(maximum.x - minimum.x, maximum.z - minimum.z);
+    if (horizontalLength <= 0.001f || maximum.y - minimum.y <= 0.001f)
+        return false;
+    const float modelScale = 4.4f / horizontalLength;
+    const aiVector3D modelCenter((minimum.x + maximum.x) * 0.5f, minimum.y, (minimum.z + maximum.z) * 0.5f);
+    std::unordered_map<unsigned int, unsigned int> materialTextures;
 
+    auto loadTexture = [&](unsigned int materialIndex) -> unsigned int {
+        const auto cached = materialTextures.find(materialIndex);
+        if (cached != materialTextures.end()) return cached->second;
+        if (materialIndex >= scene->mNumMaterials) return 0;
+        const aiMaterial* material = scene->mMaterials[materialIndex];
+        aiString texturePath;
+        if (material->GetTexture(aiTextureType_BASE_COLOR, 0, &texturePath) != AI_SUCCESS &&
+            material->GetTexture(aiTextureType_DIFFUSE, 0, &texturePath) != AI_SUCCESS) {
+            materialTextures.emplace(materialIndex, 0);
+            return 0;
+        }
+        const aiTexture* embedded = scene->GetEmbeddedTexture(texturePath.C_Str());
+        if (embedded == nullptr || embedded->mHeight != 0 || embedded->mWidth == 0) {
+            materialTextures.emplace(materialIndex, 0);
+            return 0;
+        }
+        int width = 0, textureHeight = 0, channels = 0;
+        stbi_uc* pixels = stbi_load_from_memory(reinterpret_cast<const stbi_uc*>(embedded->pcData), static_cast<int>(embedded->mWidth), &width, &textureHeight, &channels, STBI_rgb_alpha);
+        if (pixels == nullptr) {
+            materialTextures.emplace(materialIndex, 0);
+            return 0;
+        }
+        unsigned int texture = 0;
+        glGenTextures(1, &texture);
+        if (texture != 0) {
+            glBindTexture(GL_TEXTURE_2D, texture);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+            glGenerateMipmap(GL_TEXTURE_2D);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            m_textures.push_back(texture);
+        }
+        stbi_image_free(pixels);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        materialTextures.emplace(materialIndex, texture);
+        return texture;
+    };
+
+    bool loadedWheel = false;
+    for (const NodeMesh& item : sourceMeshes) {
+        const aiMesh* source = item.mesh;
+        if (wheelOnly) {
+            if (!IsWheelMesh(source) || loadedWheel) continue;
+            loadedWheel = true;
+        } else if (IsWheelAssemblyMesh(source)) {
+            continue;
+        }
+
+        std::vector<Vertex> vertices;
+        std::vector<unsigned int> indices;
+        vertices.reserve(source->mNumVertices);
+        indices.reserve(source->mNumFaces * 3);
+        aiMatrix3x3 normalTransform(item.transform);
+        normalTransform.Inverse();
+        normalTransform.Transpose();
+        aiVector3D partMinimum(FLT_MAX, FLT_MAX, FLT_MAX);
+        aiVector3D partMaximum(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+
+        for (unsigned int i = 0; i < source->mNumVertices; ++i) {
+            const aiVector3D p = item.transform * source->mVertices[i];
+            const aiVector3D n = normalTransform * (source->HasNormals() ? source->mNormals[i] : aiVector3D(0.0f, 1.0f, 0.0f));
+            Vertex vertex = {
+                {(p.x - modelCenter.x) * modelScale, (p.y - modelCenter.y) * modelScale - 0.74f, (p.z - modelCenter.z) * modelScale},
+                {n.x, n.y, n.z},
+                {0.0f, 0.0f}
+            };
+            if (source->HasTextureCoords(0)) {
+                vertex.texCoord[0] = source->mTextureCoords[0][i].x;
+                vertex.texCoord[1] = source->mTextureCoords[0][i].y;
+            }
+            vertices.push_back(vertex);
+            partMinimum.x = std::min(partMinimum.x, vertex.position[0]);
+            partMinimum.y = std::min(partMinimum.y, vertex.position[1]);
+            partMinimum.z = std::min(partMinimum.z, vertex.position[2]);
+            partMaximum.x = std::max(partMaximum.x, vertex.position[0]);
+            partMaximum.y = std::max(partMaximum.y, vertex.position[1]);
+            partMaximum.z = std::max(partMaximum.z, vertex.position[2]);
+        }
         for (unsigned int faceIndex = 0; faceIndex < source->mNumFaces; ++faceIndex) {
             const aiFace& face = source->mFaces[faceIndex];
-            for (unsigned int i = 0; i < face.mNumIndices; ++i)
-                indices.push_back(baseVertex + face.mIndices[i]);
+            for (unsigned int i = 0; i < face.mNumIndices; ++i) indices.push_back(face.mIndices[i]);
         }
+        if (vertices.empty() || indices.empty()) continue;
+
+        if (wheelOnly) {
+            const float cx = (partMinimum.x + partMaximum.x) * 0.5f;
+            const float cy = (partMinimum.y + partMaximum.y) * 0.5f;
+            const float cz = (partMinimum.z + partMaximum.z) * 0.5f;
+            const float radius = std::max(partMaximum.y - partMinimum.y, partMaximum.z - partMinimum.z) * 0.5f;
+            if (radius <= 0.001f) continue;
+            const float wheelScale = 0.5f / radius;
+            for (Vertex& vertex : vertices) {
+                vertex.position[0] = (vertex.position[0] - cx) * wheelScale;
+                vertex.position[1] = (vertex.position[1] - cy) * wheelScale;
+                vertex.position[2] = (vertex.position[2] - cz) * wheelScale;
+            }
+        }
+
+        Submesh submesh;
+        glGenVertexArrays(1, &submesh.vao);
+        glGenBuffers(1, &submesh.vbo);
+        glGenBuffers(1, &submesh.ebo);
+        if (submesh.vao == 0 || submesh.vbo == 0 || submesh.ebo == 0) {
+            if (submesh.ebo) glDeleteBuffers(1, &submesh.ebo);
+            if (submesh.vbo) glDeleteBuffers(1, &submesh.vbo);
+            if (submesh.vao) glDeleteVertexArrays(1, &submesh.vao);
+            Destroy();
+            return false;
+        }
+        glBindVertexArray(submesh.vao);
+        glBindBuffer(GL_ARRAY_BUFFER, submesh.vbo);
+        glBufferData(GL_ARRAY_BUFFER, static_cast<long>(vertices.size() * sizeof(Vertex)), vertices.data(), GL_STATIC_DRAW);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, submesh.ebo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<long>(indices.size() * sizeof(unsigned int)), indices.data(), GL_STATIC_DRAW);
+        ConfigureVertexAttributes();
+        glBindVertexArray(0);
+        submesh.indexCount = static_cast<unsigned int>(indices.size());
+
+        if (source->mMaterialIndex < scene->mNumMaterials) {
+            const aiMaterial* material = scene->mMaterials[source->mMaterialIndex];
+            aiColor4D color(1.0f, 1.0f, 1.0f, 1.0f);
+            if (material->Get(AI_MATKEY_BASE_COLOR, color) != AI_SUCCESS)
+                material->Get(AI_MATKEY_COLOR_DIFFUSE, color);
+            submesh.baseColor = Vec3(color.r, color.g, color.b);
+            submesh.texture = loadTexture(source->mMaterialIndex);
+        }
+        m_submeshes.push_back(submesh);
+        if (wheelOnly) break;
     }
 
-    const float width = maximum.x - minimum.x;
-    const float height = maximum.y - minimum.y;
-    const float depth = maximum.z - minimum.z;
-    const float horizontalLength = std::max(width, depth);
-    if (vertices.empty() || indices.empty() || horizontalLength <= 0.001f || height <= 0.001f)
-        return false;
-
-    // Normalize unknown source units to a roughly 4.4 m car and align the tire bottoms with the simulated wheels.
-    const float scale = 4.4f / horizontalLength;
-    for (Vertex& vertex : vertices) {
-        vertex.position[0] = (vertex.position[0] - (minimum.x + maximum.x) * 0.5f) * scale;
-        vertex.position[1] = (vertex.position[1] - minimum.y) * scale - 0.74f;
-        vertex.position[2] = (vertex.position[2] - (minimum.z + maximum.z) * 0.5f) * scale;
-        Vec3 normal(vertex.normal[0], vertex.normal[1], vertex.normal[2]);
-        normal = normal.Normalized();
-        vertex.normal[0] = normal.x;
-        vertex.normal[1] = normal.y;
-        vertex.normal[2] = normal.z;
-    }
-
-    glGenVertexArrays(1, &m_vao);
-    glGenBuffers(1, &m_vbo);
-    glGenBuffers(1, &m_ebo);
-    if (m_vao == 0 || m_vbo == 0 || m_ebo == 0) {
-        Destroy();
-        return false;
-    }
-
-    glBindVertexArray(m_vao);
-    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    glBufferData(GL_ARRAY_BUFFER, static_cast<long>(vertices.size() * sizeof(Vertex)), vertices.data(), GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<long>(indices.size() * sizeof(unsigned int)), indices.data(), GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, position)));
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, normal)));
-    glEnableVertexAttribArray(1);
     glBindVertexArray(0);
-
-    m_vertexCount = 0;
-    m_indexCount = static_cast<unsigned int>(indices.size());
-    m_indexed = true;
-    return true;
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    return !m_submeshes.empty();
 }
 
 bool Mesh::CreateTerrain(const Terrain& terrain) {
@@ -695,46 +816,45 @@ bool Mesh::CreateRoad(const Road& road) {
 }
 
 void Mesh::Draw() const {
-    if (m_vao == 0)
-        return;
-
+    if (m_vao == 0) return;
     glBindVertexArray(m_vao);
-
-    if (m_indexed) {
-        glDrawElements(
-            GL_TRIANGLES,
-            m_indexCount,
-            GL_UNSIGNED_INT,
-            nullptr
-        );
-    }
-    else {
-        glDrawArrays(
-            GL_TRIANGLES,
-            0,
-            m_vertexCount
-        );
-    }
-
+    if (m_indexed) glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, nullptr);
+    else glDrawArrays(GL_TRIANGLES, 0, m_vertexCount);
     glBindVertexArray(0);
 }
 
+void Mesh::Draw(Shader& shader, const Vec3& color) const {
+    if (m_submeshes.empty()) {
+        shader.SetInt("uUseTexture", 0);
+        shader.SetVec3("uBaseColor", color);
+        Draw();
+        return;
+    }
+    glActiveTexture(GL_TEXTURE0);
+    for (const Submesh& submesh : m_submeshes) {
+        shader.SetVec3("uBaseColor", Vec3(color.x * submesh.baseColor.x, color.y * submesh.baseColor.y, color.z * submesh.baseColor.z));
+        shader.SetInt("uUseTexture", submesh.texture != 0 ? 1 : 0);
+        glBindTexture(GL_TEXTURE_2D, submesh.texture);
+        glBindVertexArray(submesh.vao);
+        glDrawElements(GL_TRIANGLES, submesh.indexCount, GL_UNSIGNED_INT, nullptr);
+    }
+    glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    shader.SetInt("uUseTexture", 0);
+}
+
 void Mesh::Destroy() {
-    if (m_ebo != 0) {
-        glDeleteBuffers(1, &m_ebo);
-        m_ebo = 0;
+    for (Submesh& submesh : m_submeshes) {
+        if (submesh.ebo) glDeleteBuffers(1, &submesh.ebo);
+        if (submesh.vbo) glDeleteBuffers(1, &submesh.vbo);
+        if (submesh.vao) glDeleteVertexArrays(1, &submesh.vao);
     }
-
-    if (m_vbo != 0) {
-        glDeleteBuffers(1, &m_vbo);
-        m_vbo = 0;
-    }
-
-    if (m_vao != 0) {
-        glDeleteVertexArrays(1, &m_vao);
-        m_vao = 0;
-    }
-
+    m_submeshes.clear();
+    for (unsigned int texture : m_textures) if (texture) glDeleteTextures(1, &texture);
+    m_textures.clear();
+    if (m_ebo) { glDeleteBuffers(1, &m_ebo); m_ebo = 0; }
+    if (m_vbo) { glDeleteBuffers(1, &m_vbo); m_vbo = 0; }
+    if (m_vao) { glDeleteVertexArrays(1, &m_vao); m_vao = 0; }
     m_vertexCount = 0;
     m_indexCount = 0;
     m_indexed = false;
