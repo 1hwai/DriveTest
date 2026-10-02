@@ -17,6 +17,7 @@ public:
     bool CreateCube();
     bool CreateSphere(int segments = 16, int rings = 12);
     bool CreateCylinder(int segments = 12);
+    bool CreateDisc(int segments = 32);
     bool CreateFoliageBillboard(bool shrub = false);
     bool CreateWheel(int segments = 32, int widthSegments = 8);
     bool LoadFromFile(const std::string& path, bool wheelOnly = false);
