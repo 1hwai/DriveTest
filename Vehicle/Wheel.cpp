@@ -249,8 +249,9 @@ void Wheel::ApplyTireForce(
     const Vec3 torque =
         radiusVector.Cross(force);
 
+    // The contact force acts on the chassis; the wheel receives the opposite torque.
     m_tireReactionTorque =
-        torque.Dot(axle);
+        -torque.Dot(axle);
 
     m_driveTorque +=
         m_tireReactionTorque;
