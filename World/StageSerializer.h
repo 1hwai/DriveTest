@@ -5,7 +5,13 @@
 #include <vector>
 
 #include "../Core/Math/Vec3.h"
-#include "../Physics/Terrain.h"
+
+struct StageBump {
+    float x;
+    float z;
+    float radius;
+    float height;
+};
 
 struct StageDefinition {
     std::string name = "Untitled";
@@ -16,7 +22,7 @@ struct StageDefinition {
     int terrainOctaves = 5;
     unsigned int terrainSeed = 1337;
     std::vector<std::pair<float, float>> elevationProfile;
-    std::vector<TerrainBump> bumps;
+    std::vector<StageBump> bumps;
     float roadWidth = 8.0f;
     float roadSurfaceOffset = 0.25f;
     std::vector<Vec3> roadControlPoints;
