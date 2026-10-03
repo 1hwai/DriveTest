@@ -521,6 +521,43 @@ namespace {
         int samples = 0;
     };
 
+    bool RunSteeringForceDirectionTest(const char* name, float steering, float expectedYawSign) {
+        VehicleTestRig rig;
+        if (!rig.configLoaded) {
+            Logger::Error("[FAIL] Vehicle config: " + rig.configError);
+            return false;
+        }
+
+        for (int step = 0; step < 240; ++step) {
+            rig.car.SetInput(0.0f, 0.0f, 0.0f, 1.0f);
+            rig.car.UpdatePhysics(rig.physicsWorld, FixedDeltaTime);
+            rig.physicsWorld.Step(FixedDeltaTime);
+        }
+
+        rig.chassis->SetLinearVelocity(Vec3(0.0f, 0.0f, 8.0f));
+        rig.car.SetInput(0.0f, 0.0f, steering, 1.0f);
+        rig.car.UpdatePhysics(rig.physicsWorld, FixedDeltaTime);
+
+        const float yawTorque = rig.chassis->GetTorque().y;
+        std::ostringstream log;
+        log << std::fixed << std::setprecision(3)
+            << "[SteeringForce] test=" << name
+            << " steeringInput=" << steering
+            << " frontWheelAngle=" << rig.car.GetWheel(WheelIndex::FrontLeft).GetSteeringAngle()
+            << " yawTorque=" << yawTorque;
+        Logger::Info(log.str());
+
+        if (!std::isfinite(yawTorque) ||
+            yawTorque * expectedYawSign <= 0.0f) {
+            Logger::Error(std::string("[FAIL] ") + name +
+                " produced yaw torque in the wrong direction");
+            return false;
+        }
+
+        Logger::Info(std::string("[PASS] ") + name + " steering force direction");
+        return true;
+    }
+
     bool RunCorneringDirectionTest(
         const char* name,
         float steering,
@@ -763,6 +800,9 @@ int main() {
         GentleSlalomInput,
         SlalomGear
     ) && passed;
+
+    passed = RunSteeringForceDirectionTest("LeftSteer", 0.35f, -1.0f) && passed;
+    passed = RunSteeringForceDirectionTest("RightSteer", -0.35f, 1.0f) && passed;
 
     passed = RunCorneringLoadTransferDiagnostics() && passed;
 
