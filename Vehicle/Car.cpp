@@ -105,7 +105,15 @@ void Car::UpdatePhysics(
 
     // Input convention: negative = right, positive = left.
     // Positive rotation around +Y turns the +Z-facing wheels toward +X (right).
-    const float steeringAngle = -m_steering * m_maxSteeringAngle;
+    const Vec3 velocity = m_chassis->GetLinearVelocity();
+    const float horizontalSpeed = std::sqrt(
+        velocity.x * velocity.x +
+        velocity.z * velocity.z
+    );
+    const float steeringScale =
+        1.0f / (1.0f + 0.25f * horizontalSpeed);
+    const float steeringAngle =
+        -m_steering * m_maxSteeringAngle * steeringScale;
     m_wheels[ToIndex(WheelIndex::FrontLeft)].SetSteeringAngle(
         steeringAngle
     );
