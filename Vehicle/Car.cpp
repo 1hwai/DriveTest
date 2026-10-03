@@ -83,8 +83,10 @@ void Car::UpdatePhysics(
     if (!m_chassis)
         return;
 
-    const float rearWheelAngularVelocity =
-        0.5f * (
+    const float drivenWheelAngularVelocity =
+        0.25f * (
+            m_wheels[ToIndex(WheelIndex::FrontLeft)].GetAngularVelocity() +
+            m_wheels[ToIndex(WheelIndex::FrontRight)].GetAngularVelocity() +
             m_wheels[ToIndex(WheelIndex::RearLeft)].GetAngularVelocity() +
             m_wheels[ToIndex(WheelIndex::RearRight)].GetAngularVelocity()
         );
@@ -92,7 +94,7 @@ void Car::UpdatePhysics(
     m_powertrain.Update(
         m_throttle,
         m_clutch,
-        rearWheelAngularVelocity,
+        drivenWheelAngularVelocity,
         deltaTime
     );
 
@@ -108,13 +110,19 @@ void Car::UpdatePhysics(
         m_steering * m_maxSteeringAngle
     );
 
-    m_wheels[ToIndex(WheelIndex::FrontLeft)].SetDriveTorque(0.0f);
-    m_wheels[ToIndex(WheelIndex::FrontRight)].SetDriveTorque(0.0f);
+    // AWD center differential: split the available torque evenly
+    // between the front and rear axles, then between left and right wheels.
+    m_wheels[ToIndex(WheelIndex::FrontLeft)].SetDriveTorque(
+        leftDriveTorque * 0.5f
+    );
+    m_wheels[ToIndex(WheelIndex::FrontRight)].SetDriveTorque(
+        rightDriveTorque * 0.5f
+    );
     m_wheels[ToIndex(WheelIndex::RearLeft)].SetDriveTorque(
-        leftDriveTorque
+        leftDriveTorque * 0.5f
     );
     m_wheels[ToIndex(WheelIndex::RearRight)].SetDriveTorque(
-        rightDriveTorque
+        rightDriveTorque * 0.5f
     );
 
     for (size_t i = 0; i < WheelCount; ++i) {
