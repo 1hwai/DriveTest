@@ -13,10 +13,10 @@ struct VehicleConfig {
         Vec3(-0.76f, -0.10f, -1.25f), Vec3(0.76f, -0.10f, -1.25f)
     };
     float wheelRadius = 0.32f, wheelInertia = 1.8f;
-    float suspensionRestLength = 0.32f, suspensionBumpTravel = 0.12f, suspensionReboundTravel = 0.24f;
-    float frontSpringRate = 35000.0f, rearSpringRate = 35000.0f;
-    float frontCompressionDamping = 3000.0f, frontReboundDamping = 4200.0f;
-    float rearCompressionDamping = 3000.0f, rearReboundDamping = 4200.0f;
+    float suspensionRestLength = 0.32f, suspensionBumpTravel = 0.16f, suspensionReboundTravel = 0.42f;
+    float frontSpringRate = 39000.0f, rearSpringRate = 39000.0f;
+    float frontCompressionDamping = 2500.0f, frontReboundDamping = 3000.0f;
+    float rearCompressionDamping = 2500.0f, rearReboundDamping = 3000.0f;
     float staticFriction = 1.10f, dynamicFriction = 0.95f;
     float longitudinalStiffness = 36000.0f, lateralStiffness = 42000.0f, rollingResistance = 0.015f;
     float brakeTorque = 2500.0f, maxSteeringAngle = 0.5f;
