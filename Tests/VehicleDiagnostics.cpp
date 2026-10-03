@@ -512,6 +512,211 @@ namespace {
         Logger::Info(std::string("[PASS] ") + name);
         return true;
     }
+
+    struct CorneringMetrics {
+        float meanLateralAcceleration = 0.0f;
+        float meanLoadDifference = 0.0f;
+        float meanLoadAccelerationProduct = 0.0f;
+        float meanAbsoluteLateralAcceleration = 0.0f;
+        int samples = 0;
+    };
+
+    bool RunCorneringDirectionTest(
+        const char* name,
+        float steering,
+        CorneringMetrics& metrics
+    ) {
+        VehicleTestRig rig;
+        if (!rig.configLoaded) {
+            Logger::Error("[FAIL] Vehicle config: " + rig.configError);
+            return false;
+        }
+
+        ShiftToGear(rig.car, 1);
+        Logger::Info(
+            std::string("[CorneringDiagnostics] begin ") + name
+        );
+
+        float lateralAccelerationSum = 0.0f;
+        float loadDifferenceSum = 0.0f;
+        float loadAccelerationProductSum = 0.0f;
+        float absoluteLateralAccelerationSum = 0.0f;
+        const int steps =
+            static_cast<int>(TestDuration / FixedDeltaTime);
+
+        for (int step = 0; step < steps; ++step) {
+            const float time = step * FixedDeltaTime;
+            float clutch = 0.0f;
+            if (time < 0.75f) {
+                clutch = 1.0f;
+            } else if (time < 2.75f) {
+                clutch = std::clamp(
+                    1.0f - (time - 0.75f) / 2.0f,
+                    0.0f,
+                    1.0f
+                );
+            }
+
+            const float throttle = time < 2.75f ? 0.30f : 0.12f;
+            const float steeringInput = time >= 3.0f ? steering : 0.0f;
+
+            rig.car.SetInput(
+                throttle,
+                0.0f,
+                steeringInput,
+                clutch
+            );
+            rig.car.UpdatePhysics(
+                rig.physicsWorld,
+                FixedDeltaTime
+            );
+            rig.physicsWorld.Step(FixedDeltaTime);
+
+            if (!IsFinite(rig.chassis->GetPosition()) ||
+                !IsFinite(rig.chassis->GetLinearVelocity()) ||
+                !IsFinite(rig.chassis->GetAngularVelocity())) {
+                Logger::Error(
+                    std::string("[FAIL] ") + name +
+                    " non-finite chassis state at t=" +
+                    std::to_string(time)
+                );
+                return false;
+            }
+
+            if (time < 4.0f || time > 8.5f)
+                continue;
+
+            const Vec3 velocity =
+                rig.chassis->GetLinearVelocity();
+            const Vec3 forward =
+                rig.chassis->GetOrientation() *
+                Vec3(0.0f, 0.0f, 1.0f);
+            const float forwardSpeed = velocity.Dot(forward);
+            const float lateralAcceleration =
+                rig.chassis->GetAngularVelocity().y * forwardSpeed;
+
+            const float leftLoad =
+                rig.car.GetTire(WheelIndex::FrontLeft).GetNormalLoad() +
+                rig.car.GetTire(WheelIndex::RearLeft).GetNormalLoad();
+            const float rightLoad =
+                rig.car.GetTire(WheelIndex::FrontRight).GetNormalLoad() +
+                rig.car.GetTire(WheelIndex::RearRight).GetNormalLoad();
+            const float loadDifference = leftLoad - rightLoad;
+
+            if (!std::isfinite(lateralAcceleration) ||
+                !std::isfinite(loadDifference) ||
+                leftLoad < 0.0f ||
+                rightLoad < 0.0f) {
+                Logger::Error(
+                    std::string("[FAIL] ") + name +
+                    " invalid lateral acceleration or wheel load"
+                );
+                return false;
+            }
+
+            // In a turn, lateral acceleration should load the outside wheels.
+            // The load difference and lateral acceleration therefore share a sign.
+            lateralAccelerationSum += lateralAcceleration;
+            loadDifferenceSum += loadDifference;
+            loadAccelerationProductSum +=
+                loadDifference * lateralAcceleration;
+            absoluteLateralAccelerationSum +=
+                std::abs(lateralAcceleration);
+            ++metrics.samples;
+        }
+
+        if (metrics.samples == 0) {
+            Logger::Error(
+                std::string("[FAIL] ") + name +
+                " collected no cornering samples"
+            );
+            return false;
+        }
+
+        metrics.meanLateralAcceleration =
+            lateralAccelerationSum / metrics.samples;
+        metrics.meanLoadDifference =
+            loadDifferenceSum / metrics.samples;
+        metrics.meanLoadAccelerationProduct =
+            loadAccelerationProductSum / metrics.samples;
+        metrics.meanAbsoluteLateralAcceleration =
+            absoluteLateralAccelerationSum / metrics.samples;
+
+        std::ostringstream log;
+        log << std::fixed << std::setprecision(3)
+            << "[CorneringSummary] test=" << name
+            << " samples=" << metrics.samples
+            << " meanLateralAcceleration="
+            << metrics.meanLateralAcceleration
+            << " meanAbsLateralAcceleration="
+            << metrics.meanAbsoluteLateralAcceleration
+            << " meanLeftMinusRightLoad="
+            << metrics.meanLoadDifference
+            << " meanLoadAccelerationProduct="
+            << metrics.meanLoadAccelerationProduct;
+        Logger::Info(log.str());
+
+        if (metrics.meanAbsoluteLateralAcceleration < 0.10f) {
+            Logger::Error(
+                std::string("[FAIL] ") + name +
+                " steering produced insufficient lateral acceleration"
+            );
+            return false;
+        }
+
+        if (metrics.meanLoadAccelerationProduct <= 0.0f ||
+            metrics.meanLateralAcceleration *
+                metrics.meanLoadDifference <= 0.0f) {
+            Logger::Error(
+                std::string("[FAIL] ") + name +
+                " outside-wheel load transfer has the wrong direction"
+            );
+            return false;
+        }
+
+        Logger::Info(
+            std::string("[PASS] ") + name +
+            " outside-wheel load transfer direction"
+        );
+        return true;
+    }
+
+    bool RunCorneringLoadTransferDiagnostics() {
+        CorneringMetrics positiveSteer;
+        CorneringMetrics negativeSteer;
+
+        bool passed = RunCorneringDirectionTest(
+            "PositiveSteer",
+            0.35f,
+            positiveSteer
+        );
+        passed = RunCorneringDirectionTest(
+            "NegativeSteer",
+            -0.35f,
+            negativeSteer
+        ) && passed;
+
+        if (positiveSteer.samples == 0 ||
+            negativeSteer.samples == 0)
+            return false;
+
+        if (positiveSteer.meanLateralAcceleration *
+                negativeSteer.meanLateralAcceleration >= 0.0f ||
+            positiveSteer.meanLoadDifference *
+                negativeSteer.meanLoadDifference >= 0.0f) {
+            Logger::Error(
+                "[FAIL] Cornering load transfer did not mirror between left and right turns"
+            );
+            passed = false;
+        }
+
+        if (passed)
+            Logger::Info("[PASS] Cornering load transfer diagnostics");
+        else
+            Logger::Error("[FAIL] Cornering load transfer diagnostics");
+
+        return passed;
+    }
 }
 
 int main() {
@@ -544,6 +749,8 @@ int main() {
         GentleSlalomInput,
         SlalomGear
     ) && passed;
+
+    passed = RunCorneringLoadTransferDiagnostics() && passed;
 
     if (passed)
         Logger::Info("[PASS] All vehicle diagnostics passed");
