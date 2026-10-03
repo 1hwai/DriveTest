@@ -65,7 +65,7 @@ public:
     void Shutdown();
 
 private:
-    void ReloadVehicleConfigIfChanged();
+    void ReloadVehicleConfigIfChanged(float deltaTime);
 
     Camera m_camera;
     CameraMode m_cameraMode;
