@@ -61,7 +61,8 @@ bool Scene::Initialize(
     }
 
     m_track = std::make_unique<TestTrack>();
-    if (!m_track->Initialize(meshManager, *m_sceneFactory))
+    const std::string stagePath = std::string(DRIVETEST_PROJECT_ROOT) + "/Stages/TestTrack.stage";
+    if (!m_track->Initialize(meshManager, *m_sceneFactory, stagePath))
         return false;
 
     for (auto& object : m_track->TakeObjects())
