@@ -70,6 +70,7 @@ add_executable(DriveTest
     World/TestTrack.cpp
     World/SceneFactory.cpp
     World/SceneSerializer.cpp
+    World/StageSerializer.cpp
 
     External/glad-generated/src/gl.c
 )
