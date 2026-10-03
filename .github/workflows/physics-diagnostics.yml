@@ -56,16 +56,16 @@ jobs:
           echo "===== PhysicsDiagnostics stdout ====="
           cat physics_run.log
           echo "===== PhysicsDiagnostics file log ====="
-          if [ -f Logs/physics_diagnostics.log ]; then
-            cat Logs/physics_diagnostics.log
+          if [ -f ../Logs/physics_diagnostics.log ]; then
+            cat ../Logs/physics_diagnostics.log
           else
             echo "Missing expected log: Logs/physics_diagnostics.log"
           fi
           echo "===== VehicleDiagnostics stdout ====="
           cat vehicle_run.log
           echo "===== VehicleDiagnostics file log ====="
-          if [ -f Logs/vehicle_diagnostics.log ]; then
-            cat Logs/vehicle_diagnostics.log
+          if [ -f ../Logs/vehicle_diagnostics.log ]; then
+            cat ../Logs/vehicle_diagnostics.log
           else
             echo "Missing expected log: Logs/vehicle_diagnostics.log"
           fi
@@ -79,10 +79,10 @@ jobs:
             cat vehicle_run.log
           } | tee run.log
 
-          test -s Logs/physics_diagnostics.log
+          test -s ../Logs/physics_diagnostics.log
           physics_log_status=$?
 
-          test -s Logs/vehicle_diagnostics.log
+          test -s ../Logs/vehicle_diagnostics.log
           vehicle_log_status=$?
 
           echo "PhysicsDiagnostics log check: $physics_log_status"
@@ -104,6 +104,6 @@ jobs:
             configure.log
             build.log
             build/run.log
-            build/Logs/physics_diagnostics.log
-            build/Logs/vehicle_diagnostics.log
+            Logs/physics_diagnostics.log
+            Logs/vehicle_diagnostics.log
           if-no-files-found: warn
