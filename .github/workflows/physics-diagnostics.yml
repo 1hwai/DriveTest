@@ -56,20 +56,42 @@ jobs:
           ./DriveTestVehicleDiagnostics > vehicle_run.log 2>&1
           vehicle_status=$?
 
+          echo "PhysicsDiagnostics exit code: $physics_status"
+          echo "VehicleDiagnostics exit code: $vehicle_status"
+          echo "===== PhysicsDiagnostics stdout ====="
+          cat physics_run.log
+          echo "===== PhysicsDiagnostics file log ====="
+          if [ -f ../Logs/physics_diagnostics.log ]; then
+            cat ../Logs/physics_diagnostics.log
+          else
+            echo "Missing expected log: ../Logs/physics_diagnostics.log"
+          fi
+          echo "===== VehicleDiagnostics stdout ====="
+          cat vehicle_run.log
+          echo "===== VehicleDiagnostics file log ====="
+          if [ -f ../Logs/vehicle_diagnostics.log ]; then
+            cat ../Logs/vehicle_diagnostics.log
+          else
+            echo "Missing expected log: ../Logs/vehicle_diagnostics.log"
+          fi
+
           {
-            echo "===== PhysicsDiagnostics ====="
+            echo "PhysicsDiagnostics exit code: $physics_status"
+            echo "VehicleDiagnostics exit code: $vehicle_status"
+            echo "===== PhysicsDiagnostics stdout ====="
             cat physics_run.log
-            cat Logs/physics_diagnostics.log
-            echo "===== VehicleDiagnostics ====="
+            echo "===== VehicleDiagnostics stdout ====="
             cat vehicle_run.log
-            cat Logs/vehicle_diagnostics.log
           } | tee run.log
 
-          test -s Logs/physics_diagnostics.log
+          test -s ../Logs/physics_diagnostics.log
           physics_log_status=$?
 
-          test -s Logs/vehicle_diagnostics.log
+          test -s ../Logs/vehicle_diagnostics.log
           vehicle_log_status=$?
+
+          echo "PhysicsDiagnostics log check: $physics_log_status"
+          echo "VehicleDiagnostics log check: $vehicle_log_status"
 
           if [ "$physics_status" -ne 0 ] ||
              [ "$vehicle_status" -ne 0 ] ||
@@ -87,6 +109,6 @@ jobs:
             configure.log
             build.log
             build/run.log
-            build/Logs/physics_diagnostics.log
-            build/Logs/vehicle_diagnostics.log
+            Logs/physics_diagnostics.log
+            Logs/vehicle_diagnostics.log
           if-no-files-found: warn
