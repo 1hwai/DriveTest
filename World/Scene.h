@@ -1,6 +1,8 @@
 #pragma once
 
 #include <array>
+#include <filesystem>
+#include <string>
 #include <memory>
 #include <vector>
 
@@ -63,6 +65,8 @@ public:
     void Shutdown();
 
 private:
+    void ReloadVehicleConfigIfChanged();
+
     Camera m_camera;
     CameraMode m_cameraMode;
     std::vector<std::unique_ptr<Object>> m_objects;
@@ -72,6 +76,10 @@ private:
     std::unique_ptr<TestTrack> m_track;
 
     Car m_car;
+    VehicleConfig m_vehicleConfig;
+    std::string m_vehicleConfigPath;
+    std::filesystem::file_time_type m_vehicleConfigLastWriteTime;
+    float m_vehicleConfigCheckTimer;
     Object* m_carChassisObject;
     std::array<Object*, WheelCount> m_wheelObjects;
 
