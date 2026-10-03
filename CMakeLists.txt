@@ -6,6 +6,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+option(DRIVETEST_BUILD_APP "Build the SDL/OpenGL application" ON)
+
+if(DRIVETEST_BUILD_APP)
 find_package(SDL3 CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(assimp CONFIG REQUIRED)
@@ -101,6 +104,7 @@ target_include_directories(DriveTest PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/External/glad-generated/include"
     "${STB_IMAGE_INCLUDE_DIR}"
 )
+endif()
 
 
 option(
@@ -220,12 +224,14 @@ if(DRIVETEST_BUILD_VEHICLE_DIAGNOSTICS)
 endif()
 
 
-if(WIN32)
-    target_link_libraries(DriveTest PRIVATE
-        opengl32
-    )
-elseif(UNIX)
-    target_link_libraries(DriveTest PRIVATE
-        GL
-    )
+if(DRIVETEST_BUILD_APP)
+    if(WIN32)
+        target_link_libraries(DriveTest PRIVATE
+            opengl32
+        )
+    elseif(UNIX)
+        target_link_libraries(DriveTest PRIVATE
+            GL
+        )
+    endif()
 endif()
