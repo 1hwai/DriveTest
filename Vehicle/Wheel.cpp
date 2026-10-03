@@ -206,9 +206,9 @@ void Wheel::Update(
         m_normalLoad =
             m_force * inverseContactDotSuspension;
 
-        const Vec3 suspensionForce =
-            result.normal *
-            (m_force * inverseContactDotSuspension);
+        // The suspension transmits force along its own axis.
+        // Keep the contact-normal load for the tire model separate.
+        const Vec3 suspensionForce = down * -m_force;
 
         const float springPower =
             m_springForce *
@@ -221,7 +221,7 @@ void Wheel::Update(
 
         m_suspensionPower =
             suspensionForce.Dot(
-                body.GetPointVelocity(result.point)
+                body.GetPointVelocity(worldMount)
             );
 
         m_suspensionResidual =
