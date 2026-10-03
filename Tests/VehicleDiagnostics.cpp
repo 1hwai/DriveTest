@@ -543,6 +543,8 @@ namespace {
         float absoluteLateralAccelerationSum = 0.0f;
         const int steps =
             static_cast<int>(TestDuration / FixedDeltaTime);
+        Vec3 previousVelocity = rig.chassis->GetLinearVelocity();
+        bool hasPreviousVelocity = false;
 
         for (int step = 0; step < steps; ++step) {
             const float time = step * FixedDeltaTime;
@@ -588,12 +590,19 @@ namespace {
 
             const Vec3 velocity =
                 rig.chassis->GetLinearVelocity();
-            const Vec3 forward =
+            Vec3 worldAcceleration(0.0f, 0.0f, 0.0f);
+            if (hasPreviousVelocity) {
+                worldAcceleration =
+                    (velocity - previousVelocity) / FixedDeltaTime;
+            }
+            previousVelocity = velocity;
+            hasPreviousVelocity = true;
+
+            const Vec3 vehicleRight =
                 rig.chassis->GetOrientation() *
-                Vec3(0.0f, 0.0f, 1.0f);
-            const float forwardSpeed = velocity.Dot(forward);
+                Vec3(1.0f, 0.0f, 0.0f);
             const float lateralAcceleration =
-                rig.chassis->GetAngularVelocity().y * forwardSpeed;
+                worldAcceleration.Dot(vehicleRight);
 
             const float leftLoad =
                 rig.car.GetTire(WheelIndex::FrontLeft).GetNormalLoad() +
