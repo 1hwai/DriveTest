@@ -452,10 +452,10 @@ void DebugUI::Render() {
     {
         const Car& car = m_scene->GetCar();
         const ImGuiViewport* viewport = ImGui::GetMainViewport();
-        constexpr float panelWidth = 440.0f;
-        constexpr float panelHeight = 178.0f;
-        constexpr float tireWidth = 34.0f;
-        constexpr float tireHeight = 82.0f;
+        constexpr float panelWidth = 270.0f;
+        constexpr float panelHeight = 224.0f;
+        constexpr float tireWidth = 74.0f;
+        constexpr float tireHeight = 58.0f;
         constexpr float maxDisplayedLoad = 12000.0f;
 
         ImGui::SetNextWindowPos(
@@ -475,10 +475,13 @@ void DebugUI::Render() {
             ImGuiWindowFlags_NoInputs
         );
 
-        ImGui::TextUnformatted("TIRE CONTACT  |  LOAD (N) / SLIP SPEED (m/s)");
+        ImGui::TextUnformatted("TIRE LOAD / SLIP");
         ImDrawList* drawList = ImGui::GetWindowDrawList();
         const ImVec2 windowPos = ImGui::GetWindowPos();
-        const char* labels[WheelCount] = { "FL", "FR", "RL", "RR" };
+        const float leftX = windowPos.x + 16.0f;
+        const float rightX = windowPos.x + 180.0f;
+        const float frontY = windowPos.y + 34.0f;
+        const float rearY = windowPos.y + 126.0f;
 
         for (size_t i = 0; i < WheelCount; ++i) {
             const WheelIndex index = static_cast<WheelIndex>(i);
@@ -493,49 +496,43 @@ void DebugUI::Render() {
                 )
                 : 0.0f;
 
-            const float groupX = windowPos.x + 14.0f + static_cast<float>(i) * 105.0f;
-            const float labelY = windowPos.y + 28.0f;
-            const ImVec2 topLeft(groupX, labelY + 13.0f);
-            const ImVec2 bottomRight(topLeft.x + tireWidth, topLeft.y + tireHeight);
-
-            drawList->AddText(ImVec2(groupX + 5.0f, labelY - 1.0f),
-                IM_COL32(220, 220, 220, 255), labels[i]);
-            drawList->AddRectFilled(topLeft, bottomRight, IM_COL32(55, 55, 55, 220));
-            for (float hatchX = topLeft.x - tireHeight; hatchX < bottomRight.x; hatchX += 8.0f) {
-                const float startX = std::max(topLeft.x, hatchX);
-                const float startY = bottomRight.y - (startX - hatchX);
-                const float endX = std::min(bottomRight.x, hatchX + tireHeight);
-                const float endY = bottomRight.y - (endX - hatchX);
-                if (startY >= topLeft.y && endY >= topLeft.y)
-                    drawList->AddLine(ImVec2(startX, startY), ImVec2(endX, endY),
-                        IM_COL32(115, 115, 115, 180), 1.0f);
-            }
-
+            const bool isLeft = i == ToIndex(WheelIndex::FrontLeft) ||
+                i == ToIndex(WheelIndex::RearLeft);
+            const bool isFront = i == ToIndex(WheelIndex::FrontLeft) ||
+                i == ToIndex(WheelIndex::FrontRight);
+            const float x = isLeft ? leftX : rightX;
+            const float y = isFront ? frontY : rearY;
+            const ImVec2 topLeft(x, y);
+            const ImVec2 bottomRight(x + tireWidth, y + tireHeight);
             const float loadFraction = std::clamp(load / maxDisplayedLoad, 0.0f, 1.0f);
+
+            drawList->AddRectFilled(topLeft, bottomRight, IM_COL32(45, 45, 45, 230));
             if (loadFraction > 0.0f) {
-                const float barHeight = tireHeight * loadFraction;
+                const float barHeight = (tireHeight - 2.0f) * loadFraction;
                 drawList->AddRectFilled(
-                    ImVec2(topLeft.x + 1.0f, bottomRight.y - barHeight),
+                    ImVec2(topLeft.x + 1.0f, bottomRight.y - barHeight - 1.0f),
                     ImVec2(bottomRight.x - 1.0f, bottomRight.y - 1.0f),
                     IM_COL32(55, 205, 105, 230)
                 );
             }
             drawList->AddRect(topLeft, bottomRight, IM_COL32(175, 175, 175, 255), 0.0f, 0, 1.5f);
 
-            char slipText[32];
-            std::snprintf(slipText, sizeof(slipText), "%.3f", slipSpeed);
-            drawList->AddText(
-                ImVec2(groupX + tireWidth + 7.0f, topLeft.y + 28.0f),
-                slipSpeed > 0.05f ? IM_COL32(255, 75, 75, 255) : IM_COL32(205, 205, 205, 255),
-                slipText
-            );
-
             char loadText[32];
             std::snprintf(loadText, sizeof(loadText), "%.0f N", load);
+            const ImVec2 loadSize = ImGui::CalcTextSize(loadText);
             drawList->AddText(
-                ImVec2(groupX - 1.0f, bottomRight.y + 4.0f),
-                IM_COL32(185, 185, 185, 255),
+                ImVec2(x + (tireWidth - loadSize.x) * 0.5f, y + 7.0f),
+                IM_COL32(245, 245, 245, 255),
                 loadText
+            );
+
+            char slipText[32];
+            std::snprintf(slipText, sizeof(slipText), "%.3f", slipSpeed);
+            const ImVec2 slipSize = ImGui::CalcTextSize(slipText);
+            drawList->AddText(
+                ImVec2(x + (tireWidth - slipSize.x) * 0.5f, y + 32.0f),
+                slipSpeed > 0.05f ? IM_COL32(255, 90, 90, 255) : IM_COL32(220, 220, 220, 255),
+                slipText
             );
         }
 
