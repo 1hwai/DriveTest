@@ -449,6 +449,99 @@ void DebugUI::Render() {
         ImGui::End();
     }
 
+    {
+        const Car& car = m_scene->GetCar();
+        const ImGuiViewport* viewport = ImGui::GetMainViewport();
+        constexpr float panelWidth = 440.0f;
+        constexpr float panelHeight = 178.0f;
+        constexpr float tireWidth = 34.0f;
+        constexpr float tireHeight = 82.0f;
+        constexpr float maxDisplayedLoad = 12000.0f;
+
+        ImGui::SetNextWindowPos(
+            ImVec2(
+                viewport->WorkPos.x + viewport->WorkSize.x - panelWidth - 20.0f,
+                viewport->WorkPos.y + 220.0f
+            ),
+            ImGuiCond_Always
+        );
+        ImGui::SetNextWindowSize(ImVec2(panelWidth, panelHeight), ImGuiCond_Always);
+        ImGui::SetNextWindowBgAlpha(0.78f);
+        ImGui::Begin(
+            "Tire Loads / Slip",
+            nullptr,
+            ImGuiWindowFlags_NoDecoration |
+            ImGuiWindowFlags_NoSavedSettings |
+            ImGuiWindowFlags_NoInputs
+        );
+
+        ImGui::TextUnformatted("TIRE CONTACT  |  LOAD (N) / SLIP SPEED (m/s)");
+        ImDrawList* drawList = ImGui::GetWindowDrawList();
+        const ImVec2 windowPos = ImGui::GetWindowPos();
+        const char* labels[WheelCount] = { "FL", "FR", "RL", "RR" };
+
+        for (size_t i = 0; i < WheelCount; ++i) {
+            const WheelIndex index = static_cast<WheelIndex>(i);
+            const Wheel& wheel = car.GetWheel(index);
+            const Tire& tire = car.GetTire(index);
+            const TireState& state = tire.GetState();
+            const float load = wheel.IsGrounded() ? tire.GetNormalLoad() : 0.0f;
+            const float slipSpeed = wheel.IsGrounded()
+                ? std::sqrt(
+                    state.longitudinalSlipVelocity * state.longitudinalSlipVelocity +
+                    state.lateralVelocity * state.lateralVelocity
+                )
+                : 0.0f;
+
+            const float groupX = windowPos.x + 14.0f + static_cast<float>(i) * 105.0f;
+            const float labelY = windowPos.y + 28.0f;
+            const ImVec2 topLeft(groupX, labelY + 13.0f);
+            const ImVec2 bottomRight(topLeft.x + tireWidth, topLeft.y + tireHeight);
+
+            drawList->AddText(ImVec2(groupX + 5.0f, labelY - 1.0f),
+                IM_COL32(220, 220, 220, 255), labels[i]);
+            drawList->AddRectFilled(topLeft, bottomRight, IM_COL32(55, 55, 55, 220));
+            for (float hatchX = topLeft.x - tireHeight; hatchX < bottomRight.x; hatchX += 8.0f) {
+                const float startX = std::max(topLeft.x, hatchX);
+                const float startY = bottomRight.y - (startX - hatchX);
+                const float endX = std::min(bottomRight.x, hatchX + tireHeight);
+                const float endY = bottomRight.y - (endX - hatchX);
+                if (startY >= topLeft.y && endY >= topLeft.y)
+                    drawList->AddLine(ImVec2(startX, startY), ImVec2(endX, endY),
+                        IM_COL32(115, 115, 115, 180), 1.0f);
+            }
+
+            const float loadFraction = std::clamp(load / maxDisplayedLoad, 0.0f, 1.0f);
+            if (loadFraction > 0.0f) {
+                const float barHeight = tireHeight * loadFraction;
+                drawList->AddRectFilled(
+                    ImVec2(topLeft.x + 1.0f, bottomRight.y - barHeight),
+                    ImVec2(bottomRight.x - 1.0f, bottomRight.y - 1.0f),
+                    IM_COL32(55, 205, 105, 230)
+                );
+            }
+            drawList->AddRect(topLeft, bottomRight, IM_COL32(175, 175, 175, 255), 0.0f, 0, 1.5f);
+
+            char slipText[32];
+            std::snprintf(slipText, sizeof(slipText), "%.3f", slipSpeed);
+            drawList->AddText(
+                ImVec2(groupX + tireWidth + 7.0f, topLeft.y + 28.0f),
+                slipSpeed > 0.05f ? IM_COL32(255, 75, 75, 255) : IM_COL32(205, 205, 205, 255),
+                slipText
+            );
+
+            char loadText[32];
+            std::snprintf(loadText, sizeof(loadText), "%.0f N", load);
+            drawList->AddText(
+                ImVec2(groupX - 1.0f, bottomRight.y + 4.0f),
+                IM_COL32(185, 185, 185, 255),
+                loadText
+            );
+        }
+
+        ImGui::End();
+    }
+
     if (m_showHierarchyWindow) {
         ImGui::Begin(
             "Hierarchy",
