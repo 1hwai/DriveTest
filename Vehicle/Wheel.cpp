@@ -198,13 +198,12 @@ void Wheel::Update(
                 m_springForce + m_damperForce
             );
 
-        const float inverseContactDotSuspension =
-            -1.0f / denominator;
-
-        // m_force acts along the suspension axis. Convert it to the
-        // equivalent contact-normal load used by the tire model.
+        // The suspension force acts along the suspension axis. Only its
+        // component along the contact normal contributes to normal load.
+        // Since down points into the ground, -dot(normal, down) is the
+        // positive projection factor for a valid suspension contact.
         m_normalLoad =
-            m_force * inverseContactDotSuspension;
+            m_force * -denominator;
 
         // The suspension transmits force along its own axis.
         // Keep the contact-normal load for the tire model separate.
