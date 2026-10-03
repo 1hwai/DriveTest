@@ -103,7 +103,9 @@ void Car::UpdatePhysics(
     const float rightDriveTorque =
         m_powertrain.GetRightDriveTorque();
 
-    const float steeringAngle = m_steering * m_maxSteeringAngle;
+    // Input convention: negative = right, positive = left.
+    // Positive rotation around +Y turns the +Z-facing wheels toward +X (right).
+    const float steeringAngle = -m_steering * m_maxSteeringAngle;
     m_wheels[ToIndex(WheelIndex::FrontLeft)].SetSteeringAngle(
         steeringAngle
     );
