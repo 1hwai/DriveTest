@@ -120,8 +120,8 @@ bool Scene::Initialize(
     return true;
 }
 
-void Scene::ReloadVehicleConfigIfChanged() {
-    m_vehicleConfigCheckTimer += 0.5f;
+void Scene::ReloadVehicleConfigIfChanged(float deltaTime) {
+    m_vehicleConfigCheckTimer += deltaTime;
     if (m_vehicleConfigCheckTimer < 0.5f)
         return;
     m_vehicleConfigCheckTimer = 0.0f;
@@ -171,7 +171,7 @@ void Scene::UpdatePhysics(
     if (!m_physicsWorld)
         return;
 
-    ReloadVehicleConfigIfChanged();
+    ReloadVehicleConfigIfChanged(deltaTime);
 
     if (m_cameraMode == CameraMode::Free) {
         m_car.SetInput(0.0f, 0.0f, 0.0f, 0.0f);
