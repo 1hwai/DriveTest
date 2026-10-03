@@ -521,6 +521,43 @@ namespace {
         int samples = 0;
     };
 
+    bool RunSteeringForceDirectionTest(const char* name, float steering, float expectedYawSign) {
+        VehicleTestRig rig;
+        if (!rig.configLoaded) {
+            Logger::Error("[FAIL] Vehicle config: " + rig.configError);
+            return false;
+        }
+
+        for (int step = 0; step < 240; ++step) {
+            rig.car.SetInput(0.0f, 0.0f, 0.0f, 1.0f);
+            rig.car.UpdatePhysics(rig.physicsWorld, FixedDeltaTime);
+            rig.physicsWorld.Step(FixedDeltaTime);
+        }
+
+        rig.chassis->SetLinearVelocity(Vec3(0.0f, 0.0f, 8.0f));
+        rig.car.SetInput(0.0f, 0.0f, steering, 1.0f);
+        rig.car.UpdatePhysics(rig.physicsWorld, FixedDeltaTime);
+
+        const float yawTorque = rig.chassis->GetTorque().y;
+        std::ostringstream log;
+        log << std::fixed << std::setprecision(3)
+            << "[SteeringForce] test=" << name
+            << " steeringInput=" << steering
+            << " frontWheelAngle=" << rig.car.GetWheel(WheelIndex::FrontLeft).GetSteeringAngle()
+            << " yawTorque=" << yawTorque;
+        Logger::Info(log.str());
+
+        if (!std::isfinite(yawTorque) ||
+            yawTorque * expectedYawSign <= 0.0f) {
+            Logger::Error(std::string("[FAIL] ") + name +
+                " produced yaw torque in the wrong direction");
+            return false;
+        }
+
+        Logger::Info(std::string("[PASS] ") + name + " steering force direction");
+        return true;
+    }
+
     bool RunCorneringDirectionTest(
         const char* name,
         float steering,
@@ -543,6 +580,8 @@ namespace {
         float absoluteLateralAccelerationSum = 0.0f;
         const int steps =
             static_cast<int>(TestDuration / FixedDeltaTime);
+        Vec3 previousVelocity = rig.chassis->GetLinearVelocity();
+        bool hasPreviousVelocity = false;
 
         for (int step = 0; step < steps; ++step) {
             const float time = step * FixedDeltaTime;
@@ -583,17 +622,24 @@ namespace {
                 return false;
             }
 
+            const Vec3 velocity =
+                rig.chassis->GetLinearVelocity();
+            Vec3 worldAcceleration(0.0f, 0.0f, 0.0f);
+            if (hasPreviousVelocity) {
+                worldAcceleration =
+                    (velocity - previousVelocity) / FixedDeltaTime;
+            }
+            previousVelocity = velocity;
+            hasPreviousVelocity = true;
+
             if (time < 4.0f || time > 8.5f)
                 continue;
 
-            const Vec3 velocity =
-                rig.chassis->GetLinearVelocity();
-            const Vec3 forward =
+            const Vec3 vehicleRight =
                 rig.chassis->GetOrientation() *
-                Vec3(0.0f, 0.0f, 1.0f);
-            const float forwardSpeed = velocity.Dot(forward);
+                Vec3(1.0f, 0.0f, 0.0f);
             const float lateralAcceleration =
-                rig.chassis->GetAngularVelocity().y * forwardSpeed;
+                worldAcceleration.Dot(vehicleRight);
 
             const float leftLoad =
                 rig.car.GetTire(WheelIndex::FrontLeft).GetNormalLoad() +
@@ -754,6 +800,9 @@ int main() {
         GentleSlalomInput,
         SlalomGear
     ) && passed;
+
+    passed = RunSteeringForceDirectionTest("LeftSteer", 0.35f, -1.0f) && passed;
+    passed = RunSteeringForceDirectionTest("RightSteer", -0.35f, 1.0f) && passed;
 
     passed = RunCorneringLoadTransferDiagnostics() && passed;
 
