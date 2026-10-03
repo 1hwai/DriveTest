@@ -622,9 +622,6 @@ namespace {
                 return false;
             }
 
-            if (time < 4.0f || time > 8.5f)
-                continue;
-
             const Vec3 velocity =
                 rig.chassis->GetLinearVelocity();
             Vec3 worldAcceleration(0.0f, 0.0f, 0.0f);
@@ -634,6 +631,9 @@ namespace {
             }
             previousVelocity = velocity;
             hasPreviousVelocity = true;
+
+            if (time < 4.0f || time > 8.5f)
+                continue;
 
             const Vec3 vehicleRight =
                 rig.chassis->GetOrientation() *
