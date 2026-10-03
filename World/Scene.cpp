@@ -5,6 +5,7 @@
 #include "../Core/Debug/Logger.h"
 
 #include <cmath>
+#include <filesystem>
 #include <string>
 #include <iostream>
 
@@ -20,6 +21,8 @@ Scene::Scene()
     : m_cameraMode(CameraMode::Free),
     m_physicsWorld(nullptr),
     m_carChassisObject(nullptr),
+    m_vehicleConfigLastWriteTime(),
+    m_vehicleConfigCheckTimer(0.0f),
     m_suspensionDebugTimer(0.0f) {
     m_wheelObjects.fill(nullptr);
 }
@@ -34,15 +37,20 @@ bool Scene::Initialize(
 ) {
     m_physicsWorld = &physicsWorld;
 
-    VehicleConfig vehicleConfig;
-    std::string configError;
-    const std::string configPath =
+    m_vehicleConfigPath =
         std::string(DRIVETEST_PROJECT_ROOT) + "/Assets/Vehicles/TestCar/vehicle.ini";
-    if (!vehicleConfig.Load(configPath, configError)) {
+    std::string configError;
+    if (!m_vehicleConfig.Load(m_vehicleConfigPath, configError)) {
         Logger::Error(configError);
         return false;
     }
-    m_car.ApplyConfig(vehicleConfig);
+    m_car.ApplyConfig(m_vehicleConfig);
+
+    std::error_code timestampError;
+    m_vehicleConfigLastWriteTime =
+        std::filesystem::last_write_time(m_vehicleConfigPath, timestampError);
+    if (timestampError)
+        Logger::Warning("Unable to watch vehicle config file: " + timestampError.message());
 
     m_sceneFactory =
         std::make_unique<SceneFactory>(
@@ -68,11 +76,11 @@ bool Scene::Initialize(
         "CarChassis",
         Vec3(
             0.0f,
-            m_track->GetTerrain().GetHeight(0.0f, 0.0f) + vehicleConfig.spawnClearance,
+            m_track->GetTerrain().GetHeight(0.0f, 0.0f) + m_vehicleConfig.spawnClearance,
             0.0f
         ),
-        vehicleConfig.colliderHalfExtents,
-        vehicleConfig.mass,
+        m_vehicleConfig.colliderHalfExtents,
+        m_vehicleConfig.mass,
         0.0f,
         0.5f
     });
@@ -112,12 +120,58 @@ bool Scene::Initialize(
     return true;
 }
 
+void Scene::ReloadVehicleConfigIfChanged() {
+    m_vehicleConfigCheckTimer += 0.5f;
+    if (m_vehicleConfigCheckTimer < 0.5f)
+        return;
+    m_vehicleConfigCheckTimer = 0.0f;
+
+    std::error_code timestampError;
+    const auto writeTime =
+        std::filesystem::last_write_time(m_vehicleConfigPath, timestampError);
+    if (timestampError) {
+        Logger::Warning("Unable to check vehicle config timestamp: " + timestampError.message());
+        return;
+    }
+
+    if (writeTime == m_vehicleConfigLastWriteTime)
+        return;
+
+    // Parse into a copy so invalid edits never partially modify the active config.
+    VehicleConfig candidate = m_vehicleConfig;
+    std::string error;
+    if (!candidate.Load(m_vehicleConfigPath, error)) {
+        Logger::Error("Vehicle config reload rejected: " + error);
+        m_vehicleConfigLastWriteTime = writeTime;
+        return;
+    }
+
+    m_vehicleConfig = candidate;
+    m_vehicleConfigLastWriteTime = writeTime;
+    m_car.ApplyConfig(m_vehicleConfig);
+
+    if (m_carChassisObject != nullptr) {
+        RigidBody* chassis = m_carChassisObject->GetRigidBody();
+        Collider* collider = m_carChassisObject->GetCollider();
+        if (chassis != nullptr) {
+            chassis->SetMass(m_vehicleConfig.mass);
+            chassis->SetBoxInertia(m_vehicleConfig.colliderHalfExtents * 2.0f);
+        }
+        if (collider != nullptr)
+            collider->SetHalfExtents(m_vehicleConfig.colliderHalfExtents);
+    }
+
+    Logger::Info("Vehicle config hot-reloaded: " + m_vehicleConfigPath);
+}
+
 void Scene::UpdatePhysics(
     float deltaTime,
     const VehicleInput& input
 ) {
     if (!m_physicsWorld)
         return;
+
+    ReloadVehicleConfigIfChanged();
 
     if (m_cameraMode == CameraMode::Free) {
         m_car.SetInput(0.0f, 0.0f, 0.0f, 0.0f);
