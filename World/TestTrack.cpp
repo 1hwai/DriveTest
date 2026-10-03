@@ -29,6 +29,11 @@ bool TestTrack::Initialize(MeshManager& meshManager, SceneFactory& sceneFactory,
         return false;
     }
 
+    std::vector<TerrainBump> terrainBumps;
+    terrainBumps.reserve(stage.bumps.size());
+    for (const StageBump& bump : stage.bumps)
+        terrainBumps.push_back({ bump.x, bump.z, bump.radius, bump.height });
+
     m_terrain = std::make_unique<Terrain>(
         stage.terrainResolution,
         stage.terrainSize,
@@ -37,7 +42,7 @@ bool TestTrack::Initialize(MeshManager& meshManager, SceneFactory& sceneFactory,
         stage.terrainOctaves,
         stage.terrainSeed,
         stage.elevationProfile,
-        stage.bumps
+        terrainBumps
     );
     if (!meshManager.CreateTerrain("terrain", *m_terrain) ||
         !meshManager.LoadTexture("terrain", "Assets/road/dirt.jpg"))
