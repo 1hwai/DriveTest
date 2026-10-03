@@ -1,7 +1,6 @@
 #pragma once
 
 #include <array>
-#include <filesystem>
 #include <string>
 #include <memory>
 #include <vector>
@@ -14,6 +13,7 @@
 #include "../Physics/PhysicsWorld.h"
 #include "TestTrack.h"
 #include "../Vehicle/Car.h"
+#include "../Vehicle/VehicleConfigWatcher.h"
 #include "SceneFactory.h"
 
 enum class CameraMode {
@@ -77,9 +77,7 @@ private:
 
     Car m_car;
     VehicleConfig m_vehicleConfig;
-    std::string m_vehicleConfigPath;
-    std::filesystem::file_time_type m_vehicleConfigLastWriteTime;
-    float m_vehicleConfigCheckTimer;
+    VehicleConfigWatcher m_vehicleConfigWatcher;
     Object* m_carChassisObject;
     std::array<Object*, WheelCount> m_wheelObjects;
 
