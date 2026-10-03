@@ -36,6 +36,7 @@ add_executable(DriveTest
 
     Vehicle/Car.cpp
     Vehicle/VehicleConfig.cpp
+    Vehicle/VehicleConfigWatcher.cpp
     Vehicle/Powertrain.cpp
     Vehicle/Wheel.cpp
     Vehicle/Suspension.cpp
