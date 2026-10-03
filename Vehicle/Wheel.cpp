@@ -22,6 +22,10 @@ Wheel::Wheel()
     m_compression(0.0f),
     m_previousCompression(0.0f),
     m_force(0.0f),
+    m_normalLoad(0.0f),
+    m_compressionVelocity(0.0f),
+    m_springForce(0.0f),
+    m_damperForce(0.0f),
     m_suspensionPower(0.0f),
     m_suspensionResidual(0.0f),
     m_hasPreviousCompression(false),
@@ -112,6 +116,10 @@ void Wheel::Update(
             suspension.GetMaxLength();
         m_compression = 0.0f;
         m_force = 0.0f;
+        m_normalLoad = 0.0f;
+        m_compressionVelocity = 0.0f;
+        m_springForce = 0.0f;
+        m_damperForce = 0.0f;
         m_suspensionPower = 0.0f;
         m_suspensionResidual = 0.0f;
         m_hasPreviousCompression = false;
@@ -150,6 +158,10 @@ void Wheel::Update(
     m_suspensionPower = 0.0f;
     m_suspensionResidual = 0.0f;
     m_force = 0.0f;
+    m_normalLoad = 0.0f;
+    m_compressionVelocity = 0.0f;
+    m_springForce = 0.0f;
+    m_damperForce = 0.0f;
     m_tireReactionTorque = 0.0f;
 
     if (m_compression > 0.0f &&
@@ -168,39 +180,44 @@ void Wheel::Update(
         const float projectedVelocity =
             result.normal.Dot(rayPointVelocity);
 
-        const float compressionVelocity =
-            projectedVelocity /
-            denominator;
+        m_compressionVelocity =
+            projectedVelocity / denominator;
 
-        const float springForce =
+        m_springForce =
             suspension.GetSpringRate() *
             m_compression;
 
-        const float damperRate = compressionVelocity >= 0.0f
+        const float damperRate = m_compressionVelocity >= 0.0f
             ? suspension.GetCompressionDamperRate()
             : suspension.GetReboundDamperRate();
-        const float damperForce = damperRate * compressionVelocity;
+        m_damperForce = damperRate * m_compressionVelocity;
 
         m_force =
             std::max(
                 0.0f,
-                springForce + damperForce
+                m_springForce + m_damperForce
             );
 
         const float inverseContactDotSuspension =
             -1.0f / denominator;
+
+        // m_force acts along the suspension axis. Convert it to the
+        // equivalent contact-normal load used by the tire model.
+        m_normalLoad =
+            m_force * inverseContactDotSuspension;
 
         const Vec3 suspensionForce =
             result.normal *
             (m_force * inverseContactDotSuspension);
 
         const float springPower =
-            suspension.GetSpringRate() *
-            m_compression *
-            compressionVelocity;
+            m_springForce *
+            m_compressionVelocity;
 
         const float damperPower =
-            damperRate * compressionVelocity * compressionVelocity;
+            damperRate *
+            m_compressionVelocity *
+            m_compressionVelocity;
 
         m_suspensionPower =
             suspensionForce.Dot(
@@ -326,6 +343,22 @@ float Wheel::GetCompression() const {
 
 float Wheel::GetForce() const {
     return m_force;
+}
+
+float Wheel::GetNormalLoad() const {
+    return m_normalLoad;
+}
+
+float Wheel::GetCompressionVelocity() const {
+    return m_compressionVelocity;
+}
+
+float Wheel::GetSpringForce() const {
+    return m_springForce;
+}
+
+float Wheel::GetDamperForce() const {
+    return m_damperForce;
 }
 
 float Wheel::GetSuspensionPower() const {

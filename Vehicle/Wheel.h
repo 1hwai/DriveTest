@@ -46,6 +46,10 @@ public:
     float GetSuspensionLength() const;
     float GetCompression() const;
     float GetForce() const;
+    float GetNormalLoad() const;
+    float GetCompressionVelocity() const;
+    float GetSpringForce() const;
+    float GetDamperForce() const;
     float GetSuspensionPower() const;
     float GetSuspensionResidual() const;
     float GetAngularVelocity() const;
@@ -72,6 +76,10 @@ private:
     float m_compression;
     float m_previousCompression;
     float m_force;
+    float m_normalLoad;
+    float m_compressionVelocity;
+    float m_springForce;
+    float m_damperForce;
     float m_suspensionPower;
     float m_suspensionResidual;
     bool m_hasPreviousCompression;

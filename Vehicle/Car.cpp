@@ -185,6 +185,17 @@ void Car::UpdatePhysics(
             log << std::fixed << std::setprecision(3)
                 << "[Tire] " << names[i]
                 << " grounded=" << wheel.IsGrounded()
+                << " compression=" << wheel.GetCompression()
+                << " suspensionLength=" << wheel.GetSuspensionLength()
+                << " compressionVelocity=" << wheel.GetCompressionVelocity()
+                << " springForce=" << wheel.GetSpringForce()
+                << " damperForce=" << wheel.GetDamperForce()
+                << " suspensionAxisForce=" << wheel.GetForce()
+                << " normalLoad=" << wheel.GetNormalLoad()
+                << " contactNormal=(" << wheel.GetContactNormal().x
+                << "," << wheel.GetContactNormal().y
+                << "," << wheel.GetContactNormal().z << ")"
+                << " contactPointY=" << wheel.GetContactPoint().y
                 << " omega=" << wheel.GetAngularVelocity()
                 << " wheelSpeed=" << tire.GetWheelSurfaceSpeed()
                 << " Vx=" << tire.GetLongitudinalVelocity()

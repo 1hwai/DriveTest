@@ -182,7 +182,7 @@ TireState Tire::CalculateState(
 ) const {
     TireState state{
         wheel.IsGrounded(),
-        wheel.GetForce(),
+        wheel.GetNormalLoad(),
         0.0f,
         0.0f,
         0.0f,
