@@ -260,7 +260,9 @@ This is a planning snapshot, not a guarantee that every item is still current. R
 - Gamepad input has been introduced.
 - Audio initialization previously failed in at least one environment due to unavailable audio devices; verify the current environment before treating audio as functional.
 - Suspension configuration, AWD torque distribution, road path shape, terrain bumps, and wheel visual spin direction have been adjusted in recent work, but require local runtime verification.
-- A complete GLB importer, a full stage-data format, and the intended in-engine terrain/road editor remain future work unless current source code shows otherwise.
+- A versioned text stage format now stores terrain generation settings, elevation profiles, bumps, and road control points. `StageSerializer` supports validated load/save, and the test track is generated from `Stages/TestTrack.stage` rather than hardcoded terrain and road arrays. Roadside scenery placement is still procedural, and the in-engine editor UI, terrain sculpting, object placement, and stage switching remain future work.
+- A tire telemetry panel displays per-wheel normal load and combined longitudinal/lateral slip velocity from the tire model. Visual/runtime behavior still requires local verification.
+- A complete GLB importer and the intended in-engine terrain/road editor remain future work unless current source code shows otherwise.
 
 ## 11. Release checklist
 
