@@ -55,56 +55,14 @@ namespace {
     }
 }
 
-bool Road::GenerateTestCourse(const Terrain& terrain, float width, float surfaceOffset) {
+bool Road::GenerateCourse(const Terrain& terrain, const std::vector<Vec3>& controlPoints, float width, float surfaceOffset) {
     m_leftEdge.clear();
     m_rightEdge.clear();
 
-    if (width <= 0.0f)
+    if (width <= 0.0f || controlPoints.size() < 2)
         return false;
 
-    const std::vector<Vec3> controlPoints = {
-        Vec3(0.0f, 0.0f, -300.0f),
-        Vec3(0.0f, 0.0f, -150.0f),
-        Vec3(0.0f, 0.0f, 0.0f),
-        Vec3(35.0f, 0.0f, 100.0f),
-        Vec3(75.0f, 0.0f, 190.0f),
-        Vec3(35.0f, 0.0f, 280.0f),
-        Vec3(-45.0f, 0.0f, 390.0f),
-        Vec3(-85.0f, 0.0f, 500.0f),
-        Vec3(-25.0f, 0.0f, 610.0f),
-        Vec3(65.0f, 0.0f, 730.0f),
-        Vec3(120.0f, 0.0f, 850.0f),
-        Vec3(80.0f, 0.0f, 960.0f),
-        Vec3(-10.0f, 0.0f, 1060.0f),
-        Vec3(-95.0f, 0.0f, 1160.0f),
-        Vec3(-115.0f, 0.0f, 1260.0f),
-        Vec3(-65.0f, 0.0f, 1340.0f),
-        Vec3(5.0f, 0.0f, 1410.0f),
-        Vec3(45.0f, 0.0f, 1480.0f),
-        Vec3(15.0f, 0.0f, 1540.0f),
-        Vec3(-45.0f, 0.0f, 1585.0f),
-        Vec3(-95.0f, 0.0f, 1640.0f),
-        Vec3(-100.0f, 0.0f, 1710.0f),
-        Vec3(-55.0f, 0.0f, 1780.0f),
-        Vec3(30.0f, 0.0f, 1850.0f),
-        Vec3(105.0f, 0.0f, 1960.0f),
-        Vec3(75.0f, 0.0f, 2070.0f),
-        Vec3(-5.0f, 0.0f, 2170.0f),
-        Vec3(-65.0f, 0.0f, 2280.0f),
-        Vec3(-30.0f, 0.0f, 2390.0f),
-        Vec3(50.0f, 0.0f, 2500.0f),
-        Vec3(80.0f, 0.0f, 2600.0f),
-        Vec3(20.0f, 0.0f, 2690.0f),
-        Vec3(-55.0f, 0.0f, 2780.0f),
-        Vec3(-35.0f, 0.0f, 2870.0f),
-        Vec3(45.0f, 0.0f, 2970.0f),
-        Vec3(80.0f, 0.0f, 3070.0f),
-        Vec3(30.0f, 0.0f, 3180.0f),
-        Vec3(-45.0f, 0.0f, 3280.0f),
-        Vec3(-20.0f, 0.0f, 3380.0f),
-        Vec3(45.0f, 0.0f, 3480.0f),
-        Vec3(0.0f, 0.0f, 3600.0f)
-    };
+
 
     std::vector<Vec3> centerline;
     centerline.reserve((controlPoints.size() - 1) * SamplesPerSegment + 1);
