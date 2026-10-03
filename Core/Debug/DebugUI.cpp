@@ -496,10 +496,8 @@ void DebugUI::Render() {
                 )
                 : 0.0f;
 
-            const bool isLeft = i == ToIndex(WheelIndex::FrontLeft) ||
-                i == ToIndex(WheelIndex::RearLeft);
-            const bool isFront = i == ToIndex(WheelIndex::FrontLeft) ||
-                i == ToIndex(WheelIndex::FrontRight);
+            const bool isLeft = i == 0 || i == 2;
+            const bool isFront = i == 0 || i == 1;
             const float x = isLeft ? leftX : rightX;
             const float y = isFront ? frontY : rearY;
             const ImVec2 topLeft(x, y);
