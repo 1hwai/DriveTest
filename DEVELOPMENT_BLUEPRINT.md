@@ -255,7 +255,7 @@ This is a planning snapshot, not a guarantee that every item is still current. R
 - C++17 project using CMake, SDL3, OpenGL, and glad.
 - Core application, renderer, world, object, mesh, and debug UI infrastructure exist.
 - Physics includes rigid-body, collision, contact/solver, and raycast systems.
-- Vehicle code includes wheel/suspension and powertrain-related systems with external vehicle configuration. The current test vehicle config is watched during runtime and valid edits are hot-reloaded; initial spawn clearance remains a spawn-time setting.
+- Vehicle code includes wheel/suspension and powertrain-related systems with external vehicle configuration. `VehicleConfigWatcher` now owns file timestamp polling and transactional reload parsing; `Scene` applies accepted values to the live car. The current scene still hardcodes the TestCar config and Subaru model, so a selectable multi-vehicle catalog remains future work.
 - A test stage/road and roadside scenery systems exist.
 - Gamepad input has been introduced.
 - Audio initialization previously failed in at least one environment due to unavailable audio devices; verify the current environment before treating audio as functional.
