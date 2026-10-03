@@ -9,7 +9,7 @@ class Terrain;
 
 class Road {
 public:
-    bool GenerateTestCourse(const Terrain& terrain, float width, float surfaceOffset);
+    bool GenerateCourse(const Terrain& terrain, const std::vector<Vec3>& controlPoints, float width, float surfaceOffset);
 
     const std::vector<Vec3>& GetLeftEdge() const;
     const std::vector<Vec3>& GetRightEdge() const;
