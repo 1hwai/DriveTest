@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 #include <vector>
 
 class MeshManager;
@@ -13,7 +14,7 @@ class TestTrack {
 public:
     TestTrack();
     ~TestTrack();
-    bool Initialize(MeshManager& meshManager, SceneFactory& sceneFactory);
+    bool Initialize(MeshManager& meshManager, SceneFactory& sceneFactory, const std::string& stagePath);
 
     const Terrain& GetTerrain() const;
     std::vector<std::unique_ptr<Object>> TakeObjects();
