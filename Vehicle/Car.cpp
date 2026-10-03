@@ -103,11 +103,14 @@ void Car::UpdatePhysics(
     const float rightDriveTorque =
         m_powertrain.GetRightDriveTorque();
 
+    // Positive input means steer left. With +Z as vehicle forward and
+    // -X as vehicle left, a positive Y-axis rotation turns toward +X (right).
+    const float steeringAngle = -m_steering * m_maxSteeringAngle;
     m_wheels[ToIndex(WheelIndex::FrontLeft)].SetSteeringAngle(
-        m_steering * m_maxSteeringAngle
+        steeringAngle
     );
     m_wheels[ToIndex(WheelIndex::FrontRight)].SetSteeringAngle(
-        m_steering * m_maxSteeringAngle
+        steeringAngle
     );
 
     // AWD center differential: split the available torque evenly
