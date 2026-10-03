@@ -52,7 +52,7 @@ namespace {
                 return false;
             }
         }
-        for (const TerrainBump& bump : stage.bumps) {
+        for (const StageBump& bump : stage.bumps) {
             if (!IsFinite(bump.x) || !IsFinite(bump.z) ||
                 !IsFinite(bump.radius) || !IsFinite(bump.height) || bump.radius < 0.0f) {
                 error = "Terrain bump contains an invalid value.";
@@ -131,7 +131,7 @@ bool StageSerializer::Load(const std::string& path, StageDefinition& stage, std:
     }
     candidate.bumps.reserve(count);
     for (size_t i = 0; i < count; ++i) {
-        TerrainBump bump{};
+        StageBump bump{};
         if (!(file >> bump.x >> bump.z >> bump.radius >> bump.height)) {
             error = "Invalid terrain bump entry.";
             return false;
@@ -194,7 +194,7 @@ bool StageSerializer::Save(const std::string& path, const StageDefinition& stage
     for (const auto& point : stage.elevationProfile)
         file << point.first << ' ' << point.second << '\n';
     file << "BUMPS " << stage.bumps.size() << '\n';
-    for (const TerrainBump& bump : stage.bumps)
+    for (const StageBump& bump : stage.bumps)
         file << bump.x << ' ' << bump.z << ' ' << bump.radius << ' ' << bump.height << '\n';
     file << "ROAD_POINTS " << stage.roadControlPoints.size() << '\n';
     for (const Vec3& point : stage.roadControlPoints)
