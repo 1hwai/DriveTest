@@ -20,12 +20,7 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build autoconf autoconf-archive automake libtool libltdl-dev
-
-      - name: Install vcpkg
-        run: |
-          git clone https://github.com/microsoft/vcpkg.git "$RUNNER_TEMP/vcpkg"
-          "$RUNNER_TEMP/vcpkg/bootstrap-vcpkg.sh"
+          sudo apt-get install -y ninja-build
 
       - name: Configure
         run: |
@@ -35,7 +30,7 @@ jobs:
             -B build \
             -G Ninja \
             -DCMAKE_BUILD_TYPE=Debug \
-            -DCMAKE_TOOLCHAIN_FILE=$RUNNER_TEMP/vcpkg/scripts/buildsystems/vcpkg.cmake \
+            -DDRIVETEST_BUILD_APP=OFF \
             -DDRIVETEST_BUILD_PHYSICS_DIAGNOSTICS=ON \
             -DDRIVETEST_BUILD_VEHICLE_DIAGNOSTICS=ON \
             2>&1 | tee configure.log
