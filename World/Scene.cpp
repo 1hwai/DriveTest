@@ -19,8 +19,6 @@ namespace {
 Scene::Scene()
     : m_cameraMode(CameraMode::Free),
     m_physicsWorld(nullptr),
-    m_vehicleConfigLastWriteTime(),
-    m_vehicleConfigCheckTimer(0.0f),
     m_carChassisObject(nullptr),
     m_suspensionDebugTimer(0.0f) {
     m_wheelObjects.fill(nullptr);
