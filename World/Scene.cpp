@@ -5,7 +5,6 @@
 #include "../Core/Debug/Logger.h"
 
 #include <cmath>
-#include <filesystem>
 #include <string>
 #include <iostream>
 
@@ -37,20 +36,18 @@ bool Scene::Initialize(
 ) {
     m_physicsWorld = &physicsWorld;
 
-    m_vehicleConfigPath =
+    const std::string vehicleConfigPath =
         std::string(DRIVETEST_PROJECT_ROOT) + "/Assets/Vehicles/TestCar/vehicle.ini";
     std::string configError;
-    if (!m_vehicleConfig.Load(m_vehicleConfigPath, configError)) {
+    if (!m_vehicleConfig.Load(vehicleConfigPath, configError)) {
+        Logger::Error(configError);
+        return false;
+    }
+    if (!m_vehicleConfigWatcher.Initialize(vehicleConfigPath, configError)) {
         Logger::Error(configError);
         return false;
     }
     m_car.ApplyConfig(m_vehicleConfig);
-
-    std::error_code timestampError;
-    m_vehicleConfigLastWriteTime =
-        std::filesystem::last_write_time(m_vehicleConfigPath, timestampError);
-    if (timestampError)
-        Logger::Warning("Unable to watch vehicle config file: " + timestampError.message());
 
     m_sceneFactory =
         std::make_unique<SceneFactory>(
@@ -121,33 +118,18 @@ bool Scene::Initialize(
 }
 
 void Scene::ReloadVehicleConfigIfChanged(float deltaTime) {
-    m_vehicleConfigCheckTimer += deltaTime;
-    if (m_vehicleConfigCheckTimer < 0.5f)
-        return;
-    m_vehicleConfigCheckTimer = 0.0f;
-
-    std::error_code timestampError;
-    const auto writeTime =
-        std::filesystem::last_write_time(m_vehicleConfigPath, timestampError);
-    if (timestampError) {
-        Logger::Warning("Unable to check vehicle config timestamp: " + timestampError.message());
-        return;
-    }
-
-    if (writeTime == m_vehicleConfigLastWriteTime)
-        return;
-
-    // Parse into a copy so invalid edits never partially modify the active config.
-    VehicleConfig candidate = m_vehicleConfig;
     std::string error;
-    if (!candidate.Load(m_vehicleConfigPath, error)) {
+    const VehicleConfigReloadResult result =
+        m_vehicleConfigWatcher.Poll(deltaTime, m_vehicleConfig, error);
+
+    if (result == VehicleConfigReloadResult::Unchanged)
+        return;
+
+    if (result == VehicleConfigReloadResult::Error) {
         Logger::Error("Vehicle config reload rejected: " + error);
-        m_vehicleConfigLastWriteTime = writeTime;
         return;
     }
 
-    m_vehicleConfig = candidate;
-    m_vehicleConfigLastWriteTime = writeTime;
     m_car.ApplyConfig(m_vehicleConfig);
 
     if (m_carChassisObject != nullptr) {
@@ -161,7 +143,7 @@ void Scene::ReloadVehicleConfigIfChanged(float deltaTime) {
             collider->SetHalfExtents(m_vehicleConfig.colliderHalfExtents);
     }
 
-    Logger::Info("Vehicle config hot-reloaded: " + m_vehicleConfigPath);
+    Logger::Info("Vehicle config hot-reloaded: " + m_vehicleConfigWatcher.GetPath());
 }
 
 void Scene::UpdatePhysics(
