@@ -198,6 +198,26 @@ void Car::UpdatePhysics(
             Logger::Debug(log.str());
         }
 
+        const Vec3 angularVelocity = m_chassis->GetAngularVelocity();
+        const float leftLoad =
+            m_tires[ToIndex(WheelIndex::FrontLeft)].GetNormalLoad() +
+            m_tires[ToIndex(WheelIndex::RearLeft)].GetNormalLoad();
+        const float rightLoad =
+            m_tires[ToIndex(WheelIndex::FrontRight)].GetNormalLoad() +
+            m_tires[ToIndex(WheelIndex::RearRight)].GetNormalLoad();
+
+        std::ostringstream corneringLog;
+        corneringLog << std::fixed << std::setprecision(3)
+            << "[Cornering]"
+            << " steerInput=" << m_steering
+            << " frontSteerAngle=" << m_wheels[ToIndex(WheelIndex::FrontLeft)].GetSteeringAngle()
+            << " yawRateY=" << angularVelocity.y
+            << " rollRateZ=" << angularVelocity.z
+            << " leftLoad=" << leftLoad
+            << " rightLoad=" << rightLoad
+            << " leftMinusRight=" << leftLoad - rightLoad;
+        Logger::Debug(corneringLog.str());
+
         m_tireTimer = 0.0f;
     }
 
