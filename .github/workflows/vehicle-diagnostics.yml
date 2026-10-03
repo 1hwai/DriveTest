@@ -1,0 +1,36 @@
+name: Vehicle Diagnostics
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  vehicle-diagnostics:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y             build-essential cmake ninja-build pkg-config git curl zip unzip tar             libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxinerama-dev             libxi-dev libxkbcommon-dev libwayland-dev libdecor-0-dev             libgl1-mesa-dev libasound2-dev libpulse-dev libudev-dev             libdbus-1-dev libdrm-dev libgbm-dev libibus-1.0-dev
+
+      - name: Set up vcpkg
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgDirectory: ${{ runner.temp }}/vcpkg
+          vcpkgJsonGlob: vcpkg.json
+
+      - name: Configure diagnostics
+        run: |
+          cmake -S . -B build/diagnostics -G Ninja             -DCMAKE_BUILD_TYPE=Release             -DCMAKE_TOOLCHAIN_FILE="${{ runner.temp }}/vcpkg/scripts/buildsystems/vcpkg.cmake"             -DVCPKG_MANIFEST_MODE=ON             -DVCPKG_MANIFEST_INSTALL=ON             -DVCPKG_INSTALLED_DIR="${{ github.workspace }}/build/diagnostics/vcpkg_installed"             -DDRIVETEST_BUILD_PHYSICS_DIAGNOSTICS=ON             -DDRIVETEST_BUILD_VEHICLE_DIAGNOSTICS=ON
+
+      - name: Build headless diagnostics
+        run: cmake --build build/diagnostics --target DriveTestPhysicsDiagnostics DriveTestVehicleDiagnostics --parallel 2
+
+      - name: Run physics and vehicle simulations
+        run: ctest --test-dir build/diagnostics --output-on-failure
