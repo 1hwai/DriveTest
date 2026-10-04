@@ -144,7 +144,57 @@ void Wheel::Update(
         suspension.ClampLength(
             result.distance - m_radius
         );
-    Logger::Debug("Wheel " + std::to_string(index) + ": raydist: " + std::to_string(result.distance) + " susp: " + std::to_string(suspensionLength));
+    const Vec3 chassisRight =
+        body.GetOrientation() * Vec3(1.0f, 0.0f, 0.0f);
+    const Vec3 chassisUp =
+        body.GetOrientation() * Vec3(0.0f, 1.0f, 0.0f);
+    const Vec3 chassisForward =
+        body.GetOrientation() * Vec3(0.0f, 0.0f, 1.0f);
+    const float reconstructedDistance =
+        (result.point - worldMount).Length();
+    const int hitShape =
+        result.collider
+        ? static_cast<int>(result.collider->GetShape())
+        : -1;
+
+    Logger::Debug(
+        "[WheelRayAudit] index=" + std::to_string(index) +
+        " local=(" + std::to_string(m_localPosition.x) +
+        "," + std::to_string(m_localPosition.y) +
+        "," + std::to_string(m_localPosition.z) + ")" +
+        " bodyPos=(" + std::to_string(body.GetPosition().x) +
+        "," + std::to_string(body.GetPosition().y) +
+        "," + std::to_string(body.GetPosition().z) + ")" +
+        " mount=(" + std::to_string(worldMount.x) +
+        "," + std::to_string(worldMount.y) +
+        "," + std::to_string(worldMount.z) + ")" +
+        " down=(" + std::to_string(down.x) +
+        "," + std::to_string(down.y) +
+        "," + std::to_string(down.z) + ")" +
+        " basisRight=(" + std::to_string(chassisRight.x) +
+        "," + std::to_string(chassisRight.y) +
+        "," + std::to_string(chassisRight.z) + ")" +
+        " basisUp=(" + std::to_string(chassisUp.x) +
+        "," + std::to_string(chassisUp.y) +
+        "," + std::to_string(chassisUp.z) + ")" +
+        " basisForward=(" + std::to_string(chassisForward.x) +
+        "," + std::to_string(chassisForward.y) +
+        "," + std::to_string(chassisForward.z) + ")" +
+        " maxRay=" + std::to_string(maxRayDistance) +
+        " radius=" + std::to_string(m_radius) +
+        " hitShape=" + std::to_string(hitShape) +
+        " rayDistance=" + std::to_string(result.distance) +
+        " reconstructedDistance=" + std::to_string(reconstructedDistance) +
+        " point=(" + std::to_string(result.point.x) +
+        "," + std::to_string(result.point.y) +
+        "," + std::to_string(result.point.z) + ")" +
+        " normal=(" + std::to_string(result.normal.x) +
+        "," + std::to_string(result.normal.y) +
+        "," + std::to_string(result.normal.z) + ")" +
+        " suspRaw=" + std::to_string(result.distance - m_radius) +
+        " suspClamped=" + std::to_string(suspensionLength) +
+        " compression=" + std::to_string(compression)
+    );
 
     const float compression =
         suspension.GetRestLength() -
