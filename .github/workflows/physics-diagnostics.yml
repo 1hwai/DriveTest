@@ -88,6 +88,11 @@ jobs:
           echo "PhysicsDiagnostics log check: $physics_log_status"
           echo "VehicleDiagnostics log check: $vehicle_log_status"
 
+          grep -E '\\[(WheelRayAudit|RaycastAuditBegin|RaycastCandidate|RaycastAuditResult|WheelRaycastGeometry|FAIL)\\]' \
+            ../Logs/vehicle_diagnostics.log > raycast_audit.log || true
+          echo "===== Wheel/raycast audit excerpt (last 400 lines) ====="
+          tail -n 400 raycast_audit.log
+
           if [ "$physics_status" -ne 0 ] ||
              [ "$vehicle_status" -ne 0 ] ||
              [ "$physics_log_status" -ne 0 ] ||
@@ -104,6 +109,7 @@ jobs:
             configure.log
             build.log
             build/run.log
+            build/raycast_audit.log
             Logs/physics_diagnostics.log
             Logs/vehicle_diagnostics.log
           if-no-files-found: warn
