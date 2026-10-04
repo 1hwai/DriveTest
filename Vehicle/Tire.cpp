@@ -223,6 +223,7 @@ TireState Tire::CalculateState(
 
     forward = forward.Normalized();
 
+    // Positive steering angle rotates the +Z forward direction toward +X (right).
     forward =
         Quaternion::FromAxisAngle(
             normal,

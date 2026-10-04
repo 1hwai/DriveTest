@@ -35,7 +35,7 @@ public:
     void SetInput(
         float throttle,
         float brake,
-        float steering,
+        float steerInput,
         float clutch
     );
 

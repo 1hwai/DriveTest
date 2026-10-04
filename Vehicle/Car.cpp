@@ -67,12 +67,12 @@ void Car::ApplyConfig(const VehicleConfig& config) {
 void Car::SetInput(
     float throttle,
     float brake,
-    float steering,
+    float steerInput,
     float clutch
 ) {
     m_throttle = std::clamp(throttle, 0.0f, 1.0f);
     m_brake = std::clamp(brake, 0.0f, 1.0f);
-    m_steering = std::clamp(steering, -1.0f, 1.0f);
+    m_steering = std::clamp(steerInput, -1.0f, 1.0f);
     m_clutch = std::clamp(clutch, 0.0f, 1.0f);
 }
 
@@ -103,7 +103,8 @@ void Car::UpdatePhysics(
     const float rightDriveTorque =
         m_powertrain.GetRightDriveTorque();
 
-    // Input convention: negative = right, positive = left.
+    // Coordinate convention: vehicle forward is +Z, right is +X, and up is +Y.
+    // Steering input and steering angle are both positive to the right.
     // Positive rotation around +Y turns the +Z-facing wheels toward +X (right).
     const Vec3 velocity = m_chassis->GetLinearVelocity();
     const float horizontalSpeed = std::sqrt(
@@ -113,7 +114,7 @@ void Car::UpdatePhysics(
     const float steeringScale =
         1.0f / (1.0f + 0.25f * horizontalSpeed);
     const float steeringAngle =
-        -m_steering * m_maxSteeringAngle * steeringScale;
+        m_steering * m_maxSteeringAngle * steeringScale;
     m_wheels[ToIndex(WheelIndex::FrontLeft)].SetSteeringAngle(
         steeringAngle
     );

@@ -8,6 +8,8 @@ struct VehicleConfig {
     float mass = 1190.0f;
     float spawnClearance = 0.78f;
     Vec3 colliderHalfExtents = Vec3(0.90f, 0.34f, 2.15f);
+    // Vehicle-local coordinates: front = +Z, right = +X, up = +Y.
+    // Left wheels have negative X; right wheels have positive X.
     std::array<Vec3, 4> wheelPositions = {
         Vec3(-0.76f, -0.10f, 1.25f), Vec3(0.76f, -0.10f, 1.25f),
         Vec3(-0.76f, -0.10f, -1.25f), Vec3(0.76f, -0.10f, -1.25f)

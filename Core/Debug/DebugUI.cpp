@@ -327,7 +327,7 @@ void DebugUI::Render() {
         ImGui::Text("Clutch");
         ImGui::SameLine(90.0f);
         ImGui::ProgressBar(car.GetClutch(), ImVec2(130.0f, 14.0f), "");
-        ImGui::Text("Steering  %+0.2f", car.GetSteering());
+        ImGui::Text("Steer Input (+right)  %+0.2f", car.GetSteering());
         ImGui::End();
     }
 

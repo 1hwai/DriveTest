@@ -48,6 +48,8 @@ VehicleInput InputManager::GetVehicleInput() const {
             ? m_gamepadInput.GetBrake()
             : (m_keyboard.IsDown(SDL_SCANCODE_S) ? 1.0f : 0.0f);
 
+    // Keep the shared vehicle-input convention consistent across devices:
+    // positive = right, negative = left.
     input.steering =
         gamepadConnected
             ? m_gamepadInput.GetSteering()
