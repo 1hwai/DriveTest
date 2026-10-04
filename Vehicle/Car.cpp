@@ -189,40 +189,12 @@ void Car::UpdatePhysics(
         };
 
         for (size_t i = 0; i < WheelCount; ++i) {
-            const Tire& tire = m_tires[i];
             const Wheel& wheel = m_wheels[i];
-
-            std::ostringstream log;
-            log << std::fixed << std::setprecision(3)
-                << "[Tire] " << names[i]
-                << " grounded=" << wheel.IsGrounded()
-                << " compression=" << wheel.GetCompression()
-                << " suspensionLength=" << wheel.GetSuspensionLength()
-                << " compressionVelocity=" << wheel.GetCompressionVelocity()
-                << " springForce=" << wheel.GetSpringForce()
-                << " damperForce=" << wheel.GetDamperForce()
-                << " suspensionAxisForce=" << wheel.GetForce()
-                << " normalLoad=" << wheel.GetNormalLoad()
-                << " contactNormal=(" << wheel.GetContactNormal().x
-                << "," << wheel.GetContactNormal().y
-                << "," << wheel.GetContactNormal().z << ")"
-                << " contactPointY=" << wheel.GetContactPoint().y
-                << " omega=" << wheel.GetAngularVelocity()
-                << " wheelSpeed=" << tire.GetWheelSurfaceSpeed()
-                << " Vx=" << tire.GetLongitudinalVelocity()
-                << " Vy=" << tire.GetLateralVelocity()
-                << " slipVel=" << tire.GetLongitudinalSlipVelocity()
-                << " kappa=" << tire.GetSlipRatio()
-                << " alpha=" << tire.GetSlipAngle()
-                << " Fz=" << tire.GetNormalLoad()
-                << " Fx=" << tire.GetLongitudinalForce()
-                << " Fy=" << tire.GetLateralForce();
-
-            Logger::Debug(log.str());
-
+            const Tire& tire = m_tires[i];
+            const Vec3& localPosition = wheel.GetLocalPosition();
             const Vec3 origin =
                 m_chassis->GetPosition() +
-                m_chassis->GetOrientation() * wheel.GetLocalPosition();
+                m_chassis->GetOrientation() * localPosition;
             const Vec3 direction = (
                 m_chassis->GetOrientation() *
                 Vec3(0.0f, -1.0f, 0.0f)
@@ -236,25 +208,39 @@ void Car::UpdatePhysics(
                 ? (reconstructedPoint - wheel.GetContactPoint()).Length()
                 : 0.0f;
 
-            std::ostringstream rayLog;
-            rayLog << std::fixed << std::setprecision(3)
-                << "[WR] w=" << names[i]
-                << " h=" << wheel.IsGrounded()
+            std::ostringstream log;
+            log << std::fixed << std::setprecision(3)
+                << "[W] i=" << i
+                << " w=" << names[i]
+                << " si=" << i
+                << " lp=(" << localPosition.x << "," << localPosition.y << "," << localPosition.z << ")"
                 << " o=(" << origin.x << "," << origin.y << "," << origin.z << ")"
                 << " d=(" << direction.x << "," << direction.y << "," << direction.z << ")"
+                << " h=" << wheel.IsGrounded()
                 << " md=" << maxDistance
                 << " rd=" << rayDistance
                 << " pe=" << pointError
-                << " sh=" << wheel.GetLastRayShape();
+                << " sh=" << wheel.GetLastRayShape()
+                << " sl=" << wheel.GetSuspensionLength()
+                << " c=" << wheel.GetCompression()
+                << " cv=" << wheel.GetCompressionVelocity()
+                << " sf=" << wheel.GetSpringForce()
+                << " df=" << wheel.GetDamperForce()
+                << " af=" << wheel.GetForce()
+                << " Fz=" << tire.GetNormalLoad()
+                << " Fx=" << tire.GetLongitudinalForce()
+                << " Fy=" << tire.GetLateralForce()
+                << " k=" << tire.GetSlipRatio()
+                << " a=" << tire.GetSlipAngle();
 
             if (wheel.IsGrounded()) {
                 const Vec3& point = wheel.GetContactPoint();
                 const Vec3& normal = wheel.GetContactNormal();
-                rayLog << " p=(" << point.x << "," << point.y << "," << point.z << ")"
+                log << " p=(" << point.x << "," << point.y << "," << point.z << ")"
                     << " n=(" << normal.x << "," << normal.y << "," << normal.z << ")";
             }
 
-            Logger::Debug(rayLog.str());
+            Logger::Debug(log.str());
         }
 
         const Vec3 angularVelocity = m_chassis->GetAngularVelocity();
