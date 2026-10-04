@@ -122,8 +122,8 @@ namespace Logger {
                 "(0=Box,1=Sphere,2=Plane,3=Terrain,4=Road,-1=none); "
                 "FL/FR/RL/RR=front-left/front-right/rear-left/rear-right; "
                 "coordinates and distances are world-space meters.";
-            std::cout << legend << '\\n';
-            g_logFile << legend << '\\n';
+            std::cout << legend << '\n';
+            g_logFile << legend << '\n';
             g_logFile.flush();
         }
     }
