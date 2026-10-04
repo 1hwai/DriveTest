@@ -8,6 +8,8 @@
 #include "../Physics/Collider.h"
 #include "../Physics/PhysicsWorld.h"
 #include "../Physics/RigidBody.h"
+#include "../Physics/Road.h"
+#include "../Physics/Terrain.h"
 #include "../Vehicle/Car.h"
 #include "../Vehicle/VehicleConfig.h"
 
@@ -138,6 +140,158 @@ namespace {
 
         while (car.GetTransmission().GetGear() > targetGear)
             car.GetTransmission().ShiftDown();
+    }
+
+    bool RunRaycastRollGeometryDiagnostics() {
+        PhysicsWorld planeWorld;
+        Collider* plane = planeWorld.CreateCollider();
+        plane->SetShape(ColliderShape::Plane);
+        plane->SetPlaneHeight(0.0f);
+
+        RigidBody body;
+        body.SetPosition(Vec3(0.0f, 1.5f, 0.0f));
+
+        const Vec3 wheelLocalPositions[] = {
+            Vec3(-0.76f, -0.10f, 1.25f),
+            Vec3(0.76f, -0.10f, 1.25f),
+            Vec3(-0.76f, -0.10f, -1.25f),
+            Vec3(0.76f, -0.10f, -1.25f)
+        };
+        const char* wheelNames[] = { "FL", "FR", "RL", "RR" };
+
+        auto TraceWheel = [&](int index, const Quaternion& orientation, float& distance) {
+            body.SetOrientation(orientation);
+            const Vec3 origin =
+                body.GetPosition() +
+                body.GetOrientation() * wheelLocalPositions[index];
+            const Vec3 direction =
+                body.GetOrientation() * Vec3(0.0f, -1.0f, 0.0f);
+            Ray ray{ origin, direction };
+            RaycastResult result;
+            const bool hit = planeWorld.Raycast(ray, result, 5.0f, &body);
+
+            std::ostringstream log;
+            log << std::fixed << std::setprecision(5)
+                << "[RaycastRollTest] wheel=" << wheelNames[index]
+                << " hit=" << hit
+                << " origin=(" << origin.x << "," << origin.y << "," << origin.z << ")"
+                << " direction=(" << direction.x << "," << direction.y << "," << direction.z << ")";
+            if (hit) {
+                const Vec3 reconstructed = origin + direction * result.distance;
+                log << " distance=" << result.distance
+                    << " expectedPlaneDistance=" << origin.y / -direction.y
+                    << " point=(" << result.point.x << "," << result.point.y << "," << result.point.z << ")"
+                    << " normal=(" << result.normal.x << "," << result.normal.y << "," << result.normal.z << ")"
+                    << " pointError=" << (reconstructed - result.point).Length();
+                distance = result.distance;
+            }
+            Logger::Info(log.str());
+
+            if (!hit || direction.y >= -0.1f)
+                return false;
+
+            const float expectedDistance = origin.y / -direction.y;
+            return std::abs(result.distance - expectedDistance) < 0.0001f &&
+                std::abs(result.point.y) < 0.0001f &&
+                (origin + direction * result.distance - result.point).Length() < 0.0001f;
+        };
+
+        bool passed = true;
+        for (float rollAngle : { 0.10f, -0.10f }) {
+            const Quaternion orientation =
+                Quaternion::FromAxisAngle(Vec3(0.0f, 0.0f, 1.0f), rollAngle);
+            float distances[4] = {};
+            for (int i = 0; i < 4; ++i)
+                passed = TraceWheel(i, orientation, distances[i]) && passed;
+
+            const bool positiveRollExpected =
+                rollAngle > 0.0f
+                ? distances[0] < distances[1] && distances[2] < distances[3]
+                : distances[0] > distances[1] && distances[2] > distances[3];
+
+            std::ostringstream summary;
+            summary << std::fixed << std::setprecision(5)
+                << "[RaycastRollSummary] rollAngle=" << rollAngle
+                << " FL=" << distances[0]
+                << " FR=" << distances[1]
+                << " RL=" << distances[2]
+                << " RR=" << distances[3]
+                << " expectedSideOrdering=" << positiveRollExpected;
+            Logger::Info(summary.str());
+
+            if (!positiveRollExpected) {
+                Logger::Error("[FAIL] Raycast roll geometry produced incorrect left/right distance ordering");
+                passed = false;
+            }
+        }
+
+        if (passed)
+            Logger::Info("[PASS] Raycast roll geometry diagnostics");
+        else
+            Logger::Error("[FAIL] Raycast roll geometry diagnostics");
+        return passed;
+    }
+
+    bool RunRaycastSurfaceDiagnostics() {
+        bool passed = true;
+
+        {
+            Terrain flatTerrain(33, 100.0f, 0.0f, 0.035f, 1, 1337);
+            PhysicsWorld world;
+            Collider* collider = world.CreateCollider();
+            collider->SetShape(ColliderShape::Terrain);
+            collider->SetTerrain(&flatTerrain);
+
+            RaycastResult result;
+            const Ray ray{ Vec3(0.0f, 1.0f, 0.0f), Vec3(0.0f, -1.0f, 0.0f) };
+            const bool hit = world.Raycast(ray, result, 3.0f);
+            const float error = hit ? std::abs(result.distance - 1.0f) : INFINITY;
+            Logger::Info("[RaycastSurfaceTest] shape=Terrain hit=" +
+                std::to_string(hit) + " distance=" +
+                (hit ? std::to_string(result.distance) : std::string("none")) +
+                " expected=1.00000 error=" + std::to_string(error));
+            if (!hit || error > 0.02f || std::abs(result.point.y) > 0.02f) {
+                Logger::Error("[FAIL] Terrain raycast distance/point mismatch");
+                passed = false;
+            }
+        }
+
+        {
+            Terrain flatTerrain(33, 100.0f, 0.0f, 0.035f, 1, 1337);
+            Road road;
+            const std::vector<Vec3> controlPoints = {
+                Vec3(0.0f, 0.0f, -20.0f),
+                Vec3(0.0f, 0.0f, 20.0f)
+            };
+            if (!road.GenerateCourse(flatTerrain, controlPoints, 10.0f, 0.01f)) {
+                Logger::Error("[FAIL] Road raycast diagnostic could not generate test road");
+                return false;
+            }
+
+            PhysicsWorld world;
+            Collider* collider = world.CreateCollider();
+            collider->SetShape(ColliderShape::Road);
+            collider->SetRoad(&road);
+
+            RaycastResult result;
+            const Ray ray{ Vec3(0.0f, 1.0f, 0.0f), Vec3(0.0f, -1.0f, 0.0f) };
+            const bool hit = world.Raycast(ray, result, 3.0f);
+            const float error = hit ? std::abs(result.distance - 0.99f) : INFINITY;
+            Logger::Info("[RaycastSurfaceTest] shape=Road hit=" +
+                std::to_string(hit) + " distance=" +
+                (hit ? std::to_string(result.distance) : std::string("none")) +
+                " expected=0.99000 error=" + std::to_string(error));
+            if (!hit || error > 0.02f || std::abs(result.point.y - 0.01f) > 0.02f) {
+                Logger::Error("[FAIL] Road raycast distance/point mismatch");
+                passed = false;
+            }
+        }
+
+        if (passed)
+            Logger::Info("[PASS] Raycast surface diagnostics");
+        else
+            Logger::Error("[FAIL] Raycast surface diagnostics");
+        return passed;
     }
 
     bool RunTireModelDiagnostics() {
@@ -518,6 +672,8 @@ namespace {
         float meanLoadDifference = 0.0f;
         float meanLoadAccelerationProduct = 0.0f;
         float meanAbsoluteLateralAcceleration = 0.0f;
+        float meanLeftMinusRightRayDistance = 0.0f;
+        int raySamples = 0;
         int samples = 0;
     };
 
@@ -649,6 +805,33 @@ namespace {
                 rig.car.GetTire(WheelIndex::RearRight).GetNormalLoad();
             const float loadDifference = leftLoad - rightLoad;
 
+            const Wheel& frontLeftWheel =
+                rig.car.GetWheel(WheelIndex::FrontLeft);
+            const Wheel& frontRightWheel =
+                rig.car.GetWheel(WheelIndex::FrontRight);
+            const Wheel& rearLeftWheel =
+                rig.car.GetWheel(WheelIndex::RearLeft);
+            const Wheel& rearRightWheel =
+                rig.car.GetWheel(WheelIndex::RearRight);
+            if (frontLeftWheel.IsGrounded() &&
+                frontRightWheel.IsGrounded() &&
+                rearLeftWheel.IsGrounded() &&
+                rearRightWheel.IsGrounded()) {
+                const float leftRayDistance =
+                    0.5f * (
+                        frontLeftWheel.GetLastRayDistance() +
+                        rearLeftWheel.GetLastRayDistance()
+                    );
+                const float rightRayDistance =
+                    0.5f * (
+                        frontRightWheel.GetLastRayDistance() +
+                        rearRightWheel.GetLastRayDistance()
+                    );
+                metrics.meanLeftMinusRightRayDistance +=
+                    leftRayDistance - rightRayDistance;
+                ++metrics.raySamples;
+            }
+
             if (!std::isfinite(lateralAcceleration) ||
                 !std::isfinite(loadDifference) ||
                 leftLoad < 0.0f ||
@@ -690,6 +873,9 @@ namespace {
             loadAccelerationProductSum / metrics.samples;
         metrics.meanAbsoluteLateralAcceleration =
             absoluteLateralAccelerationSum / metrics.samples;
+        if (metrics.raySamples > 0)
+            metrics.meanLeftMinusRightRayDistance /=
+                static_cast<float>(metrics.raySamples);
 
         std::ostringstream log;
         log << std::fixed << std::setprecision(3)
@@ -701,6 +887,9 @@ namespace {
             << metrics.meanAbsoluteLateralAcceleration
             << " meanLeftMinusRightLoad="
             << metrics.meanLoadDifference
+            << " meanLeftMinusRightRayDistance="
+            << metrics.meanLeftMinusRightRayDistance
+            << " raySamples=" << metrics.raySamples
             << " meanLoadAccelerationProduct="
             << metrics.meanLoadAccelerationProduct;
         Logger::Info(log.str());
@@ -709,6 +898,15 @@ namespace {
             Logger::Error(
                 std::string("[FAIL] ") + name +
                 " steering produced insufficient lateral acceleration"
+            );
+            return false;
+        }
+
+        if (metrics.raySamples == 0 ||
+            metrics.meanLeftMinusRightRayDistance * steering <= 0.0f) {
+            Logger::Error(
+                std::string("[FAIL] ") + name +
+                " suspension ray distances do not match outside-wheel geometry"
             );
             return false;
         }
@@ -773,7 +971,9 @@ namespace {
 int main() {
     Logger::Initialize("Logs/vehicle_diagnostics.log");
 
-    bool passed = RunTireModelDiagnostics();
+    bool passed = RunRaycastRollGeometryDiagnostics();
+    passed = RunRaycastSurfaceDiagnostics() && passed;
+    passed = RunTireModelDiagnostics() && passed;
 
     passed = RunTireGripCurveDiagnostics() && passed;
 

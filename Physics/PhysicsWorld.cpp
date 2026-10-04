@@ -2,8 +2,11 @@
 #include "Road.h"
 
 #include "Terrain.h"
+#include "../Core/Debug/Logger.h"
 
 #include <algorithm>
+#include <iomanip>
+#include <sstream>
 #include <cmath>
 
 PhysicsWorld::PhysicsWorld()
@@ -552,6 +555,14 @@ bool PhysicsWorld::Raycast(
 
     bool hit = false;
     float closestDistance = maxDistance;
+    std::ostringstream rayAudit;
+    rayAudit << std::fixed << std::setprecision(5)
+        << "[RaycastAudit] origin=(" << normalizedRay.origin.x << "," << normalizedRay.origin.y << "," << normalizedRay.origin.z << ")"
+        << " direction=(" << normalizedRay.direction.x << "," << normalizedRay.direction.y << "," << normalizedRay.direction.z << ")"
+        << " inputDirectionLength=" << directionLength
+        << " maxDistance=" << maxDistance
+        << " colliderCount=" << m_colliders.size();
+    Logger::Debug(rayAudit.str());
 
     for (const auto& collider : m_colliders) {
         if (!collider)
@@ -560,7 +571,8 @@ bool PhysicsWorld::Raycast(
         const RigidBody* body =
             collider->GetRigidBody();
 
-        if (body == ignoreBody)
+        // A null ignoreBody means "ignore nothing", not "ignore static colliders".
+        if (ignoreBody && body == ignoreBody)
             continue;
 
         RaycastResult candidate;
@@ -654,6 +666,16 @@ bool PhysicsWorld::Raycast(
         if (!candidateHit)
             continue;
 
+        std::ostringstream candidateAudit;
+        candidateAudit << std::fixed << std::setprecision(5)
+            << "[RaycastCandidate] shape=" << static_cast<int>(collider->GetShape())
+            << " distance=" << candidate.distance
+            << " point=(" << candidate.point.x << "," << candidate.point.y << "," << candidate.point.z << ")"
+            << " normal=(" << candidate.normal.x << "," << candidate.normal.y << "," << candidate.normal.z << ")"
+            << " currentClosest=" << closestDistance
+            << " selected=" << (!hit || candidate.distance < closestDistance);
+        Logger::Debug(candidateAudit.str());
+
         if (!hit ||
             candidate.distance < closestDistance) {
 
@@ -661,6 +683,18 @@ bool PhysicsWorld::Raycast(
             closestDistance = candidate.distance;
             result = candidate;
         }
+    }
+
+    if (hit) {
+        std::ostringstream selectedAudit;
+        selectedAudit << std::fixed << std::setprecision(5)
+            << "[RaycastSelected] distance=" << result.distance
+            << " point=(" << result.point.x << "," << result.point.y << "," << result.point.z << ")"
+            << " normal=(" << result.normal.x << "," << result.normal.y << "," << result.normal.z << ")"
+            << " shape=" << (result.collider ? static_cast<int>(result.collider->GetShape()) : -1);
+        Logger::Debug(selectedAudit.str());
+    } else {
+        Logger::Debug("[RaycastSelected] hit=0");
     }
 
     return hit;
