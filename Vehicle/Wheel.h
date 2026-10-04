@@ -46,6 +46,7 @@ public:
     bool IsGrounded() const;
     float GetSuspensionLength() const;
     float GetLastRayDistance() const;
+    int GetLastRayShape() const;
     float GetCompression() const;
     float GetForce() const;
     float GetNormalLoad() const;
@@ -76,6 +77,7 @@ private:
     bool m_grounded;
     float m_suspensionLength;
     float m_lastRayDistance;
+    int m_lastRayShape;
     float m_compression;
     float m_previousCompression;
     float m_force;
