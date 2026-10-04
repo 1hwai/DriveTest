@@ -844,10 +844,10 @@ namespace {
             }
 
             // Coordinate convention: +Z is forward, +X is right.
-            // Negative steering input means right turn, loading the left wheels.
-            // Positive steering input means left turn, loading the right wheels.
-            // Therefore both lateral acceleration and left-minus-right load
-            // must have the opposite sign to the steering input.
+            // Positive steering input means right turn, loading the left wheels.
+            // Negative steering input means left turn, loading the right wheels.
+            // Therefore lateral acceleration and left-minus-right load must
+            // have the same sign as the steering input.
             lateralAccelerationSum += lateralAcceleration;
             loadDifferenceSum += loadDifference;
             loadAccelerationProductSum +=
@@ -914,8 +914,8 @@ namespace {
         if (metrics.meanLoadAccelerationProduct <= 0.0f ||
             metrics.meanLateralAcceleration *
                 metrics.meanLoadDifference <= 0.0f ||
-            metrics.meanLateralAcceleration * steering >= 0.0f ||
-            metrics.meanLoadDifference * steering >= 0.0f) {
+            metrics.meanLateralAcceleration * steering <= 0.0f ||
+            metrics.meanLoadDifference * steering <= 0.0f) {
             Logger::Error(
                 std::string("[FAIL] ") + name +
                 " outside-wheel load transfer has the wrong direction"
@@ -1001,8 +1001,8 @@ int main() {
         SlalomGear
     ) && passed;
 
-    passed = RunSteeringForceDirectionTest("LeftSteer", 0.35f, -1.0f) && passed;
-    passed = RunSteeringForceDirectionTest("RightSteer", -0.35f, 1.0f) && passed;
+    passed = RunSteeringForceDirectionTest("RightSteer", 0.35f, 1.0f) && passed;
+    passed = RunSteeringForceDirectionTest("LeftSteer", -0.35f, -1.0f) && passed;
 
     passed = RunCorneringLoadTransferDiagnostics() && passed;
 
