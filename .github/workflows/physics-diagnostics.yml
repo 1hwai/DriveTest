@@ -53,19 +53,19 @@ jobs:
 
           echo "PhysicsDiagnostics exit code: $physics_status"
           echo "VehicleDiagnostics exit code: $vehicle_status"
-          echo "===== PhysicsDiagnostics stdout ====="
-          cat physics_run.log
-          echo "===== PhysicsDiagnostics file log ====="
+          echo "===== PhysicsDiagnostics key output ====="
+          grep -E "\\[(FAIL|PASS|RaycastRollSummary|RaycastSurfaceTest)\\]" physics_run.log | tail -n 200 || true
+          echo "===== VehicleDiagnostics key output ====="
+          grep -E "\\[(FAIL|PASS|RaycastRollSummary|RaycastSurfaceTest|CorneringSummary|SteeringForce)\\]" vehicle_run.log | tail -n 300 || true
+          echo "===== PhysicsDiagnostics file log summary ====="
           if [ -f ../Logs/physics_diagnostics.log ]; then
-            cat ../Logs/physics_diagnostics.log
+            grep -E "\\[(FAIL|PASS|RaycastRollSummary|RaycastSurfaceTest)\\]" ../Logs/physics_diagnostics.log | tail -n 200 || true
           else
             echo "Missing expected log: Logs/physics_diagnostics.log"
           fi
-          echo "===== VehicleDiagnostics stdout ====="
-          cat vehicle_run.log
-          echo "===== VehicleDiagnostics file log ====="
+          echo "===== VehicleDiagnostics file log summary ====="
           if [ -f ../Logs/vehicle_diagnostics.log ]; then
-            cat ../Logs/vehicle_diagnostics.log
+            grep -E "\\[(FAIL|PASS|RaycastRollSummary|RaycastSurfaceTest|CorneringSummary|SteeringForce)\\]" ../Logs/vehicle_diagnostics.log | tail -n 300 || true
           else
             echo "Missing expected log: Logs/vehicle_diagnostics.log"
           fi
@@ -73,10 +73,10 @@ jobs:
           {
             echo "PhysicsDiagnostics exit code: $physics_status"
             echo "VehicleDiagnostics exit code: $vehicle_status"
-            echo "===== PhysicsDiagnostics stdout ====="
-            cat physics_run.log
-            echo "===== VehicleDiagnostics stdout ====="
-            cat vehicle_run.log
+            echo "===== PhysicsDiagnostics key output ====="
+            grep -E "\\[(FAIL|PASS|RaycastRollSummary|RaycastSurfaceTest)\\]" physics_run.log | tail -n 200 || true
+            echo "===== VehicleDiagnostics key output ====="
+            grep -E "\\[(FAIL|PASS|RaycastRollSummary|RaycastSurfaceTest|CorneringSummary|SteeringForce)\\]" vehicle_run.log | tail -n 300 || true
           } | tee run.log
 
           test -s ../Logs/physics_diagnostics.log
@@ -104,6 +104,8 @@ jobs:
             configure.log
             build.log
             build/run.log
+            build/physics_run.log
+            build/vehicle_run.log
             Logs/physics_diagnostics.log
             Logs/vehicle_diagnostics.log
           if-no-files-found: warn
