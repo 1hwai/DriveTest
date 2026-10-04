@@ -88,7 +88,7 @@ jobs:
           echo "PhysicsDiagnostics log check: $physics_log_status"
           echo "VehicleDiagnostics log check: $vehicle_log_status"
 
-          grep -E '\\[(WheelRayAudit|RaycastAuditBegin|RaycastCandidate|RaycastAuditResult|WheelRaycastGeometry|FAIL)\\]' \
+          grep -E '\[(WheelRayAudit|RaycastAuditBegin|RaycastCandidate|RaycastAuditResult|WheelRaycastGeometry|FAIL)\]' \
             ../Logs/vehicle_diagnostics.log > raycast_audit.log || true
           echo "===== Wheel/raycast audit excerpt (last 400 lines) ====="
           tail -n 400 raycast_audit.log
