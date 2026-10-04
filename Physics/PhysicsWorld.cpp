@@ -573,8 +573,15 @@ bool PhysicsWorld::Raycast(
     );
 
     for (const auto& collider : m_colliders) {
-        if (!collider)
+        if (!collider) {
+            Logger::Debug(
+                "[RaycastCandidate] colliderIndex=" +
+                std::to_string(colliderIndex) +
+                " skipped=nullCollider"
+            );
+            ++colliderIndex;
             continue;
+        }
 
         const RigidBody* body =
             collider->GetRigidBody();
@@ -596,32 +603,30 @@ bool PhysicsWorld::Raycast(
         if (collider->GetShape() ==
             ColliderShape::Box) {
 
-            if (!body)
-                continue;
-
-            candidateHit =
-                RaycastBox(
-                    normalizedRay,
-                    *collider,
-                    *body,
-                    closestDistance,
-                    candidate
-                );
+            if (body) {
+                candidateHit =
+                    RaycastBox(
+                        normalizedRay,
+                        *collider,
+                        *body,
+                        closestDistance,
+                        candidate
+                    );
+            }
         }
         else if (collider->GetShape() ==
             ColliderShape::Sphere) {
 
-            if (!body)
-                continue;
-
-            candidateHit =
-                RaycastSphere(
-                    normalizedRay,
-                    *collider,
-                    *body,
-                    closestDistance,
-                    candidate
-                );
+            if (body) {
+                candidateHit =
+                    RaycastSphere(
+                        normalizedRay,
+                        *collider,
+                        *body,
+                        closestDistance,
+                        candidate
+                    );
+            }
         }
         else if (collider->GetShape() ==
             ColliderShape::Plane) {
