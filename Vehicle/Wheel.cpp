@@ -7,6 +7,8 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iomanip>
+#include <sstream>
 #include <string>
 
 Wheel::Wheel()
@@ -114,6 +116,18 @@ void Wheel::Update(
         maxRayDistance,
         &body
     )) {
+        std::ostringstream audit;
+        audit << std::fixed << std::setprecision(5)
+            << "[WheelRayAudit] index=" << index
+            << " hit=0"
+            << " bodyPos=(" << body.GetPosition().x << "," << body.GetPosition().y << "," << body.GetPosition().z << ")"
+            << " localMount=(" << m_localPosition.x << "," << m_localPosition.y << "," << m_localPosition.z << ")"
+            << " origin=(" << worldMount.x << "," << worldMount.y << "," << worldMount.z << ")"
+            << " direction=(" << down.x << "," << down.y << "," << down.z << ")"
+            << " directionLength=" << down.Length()
+            << " maxRayDistance=" << maxRayDistance;
+        Logger::Debug(audit.str());
+
         m_grounded = false;
         m_suspensionLength =
             suspension.GetMaxLength();
@@ -140,11 +154,34 @@ void Wheel::Update(
         return;
     }
 
+    const float rawSuspensionLength =
+        result.distance - m_radius;
     const float suspensionLength =
-        suspension.ClampLength(
-            result.distance - m_radius
-        );
-    Logger::Debug("Wheel " + std::to_string(index) + ": raydist: " + std::to_string(result.distance) + " susp: " + std::to_string(suspensionLength));
+        suspension.ClampLength(rawSuspensionLength);
+    const Vec3 reconstructedPoint =
+        ray.origin + ray.direction * result.distance;
+    const float pointError =
+        (reconstructedPoint - result.point).Length();
+
+    std::ostringstream audit;
+    audit << std::fixed << std::setprecision(5)
+        << "[WheelRayAudit] index=" << index
+        << " hit=1"
+        << " bodyPos=(" << body.GetPosition().x << "," << body.GetPosition().y << "," << body.GetPosition().z << ")"
+        << " localMount=(" << m_localPosition.x << "," << m_localPosition.y << "," << m_localPosition.z << ")"
+        << " origin=(" << worldMount.x << "," << worldMount.y << "," << worldMount.z << ")"
+        << " direction=(" << down.x << "," << down.y << "," << down.z << ")"
+        << " directionLength=" << down.Length()
+        << " maxRayDistance=" << maxRayDistance
+        << " hitDistance=" << result.distance
+        << " rawSuspensionLength=" << rawSuspensionLength
+        << " clampedSuspensionLength=" << suspensionLength
+        << " hitPoint=(" << result.point.x << "," << result.point.y << "," << result.point.z << ")"
+        << " hitNormal=(" << result.normal.x << "," << result.normal.y << "," << result.normal.z << ")"
+        << " reconstructedPoint=(" << reconstructedPoint.x << "," << reconstructedPoint.y << "," << reconstructedPoint.z << ")"
+        << " pointError=" << pointError
+        << " colliderShape=" << (result.collider ? static_cast<int>(result.collider->GetShape()) : -1);
+    Logger::Debug(audit.str());
 
     const float compression =
         suspension.GetRestLength() -
