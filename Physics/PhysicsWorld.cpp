@@ -2,9 +2,12 @@
 #include "Road.h"
 
 #include "Terrain.h"
+#include "../Core/Debug/Logger.h"
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
+#include <string>
 
 PhysicsWorld::PhysicsWorld()
     : m_gravity(0.0f, -9.81f, 0.0f),
@@ -552,6 +555,22 @@ bool PhysicsWorld::Raycast(
 
     bool hit = false;
     float closestDistance = maxDistance;
+    size_t colliderIndex = 0;
+    size_t selectedColliderIndex = static_cast<size_t>(-1);
+
+    Logger::Debug(
+        "[RaycastAuditBegin] origin=(" +
+        std::to_string(normalizedRay.origin.x) + "," +
+        std::to_string(normalizedRay.origin.y) + "," +
+        std::to_string(normalizedRay.origin.z) + ")" +
+        " direction=(" +
+        std::to_string(normalizedRay.direction.x) + "," +
+        std::to_string(normalizedRay.direction.y) + "," +
+        std::to_string(normalizedRay.direction.z) + ")" +
+        " directionLengthBeforeNormalize=" + std::to_string(directionLength) +
+        " maxDistance=" + std::to_string(maxDistance) +
+        " ignoredBody=" + std::to_string(reinterpret_cast<std::uintptr_t>(ignoreBody))
+    );
 
     for (const auto& collider : m_colliders) {
         if (!collider)
@@ -560,8 +579,15 @@ bool PhysicsWorld::Raycast(
         const RigidBody* body =
             collider->GetRigidBody();
 
-        if (body == ignoreBody)
+        if (body == ignoreBody) {
+            Logger::Debug(
+                "[RaycastCandidate] colliderIndex=" +
+                std::to_string(colliderIndex) +
+                " skipped=ignoreBody"
+            );
+            ++colliderIndex;
             continue;
+        }
 
         RaycastResult candidate;
 
@@ -651,17 +677,51 @@ bool PhysicsWorld::Raycast(
             }
         }
 
-        if (!candidateHit)
-            continue;
+        Logger::Debug(
+            "[RaycastCandidate] colliderIndex=" +
+            std::to_string(colliderIndex) +
+            " shape=" +
+            std::to_string(static_cast<int>(collider->GetShape())) +
+            " hit=" + std::to_string(candidateHit) +
+            " maxDistanceUsed=" + std::to_string(closestDistance) +
+            (candidateHit
+                ? " candidateDistance=" + std::to_string(candidate.distance) +
+                  " point=(" + std::to_string(candidate.point.x) +
+                  "," + std::to_string(candidate.point.y) +
+                  "," + std::to_string(candidate.point.z) + ")" +
+                  " normal=(" + std::to_string(candidate.normal.x) +
+                  "," + std::to_string(candidate.normal.y) +
+                  "," + std::to_string(candidate.normal.z) + ")"
+                : std::string())
+        );
 
-        if (!hit ||
-            candidate.distance < closestDistance) {
-
+        if (candidateHit &&
+            (!hit || candidate.distance < closestDistance)) {
             hit = true;
             closestDistance = candidate.distance;
             result = candidate;
+            selectedColliderIndex = colliderIndex;
         }
+
+        ++colliderIndex;
     }
+
+    Logger::Debug(
+        "[RaycastAuditResult] hit=" + std::to_string(hit) +
+        " selectedColliderIndex=" +
+        (hit ? std::to_string(selectedColliderIndex) : std::string("none")) +
+        " closestDistance=" + std::to_string(closestDistance) +
+        (hit
+            ? " point=(" + std::to_string(result.point.x) +
+              "," + std::to_string(result.point.y) +
+              "," + std::to_string(result.point.z) + ")" +
+              " normal=(" + std::to_string(result.normal.x) +
+              "," + std::to_string(result.normal.y) +
+              "," + std::to_string(result.normal.z) + ")" +
+              " shape=" +
+              std::to_string(static_cast<int>(result.collider->GetShape()))
+            : std::string())
+    );
 
     return hit;
 }
