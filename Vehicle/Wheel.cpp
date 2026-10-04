@@ -192,8 +192,7 @@ void Wheel::Update(
         "," + std::to_string(result.normal.y) +
         "," + std::to_string(result.normal.z) + ")" +
         " suspRaw=" + std::to_string(result.distance - m_radius) +
-        " suspClamped=" + std::to_string(suspensionLength) +
-        " compression=" + std::to_string(compression)
+        " suspClamped=" + std::to_string(suspensionLength)
     );
 
     const float compression =
