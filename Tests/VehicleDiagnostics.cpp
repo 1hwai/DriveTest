@@ -672,6 +672,8 @@ namespace {
         float meanLoadDifference = 0.0f;
         float meanLoadAccelerationProduct = 0.0f;
         float meanAbsoluteLateralAcceleration = 0.0f;
+        float meanLeftMinusRightRayDistance = 0.0f;
+        int raySamples = 0;
         int samples = 0;
     };
 
@@ -803,6 +805,33 @@ namespace {
                 rig.car.GetTire(WheelIndex::RearRight).GetNormalLoad();
             const float loadDifference = leftLoad - rightLoad;
 
+            const Wheel& frontLeftWheel =
+                rig.car.GetWheel(WheelIndex::FrontLeft);
+            const Wheel& frontRightWheel =
+                rig.car.GetWheel(WheelIndex::FrontRight);
+            const Wheel& rearLeftWheel =
+                rig.car.GetWheel(WheelIndex::RearLeft);
+            const Wheel& rearRightWheel =
+                rig.car.GetWheel(WheelIndex::RearRight);
+            if (frontLeftWheel.IsGrounded() &&
+                frontRightWheel.IsGrounded() &&
+                rearLeftWheel.IsGrounded() &&
+                rearRightWheel.IsGrounded()) {
+                const float leftRayDistance =
+                    0.5f * (
+                        frontLeftWheel.GetLastRayDistance() +
+                        rearLeftWheel.GetLastRayDistance()
+                    );
+                const float rightRayDistance =
+                    0.5f * (
+                        frontRightWheel.GetLastRayDistance() +
+                        rearRightWheel.GetLastRayDistance()
+                    );
+                metrics.meanLeftMinusRightRayDistance +=
+                    leftRayDistance - rightRayDistance;
+                ++metrics.raySamples;
+            }
+
             if (!std::isfinite(lateralAcceleration) ||
                 !std::isfinite(loadDifference) ||
                 leftLoad < 0.0f ||
@@ -844,6 +873,9 @@ namespace {
             loadAccelerationProductSum / metrics.samples;
         metrics.meanAbsoluteLateralAcceleration =
             absoluteLateralAccelerationSum / metrics.samples;
+        if (metrics.raySamples > 0)
+            metrics.meanLeftMinusRightRayDistance /=
+                static_cast<float>(metrics.raySamples);
 
         std::ostringstream log;
         log << std::fixed << std::setprecision(3)
@@ -855,6 +887,9 @@ namespace {
             << metrics.meanAbsoluteLateralAcceleration
             << " meanLeftMinusRightLoad="
             << metrics.meanLoadDifference
+            << " meanLeftMinusRightRayDistance="
+            << metrics.meanLeftMinusRightRayDistance
+            << " raySamples=" << metrics.raySamples
             << " meanLoadAccelerationProduct="
             << metrics.meanLoadAccelerationProduct;
         Logger::Info(log.str());
@@ -863,6 +898,15 @@ namespace {
             Logger::Error(
                 std::string("[FAIL] ") + name +
                 " steering produced insufficient lateral acceleration"
+            );
+            return false;
+        }
+
+        if (metrics.raySamples == 0 ||
+            metrics.meanLeftMinusRightRayDistance * steering <= 0.0f) {
+            Logger::Error(
+                std::string("[FAIL] ") + name +
+                " suspension ray distances do not match outside-wheel geometry"
             );
             return false;
         }
