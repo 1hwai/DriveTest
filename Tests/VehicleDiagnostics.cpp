@@ -140,6 +140,154 @@ namespace {
             car.GetTransmission().ShiftDown();
     }
 
+    bool RunWheelRaycastGeometryPass(float rollAngle) {
+        VehicleTestRig rig;
+        if (!rig.configLoaded) {
+            Logger::Error("[FAIL] WheelRaycastGeometry config: " + rig.configError);
+            return false;
+        }
+
+        rig.chassis->SetPosition(
+            Vec3(0.0f, rig.config.spawnClearance, 0.0f)
+        );
+        rig.chassis->SetOrientation(
+            Quaternion::FromAxisAngle(
+                Vec3(0.0f, 0.0f, 1.0f),
+                rollAngle
+            )
+        );
+
+        float rayDistances[WheelCount] = {};
+        bool passed = true;
+
+        Logger::Info(
+            "[WheelRaycastGeometry] begin rollAngle=" +
+            std::to_string(rollAngle)
+        );
+
+        for (size_t i = 0; i < WheelCount; ++i) {
+            const WheelIndex wheelIndex =
+                static_cast<WheelIndex>(i);
+            Wheel& wheel = rig.car.GetWheel(wheelIndex);
+            Suspension& suspension =
+                rig.car.GetSuspension(wheelIndex);
+
+            const Vec3 worldMount =
+                rig.chassis->GetPosition() +
+                rig.chassis->GetOrientation() *
+                wheel.GetLocalPosition();
+            const Vec3 down =
+                rig.chassis->GetOrientation() *
+                Vec3(0.0f, -1.0f, 0.0f);
+            const float maxRayDistance =
+                suspension.GetMaxLength() + wheel.GetRadius();
+            const float expectedDistance =
+                (0.0f - worldMount.y) / down.y;
+
+            Ray ray;
+            ray.origin = worldMount;
+            ray.direction = down;
+
+            RaycastResult result;
+            const bool hit = rig.physicsWorld.Raycast(
+                ray,
+                result,
+                maxRayDistance,
+                rig.chassis
+            );
+
+            std::ostringstream log;
+            log << std::fixed << std::setprecision(5)
+                << "[WheelRaycastGeometry] roll=" << rollAngle
+                << " index=" << i
+                << " localX=" << wheel.GetLocalPosition().x
+                << " mountY=" << worldMount.y
+                << " downY=" << down.y
+                << " expectedDistance=" << expectedDistance
+                << " actualDistance=" << (hit ? result.distance : -1.0f)
+                << " hit=" << hit
+                << " pointY=" << (hit ? result.point.y : -1.0f)
+                << " maxRayDistance=" << maxRayDistance;
+            Logger::Info(log.str());
+
+            if (!hit ||
+                !std::isfinite(expectedDistance) ||
+                std::abs(result.distance - expectedDistance) > 0.001f ||
+                std::abs(result.point.y) > 0.001f) {
+                Logger::Error(
+                    "[FAIL] WheelRaycastGeometry ray distance disagrees with plane geometry"
+                );
+                passed = false;
+                continue;
+            }
+
+            rayDistances[i] = result.distance;
+
+            wheel.Update(
+                static_cast<int>(i),
+                *rig.chassis,
+                rig.physicsWorld,
+                suspension,
+                FixedDeltaTime
+            );
+
+            if (!wheel.IsGrounded()) {
+                Logger::Error(
+                    "[FAIL] WheelRaycastGeometry Wheel::Update did not retain raycast hit"
+                );
+                passed = false;
+            }
+        }
+
+        const float leftFront = rayDistances[
+            static_cast<size_t>(WheelIndex::FrontLeft)
+        ];
+        const float rightFront = rayDistances[
+            static_cast<size_t>(WheelIndex::FrontRight)
+        ];
+        const float leftRear = rayDistances[
+            static_cast<size_t>(WheelIndex::RearLeft)
+        ];
+        const float rightRear = rayDistances[
+            static_cast<size_t>(WheelIndex::RearRight)
+        ];
+
+        const bool expectedLeftShorter = rollAngle > 0.0f;
+        const bool frontOrderCorrect = expectedLeftShorter
+            ? leftFront < rightFront
+            : leftFront > rightFront;
+        const bool rearOrderCorrect = expectedLeftShorter
+            ? leftRear < rightRear
+            : leftRear > rightRear;
+
+        if (!frontOrderCorrect || !rearOrderCorrect) {
+            Logger::Error(
+                "[FAIL] WheelRaycastGeometry left/right ray distances disagree with rotated mount geometry"
+            );
+            passed = false;
+        }
+
+        Logger::Info(
+            std::string(passed ? "[PASS] " : "[FAIL] ") +
+            "WheelRaycastGeometry roll=" + std::to_string(rollAngle) +
+            " FL=" + std::to_string(leftFront) +
+            " FR=" + std::to_string(rightFront) +
+            " RL=" + std::to_string(leftRear) +
+            " RR=" + std::to_string(rightRear)
+        );
+
+        return passed;
+    }
+
+    bool RunWheelRaycastGeometryAudit() {
+        const bool positiveRollPassed =
+            RunWheelRaycastGeometryPass(0.10f);
+        const bool negativeRollPassed =
+            RunWheelRaycastGeometryPass(-0.10f);
+
+        return positiveRollPassed && negativeRollPassed;
+    }
+
     bool RunTireModelDiagnostics() {
         Tire tire;
         const float normalLoad = 4000.0f;
@@ -773,7 +921,9 @@ namespace {
 int main() {
     Logger::Initialize("Logs/vehicle_diagnostics.log");
 
-    bool passed = RunTireModelDiagnostics();
+    bool passed = RunWheelRaycastGeometryAudit();
+
+    passed = RunTireModelDiagnostics() && passed;
 
     passed = RunTireGripCurveDiagnostics() && passed;
 
