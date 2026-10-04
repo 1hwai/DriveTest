@@ -23,6 +23,7 @@ Wheel::Wheel()
     m_tireReactionTorque(0.0f),
     m_grounded(false),
     m_suspensionLength(0.0f),
+    m_lastRayDistance(0.0f),
     m_compression(0.0f),
     m_previousCompression(0.0f),
     m_force(0.0f),
@@ -131,6 +132,7 @@ void Wheel::Update(
         m_grounded = false;
         m_suspensionLength =
             suspension.GetMaxLength();
+        m_lastRayDistance = maxRayDistance;
         m_compression = 0.0f;
         m_force = 0.0f;
         m_normalLoad = 0.0f;
@@ -154,6 +156,7 @@ void Wheel::Update(
         return;
     }
 
+    m_lastRayDistance = result.distance;
     const float rawSuspensionLength =
         result.distance - m_radius;
     const float suspensionLength =
@@ -375,6 +378,10 @@ bool Wheel::IsGrounded() const {
 
 float Wheel::GetSuspensionLength() const {
     return m_suspensionLength;
+}
+
+float Wheel::GetLastRayDistance() const {
+    return m_lastRayDistance;
 }
 
 float Wheel::GetCompression() const {
