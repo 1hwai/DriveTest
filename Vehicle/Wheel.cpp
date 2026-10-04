@@ -3,9 +3,11 @@
 #include "Suspension.h"
 #include "../Physics/PhysicsWorld.h"
 #include "../Physics/RigidBody.h"
+#include "../Core/Debug/Logger.h"
 
 #include <algorithm>
 #include <cmath>
+#include <string>
 
 Wheel::Wheel()
     : m_localPosition(0.0f, 0.0f, 0.0f),
@@ -83,6 +85,7 @@ float Wheel::GetSteeringAngle() const {
 }
 
 void Wheel::Update(
+    int index,
     RigidBody& body,
     PhysicsWorld& physicsWorld,
     const Suspension& suspension,
@@ -141,6 +144,7 @@ void Wheel::Update(
         suspension.ClampLength(
             result.distance - m_radius
         );
+    Logger::Debug("Wheel " + std::to_string(index) + ": raydist: " + std::to_string(result.distance) + " susp: " + std::to_string(suspensionLength));
 
     const float compression =
         suspension.GetRestLength() -

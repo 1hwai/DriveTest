@@ -29,6 +29,7 @@ public:
     float GetSteeringAngle() const;
 
     void Update(
+        int index,
         RigidBody& body,
         PhysicsWorld& physicsWorld,
         const Suspension& suspension,

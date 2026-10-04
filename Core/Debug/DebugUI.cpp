@@ -482,7 +482,7 @@ void DebugUI::Render() {
         const float rightX = windowPos.x + 180.0f;
         const float frontY = windowPos.y + 34.0f;
         const float rearY = windowPos.y + 126.0f;
-
+        const char* wheelPosText[4] = { "FL", "FR", "RL", "RR" };
         for (size_t i = 0; i < WheelCount; ++i) {
             const WheelIndex index = static_cast<WheelIndex>(i);
             const Wheel& wheel = car.GetWheel(index);
@@ -514,6 +514,11 @@ void DebugUI::Render() {
                 );
             }
             drawList->AddRect(topLeft, bottomRight, IM_COL32(175, 175, 175, 255), 0.0f, 0, 1.5f);
+            drawList->AddText(
+                topLeft,
+                IM_COL32(245, 245, 245, 255),
+                wheelPosText[i]
+            );
 
             char loadText[32];
             std::snprintf(loadText, sizeof(loadText), "%.0f N", load);
