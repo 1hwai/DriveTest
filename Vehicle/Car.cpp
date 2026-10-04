@@ -219,6 +219,42 @@ void Car::UpdatePhysics(
                 << " Fy=" << tire.GetLateralForce();
 
             Logger::Debug(log.str());
+
+            const Vec3 origin =
+                m_chassis->GetPosition() +
+                m_chassis->GetOrientation() * wheel.GetLocalPosition();
+            const Vec3 direction = (
+                m_chassis->GetOrientation() *
+                Vec3(0.0f, -1.0f, 0.0f)
+            ).Normalized();
+            const float maxDistance =
+                m_suspensions[i].GetMaxLength() + wheel.GetRadius();
+            const float rayDistance = wheel.GetLastRayDistance();
+            const Vec3 reconstructedPoint =
+                origin + direction * rayDistance;
+            const float pointError = wheel.IsGrounded()
+                ? (reconstructedPoint - wheel.GetContactPoint()).Length()
+                : 0.0f;
+
+            std::ostringstream rayLog;
+            rayLog << std::fixed << std::setprecision(3)
+                << "[WR] w=" << names[i]
+                << " h=" << wheel.IsGrounded()
+                << " o=(" << origin.x << "," << origin.y << "," << origin.z << ")"
+                << " d=(" << direction.x << "," << direction.y << "," << direction.z << ")"
+                << " md=" << maxDistance
+                << " rd=" << rayDistance
+                << " pe=" << pointError
+                << " sh=" << wheel.GetLastRayShape();
+
+            if (wheel.IsGrounded()) {
+                const Vec3& point = wheel.GetContactPoint();
+                const Vec3& normal = wheel.GetContactNormal();
+                rayLog << " p=(" << point.x << "," << point.y << "," << point.z << ")"
+                    << " n=(" << normal.x << "," << normal.y << "," << normal.z << ")";
+            }
+
+            Logger::Debug(rayLog.str());
         }
 
         const Vec3 angularVelocity = m_chassis->GetAngularVelocity();
