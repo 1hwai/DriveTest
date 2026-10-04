@@ -571,7 +571,8 @@ bool PhysicsWorld::Raycast(
         const RigidBody* body =
             collider->GetRigidBody();
 
-        if (body == ignoreBody)
+        // A null ignoreBody means "ignore nothing", not "ignore static colliders".
+        if (ignoreBody && body == ignoreBody)
             continue;
 
         RaycastResult candidate;
