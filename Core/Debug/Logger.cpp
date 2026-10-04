@@ -114,6 +114,17 @@ namespace Logger {
 
         if (!g_logFile.is_open()) {
             std::cerr << "Failed to open log file: " << logPath << std::endl;
+        } else {
+            const std::string legend =
+                "[INFO] [Legend] WR=wheel ray; w=wheel; h=hit(1/0); o=ray origin; d=unit ray direction; "
+                "md=max ray distance; rd=ray hit distance; p=hit point; n=surface normal; "
+                "pe=|o+d*rd-p| (hit-point consistency error); sh=collider shape "
+                "(0=Box,1=Sphere,2=Plane,3=Terrain,4=Road,-1=none); "
+                "FL/FR/RL/RR=front-left/front-right/rear-left/rear-right; "
+                "coordinates and distances are world-space meters.";
+            std::cout << legend << '\\n';
+            g_logFile << legend << '\\n';
+            g_logFile.flush();
         }
     }
 
