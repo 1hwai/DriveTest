@@ -70,7 +70,7 @@ bool TestTrack::Initialize(MeshManager& meshManager, SceneFactory& sceneFactory,
     const size_t segmentCount = m_road->GetSegmentCount();
     const size_t tarmacEnd = std::max<size_t>(1, segmentCount * 18 / 100);
     const size_t transitionEnd = std::max(tarmacEnd + 1, segmentCount * 24 / 100);
-    const size_t transitionSteps = 12;
+    const size_t transitionSteps = std::min<size_t>(12, transitionEnd - tarmacEnd);
 
     const auto addRoadVisual = [&](const std::string& name, size_t first, size_t end, RenderSurface surface, float blend) {
         if (first >= end || !meshManager.CreateRoadSection(name, *m_road, first, end))
