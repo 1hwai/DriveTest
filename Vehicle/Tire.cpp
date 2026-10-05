@@ -230,8 +230,10 @@ TireState Tire::CalculateState(
             wheel.GetSteeringAngle()
         ) * forward;
 
+    // Lateral is the vehicle's left direction.
+    // With +Z forward and +Y up, forward × normal gives -X (left).
     Vec3 lateral =
-        normal.Cross(forward);
+        forward.Cross(normal);
 
     if (lateral.LengthSquared() <=
         0.000001f) {
