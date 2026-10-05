@@ -7,7 +7,6 @@
 #include "../Physics/Terrain.h"
 #include "../Physics/Road.h"
 #include "../Rendering/MeshManager.h"
-#include "../Core/Debug/Logger.h"
 
 #include <algorithm>
 #include <memory>
@@ -18,16 +17,13 @@
 TestTrack::TestTrack() = default;
 TestTrack::~TestTrack() = default;
 
-bool TestTrack::Initialize(MeshManager& meshManager, SceneFactory& sceneFactory, const std::string& stagePath) {
+bool TestTrack::Initialize(
+    MeshManager& meshManager,
+    SceneFactory& sceneFactory,
+    const StageDefinition& stage
+) {
     if (m_terrain || m_road)
         return false;
-
-    StageDefinition stage;
-    std::string stageError;
-    if (!StageSerializer::Load(stagePath, stage, stageError)) {
-        Logger::Error("Failed to load stage: " + stageError);
-        return false;
-    }
 
     std::vector<TerrainBump> terrainBumps;
     terrainBumps.reserve(stage.bumps.size());

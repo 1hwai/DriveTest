@@ -9,12 +9,13 @@ class SceneFactory;
 class Object;
 class Terrain;
 class Road;
+struct StageDefinition;
 
 class TestTrack {
 public:
     TestTrack();
     ~TestTrack();
-    bool Initialize(MeshManager& meshManager, SceneFactory& sceneFactory, const std::string& stagePath);
+    bool Initialize(MeshManager& meshManager, SceneFactory& sceneFactory, const StageDefinition& stage);
 
     const Terrain& GetTerrain() const;
     std::vector<std::unique_ptr<Object>> TakeObjects();
