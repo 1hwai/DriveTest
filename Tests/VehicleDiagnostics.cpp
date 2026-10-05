@@ -903,7 +903,7 @@ namespace {
         }
 
         if (metrics.raySamples == 0 ||
-            metrics.meanLeftMinusRightRayDistance * steering <= 0.0f) {
+            metrics.meanLeftMinusRightRayDistance * steering >= 0.0f) {
             Logger::Error(
                 std::string("[FAIL] ") + name +
                 " suspension ray distances do not match outside-wheel geometry"
