@@ -37,6 +37,14 @@ size_t StageEditor::GetSelectedRoadPointIndex() const {
     return m_selectedRoadPoint;
 }
 
+Vec3* StageEditor::GetSelectedRoadPoint() {
+    if (!m_stage || m_stage->roadControlPoints.empty() ||
+        m_selectedRoadPoint >= m_stage->roadControlPoints.size())
+        return nullptr;
+
+    return &m_stage->roadControlPoints[m_selectedRoadPoint];
+}
+
 const Vec3* StageEditor::GetSelectedRoadPoint() const {
     if (!m_stage || m_stage->roadControlPoints.empty() ||
         m_selectedRoadPoint >= m_stage->roadControlPoints.size())
@@ -69,7 +77,7 @@ bool StageEditor::SelectPreviousRoadPoint() {
 }
 
 bool StageEditor::MoveSelectedRoadPoint(const Vec3& delta) {
-    Vec3* point = const_cast<Vec3*>(GetSelectedRoadPoint());
+    Vec3* point = GetSelectedRoadPoint();
     if (!point)
         return false;
 
