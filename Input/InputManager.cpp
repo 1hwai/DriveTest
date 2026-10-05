@@ -53,8 +53,8 @@ VehicleInput InputManager::GetVehicleInput() const {
     input.steering =
         gamepadConnected
             ? m_gamepadInput.GetSteering()
-            : (m_keyboard.IsDown(SDL_SCANCODE_D) ? 1.0f : 0.0f) -
-              (m_keyboard.IsDown(SDL_SCANCODE_A) ? 1.0f : 0.0f);
+            : (m_keyboard.IsDown(SDL_SCANCODE_A) ? 1.0f : 0.0f) -
+              (m_keyboard.IsDown(SDL_SCANCODE_D) ? 1.0f : 0.0f);
 
     input.clutch =
         gamepadConnected

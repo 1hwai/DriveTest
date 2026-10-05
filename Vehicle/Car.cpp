@@ -1,4 +1,5 @@
 #include "Car.h"
+#include "VehicleCoordinates.h"
 
 #include "../Physics/PhysicsWorld.h"
 #include "../Physics/RigidBody.h"
@@ -103,9 +104,9 @@ void Car::UpdatePhysics(
     const float rightDriveTorque =
         m_powertrain.GetRightDriveTorque();
 
-    // Coordinate convention: vehicle forward is +Z, right is +X, and up is +Y.
+    // Coordinate convention: vehicle forward = +Z, right = -X, up = +Y.
     // Steering input and steering angle are both positive to the right.
-    // Positive rotation around +Y turns the +Z-facing wheels toward +X (right).
+    // Wheel steering preserves the existing input/angle sign convention.
     const Vec3 velocity = m_chassis->GetLinearVelocity();
     const float horizontalSpeed = std::sqrt(
         velocity.x * velocity.x +

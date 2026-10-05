@@ -1,6 +1,7 @@
 #include "Tire.h"
 
 #include "Wheel.h"
+#include "VehicleCoordinates.h"
 #include "../Physics/RigidBody.h"
 #include "../Core/Math/Quaternion.h"
 
@@ -22,8 +23,8 @@ Tire::Tire()
         0.0f,
         0.0f,
         0.0f,
-        Vec3(0.0f, 0.0f, 1.0f),
-        Vec3(1.0f, 0.0f, 0.0f),
+        VehicleCoordinates::Forward(),
+        VehicleCoordinates::Right(),
         Vec3(0.0f, 0.0f, 0.0f)
     },
     m_longitudinalForce(0.0f),
@@ -189,8 +190,8 @@ TireState Tire::CalculateState(
         0.0f,
         0.0f,
         0.0f,
-        Vec3(0.0f, 0.0f, 1.0f),
-        Vec3(1.0f, 0.0f, 0.0f),
+        VehicleCoordinates::Forward(),
+        VehicleCoordinates::Right(),
         wheel.GetContactPoint()
     };
 
@@ -223,15 +224,15 @@ TireState Tire::CalculateState(
 
     forward = forward.Normalized();
 
-    // Positive steering angle rotates the +Z forward direction toward +X (right).
+    // Positive steering angle follows the vehicle steering convention; the vehicle right axis is -X.
     forward =
         Quaternion::FromAxisAngle(
             normal,
             wheel.GetSteeringAngle()
         ) * forward;
 
-    // Lateral is the vehicle's left direction.
-    // With +Z forward and +Y up, forward × normal gives -X (left).
+    // Lateral is the vehicle's right direction.
+    // With +Z forward and +Y up, forward × normal gives -X (right).
     Vec3 lateral =
         forward.Cross(normal);
 

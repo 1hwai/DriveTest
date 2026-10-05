@@ -124,7 +124,7 @@ namespace Logger {
                 "p=hit point; n=surface normal; pe=|o+d*rd-p| (hit-point consistency error); "
                 "sh=collider shape (0=Box,1=Sphere,2=Plane,3=Terrain,4=Road,-1=none); "
                 "FL/FR/RL/RR=front-left/front-right/rear-left/rear-right; "
-                "vehicle axes: +X=right, +Y=up, +Z=front; coordinates/distances in meters, forces in newtons.";
+                "vehicle axes: -X=right, +Y=up, +Z=front; right-handed coordinates, distances in meters, forces in newtons.";
             std::cout << legend << '\n';
             g_logFile << legend << '\n';
             g_logFile.flush();

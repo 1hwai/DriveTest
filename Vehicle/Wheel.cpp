@@ -79,7 +79,7 @@ float Wheel::GetBrakeTorque() const {
 }
 
 void Wheel::SetSteeringAngle(float angle) {
-    m_steeringAngle = angle;
+    m_steeringAngle = -angle;
 }
 
 float Wheel::GetSteeringAngle() const {
