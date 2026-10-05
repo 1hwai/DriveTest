@@ -977,11 +977,16 @@ namespace {
             return false;
         }
 
+        const bool outsideWheelLoadCorrect =
+            steering > 0.0f
+                ? metrics.meanLoadDifference > 0.0f
+                : metrics.meanLoadDifference < 0.0f;
+
         if (metrics.meanLoadAccelerationProduct <= 0.0f ||
             metrics.meanLateralAcceleration *
                 metrics.meanLoadDifference <= 0.0f ||
             metrics.meanLateralAcceleration * steering <= 0.0f ||
-            metrics.meanLoadDifference * steering <= 0.0f) {
+            !outsideWheelLoadCorrect) {
             Logger::Error(
                 std::string("[FAIL] ") + name +
                 " outside-wheel load transfer has the wrong direction"
