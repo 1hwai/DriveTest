@@ -79,7 +79,7 @@ float Wheel::GetBrakeTorque() const {
 }
 
 void Wheel::SetSteeringAngle(float angle) {
-    m_steeringAngle = angle;
+    m_steeringAngle = -angle;
 }
 
 float Wheel::GetSteeringAngle() const {
@@ -145,6 +145,15 @@ void Wheel::Update(
     }
 
     m_lastRayDistance = result.distance;
+    Logger::Debug(
+        "Wheel[" + std::to_string(index) +
+        "] rd=" +
+        std::to_string(result.distance) + 
+        " rayOrigin=" +
+        "(" + std::to_string(ray.origin.x - body.GetPosition().x) + ", " +
+        std::to_string(ray.origin.y - body.GetPosition().y) + ", " +
+        std::to_string(ray.origin.z - body.GetPosition().z) + ")"
+    );
     const float rawSuspensionLength =
         result.distance - m_radius;
     const float suspensionLength =
