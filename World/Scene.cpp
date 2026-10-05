@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "TestTrack.h"
+#include "StageSerializer.h"
 #include "../Physics/Terrain.h"
 
 #include "../Core/Debug/Logger.h"
@@ -60,9 +61,17 @@ bool Scene::Initialize(
         return false;
     }
 
-    m_track = std::make_unique<TestTrack>();
     const std::string stagePath = std::string(DRIVETEST_PROJECT_ROOT) + "/Stages/TestTrack.stage";
-    if (!m_track->Initialize(meshManager, *m_sceneFactory, stagePath))
+    std::string stageError;
+    if (!StageSerializer::Load(stagePath, m_stage, stageError)) {
+        Logger::Error("Failed to load stage: " + stageError);
+        return false;
+    }
+
+    m_stageEditor.SetStage(&m_stage);
+
+    m_track = std::make_unique<TestTrack>();
+    if (!m_track->Initialize(meshManager, *m_sceneFactory, m_stage))
         return false;
 
     for (auto& object : m_track->TakeObjects())
