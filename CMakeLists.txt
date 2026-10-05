@@ -76,6 +76,7 @@ add_executable(DriveTest
     World/StageSerializer.cpp
 
     External/glad-generated/src/gl.c
+    Editor/StageEditor.cpp
 )
 
 target_compile_definitions(DriveTest PRIVATE
