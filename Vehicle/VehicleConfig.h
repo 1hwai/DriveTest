@@ -11,8 +11,8 @@ struct VehicleConfig {
     // Vehicle-local coordinates: front = +Z, right = +X, up = +Y.
     // Left wheels have negative X; right wheels have positive X.
     std::array<Vec3, 4> wheelPositions = {
-        Vec3(-0.76f, -0.10f, 1.25f), Vec3(0.76f, -0.10f, 1.25f),
-        Vec3(-0.76f, -0.10f, -1.25f), Vec3(0.76f, -0.10f, -1.25f)
+        Vec3(0.76f, -0.10f, 1.25f), Vec3(-0.76f, -0.10f, 1.25f),
+        Vec3(0.76f, -0.10f, -1.25f), Vec3(-0.76f, -0.10f, -1.25f)
     };
     float wheelRadius = 0.32f, wheelInertia = 1.8f;
     float suspensionRestLength = 0.32f, suspensionBumpTravel = 0.16f, suspensionReboundTravel = 0.42f;

@@ -293,7 +293,7 @@ void Scene::Update(
         const Vec3 cameraPosition =
             chassisTransform.position -
             forward * ChaseCameraDistance +
-            Vec3(2.0f, ChaseCameraHeight, 0.0f);
+            Vec3(0.0f, ChaseCameraHeight, 0.0f);
 
         const Vec3 target =
             chassisTransform.position +
