@@ -11,6 +11,7 @@
 #include "../Physics/Road.h"
 #include "../Physics/Terrain.h"
 #include "../Vehicle/Car.h"
+#include "../Vehicle/VehicleCoordinates.h"
 #include "../Vehicle/VehicleConfig.h"
 
 namespace {
@@ -152,10 +153,10 @@ namespace {
         body.SetPosition(Vec3(0.0f, 1.5f, 0.0f));
 
         const Vec3 wheelLocalPositions[] = {
-            Vec3(-0.76f, -0.10f, 1.25f),
-            Vec3(0.76f, -0.10f, 1.25f),
-            Vec3(-0.76f, -0.10f, -1.25f),
-            Vec3(0.76f, -0.10f, -1.25f)
+            VehicleCoordinates::LeftWheelPosition(0.76f, -0.10f, 1.25f),
+            VehicleCoordinates::RightWheelPosition(0.76f, -0.10f, 1.25f),
+            VehicleCoordinates::LeftWheelPosition(0.76f, -0.10f, -1.25f),
+            VehicleCoordinates::RightWheelPosition(0.76f, -0.10f, -1.25f)
         };
         const char* wheelNames[] = { "FL", "FR", "RL", "RR" };
 
@@ -677,6 +678,71 @@ namespace {
         int samples = 0;
     };
 
+    bool RunVehicleCoordinateConventionDiagnostics() {
+        const Vec3 forward = VehicleCoordinates::Forward();
+        const Vec3 right = VehicleCoordinates::Right();
+        const Vec3 up = VehicleCoordinates::Up();
+
+        const bool handedness =
+            (forward.Cross(up) - right).Length() < 0.000001f;
+
+        VehicleConfig fallbackConfig;
+        const bool fallbackPositions =
+            fallbackConfig.wheelPositions[0].x > 0.0f &&
+            fallbackConfig.wheelPositions[1].x < 0.0f &&
+            fallbackConfig.wheelPositions[2].x > 0.0f &&
+            fallbackConfig.wheelPositions[3].x < 0.0f;
+
+        VehicleTestRig rig;
+        if (!rig.configLoaded) {
+            Logger::Error("[FAIL] Vehicle coordinate convention: " + rig.configError);
+            return false;
+        }
+
+        bool loadedPositions = true;
+        for (size_t i = 0; i < WheelCount; ++i) {
+            const Vec3 position =
+                rig.car.GetWheel(static_cast<WheelIndex>(i)).GetLocalPosition();
+            const float rightProjection =
+                position.Dot(right);
+
+            const bool expectedRightWheel =
+                i == static_cast<size_t>(WheelIndex::FrontRight) ||
+                i == static_cast<size_t>(WheelIndex::RearRight);
+
+            loadedPositions =
+                (expectedRightWheel
+                    ? rightProjection > 0.0f
+                    : rightProjection < 0.0f) &&
+                loadedPositions;
+        }
+
+        std::ostringstream log;
+        log << std::fixed << std::setprecision(3)
+            << "[VehicleCoordinates] forward=("
+            << forward.x << "," << forward.y << "," << forward.z
+            << ") right=("
+            << right.x << "," << right.y << "," << right.z
+            << ") up=("
+            << up.x << "," << up.y << "," << up.z
+            << ") handedness=" << handedness
+            << " fallbackPositions=" << fallbackPositions
+            << " loadedPositions=" << loadedPositions;
+        Logger::Info(log.str());
+
+        const bool passed =
+            handedness &&
+            fallbackPositions &&
+            loadedPositions;
+
+        if (passed)
+            Logger::Info("[PASS] Vehicle coordinate convention diagnostics");
+        else
+            Logger::Error("[FAIL] Vehicle coordinate convention diagnostics");
+
+        return passed;
+    }
+
     bool RunSteeringForceDirectionTest(const char* name, float steering, float expectedYawSign) {
         VehicleTestRig rig;
         if (!rig.configLoaded) {
@@ -793,7 +859,7 @@ namespace {
 
             const Vec3 vehicleRight =
                 rig.chassis->GetOrientation() *
-                Vec3(1.0f, 0.0f, 0.0f);
+                VehicleCoordinates::Right();
             const float lateralAcceleration =
                 worldAcceleration.Dot(vehicleRight);
 
@@ -843,7 +909,7 @@ namespace {
                 return false;
             }
 
-            // Coordinate convention: +Z is forward, +X is right.
+            // Coordinate convention: +Z is forward, -X is right.
             // Positive steering input means right turn, loading the left wheels.
             // Negative steering input means left turn, loading the right wheels.
             // Therefore lateral acceleration and left-minus-right load must
@@ -971,7 +1037,8 @@ namespace {
 int main() {
     Logger::Initialize("Logs/vehicle_diagnostics.log");
 
-    bool passed = RunRaycastRollGeometryDiagnostics();
+    bool passed = RunVehicleCoordinateConventionDiagnostics();
+    passed = RunRaycastRollGeometryDiagnostics() && passed;
     passed = RunRaycastSurfaceDiagnostics() && passed;
     passed = RunTireModelDiagnostics() && passed;
 
