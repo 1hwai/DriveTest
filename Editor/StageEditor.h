@@ -20,6 +20,7 @@ public:
     void SetRoadWidth(float width);
 
     size_t GetSelectedRoadPointIndex() const;
+    Vec3* GetSelectedRoadPoint();
     const Vec3* GetSelectedRoadPoint() const;
 
     bool SelectNextRoadPoint();
