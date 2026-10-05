@@ -12,9 +12,11 @@
 #include "../Rendering/MeshManager.h"
 #include "../Physics/PhysicsWorld.h"
 #include "TestTrack.h"
+#include "StageSerializer.h"
 #include "../Vehicle/Car.h"
 #include "../Vehicle/VehicleConfigWatcher.h"
 #include "SceneFactory.h"
+#include "../Editor/StageEditor.h"
 
 enum class CameraMode {
     Free,
@@ -74,6 +76,9 @@ private:
     PhysicsWorld* m_physicsWorld;
     std::unique_ptr<SceneFactory> m_sceneFactory;
     std::unique_ptr<TestTrack> m_track;
+
+    StageDefinition m_stage;
+    StageEditor m_stageEditor;
 
     Car m_car;
     VehicleConfig m_vehicleConfig;
