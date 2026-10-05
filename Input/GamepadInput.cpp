@@ -63,7 +63,7 @@ void GamepadInput::Update() {
     constexpr float SteeringDeadzone = 0.15f;
 
     const float rawSteering =
-        static_cast<float>(
+        -static_cast<float>(
             SDL_GetGamepadAxis(
                 m_gamepad,
                 SDL_GAMEPAD_AXIS_LEFTX
