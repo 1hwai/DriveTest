@@ -3,16 +3,19 @@
 #include <string>
 #include <vector>
 #include "../Core/Math/Vec3.h"
+#include "VehicleCoordinates.h"
 
 struct VehicleConfig {
     float mass = 1190.0f;
     float spawnClearance = 0.78f;
     Vec3 colliderHalfExtents = Vec3(0.90f, 0.34f, 2.15f);
-    // Vehicle-local coordinates: front = +Z, right = +X, up = +Y.
-    // Left wheels have negative X; right wheels have positive X.
+    // Vehicle-local coordinates: forward = +Z, right = -X, up = +Y.
+    // Therefore left wheels use +X and right wheels use -X.
     std::array<Vec3, 4> wheelPositions = {
-        Vec3(0.76f, -0.10f, 1.25f), Vec3(-0.76f, -0.10f, 1.25f),
-        Vec3(0.76f, -0.10f, -1.25f), Vec3(-0.76f, -0.10f, -1.25f)
+        VehicleCoordinates::LeftWheelPosition(0.76f, -0.10f, 1.25f),
+        VehicleCoordinates::RightWheelPosition(0.76f, -0.10f, 1.25f),
+        VehicleCoordinates::LeftWheelPosition(0.76f, -0.10f, -1.25f),
+        VehicleCoordinates::RightWheelPosition(0.76f, -0.10f, -1.25f)
     };
     float wheelRadius = 0.32f, wheelInertia = 1.8f;
     float suspensionRestLength = 0.32f, suspensionBumpTravel = 0.16f, suspensionReboundTravel = 0.42f;
