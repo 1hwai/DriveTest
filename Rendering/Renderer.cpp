@@ -232,11 +232,12 @@ void Renderer::Render(const Scene& world) {
         if (distanceSquared > maxDistance * maxDistance)
             continue;
 
-        if (!IsSphereInsideFrustum(
-            viewProjection,
-            objectTransform.position,
-            cullRadius
-        ))
+        if (cullRadius < 100.0f &&
+            !IsSphereInsideFrustum(
+                viewProjection,
+                objectTransform.position,
+                cullRadius
+            ))
             continue;
 
         Transform renderTransform = objectTransform;
