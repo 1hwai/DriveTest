@@ -354,12 +354,106 @@ The configuration migration belongs to the geometry implementation phase, not th
 
 #### 1-1 — Geometry API and data model
 
-- [ ] Define the per-corner suspension geometry data.
-- [ ] Define control-arm pivots and outer joints.
-- [ ] Define upright/hub state.
-- [ ] Define the minimum math required to solve the linkage.
-- [ ] Decide exact new classes/files from the Phase 0 audit.
-- [ ] Update this document with the confirmed Phase 1 implementation scope before coding.
+**Decision:** use `DoubleWishbone` as the per-corner suspension assembly. Do not introduce separate `ControlArm` or `Upright` classes yet; their state is simple kinematic data owned by the assembly. A separate `SteeringAssembly` is deferred to Phase 3.
+
+Per-corner data model:
+
+```
+DoubleWishbone
+ ├─ UpperArm
+ │   ├─ innerPivotA
+ │   ├─ innerPivotB
+ │   ├─ outerJoint
+ │   ├─ innerToOuterLengthA
+ │   └─ innerToOuterLengthB
+ │
+ ├─ LowerArm
+ │   ├─ innerPivotA
+ │   ├─ innerPivotB
+ │   ├─ outerJoint
+ │   ├─ innerToOuterLengthA
+ │   └─ innerToOuterLengthB
+ │
+ ├─ UprightState
+ │   ├─ upperJoint
+ │   ├─ lowerJoint
+ │   ├─ hubPosition
+ │   └─ hubOrientation
+ │
+ └─ SpringMounts
+     ├─ chassisMount
+     └─ uprightMount
+```
+
+The control arms are represented by their two chassis-side pivots and fixed distances to the outer joint. The outer joints are solved points, not independent bodies.
+
+The upright is represented by the fixed relationship between its upper/lower ball joints and hub. Its orientation is a kinematic result, not an independently simulated rigid body.
+
+The spring/damper mounting points belong to the suspension geometry. `Suspension` continues to own scalar spring/damper parameters and force calculation; `DoubleWishbone` owns the geometry that supplies its actual length and axis.
+
+Minimum solver math:
+
+- Vec3 point/vector arithmetic.
+- Dot/cross products.
+- Vector normalization and distance.
+- Rotation of local geometry by the chassis orientation.
+- Circle/sphere intersection or equivalent constrained point solving for control-arm geometry.
+- Construction of an upright orientation from solved joint geometry.
+- No general multibody dynamics solver.
+
+State ownership after Phase 1:
+
+```
+Car
+ ├─ DoubleWishbone[4]  ← suspension geometry + solved hub state
+ ├─ Suspension[4]      ← spring/damper parameters + force model
+ ├─ Wheel[4]            ← wheel rotation/contact-facing state
+ └─ Tire[4]             ← tire contact/slip/force model
+```
+
+`Wheel` will no longer be the owner of suspension travel geometry. Its physical wheel center/orientation will be supplied by the suspension/upright pipeline.
+
+### Phase 1-1 implementation scope
+
+**Files to create:**
+
+```
+Vehicle/DoubleWishbone.h
+Vehicle/DoubleWishbone.cpp
+```
+
+**Files to modify:**
+
+```
+Vehicle/Car.h
+Vehicle/Car.cpp
+Vehicle/VehicleConfig.h
+Vehicle/VehicleConfig.cpp
+Assets/Vehicles/TestCar/vehicle.ini
+```
+
+Phase 1-1 itself will only introduce the data model/API and configuration representation. It will not implement the linkage solver or change vehicle dynamics.
+
+**Files explicitly not modified in 1-1:**
+
+```
+Vehicle/Wheel.*
+Vehicle/Suspension.*
+Vehicle/Tire.*
+Tests/*
+Core/Debug/DebugUI.cpp
+World/*
+Audio/*
+```
+
+Those files are handled when the new API is actually integrated.
+
+- [x] Define the per-corner suspension geometry data.
+- [x] Define control-arm pivots and outer joints.
+- [x] Define upright/hub state.
+- [x] Define the minimum math required to solve the linkage.
+- [x] Decide exact new classes/files from the Phase 0 audit.
+- [x] Update this document with the confirmed Phase 1 implementation scope before coding.
 
 #### 1-2 — Double-wishbone kinematic solver
 
