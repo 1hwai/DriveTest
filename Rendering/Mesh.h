@@ -24,6 +24,7 @@ public:
     bool LoadFromFile(const std::string& path, bool wheelOnly = false);
     bool LoadTexture(const std::string& path, bool removeBackground = false, bool secondary = false);
     bool CreateTerrain(const Terrain& terrain);
+    bool CreateTerrainChunk(const Terrain& terrain, int firstCellX, int firstCellZ, int cellWidth, int cellHeight);
     bool CreateRoad(const Road& road);
     bool CreateRoadSection(const Road& road, std::size_t firstSegment, std::size_t endSegment);
     bool CreateRoadsideWall(const Terrain& terrain, const Road& road, bool leftSide, std::size_t firstSegment, std::size_t endSegment, float offset, float wallHeight);
@@ -31,6 +32,10 @@ public:
     void Draw() const;
     void Draw(Shader& shader, const Vec3& color) const;
     void Destroy();
+
+    bool HasBounds() const;
+    const Vec3& GetBoundsCenter() const;
+    float GetBoundsRadius() const;
 
 private:
     struct Submesh {
@@ -52,4 +57,7 @@ private:
     unsigned int m_secondaryTexture;
     std::vector<Submesh> m_submeshes;
     std::vector<unsigned int> m_textures;
+    Vec3 m_boundsCenter;
+    float m_boundsRadius;
+    bool m_hasBounds;
 };
