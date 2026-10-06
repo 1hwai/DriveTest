@@ -483,6 +483,7 @@ Vehicle/VehicleConfig.h
 Vehicle/VehicleConfig.cpp
 Assets/Vehicles/TestCar/vehicle.ini
 CMakeLists.txt
+Tests/DoubleWishboneDiagnostics.cpp
 ```
 
 **Files explicitly out of scope:**
