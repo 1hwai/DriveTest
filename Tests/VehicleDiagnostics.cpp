@@ -678,6 +678,126 @@ namespace {
         int samples = 0;
     };
 
+    bool RunWheelSuspensionAxisDiagnostics() {
+        VehicleTestRig rig;
+        if (!rig.configLoaded) {
+            Logger::Error("[FAIL] Wheel suspension axis: " + rig.configError);
+            return false;
+        }
+
+        float maxRightOffset = 0.0f;
+        float maxForwardOffset = 0.0f;
+        float maxLocalXError = 0.0f;
+        float maxLocalZError = 0.0f;
+        float maxVerticalError = 0.0f;
+
+        const int steps = static_cast<int>(8.0f / FixedDeltaTime);
+
+        for (int step = 0; step < steps; ++step) {
+            const float time = step * FixedDeltaTime;
+            const float steering =
+                time < 2.0f
+                    ? 0.45f
+                    : (time < 4.0f ? -0.45f : 0.45f);
+
+            const float throttle =
+                std::clamp(0.20f + time * 0.08f, 0.20f, 0.75f);
+
+            rig.car.SetInput(
+                throttle,
+                0.0f,
+                steering,
+                time < 1.5f ? 1.0f : 0.0f
+            );
+            rig.car.UpdatePhysics(
+                rig.physicsWorld,
+                FixedDeltaTime
+            );
+
+            const Vec3 bodyPosition =
+                rig.chassis->GetPosition();
+            const Quaternion bodyOrientation =
+                rig.chassis->GetOrientation();
+            const Vec3 vehicleRight =
+                bodyOrientation * VehicleCoordinates::Right();
+            const Vec3 vehicleForward =
+                bodyOrientation * VehicleCoordinates::Forward();
+            const Vec3 vehicleUp =
+                bodyOrientation * VehicleCoordinates::Up();
+
+            for (size_t i = 0; i < WheelCount; ++i) {
+                const WheelIndex index =
+                    static_cast<WheelIndex>(i);
+                const Wheel& wheel =
+                    rig.car.GetWheel(index);
+                const Vec3& localPosition =
+                    wheel.GetLocalPosition();
+                const Vec3 wheelPosition =
+                    wheel.GetWorldPosition();
+                const Vec3 mountPosition =
+                    bodyPosition +
+                    bodyOrientation * localPosition;
+                const Vec3 mountToWheel =
+                    wheelPosition - mountPosition;
+                const Vec3 localWheelPosition =
+                    bodyOrientation.Conjugate() *
+                    (wheelPosition - bodyPosition);
+
+                const float rightOffset =
+                    std::abs(mountToWheel.Dot(vehicleRight));
+                const float forwardOffset =
+                    std::abs(mountToWheel.Dot(vehicleForward));
+                const float localXError =
+                    std::abs(localWheelPosition.x - localPosition.x);
+                const float localZError =
+                    std::abs(localWheelPosition.z - localPosition.z);
+                const float verticalError =
+                    std::abs(
+                        localWheelPosition.y -
+                        (localPosition.y - wheel.GetSuspensionLength())
+                    );
+
+                maxRightOffset =
+                    std::max(maxRightOffset, rightOffset);
+                maxForwardOffset =
+                    std::max(maxForwardOffset, forwardOffset);
+                maxLocalXError =
+                    std::max(maxLocalXError, localXError);
+                maxLocalZError =
+                    std::max(maxLocalZError, localZError);
+                maxVerticalError =
+                    std::max(maxVerticalError, verticalError);
+            }
+
+            rig.physicsWorld.Step(FixedDeltaTime);
+        }
+
+        std::ostringstream log;
+        log << std::fixed << std::setprecision(6)
+            << "[WheelSuspensionAxis] "
+            << "maxRightOffset=" << maxRightOffset
+            << " maxForwardOffset=" << maxForwardOffset
+            << " maxLocalXError=" << maxLocalXError
+            << " maxLocalZError=" << maxLocalZError
+            << " maxVerticalError=" << maxVerticalError;
+        Logger::Info(log.str());
+
+        constexpr float PositionTolerance = 0.0001f;
+        const bool passed =
+            maxRightOffset <= PositionTolerance &&
+            maxForwardOffset <= PositionTolerance &&
+            maxLocalXError <= PositionTolerance &&
+            maxLocalZError <= PositionTolerance &&
+            maxVerticalError <= PositionTolerance;
+
+        if (passed)
+            Logger::Info("[PASS] Wheel suspension axis diagnostics");
+        else
+            Logger::Error("[FAIL] Wheel suspension axis diagnostics");
+
+        return passed;
+    }
+
     bool RunVehicleCoordinateConventionDiagnostics() {
         const Vec3 forward = VehicleCoordinates::Forward();
         const Vec3 right = VehicleCoordinates::Right();
