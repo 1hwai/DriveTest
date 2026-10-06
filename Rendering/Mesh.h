@@ -23,6 +23,7 @@ public:
     bool CreateWheel(int segments = 32, int widthSegments = 8);
     bool LoadFromFile(const std::string& path, bool wheelOnly = false);
     bool LoadTexture(const std::string& path, bool removeBackground = false, bool secondary = false);
+    bool ShareTextureFrom(const Mesh& source, bool secondary = false);
     bool CreateTerrain(const Terrain& terrain);
     bool CreateTerrainChunk(const Terrain& terrain, int firstCellX, int firstCellZ, int cellWidth, int cellHeight);
     bool CreateRoad(const Road& road);

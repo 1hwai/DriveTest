@@ -538,6 +538,19 @@ bool Mesh::LoadTexture(const std::string& path, bool removeBackground, bool seco
     return true;
 }
 
+bool Mesh::ShareTextureFrom(const Mesh& source, bool secondary) {
+    const unsigned int texture = secondary ? source.m_secondaryTexture : source.m_materialTexture;
+    if (texture == 0)
+        return false;
+
+    if (secondary)
+        m_secondaryTexture = texture;
+    else
+        m_materialTexture = texture;
+
+    return true;
+}
+
 bool Mesh::CreateWheel(int segments, int widthSegments) {
     Destroy();
 
