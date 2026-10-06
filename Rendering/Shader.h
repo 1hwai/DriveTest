@@ -27,4 +27,6 @@ private:
 
     unsigned int m_program;
     std::unordered_map<std::string, int> m_uniformLocations;
+    std::unordered_map<int, int> m_intValues;
+    std::unordered_map<int, float> m_floatValues;
 };
