@@ -501,6 +501,9 @@ Audio/*
 
 **Verification:** build the project and run `DoubleWishboneDiagnostics`. The diagnostic must independently check arm lengths, left/right symmetry, hub position, and finite upright orientation. Compilation alone is not sufficient.
 
+**Current status:** the first solver implementation and independent diagnostic have been added. The first CI verification exposed a missing `DoubleWishbone.cpp` linkage entry in the two headless diagnostic targets; that CMake issue was corrected. A fresh post-fix CI run is still required before marking any 1-2 checklist item complete.
+
+
 - [ ] Implement control-arm geometry.
 - [ ] Implement upright/hub position and orientation.
 - [ ] Implement left/right symmetric configuration.
