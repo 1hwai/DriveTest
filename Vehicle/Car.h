@@ -4,6 +4,7 @@
 #include <cstddef>
 
 #include "Wheel.h"
+#include "DoubleWishbone.h"
 #include "Suspension.h"
 #include "Tire.h"
 #include "Engine.h"
@@ -44,6 +45,9 @@ public:
         float deltaTime
     );
 
+    DoubleWishbone& GetSuspensionGeometry(WheelIndex index);
+    const DoubleWishbone& GetSuspensionGeometry(WheelIndex index) const;
+
     Wheel& GetWheel(WheelIndex index);
     const Wheel& GetWheel(WheelIndex index) const;
 
@@ -80,6 +84,7 @@ private:
     float m_brakeTorque;
     float m_maxSteeringAngle;
 
+    std::array<DoubleWishbone, WheelCount> m_suspensionGeometry;
     std::array<Wheel, WheelCount> m_wheels;
     std::array<Suspension, WheelCount> m_suspensions;
     std::array<Tire, WheelCount> m_tires;
