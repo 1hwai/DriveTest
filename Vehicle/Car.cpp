@@ -41,6 +41,57 @@ void Car::ApplyConfig(const VehicleConfig& config) {
         m_wheels[i].SetRadius(config.wheelRadius);
         m_wheels[i].SetInertia(config.wheelInertia);
 
+        const float side =
+            config.wheelPositions[i].x >= 0.0f
+                ? 1.0f
+                : -1.0f;
+        const float wheelZ =
+            config.wheelPositions[i].z;
+
+        DoubleWishboneConfig geometry{
+            Vec3(
+                side * config.upperArmInnerX,
+                config.upperArmInnerY,
+                wheelZ - config.upperArmInnerZ
+            ),
+            Vec3(
+                side * config.upperArmInnerX,
+                config.upperArmInnerY,
+                wheelZ + config.upperArmInnerZ
+            ),
+            Vec3(
+                side * config.upperArmOuterX,
+                config.upperArmOuterY,
+                wheelZ
+            ),
+            Vec3(
+                side * config.lowerArmInnerX,
+                config.lowerArmInnerY,
+                wheelZ - config.lowerArmInnerZ
+            ),
+            Vec3(
+                side * config.lowerArmInnerX,
+                config.lowerArmInnerY,
+                wheelZ + config.lowerArmInnerZ
+            ),
+            Vec3(
+                side * config.lowerArmOuterX,
+                config.lowerArmOuterY,
+                wheelZ
+            ),
+            Vec3(
+                0.0f,
+                config.hubOffsetY,
+                0.0f
+            )
+        };
+
+        m_suspensionGeometry[i].Configure(geometry);
+        m_suspensionGeometry[i].Solve(
+            m_chassis ? m_chassis->GetPosition() : Vec3(),
+            m_chassis ? m_chassis->GetOrientation() : Quaternion::Identity()
+        );
+
         Suspension& suspension = m_suspensions[i];
         suspension.SetRestLength(config.suspensionRestLength);
         suspension.SetBumpTravel(config.suspensionBumpTravel);
@@ -139,6 +190,11 @@ void Car::UpdatePhysics(
     );
 
     for (size_t i = 0; i < WheelCount; ++i) {
+        m_suspensionGeometry[i].Solve(
+            m_chassis->GetPosition(),
+            m_chassis->GetOrientation()
+        );
+
         m_wheels[i].SetBrakeTorque(
             m_brake * m_brakeTorque
         );
@@ -380,6 +436,14 @@ void Car::UpdatePhysics(
 
         m_energyTimer = 0.0f;
     }
+}
+
+DoubleWishbone& Car::GetSuspensionGeometry(WheelIndex index) {
+    return m_suspensionGeometry[ToIndex(index)];
+}
+
+const DoubleWishbone& Car::GetSuspensionGeometry(WheelIndex index) const {
+    return m_suspensionGeometry[ToIndex(index)];
 }
 
 Wheel& Car::GetWheel(WheelIndex index) {
