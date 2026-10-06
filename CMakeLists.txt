@@ -239,3 +239,33 @@ if(DRIVETEST_BUILD_APP)
         )
     endif()
 endif()
+
+option(
+    DRIVETEST_BUILD_DOUBLE_WISHBONE_DIAGNOSTICS
+    "Build the headless double wishbone diagnostics executable"
+    OFF
+)
+
+if(DRIVETEST_BUILD_DOUBLE_WISHBONE_DIAGNOSTICS)
+    add_executable(DriveTestDoubleWishboneDiagnostics
+        Tests/DoubleWishboneDiagnostics.cpp
+        Vehicle/DoubleWishbone.cpp
+        Core/Math/Vec3.cpp
+        Core/Math/Mat3.cpp
+        Core/Math/Quaternion.cpp
+    )
+
+    target_include_directories(
+        DriveTestDoubleWishboneDiagnostics
+        PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}"
+    )
+
+    enable_testing()
+
+    add_test(
+        NAME DoubleWishboneDiagnostics
+        COMMAND DriveTestDoubleWishboneDiagnostics
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    )
+endif
