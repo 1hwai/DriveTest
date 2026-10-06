@@ -206,6 +206,15 @@ void Car::UpdatePhysics(
             const float rayDistance = wheel.GetLastRayDistance();
             const Vec3 reconstructedPoint =
                 origin + direction * rayDistance;
+            const Vec3 wheelPosition =
+                wheel.GetWorldPosition();
+            const Vec3 mountToWheel =
+                wheelPosition - origin;
+            const Vec3 expectedMountToWheel =
+                direction * wheel.GetSuspensionLength();
+            const Vec3 positionError =
+                mountToWheel - expectedMountToWheel;
+
             const float pointError = wheel.IsGrounded()
                 ? (reconstructedPoint - wheel.GetContactPoint()).Length()
                 : 0.0f;
@@ -218,6 +227,9 @@ void Car::UpdatePhysics(
                 << " lp=(" << localPosition.x << "," << localPosition.y << "," << localPosition.z << ")"
                 << " o=(" << origin.x << "," << origin.y << "," << origin.z << ")"
                 << " d=(" << direction.x << "," << direction.y << "," << direction.z << ")"
+                << " wp=(" << wheelPosition.x << "," << wheelPosition.y << "," << wheelPosition.z << ")"
+                << " mw=(" << mountToWheel.x << "," << mountToWheel.y << "," << mountToWheel.z << ")"
+                << " pe2=(" << positionError.x << "," << positionError.y << "," << positionError.z << ")"
                 << " h=" << wheel.IsGrounded()
                 << " md=" << maxDistance
                 << " rd=" << rayDistance
