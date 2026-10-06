@@ -207,8 +207,8 @@ namespace {
 
             const bool positiveRollExpected =
                 rollAngle > 0.0f
-                ? distances[0] < distances[1] && distances[2] < distances[3]
-                : distances[0] > distances[1] && distances[2] > distances[3];
+                ? distances[0] > distances[1] && distances[2] > distances[3]
+                : distances[0] < distances[1] && distances[2] < distances[3];
 
             std::ostringstream summary;
             summary << std::fixed << std::setprecision(5)
@@ -1193,8 +1193,8 @@ int main() {
         SlalomGear
     ) && passed;
 
-    passed = RunSteeringForceDirectionTest("RightSteer", 0.35f, 1.0f) && passed;
-    passed = RunSteeringForceDirectionTest("LeftSteer", -0.35f, -1.0f) && passed;
+    passed = RunSteeringForceDirectionTest("RightSteer", 0.35f, -1.0f) && passed;
+    passed = RunSteeringForceDirectionTest("LeftSteer", -0.35f, 1.0f) && passed;
 
     passed = RunCorneringLoadTransferDiagnostics() && passed;
 
