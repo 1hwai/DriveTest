@@ -40,9 +40,42 @@ bool TestTrack::Initialize(
         stage.elevationProfile,
         terrainBumps
     );
-    if (!meshManager.CreateTerrain("terrain", *m_terrain) ||
-        !meshManager.LoadTexture("terrain", "Assets/road/dirt.jpg"))
-        return false;
+    constexpr int TerrainChunkCells = 8;
+
+    for (int firstZ = 0;
+        firstZ < stage.terrainResolution - 1;
+        firstZ += TerrainChunkCells) {
+        for (int firstX = 0;
+            firstX < stage.terrainResolution - 1;
+            firstX += TerrainChunkCells) {
+            const std::string name =
+                "TerrainChunk_" +
+                std::to_string(firstX) + "_" +
+                std::to_string(firstZ);
+
+            if (!meshManager.CreateTerrainChunk(
+                name,
+                *m_terrain,
+                firstX,
+                firstZ,
+                TerrainChunkCells,
+                TerrainChunkCells
+            ) ||
+                !meshManager.LoadTexture(
+                    name,
+                    "Assets/road/dirt.jpg"
+                ))
+                return false;
+
+            auto object = std::make_unique<Object>();
+            object->SetName(name);
+            object->SetScenePersistent(false);
+            object->SetMesh(meshManager.Get(name));
+            object->SetColor(Vec3(1.0f, 1.0f, 1.0f));
+            object->SetRenderSurface(RenderSurface::Terrain);
+            m_objects.push_back(std::move(object));
+        }
+    }
 
     m_road = std::make_unique<Road>();
     if (!m_road->GenerateCourse(*m_terrain, stage.roadControlPoints, stage.roadWidth, stage.roadSurfaceOffset))
@@ -68,30 +101,72 @@ bool TestTrack::Initialize(
     const size_t transitionEnd = std::max(tarmacEnd + 1, segmentCount * 24 / 100);
     const size_t transitionSteps = std::min<size_t>(12, transitionEnd - tarmacEnd);
 
-    const auto addRoadVisual = [&](const std::string& name, size_t first, size_t end, RenderSurface surface, float blend) {
-        if (first >= end || !meshManager.CreateRoadSection(name, *m_road, first, end))
-            return false;
+    constexpr size_t RoadChunkSegments = 32;
 
-        bool textureLoaded = false;
-        if (surface == RenderSurface::Tarmac) {
-            textureLoaded = meshManager.LoadTexture(name, "Assets/road/asphalt.jpg");
-        } else if (surface == RenderSurface::Transition) {
-            textureLoaded = meshManager.LoadTexture(name, "Assets/road/asphalt.jpg") &&
-                meshManager.LoadTexture(name, "Assets/road/dirt.jpg", false, true);
-        } else if (surface == RenderSurface::Gravel) {
-            textureLoaded = meshManager.LoadTexture(name, "Assets/road/dirt.jpg");
+    const auto addRoadVisual = [&](
+        const std::string& prefix,
+        size_t first,
+        size_t end,
+        RenderSurface surface,
+        float blend
+    ) {
+        for (size_t chunkFirst = first;
+            chunkFirst < end;
+            chunkFirst += RoadChunkSegments) {
+            const size_t chunkEnd =
+                std::min(chunkFirst + RoadChunkSegments, end);
+
+            const std::string name =
+                prefix + "_" + std::to_string(chunkFirst);
+
+            if (!meshManager.CreateRoadSection(
+                name,
+                *m_road,
+                chunkFirst,
+                chunkEnd
+            ))
+                return false;
+
+            bool textureLoaded = false;
+            if (surface == RenderSurface::Tarmac) {
+                textureLoaded =
+                    meshManager.LoadTexture(
+                        name,
+                        "Assets/road/asphalt.jpg"
+                    );
+            } else if (surface == RenderSurface::Transition) {
+                textureLoaded =
+                    meshManager.LoadTexture(
+                        name,
+                        "Assets/road/asphalt.jpg"
+                    ) &&
+                    meshManager.LoadTexture(
+                        name,
+                        "Assets/road/dirt.jpg",
+                        false,
+                        true
+                    );
+            } else if (surface == RenderSurface::Gravel) {
+                textureLoaded =
+                    meshManager.LoadTexture(
+                        name,
+                        "Assets/road/dirt.jpg"
+                    );
+            }
+
+            if (!textureLoaded)
+                return false;
+
+            auto object = std::make_unique<Object>();
+            object->SetName(name);
+            object->SetScenePersistent(false);
+            object->SetMesh(meshManager.Get(name));
+            object->SetColor(Vec3(1.0f, 1.0f, 1.0f));
+            object->SetRenderSurface(surface);
+            object->SetSurfaceBlend(blend);
+            m_objects.push_back(std::move(object));
         }
-        if (!textureLoaded)
-            return false;
 
-        auto object = std::make_unique<Object>();
-        object->SetName(name);
-        object->SetScenePersistent(false);
-        object->SetMesh(meshManager.Get(name));
-        object->SetColor(Vec3(1.0f, 1.0f, 1.0f));
-        object->SetRenderSurface(surface);
-        object->SetSurfaceBlend(blend);
-        m_objects.push_back(std::move(object));
         return true;
     };
 

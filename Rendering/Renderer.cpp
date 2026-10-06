@@ -73,7 +73,7 @@ namespace {
         return true;
     }
 
-    float GetCullRadius(const Object& object) {
+    float GetFallbackCullRadius(const Object& object) {
         const Vec3& scale = object.GetTransform().scale;
         const float scaleRadius = std::max({
             std::abs(scale.x),
@@ -81,16 +81,7 @@ namespace {
             std::abs(scale.z)
         });
 
-        switch (object.GetRenderSurface()) {
-        case RenderSurface::Terrain:
-            return 1000.0f;
-        case RenderSurface::Tarmac:
-        case RenderSurface::Gravel:
-        case RenderSurface::Transition:
-            return 100.0f;
-        default:
-            return std::max(3.0f, scaleRadius * 3.0f);
-        }
+        return std::max(3.0f, scaleRadius * 3.0f);
     }
 }
 
@@ -224,29 +215,45 @@ void Renderer::Render(const Scene& world) {
             continue;
 
         const Transform& objectTransform = object->GetTransform();
-        const Vec3 toObject = objectTransform.position - cameraPosition;
-        const float distanceSquared = toObject.LengthSquared();
-        const float cullRadius = GetCullRadius(*object);
-        const RenderSurface surface = object->GetRenderSurface();
-        const bool largeWorldSurface =
-            surface == RenderSurface::Terrain ||
-            surface == RenderSurface::Tarmac ||
-            surface == RenderSurface::Gravel ||
-            surface == RenderSurface::Transition;
 
-        if (!largeWorldSurface) {
-            const float maxDistance = MaxRenderDistance + cullRadius;
+        Vec3 boundsCenter = objectTransform.position;
+        float cullRadius = GetFallbackCullRadius(*object);
 
-            if (distanceSquared > maxDistance * maxDistance)
-                continue;
+        if (mesh->HasBounds()) {
+            const Vec3& localCenter = mesh->GetBoundsCenter();
+            const Vec3& scale = objectTransform.scale;
+            const Vec3 scaledCenter(
+                localCenter.x * scale.x,
+                localCenter.y * scale.y,
+                localCenter.z * scale.z
+            );
 
-            if (!IsSphereInsideFrustum(
-                viewProjection,
-                objectTransform.position,
-                cullRadius
-            ))
-                continue;
+            boundsCenter =
+                objectTransform.position +
+                objectTransform.rotation * scaledCenter;
+
+            cullRadius =
+                mesh->GetBoundsRadius() *
+                std::max({
+                    std::abs(scale.x),
+                    std::abs(scale.y),
+                    std::abs(scale.z)
+                });
         }
+
+        const Vec3 toObject = boundsCenter - cameraPosition;
+        const float distanceSquared = toObject.LengthSquared();
+        const float maxDistance = MaxRenderDistance + cullRadius;
+
+        if (distanceSquared > maxDistance * maxDistance)
+            continue;
+
+        if (!IsSphereInsideFrustum(
+            viewProjection,
+            boundsCenter,
+            cullRadius
+        ))
+            continue;
 
         Transform renderTransform = objectTransform;
         if (object->IsBillboard()) {

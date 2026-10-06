@@ -142,6 +142,25 @@ bool MeshManager::CreateTerrain(const std::string& name, const Terrain& terrain)
 }
 
 
+bool MeshManager::CreateTerrainChunk(const std::string& name, const Terrain& terrain, int firstCellX, int firstCellZ, int cellWidth, int cellHeight) {
+    if (m_meshes.find(name) != m_meshes.end())
+        return false;
+
+    auto mesh = std::make_unique<Mesh>();
+
+    if (!mesh->CreateTerrainChunk(
+        terrain,
+        firstCellX,
+        firstCellZ,
+        cellWidth,
+        cellHeight
+    ))
+        return false;
+
+    m_meshes.emplace(name, std::move(mesh));
+    return true;
+}
+
 bool MeshManager::CreateRoad(const std::string& name, const Road& road) {
     if (m_meshes.find(name) != m_meshes.end())
         return false;

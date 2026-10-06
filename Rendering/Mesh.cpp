@@ -39,6 +39,35 @@ namespace {
             CollectNodeMeshes(scene, node->mChildren[i], transform, output);
     }
 
+    void CalculateBounds(const std::vector<Vertex>& vertices, Vec3& center, float& radius, bool& hasBounds) {
+        if (vertices.empty()) {
+            center = Vec3(0.0f, 0.0f, 0.0f);
+            radius = 0.0f;
+            hasBounds = false;
+            return;
+        }
+
+        Vec3 minimum(
+            vertices[0].position[0],
+            vertices[0].position[1],
+            vertices[0].position[2]
+        );
+        Vec3 maximum = minimum;
+
+        for (const Vertex& vertex : vertices) {
+            minimum.x = std::min(minimum.x, vertex.position[0]);
+            minimum.y = std::min(minimum.y, vertex.position[1]);
+            minimum.z = std::min(minimum.z, vertex.position[2]);
+            maximum.x = std::max(maximum.x, vertex.position[0]);
+            maximum.y = std::max(maximum.y, vertex.position[1]);
+            maximum.z = std::max(maximum.z, vertex.position[2]);
+        }
+
+        center = (minimum + maximum) * 0.5f;
+        radius = (maximum - center).Length();
+        hasBounds = true;
+    }
+
     bool IsWheelMesh(const aiMesh* mesh) {
         const std::string name = mesh->mName.C_Str();
         return name.rfind("Wheel.", 0) == 0 && name.find("_wheel_0") != std::string::npos;
@@ -64,7 +93,10 @@ Mesh::Mesh()
     m_materialTexture(0),
     m_secondaryTexture(0),
     m_submeshes(),
-    m_textures() {}
+    m_textures(),
+    m_boundsCenter(0.0f, 0.0f, 0.0f),
+    m_boundsRadius(0.0f),
+    m_hasBounds(false) {}
 
 Mesh::~Mesh() {
     Destroy();
@@ -803,22 +835,65 @@ bool Mesh::LoadFromFile(const std::string& path, bool wheelOnly) {
 }
 
 bool Mesh::CreateTerrain(const Terrain& terrain) {
+    const int resolution = terrain.GetResolution();
+    return CreateTerrainChunk(
+        terrain,
+        0,
+        0,
+        resolution - 1,
+        resolution - 1
+    );
+}
+
+bool Mesh::CreateTerrainChunk(
+    const Terrain& terrain,
+    int firstCellX,
+    int firstCellZ,
+    int cellWidth,
+    int cellHeight
+) {
     Destroy();
 
     const int resolution = terrain.GetResolution();
     const float size = terrain.GetSize();
     const std::vector<float>& heights = terrain.GetHeights();
 
+    if (resolution < 2 ||
+        firstCellX < 0 ||
+        firstCellZ < 0 ||
+        cellWidth <= 0 ||
+        cellHeight <= 0 ||
+        firstCellX >= resolution - 1 ||
+        firstCellZ >= resolution - 1)
+        return false;
+
+    const int lastCellX =
+        std::min(firstCellX + cellWidth, resolution - 1);
+    const int lastCellZ =
+        std::min(firstCellZ + cellHeight, resolution - 1);
+
+    if (firstCellX >= lastCellX || firstCellZ >= lastCellZ)
+        return false;
+
+    const int vertexWidth = lastCellX - firstCellX + 1;
+    const int vertexHeight = lastCellZ - firstCellZ + 1;
+
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
 
-    vertices.reserve(static_cast<size_t>(resolution) * resolution);
-    indices.reserve(static_cast<size_t>(resolution - 1) * (resolution - 1) * 6);
+    vertices.reserve(
+        static_cast<size_t>(vertexWidth) *
+        static_cast<size_t>(vertexHeight)
+    );
+    indices.reserve(
+        static_cast<size_t>(lastCellX - firstCellX) *
+        static_cast<size_t>(lastCellZ - firstCellZ) * 6
+    );
 
     const float halfSize = size * 0.5f;
 
-    for (int z = 0; z < resolution; ++z) {
-        for (int x = 0; x < resolution; ++x) {
+    for (int z = firstCellZ; z <= lastCellZ; ++z) {
+        for (int x = firstCellX; x <= lastCellX; ++x) {
             const float worldX =
                 -halfSize +
                 size * static_cast<float>(x) /
@@ -833,18 +908,24 @@ bool Mesh::CreateTerrain(const Terrain& terrain) {
                 terrain.GetNormal(worldX, worldZ);
 
             vertices.push_back({
-                {worldX, heights[static_cast<size_t>(z) * resolution + x], worldZ},
+                {
+                    worldX,
+                    heights[static_cast<size_t>(z) * resolution + x],
+                    worldZ
+                },
                 {normal.x, normal.y, normal.z},
                 {worldX * 0.25f, worldZ * 0.25f}
             });
         }
     }
 
-    for (int z = 0; z < resolution - 1; ++z) {
-        for (int x = 0; x < resolution - 1; ++x) {
-            const unsigned int a = static_cast<unsigned int>(z * resolution + x);
+    for (int z = firstCellZ; z < lastCellZ; ++z) {
+        for (int x = firstCellX; x < lastCellX; ++x) {
+            const unsigned int a = static_cast<unsigned int>(
+                (z - firstCellZ) * vertexWidth + (x - firstCellX)
+            );
             const unsigned int b = a + 1;
-            const unsigned int c = a + static_cast<unsigned int>(resolution);
+            const unsigned int c = a + static_cast<unsigned int>(vertexWidth);
             const unsigned int d = c + 1;
 
             indices.push_back(a);
@@ -883,20 +964,22 @@ bool Mesh::CreateTerrain(const Terrain& terrain) {
         GL_STATIC_DRAW
     );
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, position)));
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, normal)));
-    glEnableVertexAttribArray(1);
-
+    ConfigureVertexAttributes();
     glBindVertexArray(0);
 
     m_vertexCount = 0;
     m_indexCount = static_cast<unsigned int>(indices.size());
     m_indexed = true;
+
+    CalculateBounds(
+        vertices,
+        m_boundsCenter,
+        m_boundsRadius,
+        m_hasBounds
+    );
+
     return true;
 }
-
-
 
 bool Mesh::CreateRoad(const Road& road) {
     return CreateRoadSection(road, 0, road.GetSegmentCount());
@@ -974,6 +1057,14 @@ bool Mesh::CreateRoadSection(const Road& road, size_t firstSegment, size_t endSe
     m_vertexCount = 0;
     m_indexCount = static_cast<unsigned int>(indices.size());
     m_indexed = true;
+
+    CalculateBounds(
+        vertices,
+        m_boundsCenter,
+        m_boundsRadius,
+        m_hasBounds
+    );
+
     return true;
 }
 
@@ -1093,6 +1184,18 @@ void Mesh::Draw(Shader& shader, const Vec3& color) const {
     shader.SetInt("uUseTexture", 0);
 }
 
+bool Mesh::HasBounds() const {
+    return m_hasBounds;
+}
+
+const Vec3& Mesh::GetBoundsCenter() const {
+    return m_boundsCenter;
+}
+
+float Mesh::GetBoundsRadius() const {
+    return m_boundsRadius;
+}
+
 void Mesh::Destroy() {
     for (Submesh& submesh : m_submeshes) {
         if (submesh.ebo) glDeleteBuffers(1, &submesh.ebo);
@@ -1110,4 +1213,7 @@ void Mesh::Destroy() {
     m_indexed = false;
     m_materialTexture = 0;
     m_secondaryTexture = 0;
+    m_boundsCenter = Vec3(0.0f, 0.0f, 0.0f);
+    m_boundsRadius = 0.0f;
+    m_hasBounds = false;
 }
