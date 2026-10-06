@@ -38,6 +38,7 @@ add_executable(DriveTest
     Physics/Material.cpp
 
     Vehicle/Car.cpp
+    Vehicle/DoubleWishbone.cpp
     Vehicle/VehicleConfig.cpp
     Vehicle/VehicleConfigWatcher.cpp
     Vehicle/Powertrain.cpp
