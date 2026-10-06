@@ -97,9 +97,10 @@ void Wheel::Update(
         body.GetPosition() +
         body.GetOrientation() * m_localPosition;
 
-    const Vec3 down =
-        body.GetOrientation() *
-        Vec3(0.0f, -1.0f, 0.0f);
+    // Suspension travel is world-vertical. The wheel mount follows the
+    // chassis, but compression itself must not introduce lateral or
+    // longitudinal wheel movement when the body rolls.
+    const Vec3 down(0.0f, -1.0f, 0.0f);
 
     Ray ray;
     ray.origin = worldMount;
