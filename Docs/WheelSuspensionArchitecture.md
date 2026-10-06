@@ -4,6 +4,8 @@
 > Treat it as the source of truth for future wheel/suspension work.
 >
 > **Checklist convention:** completed items are marked with `[x]`. If a completed item must be changed or revisited, remove its checkmark first. Keep the checklist state updated as implementation progresses.
+>
+> **Work-unit convention:** implementation is tracked as `Phase N → N-1, N-2, ...`. Intermediate scope reviews are explicit work units. Do not modify implementation code before the current work unit's scope is confirmed.
 
 ## 1. Purpose
 
@@ -267,41 +269,189 @@ The new system should be tested independently of visual appearance.
 - [ ] Rollover behavior.
 - [ ] No lateral/longitudinal wheel drift caused by suspension travel.
 
-## 12. Implementation Phases
+## 12. Implementation Workflow
+
+### Phase 0 — Existing System Audit
+
+No implementation changes are made during this phase.
+
+#### 0-1 — Current responsibility inventory
+
+- [x] Inspect `Vehicle/Wheel.*`.
+- [x] Inspect `Vehicle/Suspension.*`.
+- [x] Inspect `Vehicle/Tire.*`.
+- [x] Inspect `Vehicle/Car.*`.
+- [x] Inspect `Vehicle/VehicleConfig.*`.
+- [x] Inspect current vehicle diagnostics and physics diagnostics.
+- [x] Inspect major consumers of the Wheel/Tire API.
+
+Current findings:
+
+- `Wheel` currently owns wheel transform, suspension raycast state, suspension force state, tire reaction torque, and wheel rotational state.
+- `Suspension` currently stores scalar travel limits and spring/damper parameters, but does not represent suspension geometry.
+- `Car` currently owns four independent `Wheel`, `Suspension`, and `Tire` objects and directly drives their update order.
+- Front steering currently sets one steering angle on each front `Wheel`; there is no physical steering axis or upright state.
+- `Tire` already has a useful separation between contact/slip state and force calculation, but currently receives its geometry through `Wheel`.
+- `VehicleConfig` currently describes wheel positions as four local offsets; the replacement will need real suspension geometry.
+- Debug UI, Scene diagnostics, Audio, and test code consume the existing Wheel/Tire API and therefore must be checked when that API changes.
+
+#### 0-2 — Replacement boundary
+
+- [x] Confirm the old `Wheel::Update()` suspension model is not the compatibility target.
+- [x] Confirm control arms will be kinematic links, not independent rigid bodies.
+- [x] Confirm wheel center/orientation will be outputs of suspension + steering geometry.
+- [x] Confirm tire force calculation remains a separate subsystem.
+- [x] Confirm the existing tire grip model may be reused where its inputs remain valid.
+
+#### 0-3 — Initial file scope
+
+**Core replacement files:**
+
+```
+Vehicle/Wheel.*
+Vehicle/Suspension.*
+Vehicle/Car.*
+Vehicle/VehicleConfig.*
+Vehicle/Tire.*
+```
+
+**Likely new files:**
+
+```
+Vehicle/DoubleWishbone.*
+Vehicle/Upright.*
+Vehicle/SteeringAssembly.*
+```
+
+Exact class/file names are not frozen until Phase 1-1.
+
+**Consumers to update only when their required API changes:**
+
+```
+Core/Debug/DebugUI.cpp
+World/Scene.cpp
+Audio/AudioSystem.cpp
+Tests/VehicleDiagnostics.cpp
+Tests/PhysicsDiagnostics.cpp
+```
+
+**Configuration:**
+
+```
+Assets/Vehicles/TestCar/vehicle.ini
+```
+
+The configuration migration belongs to the geometry implementation phase, not the audit phase.
+
+#### 0-4 — Implementation rule
+
+- [x] Do not modify the implementation during Phase 0.
+- [x] Before each implementation work unit, list the exact files that will be modified.
+- [x] After implementation, run the relevant diagnostics before marking the work unit complete.
+- [x] If a completed architecture item must be redesigned, remove its `[x]` before revising it.
 
 ### Phase 1 — Kinematic Double Wishbone
 
+#### 1-1 — Geometry API and data model
+
+- [ ] Define the per-corner suspension geometry data.
+- [ ] Define control-arm pivots and outer joints.
+- [ ] Define upright/hub state.
+- [ ] Define the minimum math required to solve the linkage.
+- [ ] Decide exact new classes/files from the Phase 0 audit.
+- [ ] Update this document with the confirmed Phase 1 implementation scope before coding.
+
+#### 1-2 — Double-wishbone kinematic solver
+
 - [ ] Implement control-arm geometry.
 - [ ] Implement upright/hub position and orientation.
-- [ ] Validate suspension travel without tire forces.
+- [ ] Implement left/right symmetric configuration.
+- [ ] Validate static geometry without tire forces.
+
+#### 1-3 — Suspension travel
+
+- [ ] Implement suspension travel through the kinematic geometry.
+- [ ] Validate bump/rebound endpoints.
+- [ ] Validate continuous wheel-center motion.
+- [ ] Validate no artificial lateral/longitudinal wheel drift.
 
 ### Phase 2 — Spring / Damper
 
+#### 2-1 — Spring/damper integration
+
 - [ ] Connect spring/damper to the solved suspension geometry.
-- [ ] Implement bump/rebound limits.
-- [ ] Validate static ride height and dynamic compression/rebound.
+- [ ] Define force direction from actual mounting points.
+- [ ] Implement compression and rebound velocity.
+- [ ] Implement bump/rebound mechanical limits.
+
+#### 2-2 — Suspension validation
+
+- [ ] Validate static ride height.
+- [ ] Validate dynamic compression/rebound.
+- [ ] Validate force direction.
+- [ ] Validate airborne and rollover behavior.
 
 ### Phase 3 — Steering
 
-- [ ] Implement steering axis.
-- [ ] Implement steering-axis rotation.
-- [ ] Add caster/KPI/scrub-radius geometry.
+#### 3-1 — Steering axis
+
+- [ ] Implement upper/lower steering-axis points.
+- [ ] Derive the steering axis from the suspension geometry.
+- [ ] Rotate the upright/hub around the steering axis.
+
+#### 3-2 — Steering geometry
+
+- [ ] Add caster.
+- [ ] Add KPI / SAI.
+- [ ] Add scrub radius.
+- [ ] Add steering arm geometry.
 - [ ] Add Ackermann steering.
+
+#### 3-3 — Steering validation
+
+- [ ] Validate steering-axis rotation.
+- [ ] Validate steering-induced hub position change.
+- [ ] Validate camber/toe behavior.
+- [ ] Validate extreme steering combined with suspension travel.
 
 ### Phase 4 — Tire Integration
 
+#### 4-1 — Tire interface migration
+
 - [ ] Connect tire contact to the new hub/wheel state.
-- [ ] Preserve the existing tire model where appropriate.
-- [ ] Move tire force application to the correct contact patch.
+- [ ] Preserve the existing tire grip model where appropriate.
+- [ ] Remove obsolete suspension assumptions from tire inputs.
+
+#### 4-2 — Tire force application
+
+- [ ] Validate contact-point velocity.
+- [ ] Apply tire force at the contact patch.
+- [ ] Validate wheel reaction torque against the new hub state.
 
 ### Phase 5 — Vehicle Validation
 
+#### 5-1 — Basic driving
+
 - [ ] Validate straight-line driving.
+- [ ] Validate braking.
+- [ ] Validate acceleration.
+
+#### 5-2 — Handling
+
 - [ ] Validate cornering and load transfer.
 - [ ] Validate drifting.
 - [ ] Validate wheel lift.
 - [ ] Validate jumps/airborne behavior.
 - [ ] Validate rollover behavior.
+
+#### 5-3 — Regression suite
+
+- [ ] Replace obsolete suspension-axis diagnostics.
+- [ ] Add double-wishbone geometry diagnostics.
+- [ ] Add steering-axis diagnostics.
+- [ ] Add suspension travel diagnostics.
+- [ ] Add tire/hub integration diagnostics.
+- [ ] Ensure all vehicle diagnostics pass.
 
 ## 13. Non-Goals
 
