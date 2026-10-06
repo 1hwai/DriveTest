@@ -227,18 +227,26 @@ void Renderer::Render(const Scene& world) {
         const Vec3 toObject = objectTransform.position - cameraPosition;
         const float distanceSquared = toObject.LengthSquared();
         const float cullRadius = GetCullRadius(*object);
-        const float maxDistance = MaxRenderDistance + cullRadius;
+        const RenderSurface surface = object->GetRenderSurface();
+        const bool largeWorldSurface =
+            surface == RenderSurface::Terrain ||
+            surface == RenderSurface::Tarmac ||
+            surface == RenderSurface::Gravel ||
+            surface == RenderSurface::Transition;
 
-        if (distanceSquared > maxDistance * maxDistance)
-            continue;
+        if (!largeWorldSurface) {
+            const float maxDistance = MaxRenderDistance + cullRadius;
 
-        if (cullRadius < 100.0f &&
-            !IsSphereInsideFrustum(
+            if (distanceSquared > maxDistance * maxDistance)
+                continue;
+
+            if (!IsSphereInsideFrustum(
                 viewProjection,
                 objectTransform.position,
                 cullRadius
             ))
-            continue;
+                continue;
+        }
 
         Transform renderTransform = objectTransform;
         if (object->IsBillboard()) {
