@@ -88,6 +88,17 @@ bool TestTrack::Initialize(
         }
     }
 
+    auto terrainCollider =
+        sceneFactory.CreateTerrainCollider(
+            {"TestTerrainCollision", 0.0f, 0.85f},
+            *m_terrain
+        );
+    if (!terrainCollider)
+        return false;
+    terrainCollider->SetScenePersistent(false);
+    terrainCollider->SetMesh(nullptr);
+    m_objects.push_back(std::move(terrainCollider));
+
     m_road = std::make_unique<Road>();
     if (!m_road->GenerateCourse(*m_terrain, stage.roadControlPoints, stage.roadWidth, stage.roadSurfaceOffset))
         return false;
