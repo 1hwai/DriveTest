@@ -105,6 +105,8 @@ bool Shader::Load(
     }
 
     m_uniformLocations.clear();
+    m_intValues.clear();
+    m_floatValues.clear();
 
     return true;
 }
@@ -121,6 +123,8 @@ void Shader::Destroy() {
     }
 
     m_uniformLocations.clear();
+    m_intValues.clear();
+    m_floatValues.clear();
 }
 
 int Shader::GetUniformLocation(const char* name) {
@@ -178,12 +182,26 @@ void Shader::SetVec3(const char* name, const Vec3& vector) {
 }
 void Shader::SetInt(const char* name, int value) {
     const int location = GetUniformLocation(name);
-    if (location != -1)
-        glUniform1i(location, value);
+    if (location == -1)
+        return;
+
+    const auto found = m_intValues.find(location);
+    if (found != m_intValues.end() && found->second == value)
+        return;
+
+    glUniform1i(location, value);
+    m_intValues[location] = value;
 }
 
 void Shader::SetFloat(const char* name, float value) {
     const int location = GetUniformLocation(name);
-    if (location != -1)
-        glUniform1f(location, value);
+    if (location == -1)
+        return;
+
+    const auto found = m_floatValues.find(location);
+    if (found != m_floatValues.end() && found->second == value)
+        return;
+
+    glUniform1f(location, value);
+    m_floatValues[location] = value;
 }
