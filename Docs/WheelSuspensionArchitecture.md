@@ -492,12 +492,13 @@ Vehicle/Wheel.*
 Vehicle/Suspension.*
 Vehicle/Tire.*
 Tests/VehicleDiagnostics.cpp
+Tests/DoubleWishboneDiagnostics.cpp
 Core/Debug/DebugUI.cpp
 World/*
 Audio/*
 ```
 
-**Verification:** build the project and use a focused static-geometry diagnostic. Compilation alone is not sufficient to mark the solver correct.
+**Verification:** build the project and run `DoubleWishboneDiagnostics`. The diagnostic must independently check arm lengths, left/right symmetry, hub position, and finite upright orientation. Compilation alone is not sufficient.
 
 - [ ] Implement control-arm geometry.
 - [ ] Implement upright/hub position and orientation.
