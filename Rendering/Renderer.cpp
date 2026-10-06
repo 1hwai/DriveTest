@@ -5,9 +5,17 @@
 #include <SDL3/SDL_opengl.h>
 #include <iostream>
 #include <cmath>
+#include <algorithm>
 #include "../Core/Math/Transform.h"
 
 namespace {
+    struct Plane {
+        float a;
+        float b;
+        float c;
+        float d;
+    };
+
     Mat3 GetNormalMatrix(const Mat4& model) {
         Mat3 upper;
 
@@ -17,6 +25,72 @@ namespace {
         }
 
         return upper.Inversed().Transposed();
+    }
+
+    Plane MakePlane(const Mat4& matrix, int row, float sign) {
+        return {
+            matrix.m[3][0] + sign * matrix.m[row][0],
+            matrix.m[3][1] + sign * matrix.m[row][1],
+            matrix.m[3][2] + sign * matrix.m[row][2],
+            matrix.m[3][3] + sign * matrix.m[row][3]
+        };
+    }
+
+    bool IsSphereInsideFrustum(
+        const Mat4& viewProjection,
+        const Vec3& center,
+        float radius
+    ) {
+        const Plane planes[] = {
+            MakePlane(viewProjection, 0, 1.0f),
+            MakePlane(viewProjection, 0, -1.0f),
+            MakePlane(viewProjection, 1, 1.0f),
+            MakePlane(viewProjection, 1, -1.0f),
+            MakePlane(viewProjection, 2, 1.0f),
+            MakePlane(viewProjection, 2, -1.0f)
+        };
+
+        for (const Plane& plane : planes) {
+            const float length = std::sqrt(
+                plane.a * plane.a +
+                plane.b * plane.b +
+                plane.c * plane.c
+            );
+
+            if (length <= 0.000001f)
+                continue;
+
+            const float distance =
+                plane.a * center.x +
+                plane.b * center.y +
+                plane.c * center.z +
+                plane.d;
+
+            if (distance < -radius * length)
+                return false;
+        }
+
+        return true;
+    }
+
+    float GetCullRadius(const Object& object) {
+        const Vec3& scale = object.GetTransform().scale;
+        const float scaleRadius = std::max({
+            std::abs(scale.x),
+            std::abs(scale.y),
+            std::abs(scale.z)
+        });
+
+        switch (object.GetRenderSurface()) {
+        case RenderSurface::Terrain:
+            return 1000.0f;
+        case RenderSurface::Tarmac:
+        case RenderSurface::Gravel:
+        case RenderSurface::Transition:
+            return 100.0f;
+        default:
+            return std::max(3.0f, scaleRadius * 3.0f);
+        }
     }
 }
 
@@ -139,15 +213,35 @@ void Renderer::Render(const Scene& world) {
         world.GetCamera().GetPosition()
     );
 
+    const Mat4 viewProjection = projection * view;
+    const Vec3 cameraPosition = world.GetCamera().GetPosition();
+    constexpr float MaxRenderDistance = 1500.0f;
+
     for (const auto& object : world.GetObjects()) {
         const Mesh* mesh = object->GetMesh();
 
         if (mesh == nullptr)
             continue;
 
-        Transform renderTransform = object->GetTransform();
+        const Transform& objectTransform = object->GetTransform();
+        const Vec3 toObject = objectTransform.position - cameraPosition;
+        const float distanceSquared = toObject.LengthSquared();
+        const float cullRadius = GetCullRadius(*object);
+        const float maxDistance = MaxRenderDistance + cullRadius;
+
+        if (distanceSquared > maxDistance * maxDistance)
+            continue;
+
+        if (!IsSphereInsideFrustum(
+            viewProjection,
+            objectTransform.position,
+            cullRadius
+        ))
+            continue;
+
+        Transform renderTransform = objectTransform;
         if (object->IsBillboard()) {
-            const Vec3 toCamera = world.GetCamera().GetPosition() - renderTransform.position;
+            const Vec3 toCamera = cameraPosition - renderTransform.position;
             const float yaw = std::atan2(toCamera.x, toCamera.z);
             renderTransform.rotation = Quaternion::FromAxisAngle(Vec3(0.0f, 1.0f, 0.0f), yaw);
         }
