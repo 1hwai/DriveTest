@@ -132,6 +132,8 @@ if(DRIVETEST_BUILD_PHYSICS_DIAGNOSTICS)
         Physics/Material.cpp
 
         Vehicle/Car.cpp
+        Vehicle/DoubleWishbone.cpp
+        Vehicle/DoubleWishbone.cpp
         Vehicle/Powertrain.cpp
         Vehicle/Wheel.cpp
         Vehicle/Suspension.cpp
