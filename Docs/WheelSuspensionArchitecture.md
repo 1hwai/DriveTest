@@ -7,6 +7,17 @@
 >
 > **Work-unit convention:** implementation is tracked as `Phase N → N-1, N-2, ...`. Intermediate scope reviews are explicit work units. Do not modify implementation code before the current work unit's scope is confirmed.
 
+## AI Workflow Requirements
+
+For every future wheel/suspension work unit, the implementation agent must treat these project skills as mandatory companion documents:
+
+- `.agents/skills/drivetest-engineering/SKILL.md`
+- `.agents/skills/verification-evidence/SKILL.md`
+
+**Read both before planning, editing, debugging, committing, or claiming completion.**
+
+This document remains the source of truth for wheel/suspension architecture; the skills define how that work is reasoned about, scoped, changed, and verified.
+
 ## 1. Purpose
 
 Replace the current wheel/suspension implementation with a mechanically coherent double-wishbone suspension model.
@@ -456,6 +467,37 @@ Those files are handled when the new API is actually integrated.
 - [x] Update this document with the confirmed Phase 1 implementation scope before coding.
 
 #### 1-2 — Double-wishbone kinematic solver
+
+**Implementation scope:**
+
+Create the first real kinematic solver without changing tire forces or steering behavior. The solver owns per-corner control-arm constraints and produces the upright/hub state. Vehicle integration is limited to supplying chassis pose and consuming the solved hub state.
+
+**Files allowed to change:**
+
+```
+Vehicle/DoubleWishbone.h
+Vehicle/DoubleWishbone.cpp
+Vehicle/Car.h
+Vehicle/Car.cpp
+Vehicle/VehicleConfig.h
+Vehicle/VehicleConfig.cpp
+Assets/Vehicles/TestCar/vehicle.ini
+CMakeLists.txt
+```
+
+**Files explicitly out of scope:**
+
+```
+Vehicle/Wheel.*
+Vehicle/Suspension.*
+Vehicle/Tire.*
+Tests/VehicleDiagnostics.cpp
+Core/Debug/DebugUI.cpp
+World/*
+Audio/*
+```
+
+**Verification:** build the project and use a focused static-geometry diagnostic. Compilation alone is not sufficient to mark the solver correct.
 
 - [ ] Implement control-arm geometry.
 - [ ] Implement upright/hub position and orientation.
