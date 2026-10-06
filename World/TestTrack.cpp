@@ -6,6 +6,7 @@
 #include "../Core/Object.h"
 #include "../Physics/Terrain.h"
 #include "../Physics/Road.h"
+#include "../Rendering/Mesh.h"
 #include "../Rendering/MeshManager.h"
 
 #include <algorithm>
@@ -41,6 +42,8 @@ bool TestTrack::Initialize(
         terrainBumps
     );
     constexpr int TerrainChunkCells = 8;
+    Mesh* asphaltTextureSource = nullptr;
+    Mesh* dirtTextureSource = nullptr;
 
     for (int firstZ = 0;
         firstZ < stage.terrainResolution - 1;
@@ -60,12 +63,20 @@ bool TestTrack::Initialize(
                 firstZ,
                 TerrainChunkCells,
                 TerrainChunkCells
-            ) ||
-                !meshManager.LoadTexture(
-                    name,
-                    "Assets/road/dirt.jpg"
-                ))
+            ))
                 return false;
+
+            Mesh* terrainMesh = meshManager.Get(name);
+            if (!terrainMesh)
+                return false;
+
+            if (!dirtTextureSource) {
+                if (!terrainMesh->LoadTexture("Assets/road/dirt.jpg"))
+                    return false;
+                dirtTextureSource = terrainMesh;
+            } else if (!terrainMesh->ShareTextureFrom(*dirtTextureSource)) {
+                return false;
+            }
 
             auto object = std::make_unique<Object>();
             object->SetName(name);
@@ -80,14 +91,6 @@ bool TestTrack::Initialize(
     m_road = std::make_unique<Road>();
     if (!m_road->GenerateCourse(*m_terrain, stage.roadControlPoints, stage.roadWidth, stage.roadSurfaceOffset))
         return false;
-
-    auto ground = sceneFactory.CreateTerrain({"Terrain", 0.0f, 0.5f}, *m_terrain);
-    if (!ground)
-        return false;
-    ground->SetScenePersistent(false);
-    ground->SetColor(Vec3(1.0f, 1.0f, 1.0f));
-    ground->SetRenderSurface(RenderSurface::Terrain);
-    m_objects.push_back(std::move(ground));
 
     auto roadCollider = sceneFactory.CreateRoad({"TestRoadCollision", 0.0f, 0.85f}, *m_road);
     if (!roadCollider)
@@ -127,35 +130,43 @@ bool TestTrack::Initialize(
             ))
                 return false;
 
-            bool textureLoaded = false;
-            if (surface == RenderSurface::Tarmac) {
-                textureLoaded =
-                    meshManager.LoadTexture(
-                        name,
-                        "Assets/road/asphalt.jpg"
-                    );
-            } else if (surface == RenderSurface::Transition) {
-                textureLoaded =
-                    meshManager.LoadTexture(
-                        name,
-                        "Assets/road/asphalt.jpg"
-                    ) &&
-                    meshManager.LoadTexture(
-                        name,
-                        "Assets/road/dirt.jpg",
-                        false,
-                        true
-                    );
-            } else if (surface == RenderSurface::Gravel) {
-                textureLoaded =
-                    meshManager.LoadTexture(
-                        name,
-                        "Assets/road/dirt.jpg"
-                    );
-            }
-
-            if (!textureLoaded)
+            Mesh* roadMesh = meshManager.Get(name);
+            if (!roadMesh)
                 return false;
+
+            if (surface == RenderSurface::Tarmac) {
+                if (!asphaltTextureSource) {
+                    if (!roadMesh->LoadTexture("Assets/road/asphalt.jpg"))
+                        return false;
+                    asphaltTextureSource = roadMesh;
+                } else if (!roadMesh->ShareTextureFrom(*asphaltTextureSource)) {
+                    return false;
+                }
+            } else if (surface == RenderSurface::Transition) {
+                if (!asphaltTextureSource) {
+                    if (!roadMesh->LoadTexture("Assets/road/asphalt.jpg"))
+                        return false;
+                    asphaltTextureSource = roadMesh;
+                } else if (!roadMesh->ShareTextureFrom(*asphaltTextureSource)) {
+                    return false;
+                }
+
+                if (!dirtTextureSource) {
+                    if (!roadMesh->LoadTexture("Assets/road/dirt.jpg", false, true))
+                        return false;
+                    dirtTextureSource = roadMesh;
+                } else if (!roadMesh->ShareTextureFrom(*dirtTextureSource, true)) {
+                    return false;
+                }
+            } else if (surface == RenderSurface::Gravel) {
+                if (!dirtTextureSource) {
+                    if (!roadMesh->LoadTexture("Assets/road/dirt.jpg"))
+                        return false;
+                    dirtTextureSource = roadMesh;
+                } else if (!roadMesh->ShareTextureFrom(*dirtTextureSource)) {
+                    return false;
+                }
+            }
 
             auto object = std::make_unique<Object>();
             object->SetName(name);
