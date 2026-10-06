@@ -173,6 +173,28 @@ std::unique_ptr<Object> SceneFactory::CreateTerrain(
     return object;
 }
 
+std::unique_ptr<Object> SceneFactory::CreateTerrainCollider(
+    const TerrainSettings& settings,
+    const Terrain& terrain
+) {
+    auto object = std::make_unique<Object>();
+    object->SetName(settings.name);
+
+    RigidBody* body = m_physicsWorld.CreateRigidBody();
+    body->SetMass(0.0f);
+
+    Collider* collider = m_physicsWorld.CreateCollider();
+    collider->SetShape(ColliderShape::Terrain);
+    collider->SetTerrain(&terrain);
+    collider->SetRigidBody(body);
+    collider->GetMaterial().SetRestitution(settings.restitution);
+    collider->GetMaterial().SetFriction(settings.friction);
+
+    object->SetRigidBody(body);
+    object->SetCollider(collider);
+    return object;
+}
+
 std::unique_ptr<Object> SceneFactory::CreateRoad(
     const RoadSettings& settings,
     const Road& road
