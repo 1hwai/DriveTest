@@ -539,7 +539,7 @@ bool Mesh::LoadTexture(const std::string& path, bool removeBackground, bool seco
 }
 
 bool Mesh::ShareTextureFrom(const Mesh& source, bool secondary) {
-    const unsigned int texture = secondary ? source.m_secondaryTexture : source.m_materialTexture;
+    const unsigned int texture = source.m_materialTexture;
     if (texture == 0)
         return false;
 
