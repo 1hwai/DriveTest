@@ -68,12 +68,16 @@ public:
 
 private:
     void ReloadVehicleConfigIfChanged(float deltaTime);
+    bool RebuildStage();
 
     Camera m_camera;
     CameraMode m_cameraMode;
     std::vector<std::unique_ptr<Object>> m_objects;
 
     PhysicsWorld* m_physicsWorld;
+    MeshManager* m_meshManager;
+    std::vector<Object*> m_stageObjects;
+    bool m_stageEditorMode;
     std::unique_ptr<SceneFactory> m_sceneFactory;
     std::unique_ptr<TestTrack> m_track;
 

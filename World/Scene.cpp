@@ -20,6 +20,8 @@ namespace {
 Scene::Scene()
     : m_cameraMode(CameraMode::Free),
     m_physicsWorld(nullptr),
+    m_meshManager(nullptr),
+    m_stageEditorMode(false),
     m_carChassisObject(nullptr),
     m_suspensionDebugTimer(0.0f) {
     m_wheelObjects.fill(nullptr);
@@ -34,6 +36,7 @@ bool Scene::Initialize(
     PhysicsWorld& physicsWorld
 ) {
     m_physicsWorld = &physicsWorld;
+    m_meshManager = &meshManager;
 
     const std::string vehicleConfigPath =
         std::string(DRIVETEST_PROJECT_ROOT) + "/Assets/Vehicles/TestCar/vehicle.ini";
@@ -74,8 +77,11 @@ bool Scene::Initialize(
     if (!m_track->Initialize(meshManager, *m_sceneFactory, m_stage))
         return false;
 
-    for (auto& object : m_track->TakeObjects())
+    for (auto& object : m_track->TakeObjects()) {
+        Object* stageObject = object.get();
         AddObject(std::move(object));
+        m_stageObjects.push_back(stageObject);
+    }
 
     auto chassis = m_sceneFactory->CreateBox({
         "CarChassis",
@@ -122,6 +128,46 @@ bool Scene::Initialize(
 
 
 
+    return true;
+}
+
+bool Scene::RebuildStage() {
+    if (!m_meshManager || !m_sceneFactory || !m_physicsWorld ||
+        m_cameraMode != CameraMode::Free || !m_stageEditor.HasStage())
+        return false;
+
+    for (Object* object : m_stageObjects)
+        DestroyObject(object);
+    m_stageObjects.clear();
+
+    m_track.reset();
+    m_track = std::make_unique<TestTrack>();
+    if (!m_track->Initialize(*m_meshManager, *m_sceneFactory, m_stage))
+        return false;
+
+    for (auto& object : m_track->TakeObjects()) {
+        Object* stageObject = object.get();
+        AddObject(std::move(object));
+        m_stageObjects.push_back(stageObject);
+    }
+
+    if (m_carChassisObject != nullptr) {
+        RigidBody* chassis = m_carChassisObject->GetRigidBody();
+        if (chassis != nullptr) {
+            chassis->SetPosition(
+                Vec3(
+                    0.0f,
+                    m_track->GetTerrain().GetHeight(0.0f, 0.0f) +
+                        m_vehicleConfig.spawnClearance,
+                    0.0f
+                )
+            );
+            chassis->SetLinearVelocity(Vec3(0.0f, 0.0f, 0.0f));
+            chassis->SetAngularVelocity(Vec3(0.0f, 0.0f, 0.0f));
+        }
+    }
+
+    Logger::Info("Stage rebuilt from current StageDefinition.");
     return true;
 }
 
@@ -222,6 +268,76 @@ void Scene::Update(
     const Keyboard& keyboard,
     const VehicleInput& input
 ) {
+    if (keyboard.IsPressed(SDL_SCANCODE_TAB) &&
+        m_cameraMode == CameraMode::Free) {
+        m_stageEditorMode = !m_stageEditorMode;
+
+        Logger::Info(
+            m_stageEditorMode
+                ? "Stage editor enabled."
+                : "Stage editor disabled."
+        );
+    }
+
+    if (m_stageEditorMode) {
+        constexpr float pointMoveSpeed = 5.0f;
+        Vec3 movement(0.0f, 0.0f, 0.0f);
+
+        if (keyboard.IsDown(SDL_SCANCODE_W))
+            movement.z += pointMoveSpeed * deltaTime;
+
+        if (keyboard.IsDown(SDL_SCANCODE_S))
+            movement.z -= pointMoveSpeed * deltaTime;
+
+        if (keyboard.IsDown(SDL_SCANCODE_A))
+            movement.x += pointMoveSpeed * deltaTime;
+
+        if (keyboard.IsDown(SDL_SCANCODE_D))
+            movement.x -= pointMoveSpeed * deltaTime;
+
+        if (keyboard.IsDown(SDL_SCANCODE_E))
+            movement.y += pointMoveSpeed * deltaTime;
+
+        if (keyboard.IsDown(SDL_SCANCODE_Q))
+            movement.y -= pointMoveSpeed * deltaTime;
+
+        if (movement.LengthSquared() > 0.0f)
+            m_stageEditor.MoveSelectedRoadPoint(movement);
+
+        if (keyboard.IsPressed(SDL_SCANCODE_N))
+            m_stageEditor.SelectNextRoadPoint();
+
+        if (keyboard.IsPressed(SDL_SCANCODE_P))
+            m_stageEditor.SelectPreviousRoadPoint();
+
+        if (keyboard.IsPressed(SDL_SCANCODE_DELETE))
+            m_stageEditor.DeleteSelectedRoadPoint();
+
+        if (keyboard.IsPressed(SDL_SCANCODE_INSERT)) {
+            const Vec3* selected =
+                m_stageEditor.GetSelectedRoadPoint();
+            if (selected != nullptr)
+                m_stageEditor.AddRoadPoint(
+                    *selected + Vec3(0.0f, 0.0f, 5.0f)
+                );
+        }
+
+        if (keyboard.IsDown(SDL_SCANCODE_EQUALS))
+            m_stageEditor.SetRoadWidth(
+                m_stage.roadWidth + 2.0f * deltaTime
+            );
+
+        if (keyboard.IsDown(SDL_SCANCODE_MINUS))
+            m_stageEditor.SetRoadWidth(
+                m_stage.roadWidth - 2.0f * deltaTime
+            );
+
+        if (keyboard.IsPressed(SDL_SCANCODE_R))
+            RebuildStage();
+
+        return;
+    }
+
     if (input.shiftUp)
         m_car.GetTransmission().ShiftUp();
 
@@ -490,6 +606,8 @@ Object* Scene::CreateSphere(const SphereSettings& settings) {
 }
 
 void Scene::ClearObjects() {
+    m_stageObjects.clear();
+
     if (!m_physicsWorld) {
         m_objects.clear();
         m_carBodyParts.clear();
@@ -584,7 +702,9 @@ void Scene::ClearPersistentObjects() {
 
 void Scene::Shutdown() {
     ClearObjects();
+    m_stageObjects.clear();
     m_track.reset();
     m_sceneFactory.reset();
+    m_meshManager = nullptr;
     m_physicsWorld = nullptr;
 }
