@@ -687,9 +687,8 @@ namespace {
 
         float maxRightOffset = 0.0f;
         float maxForwardOffset = 0.0f;
-        float maxLocalXError = 0.0f;
-        float maxLocalZError = 0.0f;
-        float maxVerticalError = 0.0f;
+        float maxVerticalAxisError = 0.0f;
+        float maxWorldHorizontalDrift = 0.0f;
 
         const int steps = static_cast<int>(8.0f / FixedDeltaTime);
 
@@ -718,55 +717,57 @@ namespace {
                 rig.chassis->GetPosition();
             const Quaternion bodyOrientation =
                 rig.chassis->GetOrientation();
-            const Vec3 vehicleRight =
-                bodyOrientation * VehicleCoordinates::Right();
-            const Vec3 vehicleForward =
-                bodyOrientation * VehicleCoordinates::Forward();
-            const Vec3 vehicleUp =
-                bodyOrientation * VehicleCoordinates::Up();
 
             for (size_t i = 0; i < WheelCount; ++i) {
-                const WheelIndex index =
-                    static_cast<WheelIndex>(i);
                 const Wheel& wheel =
-                    rig.car.GetWheel(index);
-                const Vec3& localPosition =
-                    wheel.GetLocalPosition();
-                const Vec3 wheelPosition =
-                    wheel.GetWorldPosition();
+                    rig.car.GetWheel(static_cast<WheelIndex>(i));
                 const Vec3 mountPosition =
                     bodyPosition +
-                    bodyOrientation * localPosition;
+                    bodyOrientation * wheel.GetLocalPosition();
                 const Vec3 mountToWheel =
-                    wheelPosition - mountPosition;
-                const Vec3 localWheelPosition =
-                    bodyOrientation.Conjugate() *
-                    (wheelPosition - bodyPosition);
+                    wheel.GetWorldPosition() - mountPosition;
 
-                const float rightOffset =
-                    std::abs(mountToWheel.Dot(vehicleRight));
-                const float forwardOffset =
-                    std::abs(mountToWheel.Dot(vehicleForward));
-                const float localXError =
-                    std::abs(localWheelPosition.x - localPosition.x);
-                const float localZError =
-                    std::abs(localWheelPosition.z - localPosition.z);
-                const float verticalError =
+                // Suspension travel must remain on the world vertical axis.
+                maxRightOffset = std::max(
+                    maxRightOffset,
+                    std::abs(mountToWheel.x)
+                );
+                maxForwardOffset = std::max(
+                    maxForwardOffset,
+                    std::abs(mountToWheel.z)
+                );
+                maxVerticalAxisError = std::max(
+                    maxVerticalAxisError,
                     std::abs(
-                        localWheelPosition.y -
-                        (localPosition.y - wheel.GetSuspensionLength())
-                    );
+                        mountToWheel.y +
+                        wheel.GetSuspensionLength()
+                    )
+                );
 
-                maxRightOffset =
-                    std::max(maxRightOffset, rightOffset);
-                maxForwardOffset =
-                    std::max(maxForwardOffset, forwardOffset);
-                maxLocalXError =
-                    std::max(maxLocalXError, localXError);
-                maxLocalZError =
-                    std::max(maxLocalZError, localZError);
-                maxVerticalError =
-                    std::max(maxVerticalError, verticalError);
+                // Compare against the expected world-vertical suspension
+                // position directly, independent of chassis roll.
+                const Vec3 expectedPosition =
+                    mountPosition +
+                    Vec3(
+                        0.0f,
+                        -wheel.GetSuspensionLength(),
+                        0.0f
+                    );
+                maxWorldHorizontalDrift = std::max(
+                    maxWorldHorizontalDrift,
+                    std::sqrt(
+                        std::pow(
+                            wheel.GetWorldPosition().x -
+                            expectedPosition.x,
+                            2.0f
+                        ) +
+                        std::pow(
+                            wheel.GetWorldPosition().z -
+                            expectedPosition.z,
+                            2.0f
+                        )
+                    )
+                );
             }
 
             rig.physicsWorld.Step(FixedDeltaTime);
@@ -777,18 +778,16 @@ namespace {
             << "[WheelSuspensionAxis] "
             << "maxRightOffset=" << maxRightOffset
             << " maxForwardOffset=" << maxForwardOffset
-            << " maxLocalXError=" << maxLocalXError
-            << " maxLocalZError=" << maxLocalZError
-            << " maxVerticalError=" << maxVerticalError;
+            << " maxVerticalAxisError=" << maxVerticalAxisError
+            << " maxWorldHorizontalDrift=" << maxWorldHorizontalDrift;
         Logger::Info(log.str());
 
         constexpr float PositionTolerance = 0.0001f;
         const bool passed =
             maxRightOffset <= PositionTolerance &&
             maxForwardOffset <= PositionTolerance &&
-            maxLocalXError <= PositionTolerance &&
-            maxLocalZError <= PositionTolerance &&
-            maxVerticalError <= PositionTolerance;
+            maxVerticalAxisError <= PositionTolerance &&
+            maxWorldHorizontalDrift <= PositionTolerance;
 
         if (passed)
             Logger::Info("[PASS] Wheel suspension axis diagnostics");
