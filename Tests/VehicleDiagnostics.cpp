@@ -1163,6 +1163,7 @@ int main() {
     Logger::Initialize("Logs/vehicle_diagnostics.log");
 
     bool passed = RunVehicleCoordinateConventionDiagnostics();
+    passed = RunWheelSuspensionAxisDiagnostics() && passed;
     passed = RunRaycastRollGeometryDiagnostics() && passed;
     passed = RunRaycastSurfaceDiagnostics() && passed;
     passed = RunTireModelDiagnostics() && passed;
