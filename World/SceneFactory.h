@@ -70,6 +70,11 @@ public:
         const Terrain& terrain
     );
 
+    std::unique_ptr<Object> CreateTerrainCollider(
+        const TerrainSettings& settings,
+        const Terrain& terrain
+    );
+
     std::unique_ptr<Object> CreateRoad(
         const RoadSettings& settings,
         const Road& road

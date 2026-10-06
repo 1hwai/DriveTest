@@ -117,8 +117,14 @@ void Wheel::Update(
         &body
     )) {
         m_grounded = false;
+
+        constexpr float FreeReboundSpeed = 4.0f;
         m_suspensionLength =
-            suspension.GetMaxLength();
+            std::min(
+                suspension.GetMaxLength(),
+                m_suspensionLength +
+                    FreeReboundSpeed * deltaTime
+            );
         m_lastRayDistance = maxRayDistance;
         m_lastRayShape = -1;
         m_compression = 0.0f;
