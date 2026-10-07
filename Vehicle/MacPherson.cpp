@@ -49,24 +49,52 @@ bool MacPherson::Solve(
     const Vec3& chassisPosition,
     const Quaternion& chassisOrientation
 ) {
+    return SolveAtTravel(
+        chassisPosition,
+        chassisOrientation,
+        0.0f
+    );
+}
+
+bool MacPherson::SolveAtTravel(
+    const Vec3& chassisPosition,
+    const Quaternion& chassisOrientation,
+    float travel
+) {
+    m_lowerArm.innerPivotA =
+        chassisPosition +
+        chassisOrientation * m_lowerArmConfig.innerPivotA;
+    m_lowerArm.innerPivotB =
+        chassisPosition +
+        chassisOrientation * m_lowerArmConfig.innerPivotB;
+    m_lowerArm.outerJoint =
+        chassisPosition +
+        chassisOrientation * m_lowerArmConfig.outerJoint;
+
+    m_strut.upperMount =
+        chassisPosition +
+        chassisOrientation * m_strutConfig.upperMount;
+
+    const float strutLength =
+        m_strut.length - travel;
+    if (strutLength <= Epsilon)
+        return false;
+
     if (!SolveConstraints(
             m_lowerArm,
             m_strut.upperMount,
-            m_strut.length + m_strutLowerOffsetLength
+            strutLength + m_strutLowerOffsetLength
         )) {
         return false;
     }
 
     m_upright.lowerJoint = m_lowerArm.outerJoint;
 
-    UpdateUpright(chassisPosition, chassisOrientation);
+    UpdateUpright();
     return true;
 }
 
-void MacPherson::UpdateUpright(
-    const Vec3& chassisPosition,
-    const Quaternion& chassisOrientation
-) {
+void MacPherson::UpdateUpright() {
     const Vec3 localOffset =
         m_strutConfig.lowerMountOffset;
 
@@ -87,14 +115,11 @@ void MacPherson::UpdateUpright(
     m_strut.lowerMount = m_upright.strutLowerJoint;
 
     m_upright.hubOrientation =
-        (chassisOrientation * localOrientation).Normalized();
+        localOrientation;
 
     m_upright.hubPosition =
-        chassisPosition +
-        chassisOrientation * (
-            m_upright.lowerJoint +
-            localOrientation * m_uprightConfig.hubOffset
-        );
+        m_upright.lowerJoint +
+        localOrientation * m_uprightConfig.hubOffset;
 }
 
 float MacPherson::Distance(
