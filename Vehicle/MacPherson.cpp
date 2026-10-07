@@ -30,13 +30,12 @@ void MacPherson::Configure(const MacPhersonConfig& config) {
     m_strut.lowerMount =
         config.lowerArm.outerJoint +
         config.strut.lowerMountOffset;
+    m_strutLowerOffsetLength =
+        config.strut.lowerMountOffset.Length();
     m_strut.length =
         config.strut.length > 0.0f
             ? config.strut.length
             : Distance(m_strut.upperMount, m_strut.lowerMount);
-
-    m_strutLowerOffsetLength =
-        config.strut.lowerMountOffset.Length();
 
     m_upright.lowerJoint = config.lowerArm.outerJoint;
     m_upright.strutLowerJoint = m_strut.lowerMount;
@@ -50,14 +49,10 @@ bool MacPherson::Solve(
     const Vec3& chassisPosition,
     const Quaternion& chassisOrientation
 ) {
-    const float targetDistance =
-        m_strut.length +
-        m_strutLowerOffsetLength;
-
     if (!SolveConstraints(
             m_lowerArm,
             m_strut.upperMount,
-            targetDistance
+            m_strut.length - m_strutLowerOffsetLength
         )) {
         return false;
     }
@@ -72,57 +67,22 @@ void MacPherson::UpdateUpright(
     const Vec3& chassisPosition,
     const Quaternion& chassisOrientation
 ) {
+    const Vec3 localOffset =
+        m_strutConfig.lowerMountOffset;
+
+    Vec3 localAxis(0.0f, 1.0f, 0.0f);
+    if (localOffset.LengthSquared() > Epsilon)
+        localAxis = localOffset.Normalized();
+
     const Vec3 strutAxis =
         (m_strut.upperMount - m_upright.lowerJoint).Normalized();
 
-    const Vec3 localStrutAxis =
-        m_strutConfig.lowerMountOffset.Normalized();
-
-    Quaternion localOrientation =
-        FromToRotation(localStrutAxis, strutAxis);
-
-    Vec3 forward(0.0f, 0.0f, 1.0f);
-    forward =
-        forward -
-        strutAxis * forward.Dot(strutAxis);
-
-    if (forward.LengthSquared() < Epsilon) {
-        forward = Vec3(1.0f, 0.0f, 0.0f);
-        forward =
-            forward -
-            strutAxis * forward.Dot(strutAxis);
-    }
-
-    forward = forward.Normalized();
-
-    const Vec3 right =
-        forward.Cross(strutAxis).Normalized();
-    const Vec3 correctedForward =
-        strutAxis.Cross(right).Normalized();
-
-    Mat3 basis = Mat3::Identity();
-    basis.m[0][0] = right.x;
-    basis.m[0][1] = right.y;
-    basis.m[0][2] = right.z;
-    basis.m[1][0] = strutAxis.x;
-    basis.m[1][1] = strutAxis.y;
-    basis.m[1][2] = strutAxis.z;
-    basis.m[2][0] = correctedForward.x;
-    basis.m[2][1] = correctedForward.y;
-    basis.m[2][2] = correctedForward.z;
-
-    const Quaternion basisOrientation =
-        Quaternion::FromMat3(basis).Normalized();
-
-    localOrientation =
-        (basisOrientation * FromToRotation(
-            basisOrientation * localStrutAxis,
-            strutAxis
-        )).Normalized();
+    const Quaternion localOrientation =
+        FromToRotation(localAxis, strutAxis);
 
     m_upright.strutLowerJoint =
         m_upright.lowerJoint +
-        localOrientation * m_strutConfig.lowerMountOffset;
+        localOrientation * localOffset;
 
     m_strut.lowerMount = m_upright.strutLowerJoint;
 
@@ -156,10 +116,12 @@ Quaternion MacPherson::FromToRotation(
         return Quaternion::Identity();
 
     if (dot < -1.0f + Epsilon) {
-        Vec3 axis = Vec3(1.0f, 0.0f, 0.0f).Cross(a);
+        Vec3 axis =
+            Vec3(1.0f, 0.0f, 0.0f).Cross(a);
 
         if (axis.LengthSquared() < Epsilon)
-            axis = Vec3(0.0f, 1.0f, 0.0f).Cross(a);
+            axis =
+                Vec3(0.0f, 1.0f, 0.0f).Cross(a);
 
         return Quaternion::FromAxisAngle(
             axis.Normalized(),
@@ -181,26 +143,41 @@ bool MacPherson::SolveConstraints(
     const Vec3& strutUpperMount,
     float strutTargetDistance
 ) {
-    const float radiusA = lowerArm.innerToOuterLengthA;
-    const float radiusB = lowerArm.innerToOuterLengthB;
-    const Vec3 centerA = lowerArm.innerPivotA;
-    const Vec3 centerB = lowerArm.innerPivotB;
+    if (strutTargetDistance <= Epsilon)
+        return false;
 
-    const Vec3 axis = centerB - centerA;
-    const float distance = axis.Length();
+    const float radiusA =
+        lowerArm.innerToOuterLengthA;
+    const float radiusB =
+        lowerArm.innerToOuterLengthB;
 
-    if (distance < Epsilon ||
-        distance > radiusA + radiusB + Epsilon ||
-        distance < std::abs(radiusA - radiusB) - Epsilon) {
+    const Vec3 centerA =
+        lowerArm.innerPivotA;
+    const Vec3 centerB =
+        lowerArm.innerPivotB;
+
+    const Vec3 armAxis =
+        centerB - centerA;
+    const float armAxisLength =
+        armAxis.Length();
+
+    if (armAxisLength < Epsilon ||
+        armAxisLength > radiusA + radiusB + Epsilon ||
+        armAxisLength < std::abs(radiusA - radiusB) - Epsilon) {
         return false;
     }
 
-    const Vec3 ex = axis / distance;
+    const Vec3 ex =
+        armAxis / armAxisLength;
+
     const float along =
-        (radiusA * radiusA -
-         radiusB * radiusB +
-         distance * distance) /
-        (2.0f * distance);
+        (
+            radiusA * radiusA -
+            radiusB * radiusB +
+            armAxisLength * armAxisLength
+        ) /
+        (2.0f * armAxisLength);
+
     const float circleRadiusSquared =
         radiusA * radiusA -
         along * along;
@@ -210,29 +187,22 @@ bool MacPherson::SolveConstraints(
 
     const float circleRadius =
         std::sqrt(std::max(0.0f, circleRadiusSquared));
+
     const Vec3 circleCenter =
         centerA + ex * along;
 
-    Vec3 planeAxis =
-        ex.Cross(Vec3(0.0f, 1.0f, 0.0f));
-
-    if (planeAxis.LengthSquared() < Epsilon)
-        planeAxis =
-            ex.Cross(Vec3(0.0f, 0.0f, 1.0f));
-
-    planeAxis = planeAxis.Normalized();
-    const Vec3 planeAxisB =
-        ex.Cross(planeAxis).Normalized();
-
     const Vec3 toStrut =
         strutUpperMount - circleCenter;
+
     const Vec3 projected =
         toStrut -
         ex * toStrut.Dot(ex);
+
     const float projectedLength =
         projected.Length();
 
-    if (projectedLength < Epsilon)
+    if (projectedLength < Epsilon ||
+        circleRadius < Epsilon)
         return false;
 
     const float cosine =
@@ -244,16 +214,18 @@ bool MacPherson::SolveConstraints(
         (2.0f * circleRadius * projectedLength);
 
     if (cosine < -1.0f - Epsilon ||
-        cosine > 1.0f + Epsilon) {
+        cosine > 1.0f + Epsilon)
         return false;
-    }
 
     const float clampedCosine =
         std::clamp(cosine, -1.0f, 1.0f);
+
     const Vec3 projectedDirection =
         projected / projectedLength;
+
     const Vec3 perpendicular =
         ex.Cross(projectedDirection).Normalized();
+
     const float sine =
         std::sqrt(std::max(
             0.0f,
@@ -266,6 +238,7 @@ bool MacPherson::SolveConstraints(
             projectedDirection * clampedCosine +
             perpendicular * sine
         ) * circleRadius;
+
     const Vec3 candidateB =
         circleCenter +
         (
@@ -275,6 +248,7 @@ bool MacPherson::SolveConstraints(
 
     const float distanceA =
         (candidateA - lowerArm.outerJoint).LengthSquared();
+
     const float distanceB =
         (candidateB - lowerArm.outerJoint).LengthSquared();
 
