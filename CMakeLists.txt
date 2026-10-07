@@ -271,6 +271,34 @@ if(DRIVETEST_BUILD_MACPHERSON_DIAGNOSTICS)
 endif()
 
 option(
+    DRIVETEST_BUILD_SUSPENSION_DIAGNOSTICS
+    "Build the headless suspension diagnostics executable"
+    OFF
+)
+
+if(DRIVETEST_BUILD_SUSPENSION_DIAGNOSTICS)
+    add_executable(DriveTestSuspensionDiagnostics
+        Tests/SuspensionDiagnostics.cpp
+        Vehicle/Suspension.cpp
+    )
+
+    target_include_directories(
+        DriveTestSuspensionDiagnostics
+        PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}"
+    )
+
+    enable_testing()
+
+    add_test(
+        NAME SuspensionDiagnostics
+        COMMAND DriveTestSuspensionDiagnostics
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    )
+endif()
+
+
+option(
     DRIVETEST_BUILD_DOUBLE_WISHBONE_DIAGNOSTICS
     "Build the headless double wishbone diagnostics executable"
     OFF
