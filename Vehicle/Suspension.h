@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../Core/Math/Vec3.h"
+
 class Suspension {
 public:
     Suspension();
@@ -23,10 +25,12 @@ public:
 
     float ClampLength(float length) const;
     void UpdateLength(float length, float deltaTime);
+    void UpdateFromMounts(const Vec3& mountA, const Vec3& mountB, float deltaTime);
     float GetLength() const;
     float GetCompression() const;
     float GetCompressionVelocity() const;
     float CalculateForce() const;
+    Vec3 CalculateForceVector(const Vec3& mountA, const Vec3& mountB) const;
 
 private:
     float m_restLength;
