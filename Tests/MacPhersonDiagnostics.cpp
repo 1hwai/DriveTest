@@ -128,14 +128,13 @@ int main() {
 
     std::cout
         << "[MacPherson]"
-        << " solved=" << solvedLeft && solvedRight
+        << " solved=" << (solvedLeft && solvedRight)
         << " armLengths=" << armLengths
         << " strutConstraint=" << strutConstraint
         << " symmetry=" << symmetry
         << " hubPosition=" << hubPosition
         << " finite=" << finite
-        << '
-';
+        << '\n';
 
     if (!finite ||
         !armLengths ||
@@ -143,13 +142,11 @@ int main() {
         !symmetry ||
         !hubPosition) {
         std::cerr
-            << "[FAIL] MacPherson diagnostics
-";
+            << "[FAIL] MacPherson diagnostics\n";
         return 1;
     }
 
     std::cout
-        << "[PASS] MacPherson diagnostics
-";
+        << "[PASS] MacPherson diagnostics\n";
     return 0;
 }
