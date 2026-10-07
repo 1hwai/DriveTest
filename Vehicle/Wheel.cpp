@@ -41,6 +41,18 @@ void Wheel::SetLocalPosition(const Vec3& position) {
     m_localPosition = position;
 }
 
+void Wheel::SetHubTransform(
+    const Vec3& position,
+    const Quaternion& orientation
+) {
+    m_worldPosition = position;
+    m_worldOrientation = orientation;
+}
+
+const Quaternion& Wheel::GetWorldOrientation() const {
+    return m_worldOrientation;
+}
+
 const Vec3& Wheel::GetLocalPosition() const {
     return m_localPosition;
 }
@@ -93,9 +105,7 @@ void Wheel::Update(
     const Suspension& suspension,
     float deltaTime
 ) {
-    const Vec3 worldMount =
-        body.GetPosition() +
-        body.GetOrientation() * m_localPosition;
+    const Vec3 worldMount = m_worldPosition;
 
     // Suspension travel is world-vertical. The wheel mount follows the
     // chassis, but compression itself must not introduce lateral or
@@ -141,12 +151,7 @@ void Wheel::Update(
             Vec3(0.0f, 1.0f, 0.0f);
         m_tireReactionTorque = 0.0f;
 
-        m_worldPosition =
-            worldMount +
-            down * m_suspensionLength;
-
-        m_contactPoint =
-            m_worldPosition;
+        m_contactPoint = m_worldPosition;
 
         return;
     }
@@ -261,9 +266,7 @@ void Wheel::Update(
     m_contactPoint = result.point;
     m_contactNormal = result.normal;
 
-    m_worldPosition =
-        worldMount +
-        down * m_suspensionLength;
+
 }
 
 void Wheel::ApplyTireForce(

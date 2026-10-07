@@ -37,11 +37,11 @@ Do not change this convention as part of the suspension rewrite.
 
 ## 3. Design Principles
 
-- [ ] Model each wheel as part of an actual suspension assembly rather than as a point attached directly to the chassis.
+- [x] Model each wheel as part of an actual suspension assembly rather than as a point attached directly to the chassis.
 - [ ] Separate suspension kinematics, steering geometry, wheel/hub state, tire contact, and tire force calculation.
 - [ ] Do not preserve the current Wheel implementation merely for compatibility.
 - [ ] Avoid solving the control arms as independent rigid bodies; treat them as kinematic links/constraints.
-- [ ] Suspension geometry must determine wheel motion.
+- [x] Suspension geometry must determine wheel motion.
 - [ ] Tire forces must be applied at the tire contact patch, not arbitrarily at the wheel mount.
 - [ ] Ground contact must not be allowed to pull or hold the chassis down through an impossible suspension configuration.
 
@@ -148,7 +148,7 @@ Responsibilities:
 
 ### Suspension
 
-- [ ] Determine wheel/hub kinematics.
+- [x] Determine wheel/hub kinematics.
 - [ ] Determine suspension compression and velocity.
 - [ ] Generate spring/damper forces.
 
@@ -161,7 +161,7 @@ Responsibilities:
 
 - [ ] Store wheel rotational state.
 - [ ] Provide wheel center/orientation to tire calculations and rendering.
-- [ ] Keep visual wheel transform derived from physical hub state.
+- [x] Keep visual wheel transform derived from physical hub state.
 
 ### Tire
 
@@ -176,7 +176,7 @@ Responsibilities:
 The suspension is primarily kinematic rather than a collection of independent rigid bodies.
 
 - [ ] Solve control-arm geometry each physics update.
-- [ ] Obtain wheel center from the solved upright position.
+- [x] Obtain wheel center from the solved upright position.
 - [ ] Obtain camber from upright orientation.
 - [ ] Allow suspension travel to naturally produce track-width changes.
 - [ ] Allow suspension travel to naturally produce wheelbase changes where geometry causes them.
