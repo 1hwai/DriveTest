@@ -667,6 +667,55 @@ Audio/*
 
 **Verification:** build the project and run MacPhersonDiagnostics. The diagnostic must independently verify lower-arm constraints, strut constraint, left/right symmetry, hub position/orientation finiteness, and static geometry.
 
+- [x] Implement lower-arm and strut kinematic constraints.
+- [x] Produce the solved lower joint, strut lower mount, hub position, and hub orientation.
+- [x] Validate static lower-arm constraints.
+- [x] Validate static strut constraint.
+- [x] Validate left/right symmetry and finite hub state.
+
+**Fresh verification:** Linux configure/build followed by ctest; PhysicsDiagnostics, VehicleDiagnostics, MacPhersonDiagnostics, and DoubleWishboneDiagnostics all passed.
+
+#### 1-3 — MacPherson suspension travel
+
+**Implementation scope:**
+
+Extend the MacPherson solver so suspension geometry is evaluated from chassis-local configuration in world space for the current chassis pose. Travel changes the strut length and the constrained lower-arm/strut geometry determines the resulting hub position.
+
+**Files allowed to change:**
+
+~~~
+Vehicle/MacPherson.h
+Vehicle/MacPherson.cpp
+Tests/MacPhersonDiagnostics.cpp
+Docs/WheelSuspensionArchitecture.md
+~~~
+
+**Files explicitly out of scope:**
+
+~~~
+Vehicle/Car.*
+Vehicle/Wheel.*
+Vehicle/Suspension.*
+Vehicle/Tire.*
+Vehicle/VehicleConfig.*
+CMakeLists.txt
+Core/Debug/DebugUI.cpp
+World/*
+Audio/*
+~~~
+
+**Verification:** build the project and run MacPhersonDiagnostics. The diagnostic must independently verify bump/rebound travel, lower-arm constraints, strut length at each travel point, left/right symmetry, travel continuity, finite hub state across chassis roll/pitch, and horizontal drift limits.
+
+- [ ] Evaluate lower-arm and strut geometry in world space from the chassis pose.
+- [ ] Implement bump/rebound travel through the strut constraint.
+- [ ] Validate lower-arm constraints throughout travel.
+- [ ] Validate strut constraint throughout travel.
+- [ ] Validate travel endpoints and continuity.
+- [ ] Validate left/right symmetry throughout travel.
+- [ ] Validate finite hub position/orientation across chassis roll and pitch.
+- [ ] Validate horizontal drift limits.
+
+
 ### Phase 2 — Spring / Damper
 
 #### 2-1 — Spring/damper integration
