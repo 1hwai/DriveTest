@@ -21,15 +21,11 @@ float Suspension::GetMaxLength() const { return m_maxLength; }
 
 void Suspension::SetBumpTravel(float travel) {
     m_bumpTravel = std::clamp(travel, 0.0f, m_restLength);
-    m_length = ClampLength(m_length);
-    m_compression = std::max(0.0f, m_restLength - m_length);
 }
 float Suspension::GetBumpTravel() const { return m_bumpTravel; }
 
 void Suspension::SetReboundTravel(float travel) {
     m_maxLength = m_restLength + std::max(0.0f, travel);
-    m_length = ClampLength(m_length);
-    m_compression = std::max(0.0f, m_restLength - m_length);
 }
 float Suspension::GetReboundTravel() const { return m_maxLength - m_restLength; }
 
