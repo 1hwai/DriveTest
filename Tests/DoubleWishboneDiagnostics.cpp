@@ -306,8 +306,12 @@ int main() {
                 continue;
             }
 
-            const Vec3 leftPoseHub = left.GetHubPosition();
-            const Vec3 rightPoseHub = right.GetHubPosition();
+            const Vec3 leftPoseHub =
+                orientation.Conjugate() *
+                (left.GetHubPosition() - chassisPosition);
+            const Vec3 rightPoseHub =
+                orientation.Conjugate() *
+                (right.GetHubPosition() - chassisPosition);
 
             poseSweep =
                 Finite(leftPoseHub) &&
