@@ -69,6 +69,7 @@ private:
     UprightState m_upright;
     Vec3 m_springMountA;
     Vec3 m_springMountB;
+    Vec3 m_springMountALocal;
     Vec3 m_springMountBOffset;
 
     float m_uprightJointDistance;
