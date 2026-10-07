@@ -41,16 +41,8 @@ void Wheel::SetLocalPosition(const Vec3& position) {
     m_localPosition = position;
 }
 
-void Wheel::SetHubTransform(
-    const Vec3& position,
-    const Quaternion& orientation
-) {
+void Wheel::SetHubPosition(const Vec3& position) {
     m_worldPosition = position;
-    m_worldOrientation = orientation;
-}
-
-const Quaternion& Wheel::GetWorldOrientation() const {
-    return m_worldOrientation;
 }
 
 const Vec3& Wheel::GetLocalPosition() const {

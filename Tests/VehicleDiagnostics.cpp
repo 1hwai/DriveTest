@@ -678,123 +678,74 @@ namespace {
         int samples = 0;
     };
 
-    bool RunWheelSuspensionAxisDiagnostics() {
+    bool RunHubWheelIntegrationDiagnostics() {
         VehicleTestRig rig;
         if (!rig.configLoaded) {
-            Logger::Error("[FAIL] Wheel suspension axis: " + rig.configError);
+            Logger::Error("[FAIL] Hub-wheel integration: " + rig.configError);
             return false;
         }
 
-        float maxRightOffset = 0.0f;
-        float maxForwardOffset = 0.0f;
-        float maxVerticalAxisError = 0.0f;
-        float maxWorldHorizontalDrift = 0.0f;
+        float maxPositionError = 0.0f;
 
-        const int steps = static_cast<int>(8.0f / FixedDeltaTime);
+        for (int step = 0; step < 240; ++step) {
+            const float time =
+                step * FixedDeltaTime;
+            const float roll =
+                0.20f * std::sin(time * 0.8f);
+            const float pitch =
+                0.12f * std::sin(time * 0.5f);
 
-        for (int step = 0; step < steps; ++step) {
-            const float time = step * FixedDeltaTime;
-            const float steering =
-                time < 2.0f
-                    ? 0.45f
-                    : (time < 4.0f ? -0.45f : 0.45f);
-
-            const float throttle =
-                std::clamp(0.20f + time * 0.08f, 0.20f, 0.75f);
-
-            rig.car.SetInput(
-                throttle,
-                0.0f,
-                steering,
-                time < 1.5f ? 1.0f : 0.0f
+            rig.chassis->SetOrientation(
+                Quaternion::FromAxisAngle(
+                    Vec3(0.0f, 0.0f, 1.0f),
+                    roll
+                ) *
+                Quaternion::FromAxisAngle(
+                    Vec3(1.0f, 0.0f, 0.0f),
+                    pitch
+                )
             );
+
+            rig.car.SetInput(0.0f, 0.0f, 0.0f, 1.0f);
             rig.car.UpdatePhysics(
                 rig.physicsWorld,
                 FixedDeltaTime
             );
 
-            const Vec3 bodyPosition =
-                rig.chassis->GetPosition();
-            const Quaternion bodyOrientation =
-                rig.chassis->GetOrientation();
-
             for (size_t i = 0; i < WheelCount; ++i) {
-                const Wheel& wheel =
-                    rig.car.GetWheel(static_cast<WheelIndex>(i));
-                const Vec3 mountPosition =
-                    bodyPosition +
-                    bodyOrientation * wheel.GetLocalPosition();
-                const Vec3 mountToWheel =
-                    wheel.GetWorldPosition() - mountPosition;
+                const WheelIndex index =
+                    static_cast<WheelIndex>(i);
+                const Vec3 hubPosition =
+                    rig.car.GetSuspensionGeometry(index)
+                        .GetHubPosition();
+                const Vec3 wheelPosition =
+                    rig.car.GetWheel(index)
+                        .GetWorldPosition();
 
-                // Suspension travel must remain on the world vertical axis.
-                maxRightOffset = std::max(
-                    maxRightOffset,
-                    std::abs(mountToWheel.x)
-                );
-                maxForwardOffset = std::max(
-                    maxForwardOffset,
-                    std::abs(mountToWheel.z)
-                );
-                maxVerticalAxisError = std::max(
-                    maxVerticalAxisError,
-                    std::abs(
-                        mountToWheel.y +
-                        wheel.GetSuspensionLength()
-                    )
-                );
-
-                // Compare against the expected world-vertical suspension
-                // position directly, independent of chassis roll.
-                const Vec3 expectedPosition =
-                    mountPosition +
-                    Vec3(
-                        0.0f,
-                        -wheel.GetSuspensionLength(),
-                        0.0f
-                    );
-                maxWorldHorizontalDrift = std::max(
-                    maxWorldHorizontalDrift,
-                    std::sqrt(
-                        std::pow(
-                            wheel.GetWorldPosition().x -
-                            expectedPosition.x,
-                            2.0f
-                        ) +
-                        std::pow(
-                            wheel.GetWorldPosition().z -
-                            expectedPosition.z,
-                            2.0f
-                        )
-                    )
+                maxPositionError = std::max(
+                    maxPositionError,
+                    (wheelPosition - hubPosition).Length()
                 );
             }
 
             rig.physicsWorld.Step(FixedDeltaTime);
         }
 
-        std::ostringstream log;
-        log << std::fixed << std::setprecision(6)
-            << "[WheelSuspensionAxis] "
-            << "maxRightOffset=" << maxRightOffset
-            << " maxForwardOffset=" << maxForwardOffset
-            << " maxVerticalAxisError=" << maxVerticalAxisError
-            << " maxWorldHorizontalDrift=" << maxWorldHorizontalDrift;
-        Logger::Info(log.str());
+        Logger::Info(
+            "[HubWheelIntegration] maxPositionError=" +
+            std::to_string(maxPositionError)
+        );
 
-        constexpr float PositionTolerance = 0.0001f;
-        const bool passed =
-            maxRightOffset <= PositionTolerance &&
-            maxForwardOffset <= PositionTolerance &&
-            maxVerticalAxisError <= PositionTolerance &&
-            maxWorldHorizontalDrift <= PositionTolerance;
+        constexpr float PositionTolerance = 0.000001f;
+        if (maxPositionError > PositionTolerance) {
+            Logger::Error(
+                "[FAIL] Wheel position does not follow solved hub position"
+            );
+            return false;
+        }
 
-        if (passed)
-            Logger::Info("[PASS] Wheel suspension axis diagnostics");
-        else
-            Logger::Error("[FAIL] Wheel suspension axis diagnostics");
-
-        return passed;
+        Logger::Info("[PASS] Hub-wheel integration diagnostics");
+        return true;
     }
 
     bool RunVehicleCoordinateConventionDiagnostics() {
@@ -1162,7 +1113,7 @@ int main() {
     Logger::Initialize("Logs/vehicle_diagnostics.log");
 
     bool passed = RunVehicleCoordinateConventionDiagnostics();
-    passed = RunWheelSuspensionAxisDiagnostics() && passed;
+    passed = RunHubWheelIntegrationDiagnostics() && passed;
     passed = RunRaycastRollGeometryDiagnostics() && passed;
     passed = RunRaycastSurfaceDiagnostics() && passed;
     passed = RunTireModelDiagnostics() && passed;

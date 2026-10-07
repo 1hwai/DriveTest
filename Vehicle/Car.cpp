@@ -195,9 +195,8 @@ void Car::UpdatePhysics(
             m_chassis->GetOrientation()
         );
 
-        m_wheels[i].SetHubTransform(
-            m_suspensionGeometry[i].GetHubPosition(),
-            m_suspensionGeometry[i].GetHubOrientation()
+        m_wheels[i].SetHubPosition(
+            m_suspensionGeometry[i].GetHubPosition()
         );
 
         m_wheels[i].SetBrakeTorque(

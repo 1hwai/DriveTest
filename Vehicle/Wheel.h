@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../Core/Math/Quaternion.h"
 #include "../Core/Math/Vec3.h"
 
 class PhysicsWorld;
@@ -14,8 +13,7 @@ public:
     void SetLocalPosition(const Vec3& position);
     const Vec3& GetLocalPosition() const;
 
-    void SetHubTransform(const Vec3& position, const Quaternion& orientation);
-    const Quaternion& GetWorldOrientation() const;
+    void SetHubPosition(const Vec3& position);
 
     void SetRadius(float radius);
     float GetRadius() const;
