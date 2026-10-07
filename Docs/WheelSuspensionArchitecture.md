@@ -760,14 +760,135 @@ Audio/*
 
 ### Phase 2 — Spring / Damper
 
-#### 2-1 — Spring/damper integration
+Phase 2 integrates the existing scalar spring/damper model with the concrete suspension geometry without making `Suspension` responsible for suspension kinematics.
 
-- [ ] Connect spring/damper to the solved suspension geometry.
-- [ ] Define force direction from actual mounting points.
-- [ ] Implement compression and rebound velocity.
-- [ ] Implement bump/rebound mechanical limits.
+#### 2-1 — Spring/damper responsibility and data flow
 
-#### 2-2 — Suspension validation
+**Goal:** define the exact ownership and data flow before modifying `Suspension` or reconnecting it to vehicle physics.
+
+The separation is:
+
+```
+Suspension Geometry
+        ↓
+Spring/Damper mount A + mount B
+        ↓
+Actual spring length + spring axis
+        ↓
+Suspension compression
+        ↓
+Compression velocity
+        ↓
+Spring + damper force
+        ↓
+Force along spring axis
+        ↓
+Chassis / suspension attachment
+```
+
+**Responsibilities:**
+
+`DoubleWishbone` / `MacPherson`
+- Own spring/damper mounting geometry.
+- Solve the current mount positions from chassis pose and suspension travel/geometry.
+- Provide the actual spring length and axis.
+- Do not calculate spring rate, damping, or force magnitude.
+
+`Suspension`
+- Own rest length, bump/rebound travel, spring rate, and damping rates.
+- Convert actual spring length into compression.
+- Convert compression change into compression/rebound velocity.
+- Apply mechanical length limits.
+- Calculate spring/damper force magnitude.
+- Do not own wheel position, ground contact, suspension linkage geometry, or steering geometry.
+- Do not derive suspension length from a ground raycast.
+
+The spring/damper force direction is derived from the two actual mounting points. It is not a fixed chassis-local or world-down vector.
+
+**State/data contract:**
+
+```
+Geometry:
+    mountA
+    mountB
+        ↓
+    length = distance(mountA, mountB)
+    axis   = normalize(mountB - mountA)
+
+Suspension:
+    previousLength
+    currentLength
+        ↓
+    compression = restLength - currentLength
+    compressionVelocity = (previousCompression - currentCompression) / dt
+        ↓
+    forceMagnitude = spring + damper
+        ↓
+    force = axis * forceMagnitude
+```
+
+The sign convention must be defined so positive compression velocity means increasing compression and selects compression damping; decreasing compression selects rebound damping. The implementation must preserve this convention explicitly rather than relying on ambiguous variable names.
+
+**Mechanical limits:**
+
+- Minimum spring length = `restLength - bumpTravel`.
+- Maximum spring length = `restLength + reboundTravel`.
+- Actual spring length is clamped to those mechanical limits before compression is calculated.
+- Damping must not be used to enforce travel limits.
+- A wheel with no valid ground contact must not acquire a ground-derived spring compression merely because the chassis is rotated or overturned.
+
+**Important integration boundary:**
+
+Phase 2-1 does not decide how the spring force is applied to the rigid body in `Car`, nor does it migrate tire/contact behavior. That belongs to the subsequent integration work.
+
+**Files allowed to change:**
+
+```
+Docs/WheelSuspensionArchitecture.md
+```
+
+**Files explicitly out of scope:**
+
+```
+Vehicle/Suspension.h
+Vehicle/Suspension.cpp
+Vehicle/DoubleWishbone.*
+Vehicle/MacPherson.*
+Vehicle/Car.*
+Vehicle/Wheel.*
+Vehicle/Tire.*
+Vehicle/VehicleConfig.*
+Tests/*
+Assets/Vehicles/TestCar/vehicle.ini
+Core/Debug/DebugUI.cpp
+World/*
+Audio/*
+CMakeLists.txt
+```
+
+**Verification for 2-1:** architecture review only. No implementation or runtime verification is claimed. The next work unit must implement the smallest API/data changes required by this contract and then verify the spring/damper invariants with an independent diagnostic.
+
+- [ ] Confirm spring/damper ownership and data flow.
+- [ ] Confirm actual mounting-point-derived length and axis.
+- [ ] Confirm compression/rebound velocity sign convention.
+- [ ] Confirm mechanical travel limits are separate from damping.
+- [ ] Confirm ground contact is not the source of suspension length.
+
+#### 2-2 — Spring/damper model implementation
+
+- [ ] Implement the Phase 2-1 responsibility/data contract in `Suspension`.
+- [ ] Track actual spring length/compression state across physics updates.
+- [ ] Calculate force magnitude from spring compression and compression/rebound damping.
+- [ ] Preserve mechanical travel limits independently from damping.
+
+#### 2-3 — Geometry ↔ Suspension force connection
+
+- [ ] Connect Double Wishbone and MacPherson spring mounts to `Suspension`.
+- [ ] Derive force direction from actual spring mounts.
+- [ ] Apply spring/damper force through the correct physical attachment points.
+- [ ] Remove obsolete ground-raycast suspension-force assumptions.
+
+#### 2-4 — Suspension validation
 
 - [ ] Validate static ride height.
 - [ ] Validate dynamic compression/rebound.
