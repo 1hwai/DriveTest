@@ -128,9 +128,15 @@ int main() {
         Near(leftHub.z, rightHub.z);
 
     const Vec3 expectedLeftHub =
-        leftLower + leftConfig.upright.hubOffset;
+        chassisPosition +
+        chassisOrientation * (
+            leftLower + leftConfig.upright.hubOffset
+        );
     const Vec3 expectedRightHub =
-        rightLower + rightConfig.upright.hubOffset;
+        chassisPosition +
+        chassisOrientation * (
+            rightLower + rightConfig.upright.hubOffset
+        );
 
     const bool hubPosition =
         NearVec(leftHub, expectedLeftHub) &&
