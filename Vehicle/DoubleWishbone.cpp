@@ -47,7 +47,7 @@ void DoubleWishbone::Configure(const DoubleWishboneConfig& config) {
     m_upright.hubPosition =
         m_lowerArm.outerJoint + config.upright.hubOffset;
     m_upright.hubOrientation = Quaternion::Identity();
-    m_springMountA = config.spring.chassisMount;
+    m_springMountALocal = config.spring.chassisMount;
     m_springMountBOffset = config.spring.uprightMountOffset;
 }
 
@@ -86,7 +86,7 @@ bool DoubleWishbone::SolveAtTravel(
 
     m_springMountA =
         chassisPosition +
-        chassisOrientation * m_springMountA;
+        chassisOrientation * m_springMountALocal;
     m_springMountB =
         chassisPosition +
         chassisOrientation * m_upright.lowerJoint +
