@@ -45,6 +45,8 @@ public:
     const Vec3& GetStrutLowerMount() const;
     const Vec3& GetSpringMountA() const;
     const Vec3& GetSpringMountB() const;
+    const Vec3& GetSpringMountA() const;
+    const Vec3& GetSpringMountB() const;
     const Vec3& GetHubPosition() const;
     const Quaternion& GetHubOrientation() const;
     float GetLowerArmLengthA() const;
