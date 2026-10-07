@@ -280,6 +280,7 @@ if(DRIVETEST_BUILD_SUSPENSION_DIAGNOSTICS)
     add_executable(DriveTestSuspensionDiagnostics
         Tests/SuspensionDiagnostics.cpp
         Vehicle/Suspension.cpp
+        Core/Math/Vec3.cpp
     )
 
     target_include_directories(
