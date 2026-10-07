@@ -50,22 +50,6 @@ namespace {
     }
 
 
-    bool CheckGeometry(
-        const DoubleWishbone& suspension,
-        const DoubleWishboneConfig& config
-    ) {
-        const Vec3 upper = suspension.GetUpperOuterJoint();
-        const Vec3 lower = suspension.GetLowerOuterJoint();
-
-        return CheckArm(upper, config.upperArm) &&
-            CheckArm(lower, config.lowerArm) &&
-            Near(
-                (upper - lower).Length(),
-                (config.upperArm.outerJoint -
-                 config.lowerArm.outerJoint).Length()
-            );
-    }
-
     bool CheckArm(
         const Vec3& outer,
         const DoubleWishboneArmConfig& arm
@@ -82,6 +66,24 @@ namespace {
         return Near(lengthA, expectedA) &&
             Near(lengthB, expectedB);
     }
+
+    bool CheckGeometry(
+        const DoubleWishbone& suspension,
+        const DoubleWishboneConfig& config
+    ) {
+        const Vec3 upper = suspension.GetUpperOuterJoint();
+        const Vec3 lower = suspension.GetLowerOuterJoint();
+
+        return CheckArm(upper, config.upperArm) &&
+            CheckArm(lower, config.lowerArm) &&
+            Near(
+                (upper - lower).Length(),
+                (config.upperArm.outerJoint -
+                 config.lowerArm.outerJoint).Length()
+            );
+    }
+
+
 }
 
 int main() {
