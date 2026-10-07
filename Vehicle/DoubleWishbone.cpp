@@ -11,6 +11,9 @@ DoubleWishbone::DoubleWishbone()
     m_restOuterAverageY(0.0f) {
     m_upright.hubPosition = Vec3(0.0f, 0.0f, 0.0f);
     m_upright.hubOrientation = Quaternion::Identity();
+    m_springMountA = Vec3(0.0f, 0.0f, 0.0f);
+    m_springMountB = Vec3(0.0f, 0.0f, 0.0f);
+    m_springMountBOffset = Vec3(0.0f, 0.0f, 0.0f);
 }
 
 void DoubleWishbone::Configure(const DoubleWishboneConfig& config) {
@@ -44,6 +47,8 @@ void DoubleWishbone::Configure(const DoubleWishboneConfig& config) {
     m_upright.hubPosition =
         m_lowerArm.outerJoint + config.upright.hubOffset;
     m_upright.hubOrientation = Quaternion::Identity();
+    m_springMountA = config.spring.chassisMount;
+    m_springMountBOffset = config.spring.uprightMountOffset;
 }
 
 void DoubleWishbone::Solve(
@@ -78,6 +83,16 @@ bool DoubleWishbone::SolveAtTravel(
     m_upright.lowerJoint = m_lowerArm.outerJoint;
 
     UpdateUpright(chassisPosition, chassisOrientation);
+
+    m_springMountA =
+        chassisPosition +
+        chassisOrientation * m_springMountA;
+    m_springMountB =
+        chassisPosition +
+        chassisOrientation * m_upright.lowerJoint +
+        m_upright.hubOrientation * m_springMountBOffset;
+
+
     return true;
 }
 
@@ -143,6 +158,14 @@ const Vec3& DoubleWishbone::GetHubPosition() const {
 
 const Quaternion& DoubleWishbone::GetHubOrientation() const {
     return m_upright.hubOrientation;
+}
+
+const Vec3& DoubleWishbone::GetSpringMountA() const {
+    return m_springMountA;
+}
+
+const Vec3& DoubleWishbone::GetSpringMountB() const {
+    return m_springMountB;
 }
 
 float DoubleWishbone::Distance(
