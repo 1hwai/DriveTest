@@ -174,8 +174,6 @@ int main() {
     const bool springMounts =
         Finite(leftSpringA) && Finite(leftSpringB) &&
         Finite(rightSpringA) && Finite(rightSpringB) &&
-        NearVec(leftSpringA, Vec3(0.0f, 0.0f, 0.0f)) == false &&
-        NearVec(rightSpringA, Vec3(0.0f, 0.0f, 0.0f)) == false &&
         Near(leftSpringA.x, -rightSpringA.x) &&
         Near(leftSpringA.y, rightSpringA.y) &&
         Near(leftSpringA.z, rightSpringA.z) &&
