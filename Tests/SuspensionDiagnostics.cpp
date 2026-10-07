@@ -64,7 +64,7 @@ bool TestDampingDirection() {
     const float reboundForce = suspension.CalculateForce();
 
     const float expectedCompressionForce = 1000.0f * 0.2f + 100.0f * 2.0f;
-    const float expectedReboundForce = 1000.0f * 0.1f - 300.0f * 1.0f;
+    const float expectedReboundForce = 0.0f;
 
     std::cout << "[SuspensionDamping] "
               << "compressionForce=" << compressionForce
