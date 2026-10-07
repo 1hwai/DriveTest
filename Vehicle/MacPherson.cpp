@@ -315,3 +315,6 @@ float MacPherson::GetLowerArmLengthB() const {
 float MacPherson::GetStrutLength() const {
     return m_strut.length;
 }
+
+const Vec3& MacPherson::GetSpringMountA() const { return m_strut.upperMount; }
+const Vec3& MacPherson::GetSpringMountB() const { return m_strut.lowerMount; }
