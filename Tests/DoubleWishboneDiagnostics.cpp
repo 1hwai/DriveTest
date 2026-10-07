@@ -169,9 +169,9 @@ int main() {
 
     bool travel = true;
     const float travels[] = {
-        -0.10f, -0.075f, -0.05f, -0.025f,
+        -0.075f, -0.05f, -0.025f,
         0.0f,
-        0.025f, 0.05f, 0.075f, 0.10f
+        0.025f, 0.05f, 0.075f
     };
 
     float previousHubY = 0.0f;
@@ -247,12 +247,12 @@ int main() {
         left.SolveAtTravel(
             chassisPosition,
             chassisOrientation,
-            -0.10f
+            -0.075f
         ) &&
         left.SolveAtTravel(
             chassisPosition,
             chassisOrientation,
-            0.10f
+            0.075f
         ) &&
         right.SolveAtTravel(
             chassisPosition,
