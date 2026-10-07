@@ -1,5 +1,6 @@
 #include <cmath>
 #include <iostream>
+#include <algorithm>
 
 #include "../Vehicle/DoubleWishbone.h"
 
@@ -265,6 +266,56 @@ int main() {
             0.075f
         );
 
+    bool poseSweep = true;
+    const float rollAngles[] = {
+        -0.35f, -0.175f, 0.0f, 0.175f, 0.35f
+    };
+    const float pitchAngles[] = {
+        -0.20f, 0.0f, 0.20f
+    };
+
+    for (float roll : rollAngles) {
+        for (float pitch : pitchAngles) {
+            const Quaternion orientation =
+                Quaternion::FromEulerAngles(
+                    pitch,
+                    0.0f,
+                    roll
+                );
+
+            const bool solvedLeft =
+                left.SolveAtTravel(
+                    chassisPosition,
+                    orientation,
+                    0.0f
+                );
+            const bool solvedRight =
+                right.SolveAtTravel(
+                    chassisPosition,
+                    orientation,
+                    0.0f
+                );
+
+            if (!solvedLeft || !solvedRight) {
+                poseSweep = false;
+                continue;
+            }
+
+            const Vec3 leftPoseHub = left.GetHubPosition();
+            const Vec3 rightPoseHub = right.GetHubPosition();
+
+            poseSweep =
+                Finite(leftPoseHub) &&
+                Finite(rightPoseHub) &&
+                Finite(left.GetHubOrientation()) &&
+                Finite(right.GetHubOrientation()) &&
+                Near(leftPoseHub.x, -rightPoseHub.x) &&
+                Near(leftPoseHub.y, rightPoseHub.y) &&
+                Near(leftPoseHub.z, rightPoseHub.z) &&
+                poseSweep;
+        }
+    }
+
     const bool continuity =
         maxHubStep < 0.05f &&
         maxHorizontalDrift < 0.20f;
@@ -292,6 +343,7 @@ int main() {
         !finite ||
         !travel ||
         !endpoints ||
+        !poseSweep ||
         !continuity) {
         std::cerr
             << "[FAIL] Double wishbone travel diagnostics\n";
