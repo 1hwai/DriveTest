@@ -52,7 +52,7 @@ bool MacPherson::Solve(
     if (!SolveConstraints(
             m_lowerArm,
             m_strut.upperMount,
-            m_strut.length - m_strutLowerOffsetLength
+            m_strut.length + m_strutLowerOffsetLength
         )) {
         return false;
     }
