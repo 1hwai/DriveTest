@@ -868,18 +868,18 @@ CMakeLists.txt
 
 **Verification for 2-1:** architecture review only. No implementation or runtime verification is claimed. The next work unit must implement the smallest API/data changes required by this contract and then verify the spring/damper invariants with an independent diagnostic.
 
-- [ ] Confirm spring/damper ownership and data flow.
-- [ ] Confirm actual mounting-point-derived length and axis.
-- [ ] Confirm compression/rebound velocity sign convention.
-- [ ] Confirm mechanical travel limits are separate from damping.
-- [ ] Confirm ground contact is not the source of suspension length.
+- [x] Confirm spring/damper ownership and data flow.
+- [x] Confirm actual mounting-point-derived length and axis.
+- [x] Confirm compression/rebound velocity sign convention.
+- [x] Confirm mechanical travel limits are separate from damping.
+- [x] Confirm ground contact is not the source of suspension length.
 
 #### 2-2 — Spring/damper model implementation
 
-- [ ] Implement the Phase 2-1 responsibility/data contract in `Suspension`.
-- [ ] Track actual spring length/compression state across physics updates.
-- [ ] Calculate force magnitude from spring compression and compression/rebound damping.
-- [ ] Preserve mechanical travel limits independently from damping.
+- [x] Implement the Phase 2-1 responsibility/data contract in `Suspension`.
+- [x] Track actual spring length/compression state across physics updates.
+- [x] Calculate force magnitude from spring compression and compression/rebound damping.
+- [x] Preserve mechanical travel limits independently from damping.
 
 #### 2-3 — Geometry ↔ Suspension force connection
 

@@ -11,16 +11,11 @@ void Suspension::SetRestLength(float length) {
     m_restLength = std::max(0.0f, length);
     m_maxLength = std::max(m_maxLength, m_restLength);
     m_bumpTravel = std::min(m_bumpTravel, m_restLength);
-    m_length = ClampLength(m_length);
-    m_compression = std::max(0.0f, m_restLength - m_length);
-    m_compressionVelocity = 0.0f;
 }
 float Suspension::GetRestLength() const { return m_restLength; }
 
 void Suspension::SetMaxLength(float length) {
     m_maxLength = std::max(m_restLength, length);
-    m_length = ClampLength(m_length);
-    m_compression = std::max(0.0f, m_restLength - m_length);
 }
 float Suspension::GetMaxLength() const { return m_maxLength; }
 
