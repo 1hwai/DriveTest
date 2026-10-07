@@ -49,6 +49,23 @@ namespace {
         };
     }
 
+
+    bool CheckGeometry(
+        const DoubleWishbone& suspension,
+        const DoubleWishboneConfig& config
+    ) {
+        const Vec3 upper = suspension.GetUpperOuterJoint();
+        const Vec3 lower = suspension.GetLowerOuterJoint();
+
+        return CheckArm(upper, config.upperArm) &&
+            CheckArm(lower, config.lowerArm) &&
+            Near(
+                (upper - lower).Length(),
+                (config.upperArm.outerJoint -
+                 config.lowerArm.outerJoint).Length()
+            );
+    }
+
     bool CheckArm(
         const Vec3& outer,
         const DoubleWishboneArmConfig& arm
@@ -148,6 +165,108 @@ int main() {
         Finite(left.GetHubOrientation()) &&
         Finite(right.GetHubOrientation());
 
+    bool travel = true;
+    const float travels[] = {
+        -0.10f, -0.075f, -0.05f, -0.025f,
+        0.0f,
+        0.025f, 0.05f, 0.075f, 0.10f
+    };
+
+    float previousHubY = 0.0f;
+    bool hasPrevious = false;
+    float maxHubStep = 0.0f;
+    float maxHorizontalDrift = 0.0f;
+
+    for (float value : travels) {
+        const bool solvedLeft =
+            left.SolveAtTravel(
+                chassisPosition,
+                chassisOrientation,
+                value
+            );
+        const bool solvedRight =
+            right.SolveAtTravel(
+                chassisPosition,
+                chassisOrientation,
+                value
+            );
+
+        if (!solvedLeft || !solvedRight) {
+            travel = false;
+            continue;
+        }
+
+        travel =
+            CheckGeometry(left, leftConfig) &&
+            CheckGeometry(right, rightConfig) &&
+            travel;
+
+        const Vec3 leftHubAtTravel =
+            left.GetHubPosition();
+        const Vec3 rightHubAtTravel =
+            right.GetHubPosition();
+
+        travel =
+            Near(leftHubAtTravel.x, -rightHubAtTravel.x) &&
+            Near(leftHubAtTravel.y, rightHubAtTravel.y) &&
+            Near(leftHubAtTravel.z, rightHubAtTravel.z) &&
+            travel;
+
+        maxHorizontalDrift = std::max(
+            maxHorizontalDrift,
+            std::abs(
+                leftHubAtTravel.x -
+                leftHub.x
+            )
+        );
+        maxHorizontalDrift = std::max(
+            maxHorizontalDrift,
+            std::abs(
+                leftHubAtTravel.z -
+                leftHub.z
+            )
+        );
+
+        if (hasPrevious) {
+            maxHubStep = std::max(
+                maxHubStep,
+                std::abs(
+                    leftHubAtTravel.y -
+                    previousHubY
+                )
+            );
+        }
+
+        previousHubY = leftHubAtTravel.y;
+        hasPrevious = true;
+    }
+
+    const bool endpoints =
+        left.SolveAtTravel(
+            chassisPosition,
+            chassisOrientation,
+            -0.10f
+        ) &&
+        left.SolveAtTravel(
+            chassisPosition,
+            chassisOrientation,
+            0.10f
+        ) &&
+        right.SolveAtTravel(
+            chassisPosition,
+            chassisOrientation,
+            -0.10f
+        ) &&
+        right.SolveAtTravel(
+            chassisPosition,
+            chassisOrientation,
+            0.10f
+        );
+
+    const bool continuity =
+        maxHubStep < 0.05f &&
+        maxHorizontalDrift < 0.20f;
+
     std::cout
         << "[DoubleWishbone]"
         << " armLengths=" << armLengths
@@ -156,6 +275,11 @@ int main() {
         << " hubSymmetry=" << hubSymmetry
         << " hubPosition=" << hubPosition
         << " finite=" << finite
+        << " travel=" << travel
+        << " endpoints=" << endpoints
+        << " continuity=" << continuity
+        << " maxHubStep=" << maxHubStep
+        << " maxHorizontalDrift=" << maxHorizontalDrift
         << '\n';
 
     if (!armLengths ||
@@ -163,13 +287,16 @@ int main() {
         !symmetry ||
         !hubSymmetry ||
         !hubPosition ||
-        !finite) {
+        !finite ||
+        !travel ||
+        !endpoints ||
+        !continuity) {
         std::cerr
-            << "[FAIL] Double wishbone static geometry diagnostics\n";
+            << "[FAIL] Double wishbone travel diagnostics\n";
         return 1;
     }
 
     std::cout
-        << "[PASS] Double wishbone static geometry diagnostics\n";
+        << "[PASS] Double wishbone travel diagnostics\n";
     return 0;
 }

@@ -25,6 +25,11 @@ public:
 
     void Configure(const DoubleWishboneConfig& config);
     void Solve(const Vec3& chassisPosition, const Quaternion& chassisOrientation);
+    bool SolveAtTravel(
+        const Vec3& chassisPosition,
+        const Quaternion& chassisOrientation,
+        float travel
+    );
 
     const Vec3& GetUpperOuterJoint() const;
     const Vec3& GetLowerOuterJoint() const;
@@ -56,14 +61,21 @@ private:
     UprightState m_upright;
 
     float m_uprightJointDistance;
+    float m_restOuterAverageY;
 
     static float Distance(const Vec3& a, const Vec3& b);
     static void ProjectDistance(Vec3& point, const Vec3& anchor, float length);
-    static void SolveConstraints(
+    static bool SolveArmAtHeight(
+        const ArmState& arm,
+        float height,
+        const Vec3& previousOuter,
+        Vec3& outer
+    );
+    static bool SolveConstraints(
         ArmState& upperArm,
         ArmState& lowerArm,
         float uprightJointDistance,
-        int iterations
+        float targetAverageY
     );
 
     void UpdateUpright(
