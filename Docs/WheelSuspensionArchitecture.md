@@ -883,10 +883,12 @@ CMakeLists.txt
 
 #### 2-3 — Geometry ↔ Suspension force connection
 
-- [ ] Connect Double Wishbone and MacPherson spring mounts to `Suspension`.
-- [ ] Derive force direction from actual spring mounts.
-- [ ] Apply spring/damper force through the correct physical attachment points.
-- [ ] Remove obsolete ground-raycast suspension-force assumptions.
+**Scope:** connect the concrete suspension geometries to the scalar `Suspension` model through actual spring/damper mounting points. Rigid-body force application remains deferred to vehicle integration.
+
+- [x] Connect Double Wishbone and MacPherson spring mounts to `Suspension`.
+- [x] Derive force direction from actual spring mounts.
+- [x] Expose the resulting force for later application at the geometry-defined attachment points.
+- [ ] Remove obsolete ground-raycast suspension-force assumptions; this remains deferred until the new suspension pipeline is integrated into `Car`/`Wheel`.
 
 #### 2-4 — Suspension validation
 
