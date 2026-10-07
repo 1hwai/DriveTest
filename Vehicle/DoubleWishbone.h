@@ -13,10 +13,16 @@ struct DoubleWishboneUprightConfig {
     Vec3 hubOffset;
 };
 
+struct DoubleWishboneSpringMountConfig {
+    Vec3 chassisMount;
+    Vec3 uprightMountOffset;
+};
+
 struct DoubleWishboneConfig {
     DoubleWishboneArmConfig upperArm;
     DoubleWishboneArmConfig lowerArm;
     DoubleWishboneUprightConfig upright;
+    DoubleWishboneSpringMountConfig spring;
 };
 
 class DoubleWishbone {
@@ -35,6 +41,8 @@ public:
     const Vec3& GetLowerOuterJoint() const;
     const Vec3& GetHubPosition() const;
     const Quaternion& GetHubOrientation() const;
+    const Vec3& GetSpringMountA() const;
+    const Vec3& GetSpringMountB() const;
 
 private:
     struct ArmState {
@@ -59,6 +67,9 @@ private:
     ArmState m_upperArm;
     ArmState m_lowerArm;
     UprightState m_upright;
+    Vec3 m_springMountA;
+    Vec3 m_springMountB;
+    Vec3 m_springMountBOffset;
 
     float m_uprightJointDistance;
     float m_restOuterAverageY;
