@@ -26,14 +26,14 @@ namespace {
     MacPhersonConfig MakeConfig(float side) {
         return {
             {
-                Vec3(side * 0.52f, -0.22f, 1.25f - 0.22f),
-                Vec3(side * 0.52f, -0.22f, 1.25f + 0.22f),
+                Vec3(side * 0.52f, -0.22f, 1.03f),
+                Vec3(side * 0.52f, -0.22f, 1.47f),
                 Vec3(side * 0.76f, -0.18f, 1.25f)
             },
             {
                 Vec3(side * 0.52f, 0.68f, 1.25f),
                 Vec3(0.0f, 0.26f, 0.0f),
-                0.34f
+                0.74f
             },
             {
                 Vec3(0.0f, 0.10f, 0.0f)
@@ -109,30 +109,12 @@ int main() {
         right.GetHubOrientation() * rightConfig.upright.hubOffset;
 
     const bool hubPosition =
-        Near(
-            left.GetHubPosition().x,
-            expectedLeftHub.x
-        ) &&
-        Near(
-            left.GetHubPosition().y,
-            expectedLeftHub.y
-        ) &&
-        Near(
-            left.GetHubPosition().z,
-            expectedLeftHub.z
-        ) &&
-        Near(
-            right.GetHubPosition().x,
-            expectedRightHub.x
-        ) &&
-        Near(
-            right.GetHubPosition().y,
-            expectedRightHub.y
-        ) &&
-        Near(
-            right.GetHubPosition().z,
-            expectedRightHub.z
-        );
+        Near(left.GetHubPosition().x, expectedLeftHub.x) &&
+        Near(left.GetHubPosition().y, expectedLeftHub.y) &&
+        Near(left.GetHubPosition().z, expectedLeftHub.z) &&
+        Near(right.GetHubPosition().x, expectedRightHub.x) &&
+        Near(right.GetHubPosition().y, expectedRightHub.y) &&
+        Near(right.GetHubPosition().z, expectedRightHub.z);
 
     const bool finite =
         solvedLeft &&
@@ -146,13 +128,14 @@ int main() {
 
     std::cout
         << "[MacPherson]"
-        << " solved=" << finite
+        << " solved=" << solvedLeft && solvedRight
         << " armLengths=" << armLengths
         << " strutConstraint=" << strutConstraint
         << " symmetry=" << symmetry
         << " hubPosition=" << hubPosition
         << " finite=" << finite
-        << '\n';
+        << '
+';
 
     if (!finite ||
         !armLengths ||
@@ -160,11 +143,13 @@ int main() {
         !symmetry ||
         !hubPosition) {
         std::cerr
-            << "[FAIL] MacPherson diagnostics\n";
+            << "[FAIL] MacPherson diagnostics
+";
         return 1;
     }
 
     std::cout
-        << "[PASS] MacPherson diagnostics\n";
+        << "[PASS] MacPherson diagnostics
+";
     return 0;
 }
