@@ -37,11 +37,11 @@ Do not change this convention as part of the suspension rewrite.
 
 ## 3. Design Principles
 
-- [x] Model each wheel as part of an actual suspension assembly rather than as a point attached directly to the chassis.
+- [ ] Model each wheel as part of an actual suspension assembly rather than as a point attached directly to the chassis.
 - [ ] Separate suspension kinematics, steering geometry, wheel/hub state, tire contact, and tire force calculation.
 - [ ] Do not preserve the current Wheel implementation merely for compatibility.
 - [ ] Avoid solving the control arms as independent rigid bodies; treat them as kinematic links/constraints.
-- [x] Suspension geometry must determine wheel motion.
+- [ ] Suspension geometry must determine wheel motion.
 - [ ] Tire forces must be applied at the tire contact patch, not arbitrarily at the wheel mount.
 - [ ] Ground contact must not be allowed to pull or hold the chassis down through an impossible suspension configuration.
 
@@ -161,7 +161,7 @@ Responsibilities:
 
 - [ ] Store wheel rotational state.
 - [ ] Provide wheel center/orientation to tire calculations and rendering.
-- [x] Keep visual wheel transform derived from physical hub state.
+- [ ] Keep visual wheel transform derived from physical hub state.
 
 ### Tire
 
@@ -176,7 +176,7 @@ Responsibilities:
 The suspension is primarily kinematic rather than a collection of independent rigid bodies.
 
 - [ ] Solve control-arm geometry each physics update.
-- [x] Obtain wheel center from the solved upright position.
+- [ ] Obtain wheel center from the solved upright position.
 - [ ] Obtain camber from upright orientation.
 - [ ] Allow suspension travel to naturally produce track-width changes.
 - [ ] Allow suspension travel to naturally produce wheelbase changes where geometry causes them.
@@ -507,7 +507,34 @@ Audio/*
 - [x] Define the coupled upper/lower outer-joint constraint that forms the upright.
 - [x] Define the upright/hub position and orientation state.
 - [x] Define left/right symmetric configuration through the existing vehicle coordinate convention.
-- [ ] Validate static geometry without tire forces.
+- [x] Validate static geometry without tire forces.
+
+#### 1-2-4 — Vehicle integration
+
+**Scope:** connect the solved double-wishbone hub position to the existing Wheel state without changing steering, tire-force behavior, or spring/damper geometry.
+
+**Files allowed to change:**
+
+```
+Vehicle/Car.h
+Vehicle/Car.cpp
+Vehicle/Wheel.h
+Vehicle/Wheel.cpp
+Tests/VehicleDiagnostics.cpp
+Docs/WheelSuspensionArchitecture.md
+```
+
+**Integration contract:**
+
+- [x] Car solves suspension geometry before wheel update.
+- [x] Wheel receives the solved hub position from DoubleWishbone.
+- [x] Wheel no longer reconstructs its physical center from the chassis-local wheel offset.
+- [x] Vehicle diagnostics validate hub position to wheel position propagation.
+- [ ] Wheel orientation is consumed from the solved hub state. This remains part of steering integration.
+
+**Verification:** build and run all vehicle/physics diagnostics. The hub-to-wheel diagnostic must remain within position tolerance while the chassis changes roll/pitch.
+
+**Current status:** implementation is committed; fresh verification is required before marking 1-2-4 complete.
 
 #### 1-3 — Suspension travel
 
