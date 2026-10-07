@@ -58,6 +58,14 @@ float Suspension::ClampLength(float length) const {
     );
 }
 
+void Suspension::UpdateFromMounts(
+    const Vec3& mountA,
+    const Vec3& mountB,
+    float deltaTime
+) {
+    UpdateLength((mountB - mountA).Length(), deltaTime);
+}
+
 void Suspension::UpdateLength(float length, float deltaTime) {
     const float previousCompression = m_compression;
     m_length = ClampLength(length);
@@ -74,6 +82,17 @@ float Suspension::GetLength() const { return m_length; }
 float Suspension::GetCompression() const { return m_compression; }
 float Suspension::GetCompressionVelocity() const {
     return m_compressionVelocity;
+}
+
+Vec3 Suspension::CalculateForceVector(
+    const Vec3& mountA,
+    const Vec3& mountB
+) const {
+    const Vec3 delta = mountB - mountA;
+    if (delta.LengthSquared() <= 0.000001f)
+        return Vec3(0.0f, 0.0f, 0.0f);
+
+    return delta.Normalized() * CalculateForce();
 }
 
 float Suspension::CalculateForce() const {
