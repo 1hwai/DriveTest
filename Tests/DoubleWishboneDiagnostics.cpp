@@ -277,11 +277,16 @@ int main() {
     for (float roll : rollAngles) {
         for (float pitch : pitchAngles) {
             const Quaternion orientation =
-                Quaternion::FromEulerAngles(
-                    pitch,
-                    0.0f,
-                    roll
-                );
+                (
+                    Quaternion::FromAxisAngle(
+                        Vec3(1.0f, 0.0f, 0.0f),
+                        pitch
+                    ) *
+                    Quaternion::FromAxisAngle(
+                        Vec3(0.0f, 0.0f, 1.0f),
+                        roll
+                    )
+                ).Normalized();
 
             const bool solvedLeft =
                 left.SolveAtTravel(
