@@ -706,15 +706,57 @@ Audio/*
 
 **Verification:** build the project and run MacPhersonDiagnostics. The diagnostic must independently verify bump/rebound travel, lower-arm constraints, strut length at each travel point, left/right symmetry, travel continuity, finite hub state across chassis roll/pitch, and horizontal drift limits.
 
-- [ ] Evaluate lower-arm and strut geometry in world space from the chassis pose.
-- [ ] Implement bump/rebound travel through the strut constraint.
-- [ ] Validate lower-arm constraints throughout travel.
-- [ ] Validate strut constraint throughout travel.
-- [ ] Validate travel endpoints and continuity.
-- [ ] Validate left/right symmetry throughout travel.
-- [ ] Validate finite hub position/orientation across chassis roll and pitch.
-- [ ] Validate horizontal drift limits.
+- [x] Evaluate lower-arm and strut geometry in world space from the chassis pose.
+- [x] Implement bump/rebound travel through the strut constraint.
+- [x] Validate lower-arm constraints throughout travel.
+- [x] Validate strut constraint throughout travel.
+- [x] Validate travel endpoints and continuity.
+- [x] Validate left/right symmetry throughout travel.
+- [x] Validate finite hub position/orientation across chassis roll and pitch.
+- [x] Validate horizontal drift limits.
 
+
+**Fresh verification:** Linux configure/build followed by ctest; all four diagnostics passed.\n\n#### 1-4 — MacPherson final geometry validation
+
+**Implementation scope:**
+
+Use the independent MacPherson diagnostic as the final validation gate for the concrete kinematic geometry before moving to spring/damper integration. This work unit does not integrate MacPherson into Car, Wheel, or Suspension.
+
+**Files allowed to change:**
+
+~~~
+Tests/MacPhersonDiagnostics.cpp
+Docs/WheelSuspensionArchitecture.md
+~~~
+
+**Files explicitly out of scope:**
+
+~~~
+Vehicle/MacPherson.h
+Vehicle/MacPherson.cpp
+Vehicle/Car.*
+Vehicle/Wheel.*
+Vehicle/Suspension.*
+Vehicle/Tire.*
+Vehicle/VehicleConfig.*
+CMakeLists.txt
+Assets/Vehicles/TestCar/vehicle.ini
+Core/Debug/DebugUI.cpp
+World/*
+Audio/*
+~~~
+
+**Final validation requirements:**
+
+- [x] Validate lower-arm fixed-length constraints at static pose and across travel.
+- [x] Validate strut-length constraint at static pose and across travel.
+- [x] Validate left/right symmetry at static pose and across travel.
+- [x] Validate finite hub position and normalized hub orientation across chassis roll/pitch.
+- [x] Validate bump/rebound endpoints and continuous hub motion.
+- [x] Validate horizontal drift remains within the diagnostic limit.
+- [x] Keep the diagnostic independent of spring/damper and tire-force behavior.
+
+**Fresh verification:** Linux configure/build followed by ctest; PhysicsDiagnostics, VehicleDiagnostics, MacPhersonDiagnostics, and DoubleWishboneDiagnostics all passed.
 
 ### Phase 2 — Spring / Damper
 
