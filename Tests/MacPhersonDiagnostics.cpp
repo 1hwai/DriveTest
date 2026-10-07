@@ -30,6 +30,16 @@ namespace {
             std::isfinite(value.z);
     }
 
+    bool UnitQuaternion(const Quaternion& value) {
+        const float lengthSquared =
+            value.w * value.w +
+            value.x * value.x +
+            value.y * value.y +
+            value.z * value.z;
+
+        return Near(lengthSquared, 1.0f);
+    }
+
     MacPhersonConfig MakeConfig(float side) {
         return {
             {
@@ -231,6 +241,10 @@ int main() {
             Finite(rightAtTravel) &&
             Finite(leftHubAtTravel) &&
             Finite(rightHubAtTravel) &&
+            Finite(left.GetHubOrientation()) &&
+            Finite(right.GetHubOrientation()) &&
+            UnitQuaternion(left.GetHubOrientation()) &&
+            UnitQuaternion(right.GetHubOrientation()) &&
             travel;
 
         maxHorizontalDrift = std::max(
@@ -327,6 +341,8 @@ int main() {
                 Finite(rightLocalHub) &&
                 Finite(left.GetHubOrientation()) &&
                 Finite(right.GetHubOrientation()) &&
+                UnitQuaternion(left.GetHubOrientation()) &&
+                UnitQuaternion(right.GetHubOrientation()) &&
                 Near(leftLocalHub.x, -rightLocalHub.x) &&
                 Near(leftLocalHub.y, rightLocalHub.y) &&
                 Near(leftLocalHub.z, rightLocalHub.z) &&
@@ -337,6 +353,10 @@ int main() {
     const bool continuity =
         maxHubStep < 0.05f &&
         maxHorizontalDrift < 0.20f;
+
+    const bool orientation =
+        UnitQuaternion(left.GetHubOrientation()) &&
+        UnitQuaternion(right.GetHubOrientation());
 
     std::cout
         << "[MacPherson]"
@@ -362,6 +382,7 @@ int main() {
         !travel ||
         !endpoints ||
         !poseSweep ||
+        !orientation ||
         !continuity) {
         std::cerr
             << "[FAIL] MacPherson travel diagnostics";
