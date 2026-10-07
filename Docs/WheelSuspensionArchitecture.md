@@ -20,7 +20,7 @@ This document remains the source of truth for wheel/suspension architecture; the
 
 ## 1. Purpose
 
-Replace the current wheel/suspension implementation with a mechanically coherent double-wishbone suspension model.
+Replace the current wheel/suspension implementation with mechanically coherent kinematic suspension geometries, beginning with Double Wishbone and MacPherson. Each concrete geometry is implemented and validated independently before any common abstraction is introduced.
 
 This is an architecture replacement, not an incremental feature addition to the existing `Wheel::Update()` implementation.
 
@@ -361,7 +361,9 @@ The configuration migration belongs to the geometry implementation phase, not th
 - [x] After implementation, run the relevant diagnostics before marking the work unit complete.
 - [x] If a completed architecture item must be redesigned, remove its `[x]` before revising it.
 
-### Phase 1 — Kinematic Double Wishbone
+### Phase 1 — Kinematic Suspension Geometry
+
+The first concrete suspension geometry is Double Wishbone. MacPherson is implemented as a separate concrete geometry after Double Wishbone, without forcing a shared interface before the common behavior is demonstrated.
 
 #### 1-1 — Geometry API and data model
 
@@ -538,10 +540,132 @@ Docs/WheelSuspensionArchitecture.md
 
 #### 1-3 — Suspension travel
 
-- [ ] Implement suspension travel through the kinematic geometry.
-- [ ] Validate bump/rebound endpoints.
-- [ ] Validate continuous wheel-center motion.
-- [ ] Validate no artificial lateral/longitudinal wheel drift.
+- [x] Implement suspension travel through the kinematic geometry.
+- [x] Validate bump/rebound endpoints.
+- [x] Validate continuous wheel-center motion.
+- [x] Validate no artificial lateral/longitudinal wheel drift.
+
+#### 1-4 — Double-wishbone geometry validation
+
+- [x] Validate arm-length constraints.
+- [x] Validate coupled upright constraint.
+- [x] Validate left/right symmetry.
+- [x] Validate finite hub position/orientation across chassis roll and pitch.
+- [x] Validate travel continuity and horizontal drift limits.
+
+**Fresh verification:** Linux build followed by ctest; PhysicsDiagnostics, VehicleDiagnostics, and DoubleWishboneDiagnostics all passed.
+
+### Phase 1-M — Kinematic MacPherson
+
+MacPherson is treated as its own concrete suspension geometry. Do not introduce a generic suspension interface or shared base class during this phase. Any common abstraction is deferred until both concrete geometries have been implemented and their actual shared behavior is known.
+
+#### 1-1 — MacPherson geometry API and data model
+
+**Decision:** use MacPherson as the per-corner suspension assembly. Do not introduce separate LowerArm, Strut, or Upright classes yet; their state is simple kinematic data owned by the assembly.
+
+Per-corner data model:
+
+~~~
+MacPherson
+ ├─ LowerArm
+ │   ├─ innerPivotA
+ │   ├─ innerPivotB
+ │   ├─ outerJoint
+ │   ├─ innerToOuterLengthA
+ │   └─ innerToOuterLengthB
+ │
+ ├─ Strut
+ │   ├─ upperMount
+ │   ├─ lowerMount
+ │   └─ length
+ │
+ └─ UprightState
+     ├─ lowerJoint
+     ├─ strutLowerJoint
+     ├─ hubPosition
+     └─ hubOrientation
+~~~
+
+The lower arm is a kinematic link constrained by its two chassis pivots and fixed link lengths to the outer joint.
+
+The strut is the upper suspension constraint. Its upper mount is fixed to the chassis and its lower mount is attached to the upright. Strut length is a geometric constraint, not an independently simulated rigid body.
+
+The upright/hub state is the kinematic result of the lower-arm and strut constraints. Steering-axis behavior is deferred to Phase 3.
+
+Minimum solver math:
+
+- Vec3 point/vector arithmetic.
+- Dot/cross products.
+- Vector normalization and distance.
+- Rotation of local geometry by the chassis orientation.
+- Constrained point solving for the lower arm.
+- Strut-length constraint solving.
+- Construction of an upright orientation from the solved lower joint and strut geometry.
+- No general multibody dynamics solver.
+
+**Important geometry distinction from Double Wishbone:** there is no upper control arm. The strut replaces the upper locating function and supplies the upper constraint through its chassis mount.
+
+#### 1-1 implementation scope
+
+**Files to modify:**
+
+~~~
+Docs/WheelSuspensionArchitecture.md
+~~~
+
+**Files explicitly not modified in 1-1:**
+
+~~~
+Vehicle/MacPherson.*
+Vehicle/DoubleWishbone.*
+Vehicle/Car.*
+Vehicle/Wheel.*
+Vehicle/Suspension.*
+Vehicle/Tire.*
+Vehicle/VehicleConfig.*
+Tests/*
+Assets/Vehicles/TestCar/vehicle.ini
+~~~
+
+1-1 is an architecture/data-model decision only. No solver, vehicle integration, or dynamics behavior changes are part of this work unit.
+
+- [x] Define the lower-arm geometry.
+- [x] Define the strut upper/lower mounts and constraint role.
+- [x] Define the upright/hub state.
+- [x] Define the minimum MacPherson solver math.
+- [x] Decide not to create separate LowerArm/Strut/Upright classes yet.
+- [x] Defer generic suspension abstraction until Double Wishbone and MacPherson have both been implemented and compared.
+
+#### 1-2 — MacPherson kinematic solver
+
+**Implementation scope:**
+
+Create the first real MacPherson kinematic solver. The solver owns lower-arm and strut constraints and produces the upright/hub state. No steering or tire-force behavior changes.
+
+**Files allowed to change:**
+
+~~~
+Vehicle/MacPherson.h
+Vehicle/MacPherson.cpp
+CMakeLists.txt
+Tests/MacPhersonDiagnostics.cpp
+~~~
+
+**Files explicitly out of scope:**
+
+~~~
+Vehicle/Car.*
+Vehicle/Wheel.*
+Vehicle/Suspension.*
+Vehicle/Tire.*
+Vehicle/VehicleConfig.*
+Assets/Vehicles/TestCar/vehicle.ini
+Core/Debug/DebugUI.cpp
+World/*
+Audio/*
+~~~
+
+**Verification:** build the project and run MacPhersonDiagnostics. The diagnostic must independently verify lower-arm constraints, strut constraint, left/right symmetry, hub position/orientation finiteness, and static geometry.
 
 ### Phase 2 — Spring / Damper
 
