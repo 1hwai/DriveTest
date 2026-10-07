@@ -257,12 +257,12 @@ int main() {
         right.SolveAtTravel(
             chassisPosition,
             chassisOrientation,
-            -0.10f
+            -0.075f
         ) &&
         right.SolveAtTravel(
             chassisPosition,
             chassisOrientation,
-            0.10f
+            0.075f
         );
 
     const bool continuity =
