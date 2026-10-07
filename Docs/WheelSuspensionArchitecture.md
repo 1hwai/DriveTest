@@ -37,8 +37,8 @@ Do not change this convention as part of the suspension rewrite.
 
 ## 3. Design Principles
 
-- [ ] Model each wheel as part of an actual suspension assembly rather than as a point attached directly to the chassis.
-- [ ] Separate suspension kinematics, steering geometry, wheel/hub state, tire contact, and tire force calculation.
+- [x] Model each wheel as part of an actual suspension assembly rather than as a point attached directly to the chassis.
+- [x] Separate suspension kinematics, steering geometry, wheel/hub state, tire contact, and tire force calculation.
 - [ ] Do not preserve the current Wheel implementation merely for compatibility.
 - [ ] Avoid solving the control arms as independent rigid bodies; treat them as kinematic links/constraints.
 - [ ] Suspension geometry must determine wheel motion.
@@ -88,6 +88,17 @@ The upright connects the upper/lower control arms, steering assembly, and wheel 
 - [ ] Define hub orientation from the suspension and steering geometry.
 - [ ] Keep wheel visual transform derived from hub state rather than independently moving the visual wheel.
 
+### 3.1 Component Coupling
+
+Components may be physically coupled without being implementation-dependent.
+
+- Geometry exposes solved positions/orientations and spring mounting points.
+- Suspension consumes mounting-point data and exposes spring/damper force results.
+- Wheel consumes hub state rather than knowing how a concrete suspension geometry solved it.
+- Tire consumes wheel/contact state rather than knowing the internal suspension implementation.
+- Vehicle-level orchestration owns the order in which these results are produced and consumed.
+
+Do not introduce additional classes solely to hide a small data transformation. The goal is stable result-oriented boundaries, not maximal decomposition.
 ### 4.4 Spring / Damper
 
 Spring and damper behavior is separate from suspension geometry.
@@ -892,11 +903,48 @@ CMakeLists.txt
 
 #### 2-4 — Suspension validation
 
-- [ ] Validate static ride height.
-- [ ] Validate dynamic compression/rebound.
-- [ ] Validate force direction.
-- [ ] Validate airborne and rollover behavior.
+**Scope:** independently validate the spring/damper model and geometry-to-suspension mount data before rigid-body force application is integrated. This work unit does not modify `Car`, `Wheel`, `Tire`, or rigid-body integration.
 
+**Files allowed to change:**
+
+~~~
+Tests/SuspensionDiagnostics.cpp
+Tests/DoubleWishboneDiagnostics.cpp
+Tests/MacPhersonDiagnostics.cpp
+Docs/WheelSuspensionArchitecture.md
+~~~
+
+**Files explicitly out of scope:**
+
+~~~
+Vehicle/Suspension.*
+Vehicle/DoubleWishbone.*
+Vehicle/MacPherson.*
+Vehicle/Car.*
+Vehicle/Wheel.*
+Vehicle/Tire.*
+Vehicle/VehicleConfig.*
+World/*
+Audio/*
+Core/Debug/*
+~~~
+
+**Validation requirements:**
+
+- [x] Validate mechanical bump/rebound limits.
+- [x] Validate compression and compression velocity.
+- [x] Validate compression/rebound damping selection.
+- [x] Validate non-tensile spring/damper force behavior.
+- [x] Validate actual mount-derived spring length.
+- [x] Validate force-vector direction from the actual mount delta.
+- [x] Validate degenerate zero-length mounts without NaN/Inf.
+- [x] Validate Double Wishbone spring mount finiteness, symmetry, and non-degenerate length.
+- [x] Validate MacPherson spring mount finiteness, symmetry, and non-degenerate length.
+- [x] Keep diagnostics independent of rigid-body force application and tire behavior.
+
+**Force-direction convention:** `CalculateForceVector(mountA, mountB)` returns `normalize(mountB - mountA) * magnitude`. The vector therefore points from mount A toward mount B. Which body receives this vector is intentionally deferred to vehicle force integration; the diagnostic verifies the geometric direction only.
+
+**Fresh verification:** Linux clean build followed by ctest; all registered diagnostics must pass before this work unit is considered complete.
 ### Phase 3 — Steering
 
 #### 3-1 — Steering axis
