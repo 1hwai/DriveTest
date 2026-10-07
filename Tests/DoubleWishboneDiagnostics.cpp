@@ -162,6 +162,25 @@ int main() {
         NearVec(leftHub, expectedLeftHub) &&
         NearVec(rightHub, expectedRightHub);
 
+    const Vec3 leftSpringA = left.GetSpringMountA();
+    const Vec3 leftSpringB = left.GetSpringMountB();
+    const Vec3 rightSpringA = right.GetSpringMountA();
+    const Vec3 rightSpringB = right.GetSpringMountB();
+
+    const bool springMounts =
+        Finite(leftSpringA) && Finite(leftSpringB) &&
+        Finite(rightSpringA) && Finite(rightSpringB) &&
+        NearVec(leftSpringA, Vec3(0.0f, 0.0f, 0.0f)) == false &&
+        NearVec(rightSpringA, Vec3(0.0f, 0.0f, 0.0f)) == false &&
+        Near(leftSpringA.x, -rightSpringA.x) &&
+        Near(leftSpringA.y, rightSpringA.y) &&
+        Near(leftSpringA.z, rightSpringA.z) &&
+        Near(leftSpringB.x, -rightSpringB.x) &&
+        Near(leftSpringB.y, rightSpringB.y) &&
+        Near(leftSpringB.z, rightSpringB.z) &&
+        (leftSpringB - leftSpringA).Length() > 0.0001f &&
+        (rightSpringB - rightSpringA).Length() > 0.0001f;
+
     const bool finite =
         Finite(leftHub) &&
         Finite(rightHub) &&
