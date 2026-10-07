@@ -152,6 +152,7 @@ int main() {
     bool travel = true;
     float maxHubStep = 0.0f;
     float maxHorizontalDrift = 0.0f;
+    const Vec3 staticLeftHub = left.GetHubPosition();
     Vec3 previousLeftHub;
     bool hasPrevious = false;
 
@@ -234,11 +235,11 @@ int main() {
 
         maxHorizontalDrift = std::max(
             maxHorizontalDrift,
-            std::abs(leftHubAtTravel.x - left.GetHubPosition().x)
+            std::abs(leftHubAtTravel.x - staticLeftHub.x)
         );
         maxHorizontalDrift = std::max(
             maxHorizontalDrift,
-            std::abs(leftHubAtTravel.z - left.GetHubPosition().z)
+            std::abs(leftHubAtTravel.z - staticLeftHub.z)
         );
 
         if (hasPrevious) {
