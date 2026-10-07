@@ -35,6 +35,12 @@ public:
         const Quaternion& chassisOrientation
     );
 
+    bool SolveAtTravel(
+        const Vec3& chassisPosition,
+        const Quaternion& chassisOrientation,
+        float travel
+    );
+
     const Vec3& GetLowerOuterJoint() const;
     const Vec3& GetStrutLowerMount() const;
     const Vec3& GetHubPosition() const;
