@@ -10,8 +10,21 @@ namespace {
         return std::abs(a - b) <= Tolerance;
     }
 
+    bool NearVec(const Vec3& a, const Vec3& b) {
+        return Near(a.x, b.x) &&
+            Near(a.y, b.y) &&
+            Near(a.z, b.z);
+    }
+
     bool Finite(const Vec3& value) {
         return std::isfinite(value.x) &&
+            std::isfinite(value.y) &&
+            std::isfinite(value.z);
+    }
+
+    bool Finite(const Quaternion& value) {
+        return std::isfinite(value.w) &&
+            std::isfinite(value.x) &&
             std::isfinite(value.y) &&
             std::isfinite(value.z);
     }
@@ -20,23 +33,51 @@ namespace {
         const float z = 1.25f;
 
         return {
-            Vec3(side * 0.55f, 0.15f, z - 0.18f),
-            Vec3(side * 0.55f, 0.15f, z + 0.18f),
-            Vec3(side * 0.72f, 0.10f, z),
-            Vec3(side * 0.55f, -0.25f, z - 0.18f),
-            Vec3(side * 0.55f, -0.25f, z + 0.18f),
-            Vec3(side * 0.76f, -0.20f, z),
-            Vec3(0.0f, 0.10f, 0.0f)
+            {
+                Vec3(side * 0.55f, 0.15f, z - 0.18f),
+                Vec3(side * 0.55f, 0.15f, z + 0.18f),
+                Vec3(side * 0.72f, 0.10f, z)
+            },
+            {
+                Vec3(side * 0.55f, -0.25f, z - 0.18f),
+                Vec3(side * 0.55f, -0.25f, z + 0.18f),
+                Vec3(side * 0.76f, -0.20f, z)
+            },
+            {
+                Vec3(0.0f, 0.10f, 0.0f)
+            }
         };
+    }
+
+    bool CheckArm(
+        const Vec3& outer,
+        const DoubleWishboneArmConfig& arm
+    ) {
+        const float lengthA =
+            (outer - arm.innerPivotA).Length();
+        const float lengthB =
+            (outer - arm.innerPivotB).Length();
+        const float expectedA =
+            (arm.outerJoint - arm.innerPivotA).Length();
+        const float expectedB =
+            (arm.outerJoint - arm.innerPivotB).Length();
+
+        return Near(lengthA, expectedA) &&
+            Near(lengthB, expectedB);
     }
 }
 
 int main() {
+    const DoubleWishboneConfig leftConfig =
+        MakeConfig(1.0f);
+    const DoubleWishboneConfig rightConfig =
+        MakeConfig(-1.0f);
+
     DoubleWishbone left;
     DoubleWishbone right;
 
-    left.Configure(MakeConfig(1.0f));
-    right.Configure(MakeConfig(-1.0f));
+    left.Configure(leftConfig);
+    right.Configure(rightConfig);
 
     const Vec3 chassisPosition(0.0f, 0.78f, 0.0f);
     const Quaternion chassisOrientation =
@@ -50,20 +91,25 @@ int main() {
     const Vec3 rightUpper = right.GetUpperOuterJoint();
     const Vec3 rightLower = right.GetLowerOuterJoint();
 
-    const float leftUpperLengthA =
-        (leftUpper - Vec3(0.55f, 0.15f, 1.07f)).Length();
-    const float leftUpperLengthB =
-        (leftUpper - Vec3(0.55f, 0.15f, 1.43f)).Length();
-    const float leftLowerLengthA =
-        (leftLower - Vec3(0.55f, -0.25f, 1.07f)).Length();
-    const float leftLowerLengthB =
-        (leftLower - Vec3(0.55f, -0.25f, 1.43f)).Length();
-
     const bool armLengths =
-        Near(leftUpperLengthA, (MakeConfig(1.0f).upperOuter - MakeConfig(1.0f).upperInnerA).Length()) &&
-        Near(leftUpperLengthB, (MakeConfig(1.0f).upperOuter - MakeConfig(1.0f).upperInnerB).Length()) &&
-        Near(leftLowerLengthA, (MakeConfig(1.0f).lowerOuter - MakeConfig(1.0f).lowerInnerA).Length()) &&
-        Near(leftLowerLengthB, (MakeConfig(1.0f).lowerOuter - MakeConfig(1.0f).lowerInnerB).Length());
+        CheckArm(leftUpper, leftConfig.upperArm) &&
+        CheckArm(leftLower, leftConfig.lowerArm) &&
+        CheckArm(rightUpper, rightConfig.upperArm) &&
+        CheckArm(rightLower, rightConfig.lowerArm);
+
+    const float expectedUprightDistance =
+        (leftConfig.upperArm.outerJoint -
+         leftConfig.lowerArm.outerJoint).Length();
+
+    const bool uprightConstraint =
+        Near(
+            (leftUpper - leftLower).Length(),
+            expectedUprightDistance
+        ) &&
+        Near(
+            (rightUpper - rightLower).Length(),
+            expectedUprightDistance
+        );
 
     const bool symmetry =
         Near(leftUpper.x, -rightUpper.x) &&
@@ -81,30 +127,43 @@ int main() {
         Near(leftHub.y, rightHub.y) &&
         Near(leftHub.z, rightHub.z);
 
+    const Vec3 expectedLeftHub =
+        leftLower + leftConfig.upright.hubOffset;
+    const Vec3 expectedRightHub =
+        rightLower + rightConfig.upright.hubOffset;
+
+    const bool hubPosition =
+        NearVec(leftHub, expectedLeftHub) &&
+        NearVec(rightHub, expectedRightHub);
+
     const bool finite =
         Finite(leftHub) &&
         Finite(rightHub) &&
-        std::isfinite(left.GetHubOrientation().w) &&
-        std::isfinite(left.GetHubOrientation().x) &&
-        std::isfinite(left.GetHubOrientation().y) &&
-        std::isfinite(left.GetHubOrientation().z) &&
-        std::isfinite(right.GetHubOrientation().w) &&
-        std::isfinite(right.GetHubOrientation().x) &&
-        std::isfinite(right.GetHubOrientation().y) &&
-        std::isfinite(right.GetHubOrientation().z);
+        Finite(left.GetHubOrientation()) &&
+        Finite(right.GetHubOrientation());
 
     std::cout
-        << "[DoubleWishbone] armLengths=" << armLengths
+        << "[DoubleWishbone]"
+        << " armLengths=" << armLengths
+        << " uprightConstraint=" << uprightConstraint
         << " symmetry=" << symmetry
         << " hubSymmetry=" << hubSymmetry
+        << " hubPosition=" << hubPosition
         << " finite=" << finite
         << '\n';
 
-    if (!armLengths || !symmetry || !hubSymmetry || !finite) {
-        std::cerr << "[FAIL] Double wishbone static geometry diagnostics\n";
+    if (!armLengths ||
+        !uprightConstraint ||
+        !symmetry ||
+        !hubSymmetry ||
+        !hubPosition ||
+        !finite) {
+        std::cerr
+            << "[FAIL] Double wishbone static geometry diagnostics\n";
         return 1;
     }
 
-    std::cout << "[PASS] Double wishbone static geometry diagnostics\n";
+    std::cout
+        << "[PASS] Double wishbone static geometry diagnostics\n";
     return 0;
 }

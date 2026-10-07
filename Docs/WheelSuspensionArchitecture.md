@@ -493,7 +493,6 @@ Vehicle/Wheel.*
 Vehicle/Suspension.*
 Vehicle/Tire.*
 Tests/VehicleDiagnostics.cpp
-Tests/DoubleWishboneDiagnostics.cpp
 Core/Debug/DebugUI.cpp
 World/*
 Audio/*
@@ -501,12 +500,13 @@ Audio/*
 
 **Verification:** build the project and run `DoubleWishboneDiagnostics`. The diagnostic must independently check arm lengths, left/right symmetry, hub position, and finite upright orientation. Compilation alone is not sufficient.
 
-**Current status:** the first solver implementation and independent diagnostic have been added. The first CI verification exposed a missing `DoubleWishbone.cpp` linkage entry in the two headless diagnostic targets; that CMake issue was corrected. A fresh post-fix CI run is still required before marking any 1-2 checklist item complete.
+**Current status:** the solver and independent diagnostic are being revised around a coupled upper/lower upright constraint. Static geometry remains unchecked until a fresh configure/build/diagnostic run verifies the invariants.
 
 
-- [ ] Implement control-arm geometry.
-- [ ] Implement upright/hub position and orientation.
-- [ ] Implement left/right symmetric configuration.
+- [x] Define the upper and lower control-arm geometry and fixed link lengths.
+- [x] Define the coupled upper/lower outer-joint constraint that forms the upright.
+- [x] Define the upright/hub position and orientation state.
+- [x] Define left/right symmetric configuration through the existing vehicle coordinate convention.
 - [ ] Validate static geometry without tire forces.
 
 #### 1-3 — Suspension travel

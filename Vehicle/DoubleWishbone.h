@@ -3,14 +3,20 @@
 #include "../Core/Math/Quaternion.h"
 #include "../Core/Math/Vec3.h"
 
-struct DoubleWishboneConfig {
-    Vec3 upperInnerA;
-    Vec3 upperInnerB;
-    Vec3 upperOuter;
-    Vec3 lowerInnerA;
-    Vec3 lowerInnerB;
-    Vec3 lowerOuter;
+struct DoubleWishboneArmConfig {
+    Vec3 innerPivotA;
+    Vec3 innerPivotB;
+    Vec3 outerJoint;
+};
+
+struct DoubleWishboneUprightConfig {
     Vec3 hubOffset;
+};
+
+struct DoubleWishboneConfig {
+    DoubleWishboneArmConfig upperArm;
+    DoubleWishboneArmConfig lowerArm;
+    DoubleWishboneUprightConfig upright;
 };
 
 class DoubleWishbone {
@@ -26,23 +32,42 @@ public:
     const Quaternion& GetHubOrientation() const;
 
 private:
-    struct Arm {
-        Vec3 innerA;
-        Vec3 innerB;
-        Vec3 outer;
-        float lengthA;
-        float lengthB;
+    struct ArmState {
+        Vec3 innerPivotA;
+        Vec3 innerPivotB;
+        Vec3 outerJoint;
+        float innerToOuterLengthA;
+        float innerToOuterLengthB;
     };
 
-    Arm m_upperArm;
-    Arm m_lowerArm;
-    Vec3 m_hubOffset;
-    Vec3 m_upperOuterJoint;
-    Vec3 m_lowerOuterJoint;
-    Vec3 m_hubPosition;
-    Quaternion m_hubOrientation;
+    struct UprightState {
+        Vec3 upperJoint;
+        Vec3 lowerJoint;
+        Vec3 hubPosition;
+        Quaternion hubOrientation;
+    };
+
+    DoubleWishboneArmConfig m_upperArmConfig;
+    DoubleWishboneArmConfig m_lowerArmConfig;
+    DoubleWishboneUprightConfig m_uprightConfig;
+
+    ArmState m_upperArm;
+    ArmState m_lowerArm;
+    UprightState m_upright;
+
+    float m_uprightJointDistance;
 
     static float Distance(const Vec3& a, const Vec3& b);
     static void ProjectDistance(Vec3& point, const Vec3& anchor, float length);
-    static void SolveArm(Arm& arm, int iterations);
+    static void SolveConstraints(
+        ArmState& upperArm,
+        ArmState& lowerArm,
+        float uprightJointDistance,
+        int iterations
+    );
+
+    void UpdateUpright(
+        const Vec3& chassisPosition,
+        const Quaternion& chassisOrientation
+    );
 };

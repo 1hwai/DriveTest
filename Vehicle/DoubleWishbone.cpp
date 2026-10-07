@@ -7,57 +7,76 @@ namespace {
 }
 
 DoubleWishbone::DoubleWishbone()
-    : m_hubOffset(0.0f, 0.0f, 0.0f),
-    m_upperOuterJoint(0.0f, 0.0f, 0.0f),
-    m_lowerOuterJoint(0.0f, 0.0f, 0.0f),
-    m_hubPosition(0.0f, 0.0f, 0.0f),
-    m_hubOrientation(Quaternion::Identity()) {}
+    : m_uprightJointDistance(0.0f) {
+    m_upright.hubPosition = Vec3(0.0f, 0.0f, 0.0f);
+    m_upright.hubOrientation = Quaternion::Identity();
+}
 
 void DoubleWishbone::Configure(const DoubleWishboneConfig& config) {
-    m_upperArm.innerA = config.upperInnerA;
-    m_upperArm.innerB = config.upperInnerB;
-    m_upperArm.outer = config.upperOuter;
-    m_upperArm.lengthA = Distance(config.upperInnerA, config.upperOuter);
-    m_upperArm.lengthB = Distance(config.upperInnerB, config.upperOuter);
+    m_upperArmConfig = config.upperArm;
+    m_lowerArmConfig = config.lowerArm;
+    m_uprightConfig = config.upright;
 
-    m_lowerArm.innerA = config.lowerInnerA;
-    m_lowerArm.innerB = config.lowerInnerB;
-    m_lowerArm.outer = config.lowerOuter;
-    m_lowerArm.lengthA = Distance(config.lowerInnerA, config.lowerOuter);
-    m_lowerArm.lengthB = Distance(config.lowerInnerB, config.lowerOuter);
+    m_upperArm.innerPivotA = config.upperArm.innerPivotA;
+    m_upperArm.innerPivotB = config.upperArm.innerPivotB;
+    m_upperArm.outerJoint = config.upperArm.outerJoint;
+    m_upperArm.innerToOuterLengthA =
+        Distance(config.upperArm.innerPivotA, config.upperArm.outerJoint);
+    m_upperArm.innerToOuterLengthB =
+        Distance(config.upperArm.innerPivotB, config.upperArm.outerJoint);
 
-    m_hubOffset = config.hubOffset;
-    m_upperOuterJoint = config.upperOuter;
-    m_lowerOuterJoint = config.lowerOuter;
-    m_hubPosition = config.lowerOuter + config.hubOffset;
-    m_hubOrientation = Quaternion::Identity();
+    m_lowerArm.innerPivotA = config.lowerArm.innerPivotA;
+    m_lowerArm.innerPivotB = config.lowerArm.innerPivotB;
+    m_lowerArm.outerJoint = config.lowerArm.outerJoint;
+    m_lowerArm.innerToOuterLengthA =
+        Distance(config.lowerArm.innerPivotA, config.lowerArm.outerJoint);
+    m_lowerArm.innerToOuterLengthB =
+        Distance(config.lowerArm.innerPivotB, config.lowerArm.outerJoint);
+
+    m_uprightJointDistance =
+        Distance(config.upperArm.outerJoint, config.lowerArm.outerJoint);
+
+    m_upright.upperJoint = m_upperArm.outerJoint;
+    m_upright.lowerJoint = m_lowerArm.outerJoint;
+    m_upright.hubPosition =
+        m_lowerArm.outerJoint + config.upright.hubOffset;
+    m_upright.hubOrientation = Quaternion::Identity();
 }
 
 void DoubleWishbone::Solve(
     const Vec3& chassisPosition,
     const Quaternion& chassisOrientation
 ) {
-    m_upperArm.outer = m_upperOuterJoint;
-    m_lowerArm.outer = m_lowerOuterJoint;
+    SolveConstraints(
+        m_upperArm,
+        m_lowerArm,
+        m_uprightJointDistance,
+        32
+    );
 
-    SolveArm(m_upperArm, 8);
-    SolveArm(m_lowerArm, 8);
+    m_upright.upperJoint = m_upperArm.outerJoint;
+    m_upright.lowerJoint = m_lowerArm.outerJoint;
 
-    m_upperOuterJoint = m_upperArm.outer;
-    m_lowerOuterJoint = m_lowerArm.outer;
+    UpdateUpright(chassisPosition, chassisOrientation);
+}
 
-    const Vec3 uprightUp = (
-        m_upperOuterJoint - m_lowerOuterJoint
-    ).Normalized();
+void DoubleWishbone::UpdateUpright(
+    const Vec3& chassisPosition,
+    const Quaternion& chassisOrientation
+) {
+    const Vec3 uprightUp =
+        (m_upright.upperJoint - m_upright.lowerJoint).Normalized();
 
     Vec3 forward(0.0f, 0.0f, 1.0f);
-    forward = (
+    forward =
         forward -
-        uprightUp * forward.Dot(uprightUp)
-    ).Normalized();
+        uprightUp * forward.Dot(uprightUp);
 
-    if (forward.LengthSquared() < Epsilon)
-        forward = Vec3(0.0f, 0.0f, 1.0f);
+    if (forward.LengthSquared() < Epsilon) {
+        forward = Vec3(1.0f, 0.0f, 0.0f);
+    } else {
+        forward = forward.Normalized();
+    }
 
     const Vec3 right =
         forward.Cross(uprightUp).Normalized();
@@ -78,31 +97,31 @@ void DoubleWishbone::Solve(
     const Quaternion localOrientation =
         Quaternion::FromMat3(basis).Normalized();
 
-    m_hubOrientation =
+    m_upright.hubOrientation =
         (chassisOrientation * localOrientation).Normalized();
 
-    m_hubPosition =
+    m_upright.hubPosition =
         chassisPosition +
         chassisOrientation * (
-            m_lowerOuterJoint +
-            localOrientation * m_hubOffset
+            m_upright.lowerJoint +
+            localOrientation * m_uprightConfig.hubOffset
         );
 }
 
 const Vec3& DoubleWishbone::GetUpperOuterJoint() const {
-    return m_upperOuterJoint;
+    return m_upright.upperJoint;
 }
 
 const Vec3& DoubleWishbone::GetLowerOuterJoint() const {
-    return m_lowerOuterJoint;
+    return m_upright.lowerJoint;
 }
 
 const Vec3& DoubleWishbone::GetHubPosition() const {
-    return m_hubPosition;
+    return m_upright.hubPosition;
 }
 
 const Quaternion& DoubleWishbone::GetHubOrientation() const {
-    return m_hubOrientation;
+    return m_upright.hubOrientation;
 }
 
 float DoubleWishbone::Distance(
@@ -126,12 +145,46 @@ void DoubleWishbone::ProjectDistance(
     point = anchor + delta * (length / distance);
 }
 
-void DoubleWishbone::SolveArm(
-    Arm& arm,
+void DoubleWishbone::SolveConstraints(
+    ArmState& upperArm,
+    ArmState& lowerArm,
+    float uprightJointDistance,
     int iterations
 ) {
     for (int i = 0; i < iterations; ++i) {
-        ProjectDistance(arm.outer, arm.innerA, arm.lengthA);
-        ProjectDistance(arm.outer, arm.innerB, arm.lengthB);
+        ProjectDistance(
+            upperArm.outerJoint,
+            upperArm.innerPivotA,
+            upperArm.innerToOuterLengthA
+        );
+        ProjectDistance(
+            upperArm.outerJoint,
+            upperArm.innerPivotB,
+            upperArm.innerToOuterLengthB
+        );
+
+        ProjectDistance(
+            lowerArm.outerJoint,
+            lowerArm.innerPivotA,
+            lowerArm.innerToOuterLengthA
+        );
+        ProjectDistance(
+            lowerArm.outerJoint,
+            lowerArm.innerPivotB,
+            lowerArm.innerToOuterLengthB
+        );
+
+        const Vec3 delta =
+            lowerArm.outerJoint - upperArm.outerJoint;
+        const float distance = delta.Length();
+
+        if (distance < Epsilon)
+            continue;
+
+        const Vec3 correction =
+            delta * ((distance - uprightJointDistance) / distance);
+
+        upperArm.outerJoint += correction * 0.5f;
+        lowerArm.outerJoint -= correction * 0.5f;
     }
 }
