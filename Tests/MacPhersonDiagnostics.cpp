@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 
@@ -8,6 +9,12 @@ namespace {
 
     bool Near(float a, float b) {
         return std::abs(a - b) <= Tolerance;
+    }
+
+    bool NearVec(const Vec3& a, const Vec3& b) {
+        return Near(a.x, b.x) &&
+            Near(a.y, b.y) &&
+            Near(a.z, b.z);
     }
 
     bool Finite(const Vec3& value) {
@@ -40,6 +47,31 @@ namespace {
             }
         };
     }
+
+    Vec3 ToWorld(
+        const Vec3& chassisPosition,
+        const Quaternion& chassisOrientation,
+        const Vec3& local
+    ) {
+        return chassisPosition +
+            chassisOrientation * local;
+    }
+
+    bool CheckArm(
+        const Vec3& outer,
+        const MacPhersonArmConfig& arm,
+        float lengthA,
+        float lengthB
+    ) {
+        return Near(
+            (outer - arm.innerPivotA).Length(),
+            lengthA
+        ) &&
+        Near(
+            (outer - arm.innerPivotB).Length(),
+            lengthB
+        );
+    }
 }
 
 int main() {
@@ -53,13 +85,12 @@ int main() {
     right.Configure(rightConfig);
 
     const Vec3 chassisPosition(0.0f, 0.0f, 0.0f);
-    const Quaternion chassisOrientation =
-        Quaternion::Identity();
+    const Quaternion identity = Quaternion::Identity();
 
     const bool solvedLeft =
-        left.Solve(chassisPosition, chassisOrientation);
+        left.Solve(chassisPosition, identity);
     const bool solvedRight =
-        right.Solve(chassisPosition, chassisOrientation);
+        right.Solve(chassisPosition, identity);
 
     const Vec3 leftJoint = left.GetLowerOuterJoint();
     const Vec3 rightJoint = right.GetLowerOuterJoint();
@@ -67,20 +98,16 @@ int main() {
     const Vec3 rightMount = right.GetStrutLowerMount();
 
     const bool armLengths =
-        Near(
-            (leftJoint - leftConfig.lowerArm.innerPivotA).Length(),
-            left.GetLowerArmLengthA()
-        ) &&
-        Near(
-            (leftJoint - leftConfig.lowerArm.innerPivotB).Length(),
+        CheckArm(
+            leftJoint,
+            leftConfig.lowerArm,
+            left.GetLowerArmLengthA(),
             left.GetLowerArmLengthB()
         ) &&
-        Near(
-            (rightJoint - rightConfig.lowerArm.innerPivotA).Length(),
-            right.GetLowerArmLengthA()
-        ) &&
-        Near(
-            (rightJoint - rightConfig.lowerArm.innerPivotB).Length(),
+        CheckArm(
+            rightJoint,
+            rightConfig.lowerArm,
+            right.GetLowerArmLengthA(),
             right.GetLowerArmLengthB()
         );
 
@@ -109,12 +136,8 @@ int main() {
         right.GetHubOrientation() * rightConfig.upright.hubOffset;
 
     const bool hubPosition =
-        Near(left.GetHubPosition().x, expectedLeftHub.x) &&
-        Near(left.GetHubPosition().y, expectedLeftHub.y) &&
-        Near(left.GetHubPosition().z, expectedLeftHub.z) &&
-        Near(right.GetHubPosition().x, expectedRightHub.x) &&
-        Near(right.GetHubPosition().y, expectedRightHub.y) &&
-        Near(right.GetHubPosition().z, expectedRightHub.z);
+        NearVec(left.GetHubPosition(), expectedLeftHub) &&
+        NearVec(right.GetHubPosition(), expectedRightHub);
 
     const bool finite =
         solvedLeft &&
@@ -126,6 +149,194 @@ int main() {
         Finite(left.GetHubOrientation()) &&
         Finite(right.GetHubOrientation());
 
+    bool travel = true;
+    float maxHubStep = 0.0f;
+    float maxHorizontalDrift = 0.0f;
+    Vec3 previousLeftHub;
+    bool hasPrevious = false;
+
+    const float travels[] = {
+        -0.075f, -0.05f, -0.025f,
+        0.0f,
+        0.025f, 0.05f, 0.075f
+    };
+
+    for (float value : travels) {
+        const bool solvedAtTravelLeft =
+            left.SolveAtTravel(
+                chassisPosition,
+                identity,
+                value
+            );
+        const bool solvedAtTravelRight =
+            right.SolveAtTravel(
+                chassisPosition,
+                identity,
+                value
+            );
+
+        if (!solvedAtTravelLeft || !solvedAtTravelRight) {
+            travel = false;
+            continue;
+        }
+
+        const Vec3 leftAtTravel =
+            left.GetLowerOuterJoint();
+        const Vec3 rightAtTravel =
+            right.GetLowerOuterJoint();
+        const Vec3 leftHubAtTravel =
+            left.GetHubPosition();
+        const Vec3 rightHubAtTravel =
+            right.GetHubPosition();
+
+        const float expectedStrutLength =
+            left.GetStrutLength() - value;
+
+        const float actualLeftStrut =
+            (leftConfig.strut.upperMount -
+             left.GetStrutLowerMount()).Length();
+        const float actualRightStrut =
+            (rightConfig.strut.upperMount -
+             right.GetStrutLowerMount()).Length();
+
+        travel =
+            CheckArm(
+                leftAtTravel,
+                leftConfig.lowerArm,
+                left.GetLowerArmLengthA(),
+                left.GetLowerArmLengthB()
+            ) &&
+            CheckArm(
+                rightAtTravel,
+                rightConfig.lowerArm,
+                right.GetLowerArmLengthA(),
+                right.GetLowerArmLengthB()
+            ) &&
+            Near(actualLeftStrut, expectedStrutLength) &&
+            Near(actualRightStrut, expectedStrutLength) &&
+            Near(leftAtTravel.x, -rightAtTravel.x) &&
+            Near(leftAtTravel.y, rightAtTravel.y) &&
+            Near(leftAtTravel.z, rightAtTravel.z) &&
+            Near(leftHubAtTravel.x, -rightHubAtTravel.x) &&
+            Near(leftHubAtTravel.y, rightHubAtTravel.y) &&
+            Near(leftHubAtTravel.z, rightHubAtTravel.z) &&
+            NearVec(
+                leftHubAtTravel,
+                leftAtTravel +
+                left.GetHubOrientation() *
+                    leftConfig.upright.hubOffset
+            ) &&
+            Finite(leftAtTravel) &&
+            Finite(rightAtTravel) &&
+            Finite(leftHubAtTravel) &&
+            Finite(rightHubAtTravel) &&
+            travel;
+
+        maxHorizontalDrift = std::max(
+            maxHorizontalDrift,
+            std::abs(leftHubAtTravel.x - left.GetHubPosition().x)
+        );
+        maxHorizontalDrift = std::max(
+            maxHorizontalDrift,
+            std::abs(leftHubAtTravel.z - left.GetHubPosition().z)
+        );
+
+        if (hasPrevious) {
+            maxHubStep = std::max(
+                maxHubStep,
+                (leftHubAtTravel - previousLeftHub).Length()
+            );
+        }
+
+        previousLeftHub = leftHubAtTravel;
+        hasPrevious = true;
+    }
+
+    const bool endpoints =
+        left.SolveAtTravel(
+            chassisPosition,
+            identity,
+            -0.075f
+        ) &&
+        left.SolveAtTravel(
+            chassisPosition,
+            identity,
+            0.075f
+        ) &&
+        right.SolveAtTravel(
+            chassisPosition,
+            identity,
+            -0.075f
+        ) &&
+        right.SolveAtTravel(
+            chassisPosition,
+            identity,
+            0.075f
+        );
+
+    bool poseSweep = true;
+    const float rollAngles[] = {
+        -0.35f, -0.175f, 0.0f, 0.175f, 0.35f
+    };
+    const float pitchAngles[] = {
+        -0.20f, 0.0f, 0.20f
+    };
+
+    for (float roll : rollAngles) {
+        for (float pitch : pitchAngles) {
+            const Quaternion orientation =
+                (
+                    Quaternion::FromAxisAngle(
+                        Vec3(1.0f, 0.0f, 0.0f),
+                        pitch
+                    ) *
+                    Quaternion::FromAxisAngle(
+                        Vec3(0.0f, 0.0f, 1.0f),
+                        roll
+                    )
+                ).Normalized();
+
+            const bool solvedPoseLeft =
+                left.SolveAtTravel(
+                    chassisPosition,
+                    orientation,
+                    0.0f
+                );
+            const bool solvedPoseRight =
+                right.SolveAtTravel(
+                    chassisPosition,
+                    orientation,
+                    0.0f
+                );
+
+            if (!solvedPoseLeft || !solvedPoseRight) {
+                poseSweep = false;
+                continue;
+            }
+
+            const Vec3 leftLocalHub =
+                orientation.Conjugate() *
+                (left.GetHubPosition() - chassisPosition);
+            const Vec3 rightLocalHub =
+                orientation.Conjugate() *
+                (right.GetHubPosition() - chassisPosition);
+
+            poseSweep =
+                Finite(leftLocalHub) &&
+                Finite(rightLocalHub) &&
+                Finite(left.GetHubOrientation()) &&
+                Finite(right.GetHubOrientation()) &&
+                Near(leftLocalHub.x, -rightLocalHub.x) &&
+                Near(leftLocalHub.y, rightLocalHub.y) &&
+                Near(leftLocalHub.z, rightLocalHub.z) &&
+                poseSweep;
+        }
+    }
+
+    const bool continuity =
+        maxHubStep < 0.05f &&
+        maxHorizontalDrift < 0.20f;
+
     std::cout
         << "[MacPherson]"
         << " solved=" << (solvedLeft && solvedRight)
@@ -134,19 +345,32 @@ int main() {
         << " symmetry=" << symmetry
         << " hubPosition=" << hubPosition
         << " finite=" << finite
-        << '\n';
+        << " travel=" << travel
+        << " endpoints=" << endpoints
+        << " poseSweep=" << poseSweep
+        << " continuity=" << continuity
+        << " maxHubStep=" << maxHubStep
+        << " maxHorizontalDrift=" << maxHorizontalDrift
+        << '
+';
 
     if (!finite ||
         !armLengths ||
         !strutConstraint ||
         !symmetry ||
-        !hubPosition) {
+        !hubPosition ||
+        !travel ||
+        !endpoints ||
+        !poseSweep ||
+        !continuity) {
         std::cerr
-            << "[FAIL] MacPherson diagnostics\n";
+            << "[FAIL] MacPherson travel diagnostics
+";
         return 1;
     }
 
     std::cout
-        << "[PASS] MacPherson diagnostics\n";
+        << "[PASS] MacPherson travel diagnostics
+";
     return 0;
 }
