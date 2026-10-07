@@ -352,8 +352,7 @@ int main() {
         << " continuity=" << continuity
         << " maxHubStep=" << maxHubStep
         << " maxHorizontalDrift=" << maxHorizontalDrift
-        << '
-';
+        << '\n';
 
     if (!finite ||
         !armLengths ||
@@ -365,13 +364,11 @@ int main() {
         !poseSweep ||
         !continuity) {
         std::cerr
-            << "[FAIL] MacPherson travel diagnostics
-";
+            << "[FAIL] MacPherson travel diagnostics";
         return 1;
     }
 
     std::cout
-        << "[PASS] MacPherson travel diagnostics
-";
+        << "[PASS] MacPherson travel diagnostics";
     return 0;
 }

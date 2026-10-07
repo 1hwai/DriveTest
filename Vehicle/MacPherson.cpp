@@ -90,11 +90,14 @@ bool MacPherson::SolveAtTravel(
 
     m_upright.lowerJoint = m_lowerArm.outerJoint;
 
-    UpdateUpright();
+    UpdateUpright(chassisPosition, chassisOrientation);
     return true;
 }
 
-void MacPherson::UpdateUpright() {
+void MacPherson::UpdateUpright(
+        const Vec3& chassisPosition,
+        const Quaternion& chassisOrientation
+) {
     const Vec3 localOffset =
         m_strutConfig.lowerMountOffset;
 
