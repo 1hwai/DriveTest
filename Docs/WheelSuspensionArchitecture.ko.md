@@ -554,7 +554,7 @@ Suspension Geometry
 - [x] Tire basis와 projected solved hub basis를 비교하는 독립 진단 추가.
 - [ ] 이전 후 Linux 전체 빌드 및 vehicle diagnostics 실행.
 
-**현재 상태:** solved hub 기반 Tire 접촉 기준 이전을 진행 중이다. 초기 회귀에서 좌우 front hub의 geometry angle이 같은 실제 선회 방향을 나타내지 않는 Ackermann 부호 오류가 발견되어 수정했고, Ackermann 회귀 진단도 크기뿐 아니라 실제 선회 방향을 검사하도록 강화했다. Linux 전체 진단에서 좌우 대칭 하중 이동이 다시 확인될 때까지 4-2는 완료 처리하지 않는다.
+**현재 상태:** solved hub 기반 Tire 접촉 기준 이전을 진행 중이다. Ackermann 선회 방향과 좌우 대칭 하중 이동은 수정되었고, grounded 상태에서는 normal load 유효성 검사보다 먼저 solved hub 기준 Tire basis를 생성하도록 정리했다. 따라서 접지되어 있지만 일시적으로 normal load가 0인 상태에서도 차량 기본축으로 조용히 되돌아가지 않는다. Linux 전체 회귀 진단이 통과할 때까지 4-2는 완료 처리하지 않는다.
 
 ### Phase 5 — 차량 검증
 
