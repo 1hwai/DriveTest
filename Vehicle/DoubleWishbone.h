@@ -43,6 +43,9 @@ public:
     const Quaternion& GetHubOrientation() const;
     const Vec3& GetSpringMountA() const;
     const Vec3& GetSpringMountB() const;
+    Vec3 GetSteeringAxisStart() const;
+    Vec3 GetSteeringAxisEnd() const;
+    bool ApplySteering(float angle);
 
 private:
     struct ArmState {
