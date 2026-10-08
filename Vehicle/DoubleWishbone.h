@@ -74,6 +74,8 @@ private:
     Vec3 m_springMountB;
     Vec3 m_springMountALocal;
     Vec3 m_springMountBOffset;
+    Vec3 m_steeringAxisStart;
+    Vec3 m_steeringAxisEnd;
 
     float m_uprightJointDistance;
     float m_restOuterAverageY;
