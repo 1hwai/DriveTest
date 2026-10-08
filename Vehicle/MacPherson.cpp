@@ -108,22 +108,28 @@ void MacPherson::UpdateUpright(
     const Vec3 strutAxis =
         (m_strut.upperMount - m_upright.lowerJoint).Normalized();
 
-    const Quaternion localOrientation =
-        FromToRotation(localAxis, strutAxis);
+    const Vec3 worldLocalAxis =
+        chassisOrientation * localAxis;
+
+    const Quaternion strutRotation =
+        FromToRotation(worldLocalAxis, strutAxis);
+
+    const Quaternion worldUprightOrientation =
+        (strutRotation * chassisOrientation).Normalized();
 
     m_upright.strutLowerJoint =
         m_upright.lowerJoint +
-        localOrientation * localOffset;
+        strutRotation * (chassisOrientation * localOffset);
 
     m_strut.lowerMount = m_upright.strutLowerJoint;
 
     m_upright.hubOrientation =
-        (chassisOrientation * localOrientation).Normalized();
+        worldUprightOrientation;
 
     m_upright.hubPosition =
         m_upright.lowerJoint +
-        chassisOrientation *
-            (localOrientation * m_uprightConfig.hubOffset);
+        strutRotation *
+            (chassisOrientation * m_uprightConfig.hubOffset);
 }
 
 float MacPherson::Distance(
