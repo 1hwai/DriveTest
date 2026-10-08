@@ -14,6 +14,8 @@ DoubleWishbone::DoubleWishbone()
     m_springMountA = Vec3(0.0f, 0.0f, 0.0f);
     m_springMountB = Vec3(0.0f, 0.0f, 0.0f);
     m_springMountBOffset = Vec3(0.0f, 0.0f, 0.0f);
+    m_steeringAxisStart = Vec3(0.0f, 0.0f, 0.0f);
+    m_steeringAxisEnd = Vec3(0.0f, 0.0f, 0.0f);
 }
 
 void DoubleWishbone::Configure(const DoubleWishboneConfig& config) {
@@ -81,6 +83,12 @@ bool DoubleWishbone::SolveAtTravel(
 
     m_upright.upperJoint = m_upperArm.outerJoint;
     m_upright.lowerJoint = m_lowerArm.outerJoint;
+    m_steeringAxisStart =
+        chassisPosition +
+        chassisOrientation * m_upright.upperJoint;
+    m_steeringAxisEnd =
+        chassisPosition +
+        chassisOrientation * m_upright.lowerJoint;
 
     UpdateUpright(chassisPosition, chassisOrientation);
 
@@ -168,17 +176,17 @@ const Vec3& DoubleWishbone::GetSpringMountB() const {
     return m_springMountB;
 }
 
-Vec3 DoubleWishbone::GetSteeringAxisStart() const { return m_upright.upperJoint; }
-Vec3 DoubleWishbone::GetSteeringAxisEnd() const { return m_upright.lowerJoint; }
+Vec3 DoubleWishbone::GetSteeringAxisStart() const { return m_steeringAxisStart; }
+Vec3 DoubleWishbone::GetSteeringAxisEnd() const { return m_steeringAxisEnd; }
 
 bool DoubleWishbone::ApplySteering(float angle) {
-    const Vec3 axisDelta = m_upright.lowerJoint - m_upright.upperJoint;
+    const Vec3 axisDelta = m_steeringAxisEnd - m_steeringAxisStart;
     const float axisLengthSquared = axisDelta.LengthSquared();
     if (axisLengthSquared < Epsilon)
         return false;
     const Vec3 axis = axisDelta / std::sqrt(axisLengthSquared);
     const Quaternion rotation = Quaternion::FromAxisAngle(axis, angle);
-    const Vec3 axisPoint = m_upright.lowerJoint;
+    const Vec3 axisPoint = m_steeringAxisEnd;
     m_upright.hubPosition = axisPoint + rotation * (m_upright.hubPosition - axisPoint);
     m_upright.hubOrientation = (rotation * m_upright.hubOrientation).Normalized();
     m_springMountB = axisPoint + rotation * (m_springMountB - axisPoint);
