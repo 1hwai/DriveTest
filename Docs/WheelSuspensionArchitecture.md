@@ -1009,6 +1009,60 @@ Tests/VehicleDiagnostics.cpp
 
 **Current status:** interface/state migration is complete and regression-safe. Tire force-basis migration to solved hub orientation is intentionally deferred until the dedicated tire-force work unit.
 
+#### 4-2 — Tire contact patch / force basis migration
+
+**Goal:** make the tire contact basis derive from the solved wheel hub orientation while preserving the existing tire force model itself.
+
+The responsibility boundary is:
+
+```
+Suspension Geometry
+        ↓
+   Hub Position
+   Hub Orientation
+        ↓
+       Wheel
+        ↓
+ Contact Point + Normal
+        ↓
+ Project hub forward onto contact plane
+        ↓
+ Tire contact basis
+   ├─ forward
+   └─ lateral
+        ↓
+ Existing slip / grip / force model
+```
+
+**Important coordinate detail:** DriveTest uses vehicle-right = `-X`, while the quaternion rotation basis is right-handed. Therefore the hub orientation must be constructed from the physical `+X = left` axis, `+Y = up`, and `+Z = forward`. Using vehicle-right (`-X`) directly as a quaternion basis axis creates a reflection rather than a rotation.
+
+**Tire state basis:**
+
+- `forward = hubOrientation * VehicleCoordinates::Forward()`.
+- Project `forward` onto the contact plane using the contact normal.
+- Normalize the projected forward vector.
+- `lateral = forward × contactNormal`, producing vehicle-right (`-X`) for a flat road.
+- Do not apply `Wheel::GetSteeringAngle()` again after reading the solved hub orientation; steering is already represented by the hub orientation.
+
+**Force-model boundary:**
+
+- Keep the existing slip-ratio calculation.
+- Keep the existing slip-angle calculation.
+- Keep the existing grip curve.
+- Keep the existing friction limit and combined-slip scaling.
+- Keep rolling resistance behavior.
+- Only migrate the coordinate basis used to interpret contact velocity and apply the resulting force.
+
+**Verification:**
+
+- [x] Correct the hub orientation basis so it represents a proper quaternion rotation under the vehicle coordinate convention.
+- [x] Derive tire contact forward/lateral basis from solved hub orientation.
+- [x] Prevent steering from being applied twice.
+- [x] Add an independent diagnostic comparing the tire basis with the projected solved hub basis.
+- [ ] Run the full Linux build and vehicle diagnostics after the migration.
+
+**Current status:** implementation is committed; fresh Linux verification is required before marking 4-2 complete.
+
 ### Phase 5 — Vehicle Validation
 
 #### 5-1 — Basic driving
