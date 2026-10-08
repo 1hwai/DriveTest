@@ -1071,6 +1071,61 @@ namespace {
         return true;
     }
 
+    bool RunAckermannSteeringDiagnostics() {
+        VehicleTestRig rig;
+        if (!rig.configLoaded) {
+            Logger::Error("[FAIL] Ackermann steering: " + rig.configError);
+            return false;
+        }
+
+        auto MeasureSteeringMagnitude = [&](WheelIndex index) {
+            const Vec3 forward =
+                rig.car.GetSuspensionGeometry(index)
+                    .GetHubOrientation() * VehicleCoordinates::Forward();
+            return std::atan2(std::abs(forward.x), forward.z);
+        };
+
+        rig.car.SetInput(0.0f, 0.0f, 0.35f, 1.0f);
+        rig.car.UpdatePhysics(rig.physicsWorld, FixedDeltaTime);
+        const float rightTurnLeft =
+            MeasureSteeringMagnitude(WheelIndex::FrontLeft);
+        const float rightTurnRight =
+            MeasureSteeringMagnitude(WheelIndex::FrontRight);
+
+        rig.car.SetInput(0.0f, 0.0f, -0.35f, 1.0f);
+        rig.car.UpdatePhysics(rig.physicsWorld, FixedDeltaTime);
+        const float leftTurnLeft =
+            MeasureSteeringMagnitude(WheelIndex::FrontLeft);
+        const float leftTurnRight =
+            MeasureSteeringMagnitude(WheelIndex::FrontRight);
+
+        std::ostringstream log;
+        log << std::fixed << std::setprecision(5)
+            << "[Ackermann] rightTurnLeft=" << rightTurnLeft
+            << " rightTurnRight=" << rightTurnRight
+            << " leftTurnLeft=" << leftTurnLeft
+            << " leftTurnRight=" << leftTurnRight;
+        Logger::Info(log.str());
+
+        const bool finite =
+            std::isfinite(rightTurnLeft) &&
+            std::isfinite(rightTurnRight) &&
+            std::isfinite(leftTurnLeft) &&
+            std::isfinite(leftTurnRight);
+        const bool rightTurnCorrect =
+            rightTurnRight > rightTurnLeft + 0.0001f;
+        const bool leftTurnCorrect =
+            leftTurnLeft > leftTurnRight + 0.0001f;
+
+        if (!finite || !rightTurnCorrect || !leftTurnCorrect) {
+            Logger::Error("[FAIL] Ackermann inner-wheel steering geometry");
+            return false;
+        }
+
+        Logger::Info("[PASS] Ackermann steering diagnostics");
+        return true;
+    }
+
     bool RunCorneringLoadTransferDiagnostics() {
         CorneringMetrics positiveSteer;
         CorneringMetrics negativeSteer;
@@ -1146,6 +1201,8 @@ int main() {
 
     passed = RunSteeringForceDirectionTest("RightSteer", 0.35f, -1.0f) && passed;
     passed = RunSteeringForceDirectionTest("LeftSteer", -0.35f, 1.0f) && passed;
+
+    passed = RunAckermannSteeringDiagnostics() && passed;
 
     passed = RunCorneringLoadTransferDiagnostics() && passed;
 
