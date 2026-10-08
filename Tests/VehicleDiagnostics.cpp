@@ -1135,6 +1135,97 @@ namespace {
         return true;
     }
 
+    bool RunTireContactBasisDiagnostics() {
+        VehicleTestRig rig;
+        if (!rig.configLoaded) {
+            Logger::Error("[FAIL] Tire contact basis: " + rig.configError);
+            return false;
+        }
+
+        rig.car.SetInput(0.0f, 0.0f, 0.35f, 1.0f);
+        rig.car.UpdatePhysics(
+            rig.physicsWorld,
+            FixedDeltaTime
+        );
+
+        float maxForwardError = 0.0f;
+        float maxLateralError = 0.0f;
+        bool finite = true;
+
+        for (size_t i = 0; i < WheelCount; ++i) {
+            const Wheel& wheel =
+                rig.car.GetWheel(static_cast<WheelIndex>(i));
+            const TireState& state =
+                rig.car.GetTire(static_cast<WheelIndex>(i))
+                    .GetState();
+
+            if (!wheel.IsGrounded())
+                continue;
+
+            const Vec3 normal =
+                wheel.GetContactNormal();
+
+            Vec3 expectedForward =
+                wheel.GetWorldOrientation() *
+                VehicleCoordinates::Forward();
+            expectedForward -=
+                normal * expectedForward.Dot(normal);
+
+            if (expectedForward.LengthSquared() <= 0.000001f)
+                return false;
+
+            expectedForward =
+                expectedForward.Normalized();
+
+            Vec3 expectedLateral =
+                expectedForward.Cross(normal);
+
+            if (expectedLateral.LengthSquared() <= 0.000001f)
+                return false;
+
+            expectedLateral =
+                expectedLateral.Normalized();
+
+            maxForwardError =
+                std::max(
+                    maxForwardError,
+                    (state.forward - expectedForward).Length()
+                );
+            maxLateralError =
+                std::max(
+                    maxLateralError,
+                    (state.lateral - expectedLateral).Length()
+                );
+
+            finite =
+                finite &&
+                IsFinite(state.forward) &&
+                IsFinite(state.lateral);
+        }
+
+        Logger::Info(
+            "[TireContactBasis] maxForwardError=" +
+            std::to_string(maxForwardError) +
+            " maxLateralError=" +
+            std::to_string(maxLateralError)
+        );
+
+        constexpr float BasisTolerance = 0.000001f;
+        if (!finite ||
+            maxForwardError > BasisTolerance ||
+            maxLateralError > BasisTolerance) {
+            Logger::Error(
+                "[FAIL] Tire contact basis does not follow solved hub orientation"
+            );
+            return false;
+        }
+
+        Logger::Info(
+            "[PASS] Tire contact basis diagnostics"
+        );
+        return true;
+    }
+
     bool RunAckermannSteeringDiagnostics() {
         VehicleTestRig rig;
         if (!rig.configLoaded) {
@@ -1267,6 +1358,7 @@ int main() {
     passed = RunSteeringForceDirectionTest("LeftSteer", -0.35f, 1.0f) && passed;
 
     passed = RunTireHubStateDiagnostics() && passed;
+    passed = RunTireContactBasisDiagnostics() && passed;
     passed = RunAckermannSteeringDiagnostics() && passed;
 
     passed = RunCorneringLoadTransferDiagnostics() && passed;
