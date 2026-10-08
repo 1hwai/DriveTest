@@ -1031,9 +1031,10 @@ These geometry properties are represented through the existing concrete suspensi
 
 - [x] Calculate inner/outer steering angles from wheelbase and track width.
 - [x] Apply the larger steering magnitude to the inner wheel for both turn directions.
+- [x] Keep both front geometry angles aligned with the actual solved steering-axis turn direction.
 - [x] Validate right-turn and left-turn Ackermann symmetry.
 - [x] Validate finite steering-angle results.
-- [x] Validate the complete vehicle diagnostics after Ackermann integration.
+- [x] Validate actual Ackermann steering direction in regression diagnostics.
 
 **Current status:** Phase 3 steering-axis, steering-geometry, integration, and Ackermann work units are complete and covered by vehicle diagnostics.
 ### Phase 4 — Tire Integration
@@ -1112,7 +1113,7 @@ Suspension Geometry
 - [x] Add an independent diagnostic comparing the tire basis with the projected solved hub basis.
 - [ ] Run the full Linux build and vehicle diagnostics after the migration.
 
-**Current status:** implementation is committed, but 4-2 is **not complete**. The current regression shows that the solved-hub tire basis is finite and directionally usable, but the cornering scenario does not yet produce the required mirrored suspension load transfer. Do not mark 4-2 complete or compensate by changing vehicle parameters until the physical transfer chain above is restored and verified.
+**Current status:** the solved-hub tire contact basis migration is still in progress. The initial regression exposed an Ackermann geometry sign error: the two front hub geometry angles did not represent the same physical turn direction. That sign handling is now corrected and the Ackermann regression check validates both magnitude and direction. Phase 4-2 remains incomplete until Linux diagnostics confirm mirrored cornering load transfer.
 
 ### Phase 5 — Vehicle Validation
 
