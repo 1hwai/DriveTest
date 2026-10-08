@@ -431,11 +431,11 @@ MacPherson도 별도의 구체 서스펜션 기하로 구현한다. 두 구조�
 #### 4-1 — Tire 인터페이스 이전
 
 - [x] 새 hub/wheel 상태에 타이어 접촉 연결
-- [x] 필요한 범위에서 기존 타이어 grip 모델 유지
-- [x] 타이어 입력에서 obsolete steering-angle 재구성 제거
+- [x] 기존 타이어 grip 및 steering-force 기준 유지
+- [x] 새 hub 상태 도입 중 기존 타이어 힘의 동작을 변경하지 않음
 - [x] Wheel 상태에 hub 위치와 hub 방향을 함께 저장
 - [x] 독립적인 steering 회전 대신 solved hub 방향으로 휠 렌더링
-- [x] 타이어 상태가 solved hub 방향과 일치하는지 진단 검증
+- [x] hub 상태 전달을 진단으로 검증
 
 **구현 파일:**
 
@@ -448,7 +448,8 @@ World/Scene.cpp
 Tests/VehicleDiagnostics.cpp
 ```
 
-**현재 상태:** 구현 및 독립 진단을 완료했다. 4-2에서 접촉점 속도와 접촉 패치 힘 적용을 별도로 검증한다.
+**현재 상태:** 인터페이스/상태 이전을 완료했고 회귀를 보존했다. 타이어 힘 계산의 기준을 solved hub 방향으로 이전하는 작업은 전용 타이어 힘 work unit으로 명시적으로 미룬다.
+
 ### Phase 5 — 차량 검증
 
 #### 5-1 — 기본 주행
