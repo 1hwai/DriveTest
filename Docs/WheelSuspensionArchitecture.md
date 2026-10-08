@@ -1113,7 +1113,7 @@ Suspension Geometry
 - [x] Add an independent diagnostic comparing the tire basis with the projected solved hub basis.
 - [ ] Run the full Linux build and vehicle diagnostics after the migration.
 
-**Current status:** the solved-hub tire contact basis migration is still in progress. The initial regression exposed an Ackermann geometry sign error: the two front hub geometry angles did not represent the same physical turn direction. That sign handling is now corrected and the Ackermann regression check validates both magnitude and direction. Phase 4-2 remains incomplete until Linux diagnostics confirm mirrored cornering load transfer.
+**Current status:** the solved-hub tire contact basis migration is still in progress. Ackermann steering direction and mirrored cornering load transfer are now corrected. The tire basis is also generated for grounded wheels before the normal-load validity check, so a zero-load grounded state cannot silently fall back to the vehicle default axis. Phase 4-2 remains incomplete until Linux diagnostics confirm the complete regression suite.
 
 ### Phase 5 — Vehicle Validation
 
