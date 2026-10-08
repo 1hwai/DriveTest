@@ -189,7 +189,7 @@ int main() {
         Near(left.GetHubOrientation().y, zeroOrientation.y) &&
         Near(left.GetHubOrientation().z, zeroOrientation.z);
 
-    left.Solve(chassisPosition, chassisOrientation);
+    left.Solve(chassisPosition, identity);
     const Vec3 steeringBefore = left.GetHubPosition();
     const Vec3 steeringAxisStart = left.GetSteeringAxisStart();
     const Vec3 steeringAxisEnd = left.GetSteeringAxisEnd();
