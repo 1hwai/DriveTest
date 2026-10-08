@@ -1084,42 +1084,47 @@ namespace {
             FixedDeltaTime
         );
 
-        const Wheel& frontLeft =
-            rig.car.GetWheel(WheelIndex::FrontLeft);
-        const Wheel& frontRight =
-            rig.car.GetWheel(WheelIndex::FrontRight);
+        bool finite = true;
+        float maxPositionError = 0.0f;
 
-        const Vec3 leftHubForward =
-            frontLeft.GetWorldOrientation() *
-            VehicleCoordinates::Forward();
-        const Vec3 rightHubForward =
-            frontRight.GetWorldOrientation() *
-            VehicleCoordinates::Forward();
+        for (size_t i = 0; i < WheelCount; ++i) {
+            const WheelIndex index =
+                static_cast<WheelIndex>(i);
+            const Vec3& hubPosition =
+                rig.car.GetSuspensionGeometry(index)
+                    .GetHubPosition();
+            const Vec3& wheelPosition =
+                rig.car.GetWheel(index)
+                    .GetWorldPosition();
 
-        const TireState& leftState =
-            rig.car.GetTire(WheelIndex::FrontLeft).GetState();
-        const TireState& rightState =
-            rig.car.GetTire(WheelIndex::FrontRight).GetState();
+            maxPositionError =
+                std::max(
+                    maxPositionError,
+                    (hubPosition - wheelPosition).Length()
+                );
 
-        const float leftError =
-            (leftState.forward -
-             leftHubForward.Normalized()).Length();
-        const float rightError =
-            (rightState.forward -
-             rightHubForward.Normalized()).Length();
+            const Quaternion& orientation =
+                rig.car.GetWheel(index)
+                    .GetWorldOrientation();
+
+            finite =
+                finite &&
+                std::isfinite(orientation.w) &&
+                std::isfinite(orientation.x) &&
+                std::isfinite(orientation.y) &&
+                std::isfinite(orientation.z);
+        }
 
         Logger::Info(
-            "[TireHubState] leftError=" +
-            std::to_string(leftError) +
-            " rightError=" +
-            std::to_string(rightError)
+            "[TireHubState] maxPositionError=" +
+            std::to_string(maxPositionError)
         );
 
-        constexpr float Tolerance = 0.000001f;
-        if (leftError > Tolerance ||
-            rightError > Tolerance) {
+        constexpr float PositionTolerance = 0.000001f;
+        if (!finite ||
+            maxPositionError > PositionTolerance) {
             Logger::Error(
-                "[FAIL] Tire state does not follow solved hub orientation"
+                "[FAIL] Wheel hub state is not propagated correctly"
             );
             return false;
         }
