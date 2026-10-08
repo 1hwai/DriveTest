@@ -472,9 +472,10 @@ MacPherson도 별도의 구체 서스펜션 기하로 구현한다. 두 구조�
 
 - [x] wheelbase와 track width로 inner/outer 조향각 계산
 - [x] 양쪽 회전 모두 inner wheel에 더 큰 조향각 적용
+- [x] solved steering axis 기준으로 좌우 front hub가 같은 실제 선회 방향을 갖도록 geometry angle 부호 정리
 - [x] 우회전/좌회전 Ackermann 대칭 검증
 - [x] 조향각 유한성 검증
-- [x] Ackermann 적용 후 전체 차량 진단 통과
+- [x] Ackermann 실제 선회 방향 회귀 검증
 
 **현재 상태:** 스티어링 축, 스티어링 기하, 통합, Ackermann work unit을 모두 완료했고 차량 진단으로 검증했다.
 ### Phase 4 — 타이어 통합
@@ -553,7 +554,7 @@ Suspension Geometry
 - [x] Tire basis와 projected solved hub basis를 비교하는 독립 진단 추가.
 - [ ] 이전 후 Linux 전체 빌드 및 vehicle diagnostics 실행.
 
-**현재 상태:** 구현은 커밋되었지만 4-2는 **완료되지 않았다**. 현재 회귀에서는 solved hub 기반 타이어 좌표계 자체는 유한하고 방향도 사용할 수 있는 상태지만, 코너링 시나리오에서 요구되는 좌우 대칭 하중 이동이 아직 제대로 발생하지 않는다. 위 물리 전달 경로가 복구되고 검증되기 전에는 4-2를 완료 처리하거나 차량 파라미터를 바꿔 결과를 맞추지 않는다.
+**현재 상태:** solved hub 기반 Tire 접촉 기준 이전을 진행 중이다. 초기 회귀에서 좌우 front hub의 geometry angle이 같은 실제 선회 방향을 나타내지 않는 Ackermann 부호 오류가 발견되어 수정했고, Ackermann 회귀 진단도 크기뿐 아니라 실제 선회 방향을 검사하도록 강화했다. Linux 전체 진단에서 좌우 대칭 하중 이동이 다시 확인될 때까지 4-2는 완료 처리하지 않는다.
 
 ### Phase 5 — 차량 검증
 
