@@ -91,6 +91,25 @@ namespace {
 
 }
 
+    bool UnitQuaternion(const Quaternion& value) {
+        return Near(value.LengthSquared(), 1.0f);
+    }
+
+    bool CheckAxis(const Vec3& start, const Vec3& end) {
+        const Vec3 delta = end - start;
+        return Finite(start) && Finite(end) &&
+            delta.Length() > 0.0001f &&
+            Near(delta.Normalized().Length(), 1.0f);
+    }
+
+    bool CheckAxisRotation(const Vec3& axisStart, const Vec3& axisEnd, const Vec3& before, const Vec3& after, float angle) {
+        const Vec3 axis = (axisEnd - axisStart).Normalized();
+        const Vec3 radial = before - axisStart;
+        const Vec3 rotated = axisStart + Quaternion::FromAxisAngle(axis, angle) * radial;
+        return NearVec(after, rotated) &&
+            Near(radial.Dot(axis), (after - axisStart).Dot(axis));
+    }
+
 int main() {
     const DoubleWishboneConfig leftConfig =
         MakeConfig(1.0f);
@@ -165,6 +184,40 @@ int main() {
     const bool hubPosition =
         NearVec(leftHub, expectedLeftHub) &&
         NearVec(rightHub, expectedRightHub);
+
+    const Vec3 leftAxisStart = left.GetSteeringAxisStart();
+    const Vec3 leftAxisEnd = left.GetSteeringAxisEnd();
+    const Vec3 rightAxisStart = right.GetSteeringAxisStart();
+    const Vec3 rightAxisEnd = right.GetSteeringAxisEnd();
+
+    const bool steeringAxis =
+        CheckAxis(leftAxisStart, leftAxisEnd) &&
+        CheckAxis(rightAxisStart, rightAxisEnd) &&
+        Near(leftAxisStart.x, -rightAxisStart.x) &&
+        Near(leftAxisStart.y, rightAxisStart.y) &&
+        Near(leftAxisStart.z, rightAxisStart.z) &&
+        Near(leftAxisEnd.x, -rightAxisEnd.x) &&
+        Near(leftAxisEnd.y, rightAxisEnd.y) &&
+        Near(leftAxisEnd.z, rightAxisEnd.z);
+
+    const Vec3 zeroBefore = left.GetHubPosition();
+    const Quaternion zeroOrientation = left.GetHubOrientation();
+    const bool zeroSteering =
+        left.ApplySteering(0.0f) &&
+        NearVec(left.GetHubPosition(), zeroBefore) &&
+        Near(left.GetHubOrientation().w, zeroOrientation.w) &&
+        Near(left.GetHubOrientation().x, zeroOrientation.x) &&
+        Near(left.GetHubOrientation().y, zeroOrientation.y) &&
+        Near(left.GetHubOrientation().z, zeroOrientation.z);
+
+    left.Solve(chassisPosition, chassisOrientation);
+    const Vec3 steeringBefore = left.GetHubPosition();
+    const Vec3 steeringAxisStart = left.GetSteeringAxisStart();
+    const Vec3 steeringAxisEnd = left.GetSteeringAxisEnd();
+    const bool steeringRotation =
+        left.ApplySteering(0.35f) &&
+        CheckAxisRotation(steeringAxisStart, steeringAxisEnd, steeringBefore, left.GetHubPosition(), 0.35f) &&
+        UnitQuaternion(left.GetHubOrientation());
 
     const Vec3 leftSpringA = left.GetSpringMountA();
     const Vec3 leftSpringB = left.GetSpringMountB();
@@ -357,6 +410,9 @@ int main() {
         << " symmetry=" << symmetry
         << " hubSymmetry=" << hubSymmetry
         << " hubPosition=" << hubPosition
+        << " steeringAxis=" << steeringAxis
+        << " zeroSteering=" << zeroSteering
+        << " steeringRotation=" << steeringRotation
         << " finite=" << finite
         << " travel=" << travel
         << " endpoints=" << endpoints
@@ -370,6 +426,9 @@ int main() {
         !symmetry ||
         !hubSymmetry ||
         !hubPosition ||
+        !steeringAxis ||
+        !zeroSteering ||
+        !steeringRotation ||
         !finite ||
         !travel ||
         !endpoints ||
