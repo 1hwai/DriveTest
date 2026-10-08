@@ -132,13 +132,13 @@ void DoubleWishbone::UpdateUpright(
 
     Mat3 basis = Mat3::Identity();
     basis.m[0][0] = left.x;
-    basis.m[0][1] = left.y;
-    basis.m[0][2] = left.z;
-    basis.m[1][0] = uprightUp.x;
+    basis.m[1][0] = left.y;
+    basis.m[2][0] = left.z;
+    basis.m[0][1] = uprightUp.x;
     basis.m[1][1] = uprightUp.y;
-    basis.m[1][2] = uprightUp.z;
-    basis.m[2][0] = correctedForward.x;
-    basis.m[2][1] = correctedForward.y;
+    basis.m[2][1] = uprightUp.z;
+    basis.m[0][2] = correctedForward.x;
+    basis.m[1][2] = correctedForward.y;
     basis.m[2][2] = correctedForward.z;
 
     const Quaternion localOrientation =
