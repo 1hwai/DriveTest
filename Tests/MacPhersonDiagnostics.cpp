@@ -402,7 +402,26 @@ int main() {
                 orientation.Conjugate() *
                 (right.GetHubPosition() - chassisPosition);
 
+            const bool hubOffsetInvariant =
+                Near(
+                    (left.GetHubPosition() - left.GetLowerOuterJoint()).Length(),
+                    leftConfig.upright.hubOffset.Length()
+                ) &&
+                Near(
+                    (right.GetHubPosition() - right.GetLowerOuterJoint()).Length(),
+                    rightConfig.upright.hubOffset.Length()
+                ) &&
+                Near(
+                    (left.GetStrutLowerMount() - left.GetLowerOuterJoint()).Length(),
+                    leftConfig.strut.lowerMountOffset.Length()
+                ) &&
+                Near(
+                    (right.GetStrutLowerMount() - right.GetLowerOuterJoint()).Length(),
+                    rightConfig.strut.lowerMountOffset.Length()
+                );
+
             poseSweep =
+                hubOffsetInvariant &&
                 Finite(leftLocalHub) &&
                 Finite(rightLocalHub) &&
                 Finite(left.GetHubOrientation()) &&
