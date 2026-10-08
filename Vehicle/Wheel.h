@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../Core/Math/Quaternion.h"
 #include "../Core/Math/Vec3.h"
 
 class PhysicsWorld;
@@ -14,6 +15,7 @@ public:
     const Vec3& GetLocalPosition() const;
 
     void SetHubPosition(const Vec3& position);
+    void SetHubState(const Vec3& position, const Quaternion& orientation);
 
     void SetRadius(float radius);
     float GetRadius() const;
@@ -61,6 +63,7 @@ public:
     float GetRotationAngle() const;
     float GetTireReactionTorque() const;
     const Vec3& GetWorldPosition() const;
+    const Quaternion& GetWorldOrientation() const;
     const Vec3& GetContactPoint() const;
     const Vec3& GetContactNormal() const;
 
@@ -92,6 +95,7 @@ private:
     bool m_hasPreviousCompression;
 
     Vec3 m_worldPosition;
+    Quaternion m_worldOrientation;
     Vec3 m_contactPoint;
     Vec3 m_contactNormal;
 };
