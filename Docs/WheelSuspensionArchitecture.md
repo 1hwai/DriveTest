@@ -1005,6 +1005,25 @@ Hub position + hub orientation
 
 The steering-axis endpoints must be evaluated after the current suspension geometry solve. Suspension travel can therefore change the axis position and orientation naturally.
 
+**Coordinate-space audit:**
+
+The two concrete geometries intentionally use different internal solve spaces, but their public steering results are world-space.
+
+| State | Double Wishbone | MacPherson |
+| --- | --- | --- |
+| Arm/joint solve | Suspension-local | World-space after chassis transform |
+| Steering-axis endpoints | World-space transformed upper/lower outer joints | World-space upper strut mount/lower outer joint |
+| Steering axis | World-space | World-space |
+| Upright orientation before steering | `chassisOrientation * localUprightOrientation` | World-space orientation derived from chassis orientation and strut direction |
+| Hub position | World lower joint + world upright orientation × local hub offset | World lower joint + world strut rotation × chassis-transformed local hub offset |
+| Steering rotation | World axis-angle rotation | World axis-angle rotation |
+
+For MacPherson, the strut-direction rotation is computed from the **world-transformed local reference axis** to the solved world strut axis. It must not be multiplied by `chassisOrientation` again after that conversion. This prevents chassis roll/pitch from being applied twice.
+
+For Double Wishbone, the arm solver remains in suspension-local coordinates. Its local upright orientation is transformed to world space exactly once, and the steering-axis endpoints are explicitly stored in world space after that transformation.
+
+This distinction is intentional: internal coordinate spaces may differ, but the steering API exposes a single world-space contract for axis endpoints, hub position, and hub orientation.
+
 **Kinematic operation:**
 
 - Double Wishbone upper/lower outer joints lie on the steering axis and remain the axis-defining pivots while the upright/hub rotates.
