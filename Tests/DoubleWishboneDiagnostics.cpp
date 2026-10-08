@@ -276,7 +276,7 @@ int main() {
     left.Solve(chassisPosition, chassisOrientation);
     right.Solve(chassisPosition, chassisOrientation);
     left.ApplySteering(0.35f);
-    right.ApplySteering(0.35f);
+    right.ApplySteering(-0.35f);
 
     const bool steeringSymmetry =
         Near(left.GetHubPosition().x, -right.GetHubPosition().x) &&
