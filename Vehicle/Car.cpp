@@ -195,8 +195,16 @@ void Car::UpdatePhysics(
         );
 
         if (i < 2) {
+            const float steeringAngle =
+                m_wheels[i].GetSteeringAngle();
+
+            const float geometrySteeringAngle =
+                i == static_cast<size_t>(WheelIndex::FrontLeft)
+                    ? steeringAngle
+                    : -steeringAngle;
+
             m_suspensionGeometry[i].ApplySteering(
-                m_wheels[i].GetSteeringAngle()
+                geometrySteeringAngle
             );
         }
 
