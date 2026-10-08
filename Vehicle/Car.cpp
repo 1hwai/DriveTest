@@ -156,7 +156,6 @@ void Car::UpdatePhysics(
         m_powertrain.GetRightDriveTorque();
 
     // Coordinate convention: vehicle forward = +Z, right = -X, up = +Y.
-    // Steering input and steering angle are both positive to the right.
     // Wheel steering preserves the existing input/angle sign convention.
     const Vec3 velocity = m_chassis->GetLinearVelocity();
     const float horizontalSpeed = std::sqrt(
@@ -194,6 +193,12 @@ void Car::UpdatePhysics(
             m_chassis->GetPosition(),
             m_chassis->GetOrientation()
         );
+
+        if (i < 2) {
+            m_suspensionGeometry[i].ApplySteering(
+                m_wheels[i].GetSteeringAngle()
+            );
+        }
 
         m_wheels[i].SetHubPosition(
             m_suspensionGeometry[i].GetHubPosition()
