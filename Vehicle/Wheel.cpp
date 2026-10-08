@@ -34,6 +34,7 @@ Wheel::Wheel()
     m_suspensionResidual(0.0f),
     m_hasPreviousCompression(false),
     m_worldPosition(0.0f, 0.0f, 0.0f),
+    m_worldOrientation(Quaternion::Identity()),
     m_contactPoint(0.0f, 0.0f, 0.0f),
     m_contactNormal(0.0f, 1.0f, 0.0f) {}
 
@@ -43,6 +44,14 @@ void Wheel::SetLocalPosition(const Vec3& position) {
 
 void Wheel::SetHubPosition(const Vec3& position) {
     m_worldPosition = position;
+}
+
+void Wheel::SetHubState(
+    const Vec3& position,
+    const Quaternion& orientation
+) {
+    m_worldPosition = position;
+    m_worldOrientation = orientation;
 }
 
 const Vec3& Wheel::GetLocalPosition() const {
@@ -404,6 +413,10 @@ float Wheel::GetTireReactionTorque() const {
 
 const Vec3& Wheel::GetWorldPosition() const {
     return m_worldPosition;
+}
+
+const Quaternion& Wheel::GetWorldOrientation() const {
+    return m_worldOrientation;
 }
 
 const Vec3& Wheel::GetContactPoint() const {
