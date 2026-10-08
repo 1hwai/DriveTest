@@ -450,6 +450,60 @@ Tests/VehicleDiagnostics.cpp
 
 **현재 상태:** 인터페이스/상태 이전을 완료했고 회귀를 보존했다. 타이어 힘 계산의 기준을 solved hub 방향으로 이전하는 작업은 전용 타이어 힘 work unit으로 명시적으로 미룬다.
 
+#### 4-2 — Tire 접촉 패치 / 힘 기준 이전
+
+**목표:** 타이어 접촉 좌표계를 solved wheel hub orientation에서 직접 얻도록 이전하면서, 기존 타이어 힘 모델 자체는 보존한다.
+
+책임 경계는 다음과 같다.
+
+```
+Suspension Geometry
+        ↓
+   Hub Position
+   Hub Orientation
+        ↓
+       Wheel
+        ↓
+ Contact Point + Normal
+        ↓
+ 접촉면에 hub forward 투영
+        ↓
+ Tire contact basis
+   ├─ forward
+   └─ lateral
+        ↓
+ 기존 slip / grip / force 모델
+```
+
+**중요한 좌표계 사항:** DriveTest의 차량 오른쪽은 `-X`이지만 quaternion 회전 basis는 오른손 좌표계다. 따라서 hub orientation은 물리적인 `+X = left`, `+Y = up`, `+Z = forward` 축으로 구성해야 한다. 차량 오른쪽(`-X`)을 quaternion basis 축으로 직접 사용하면 회전이 아니라 반사(reflection)가 된다.
+
+**Tire state basis:**
+
+- `forward = hubOrientation * VehicleCoordinates::Forward()`.
+- contact normal을 사용해 `forward`를 접촉면에 투영한다.
+- 투영된 forward를 정규화한다.
+- `lateral = forward × contactNormal`로 계산하며, 평탄한 도로에서는 차량 오른쪽(`-X`)이 된다.
+- solved hub orientation을 사용한 뒤에는 `Wheel::GetSteeringAngle()`을 다시 적용하지 않는다. 스티어링은 이미 hub orientation에 반영되어 있다.
+
+**힘 모델 경계:**
+
+- 기존 slip ratio 계산을 유지한다.
+- 기존 slip angle 계산을 유지한다.
+- 기존 grip curve를 유지한다.
+- 기존 friction limit 및 combined-slip scaling을 유지한다.
+- rolling resistance 동작을 유지한다.
+- 접촉점 속도를 해석하고 결과 힘을 적용하는 좌표 basis만 이전한다.
+
+**검증:**
+
+- [x] 차량 좌표계에서 hub orientation이 올바른 quaternion 회전이 되도록 basis 수정.
+- [x] solved hub orientation으로 Tire 접촉 forward/lateral basis 계산.
+- [x] steering이 두 번 적용되지 않도록 제거.
+- [x] Tire basis와 projected solved hub basis를 비교하는 독립 진단 추가.
+- [ ] 이전 후 Linux 전체 빌드 및 vehicle diagnostics 실행.
+
+**현재 상태:** 구현은 커밋되었으며, 4-2 완료 판정 전 Linux에서 새 검증이 필요하다.
+
 ### Phase 5 — 차량 검증
 
 #### 5-1 — 기본 주행
