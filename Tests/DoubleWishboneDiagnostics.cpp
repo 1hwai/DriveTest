@@ -387,7 +387,18 @@ int main() {
                 orientation.Conjugate() *
                 (right.GetHubPosition() - chassisPosition);
 
+            const bool hubOffsetInvariant =
+                Near(
+                    (left.GetHubPosition() - left.GetLowerOuterJoint()).Length(),
+                    leftConfig.upright.hubOffset.Length()
+                ) &&
+                Near(
+                    (right.GetHubPosition() - right.GetLowerOuterJoint()).Length(),
+                    rightConfig.upright.hubOffset.Length()
+                );
+
             poseSweep =
+                hubOffsetInvariant &&
                 Finite(leftPoseHub) &&
                 Finite(rightPoseHub) &&
                 Finite(left.GetHubOrientation()) &&
