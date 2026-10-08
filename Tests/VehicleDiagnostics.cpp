@@ -1233,33 +1233,54 @@ namespace {
             return false;
         }
 
-        auto MeasureSteeringMagnitude = [&](WheelIndex index) {
+        auto MeasureSteeringAngle = [&](WheelIndex index) {
             const Vec3 forward =
                 rig.car.GetSuspensionGeometry(index)
                     .GetHubOrientation() * VehicleCoordinates::Forward();
-            return std::atan2(std::abs(forward.x), forward.z);
+            return std::atan2(
+                -forward.x,
+                forward.z
+            );
+        };
+
+        auto MeasureSteeringMagnitude = [&](WheelIndex index) {
+            return std::abs(
+                MeasureSteeringAngle(index)
+            );
         };
 
         rig.car.SetInput(0.0f, 0.0f, 0.35f, 1.0f);
         rig.car.UpdatePhysics(rig.physicsWorld, FixedDeltaTime);
+        const float rightTurnLeftAngle =
+            MeasureSteeringAngle(WheelIndex::FrontLeft);
+        const float rightTurnRightAngle =
+            MeasureSteeringAngle(WheelIndex::FrontRight);
         const float rightTurnLeft =
-            MeasureSteeringMagnitude(WheelIndex::FrontLeft);
+            std::abs(rightTurnLeftAngle);
         const float rightTurnRight =
-            MeasureSteeringMagnitude(WheelIndex::FrontRight);
+            std::abs(rightTurnRightAngle);
 
         rig.car.SetInput(0.0f, 0.0f, -0.35f, 1.0f);
         rig.car.UpdatePhysics(rig.physicsWorld, FixedDeltaTime);
+        const float leftTurnLeftAngle =
+            MeasureSteeringAngle(WheelIndex::FrontLeft);
+        const float leftTurnRightAngle =
+            MeasureSteeringAngle(WheelIndex::FrontRight);
         const float leftTurnLeft =
-            MeasureSteeringMagnitude(WheelIndex::FrontLeft);
+            std::abs(leftTurnLeftAngle);
         const float leftTurnRight =
-            MeasureSteeringMagnitude(WheelIndex::FrontRight);
+            std::abs(leftTurnRightAngle);
 
         std::ostringstream log;
         log << std::fixed << std::setprecision(5)
             << "[Ackermann] rightTurnLeft=" << rightTurnLeft
             << " rightTurnRight=" << rightTurnRight
             << " leftTurnLeft=" << leftTurnLeft
-            << " leftTurnRight=" << leftTurnRight;
+            << " leftTurnRight=" << leftTurnRight
+            << " rightTurnAngles=(" << rightTurnLeftAngle
+            << "," << rightTurnRightAngle << ")"
+            << " leftTurnAngles=(" << leftTurnLeftAngle
+            << "," << leftTurnRightAngle << ")";
         Logger::Info(log.str());
 
         const bool finite =
@@ -1267,12 +1288,22 @@ namespace {
             std::isfinite(rightTurnRight) &&
             std::isfinite(leftTurnLeft) &&
             std::isfinite(leftTurnRight);
+        const bool rightTurnDirectionCorrect =
+            rightTurnLeftAngle > 0.0001f &&
+            rightTurnRightAngle > 0.0001f;
+        const bool leftTurnDirectionCorrect =
+            leftTurnLeftAngle < -0.0001f &&
+            leftTurnRightAngle < -0.0001f;
         const bool rightTurnCorrect =
             rightTurnRight > rightTurnLeft + 0.0001f;
         const bool leftTurnCorrect =
             leftTurnLeft > leftTurnRight + 0.0001f;
 
-        if (!finite || !rightTurnCorrect || !leftTurnCorrect) {
+        if (!finite ||
+            !rightTurnDirectionCorrect ||
+            !leftTurnDirectionCorrect ||
+            !rightTurnCorrect ||
+            !leftTurnCorrect) {
             Logger::Error("[FAIL] Ackermann inner-wheel steering geometry");
             return false;
         }
