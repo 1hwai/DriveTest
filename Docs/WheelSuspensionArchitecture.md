@@ -35,6 +35,57 @@ The vehicle coordinate convention is fixed:
 
 Do not change this convention as part of the suspension rewrite.
 
+### 2.1 Vehicle-local reference frame and load-transfer sign convention
+
+The coordinate convention above is a **vehicle-local** convention. It is not a world-axis convention and not a separate convention per wheel.
+
+```text
+                 +Y Up
+                  ↑
+                  │
+      +X Left  ←  ●  →  -X Right
+                  │
+                  └────────→ +Z Forward
+```
+
+- `+X` is the vehicle's left side.
+- `-X` is the vehicle's right side.
+- `+Y` is upward.
+- `+Z` is forward.
+- When the chassis rotates, these axes rotate with the chassis into world space.
+- `Wheel::GetWorldOrientation()` is a world-space rotation of this vehicle-local hub frame.
+- The physical quaternion basis uses `+X = left`, not `-X = right`; `-X` is the derived right direction.
+
+For cornering diagnostics the load-transfer sign is fixed as:
+
+```text
+positive steering input  → right turn  → lateral acceleration toward -X
+                         → left/outside load increases
+                         → leftLoad - rightLoad > 0
+
+negative steering input  → left turn   → lateral acceleration toward +X
+                         → right/outside load increases
+                         → leftLoad - rightLoad < 0
+```
+
+The intended physical chain is:
+
+```text
+Tire lateral force at contact patch
+            ↓
+     chassis roll torque
+            ↓
+       chassis roll
+            ↓
+ left/right wheel geometry + ray distance
+            ↓
+ suspension compression difference
+            ↓
+ left/right spring normal load difference
+```
+
+A load-transfer test must therefore verify the chain rather than compensate for a missing roll response by changing spring rates, steering scale, or test thresholds.
+
 ## 3. Design Principles
 
 - [x] Model each wheel as part of an actual suspension assembly rather than as a point attached directly to the chassis.
@@ -1061,7 +1112,7 @@ Suspension Geometry
 - [x] Add an independent diagnostic comparing the tire basis with the projected solved hub basis.
 - [ ] Run the full Linux build and vehicle diagnostics after the migration.
 
-**Current status:** implementation is committed; fresh Linux verification is required before marking 4-2 complete.
+**Current status:** implementation is committed, but 4-2 is **not complete**. The current regression shows that the solved-hub tire basis is finite and directionally usable, but the cornering scenario does not yet produce the required mirrored suspension load transfer. Do not mark 4-2 complete or compensate by changing vehicle parameters until the physical transfer chain above is restored and verified.
 
 ### Phase 5 — Vehicle Validation
 
