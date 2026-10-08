@@ -1071,6 +1071,65 @@ namespace {
         return true;
     }
 
+    bool RunTireHubStateDiagnostics() {
+        VehicleTestRig rig;
+        if (!rig.configLoaded) {
+            Logger::Error("[FAIL] Tire hub state: " + rig.configError);
+            return false;
+        }
+
+        rig.car.SetInput(0.0f, 0.0f, 0.35f, 1.0f);
+        rig.car.UpdatePhysics(
+            rig.physicsWorld,
+            FixedDeltaTime
+        );
+
+        const Wheel& frontLeft =
+            rig.car.GetWheel(WheelIndex::FrontLeft);
+        const Wheel& frontRight =
+            rig.car.GetWheel(WheelIndex::FrontRight);
+
+        const Vec3 leftHubForward =
+            frontLeft.GetWorldOrientation() *
+            VehicleCoordinates::Forward();
+        const Vec3 rightHubForward =
+            frontRight.GetWorldOrientation() *
+            VehicleCoordinates::Forward();
+
+        const TireState& leftState =
+            rig.car.GetTire(WheelIndex::FrontLeft).GetState();
+        const TireState& rightState =
+            rig.car.GetTire(WheelIndex::FrontRight).GetState();
+
+        const float leftError =
+            (leftState.forward -
+             leftHubForward.Normalized()).Length();
+        const float rightError =
+            (rightState.forward -
+             rightHubForward.Normalized()).Length();
+
+        Logger::Info(
+            "[TireHubState] leftError=" +
+            std::to_string(leftError) +
+            " rightError=" +
+            std::to_string(rightError)
+        );
+
+        constexpr float Tolerance = 0.000001f;
+        if (leftError > Tolerance ||
+            rightError > Tolerance) {
+            Logger::Error(
+                "[FAIL] Tire state does not follow solved hub orientation"
+            );
+            return false;
+        }
+
+        Logger::Info(
+            "[PASS] Tire hub orientation interface diagnostics"
+        );
+        return true;
+    }
+
     bool RunAckermannSteeringDiagnostics() {
         VehicleTestRig rig;
         if (!rig.configLoaded) {
@@ -1202,6 +1261,7 @@ int main() {
     passed = RunSteeringForceDirectionTest("RightSteer", 0.35f, -1.0f) && passed;
     passed = RunSteeringForceDirectionTest("LeftSteer", -0.35f, 1.0f) && passed;
 
+    passed = RunTireHubStateDiagnostics() && passed;
     passed = RunAckermannSteeringDiagnostics() && passed;
 
     passed = RunCorneringLoadTransferDiagnostics() && passed;
