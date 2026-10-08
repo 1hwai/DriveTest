@@ -387,26 +387,71 @@ int main() {
                 orientation.Conjugate() *
                 (right.GetHubPosition() - chassisPosition);
 
-            const bool hubOffsetInvariant =
-                Near(
-                    (left.GetHubPosition() - left.GetLowerOuterJoint()).Length(),
-                    leftConfig.upright.hubOffset.Length()
-                ) &&
-                Near(
-                    (right.GetHubPosition() - right.GetLowerOuterJoint()).Length(),
-                    rightConfig.upright.hubOffset.Length()
-                );
+            const Vec3 leftLowerWorld =
+    chassisPosition +
+    orientation * left.GetLowerOuterJoint();
 
-            poseSweep =
-                hubOffsetInvariant &&
-                Finite(leftPoseHub) &&
-                Finite(rightPoseHub) &&
-                Finite(left.GetHubOrientation()) &&
-                Finite(right.GetHubOrientation()) &&
-                Near(leftPoseHub.x, -rightPoseHub.x) &&
-                Near(leftPoseHub.y, rightPoseHub.y) &&
-                Near(leftPoseHub.z, rightPoseHub.z) &&
-                poseSweep;
+const Vec3 rightLowerWorld =
+    chassisPosition +
+    orientation * right.GetLowerOuterJoint();
+
+const bool hubOffsetInvariant =
+    Near(
+        (left.GetHubPosition() - leftLowerWorld).Length(),
+        leftConfig.upright.hubOffset.Length()
+    ) &&
+    Near(
+        (right.GetHubPosition() - rightLowerWorld).Length(),
+        rightConfig.upright.hubOffset.Length()
+    );
+
+    const bool finitePose =
+        Finite(leftPoseHub) &&
+        Finite(rightPoseHub) &&
+        Finite(left.GetHubOrientation()) &&
+        Finite(right.GetHubOrientation());
+
+    const bool poseSymmetry =
+        Near(leftPoseHub.x, -rightPoseHub.x) &&
+        Near(leftPoseHub.y, rightPoseHub.y) &&
+        Near(leftPoseHub.z, rightPoseHub.z);
+
+    if (!hubOffsetInvariant || !finitePose || !poseSymmetry) {
+        std::cout
+            << "[DW pose failure]"
+            << " roll=" << roll
+            << " pitch=" << pitch
+            << " hubOffsetInvariant=" << hubOffsetInvariant
+            << " finite=" << finitePose
+            << " symmetry=" << poseSymmetry
+            << " leftPoseHub=("
+            << leftPoseHub.x << ","
+            << leftPoseHub.y << ","
+            << leftPoseHub.z << ")"
+            << " rightPoseHub=("
+            << rightPoseHub.x << ","
+            << rightPoseHub.y << ","
+            << rightPoseHub.z << ")"
+            << " leftHub=("
+            << left.GetHubPosition().x << ","
+            << left.GetHubPosition().y << ","
+            << left.GetHubPosition().z << ")"
+            << " leftLower=("
+            << left.GetLowerOuterJoint().x << ","
+            << left.GetLowerOuterJoint().y << ","
+            << left.GetLowerOuterJoint().z << ")"
+            << " leftOffset="
+            << (left.GetHubPosition() - left.GetLowerOuterJoint()).Length()
+            << " expectedOffset="
+            << leftConfig.upright.hubOffset.Length()
+            << '\n';
+    }
+
+    poseSweep =
+        hubOffsetInvariant &&
+        finitePose &&
+        poseSymmetry &&
+        poseSweep;
         }
     }
 
