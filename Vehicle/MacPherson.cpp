@@ -118,11 +118,14 @@ void MacPherson::UpdateUpright(
     m_strut.lowerMount = m_upright.strutLowerJoint;
 
     m_upright.hubOrientation =
-        localOrientation;
+        (chassisOrientation * localOrientation).Normalized();
 
     m_upright.hubPosition =
-        m_upright.lowerJoint +
-        localOrientation * m_uprightConfig.hubOffset;
+        chassisPosition +
+        chassisOrientation * (
+            m_upright.lowerJoint +
+            localOrientation * m_uprightConfig.hubOffset
+        );
 }
 
 float MacPherson::Distance(
@@ -318,3 +321,21 @@ float MacPherson::GetStrutLength() const {
 
 const Vec3& MacPherson::GetSpringMountA() const { return m_strut.upperMount; }
 const Vec3& MacPherson::GetSpringMountB() const { return m_strut.lowerMount; }
+
+Vec3 MacPherson::GetSteeringAxisStart() const { return m_strut.upperMount; }
+Vec3 MacPherson::GetSteeringAxisEnd() const { return m_upright.lowerJoint; }
+
+bool MacPherson::ApplySteering(float angle) {
+    const Vec3 axisDelta = m_upright.lowerJoint - m_strut.upperMount;
+    const float axisLengthSquared = axisDelta.LengthSquared();
+    if (axisLengthSquared < Epsilon)
+        return false;
+    const Vec3 axis = axisDelta / std::sqrt(axisLengthSquared);
+    const Quaternion rotation = Quaternion::FromAxisAngle(axis, angle);
+    const Vec3 axisPoint = m_upright.lowerJoint;
+    m_upright.hubPosition = axisPoint + rotation * (m_upright.hubPosition - axisPoint);
+    m_upright.strutLowerJoint = axisPoint + rotation * (m_upright.strutLowerJoint - axisPoint);
+    m_strut.lowerMount = m_upright.strutLowerJoint;
+    m_upright.hubOrientation = (rotation * m_upright.hubOrientation).Normalized();
+    return true;
+}
