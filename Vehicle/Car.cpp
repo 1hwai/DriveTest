@@ -43,7 +43,7 @@ namespace {
         if (std::abs(steeringAngle) < 0.000001f ||
             wheelbase <= 0.000001f ||
             trackWidth <= 0.000001f) {
-            return { steeringAngle, -steeringAngle };
+            return { 0.0f, 0.0f };
         }
 
         const float centerAngle = std::abs(steeringAngle);
@@ -58,14 +58,24 @@ namespace {
             std::atan(wheelbase / outerRadius);
 
         const bool turningRight = steeringAngle < 0.0f;
-        const float leftMagnitude =
-            turningRight ? outerMagnitude : innerMagnitude;
-        const float rightMagnitude =
-            turningRight ? innerMagnitude : outerMagnitude;
+        const float direction =
+            turningRight ? 1.0f : -1.0f;
 
+        // DoubleWishbone's solved steering axis points from the upper
+        // outer joint to the lower outer joint. With the current geometry
+        // that axis points toward -Y, so positive geometry rotation is
+        // a right turn for both front wheels.
         return {
-            turningRight ? -leftMagnitude : leftMagnitude,
-            turningRight ? rightMagnitude : -rightMagnitude
+            direction * (
+                turningRight
+                    ? outerMagnitude
+                    : innerMagnitude
+            ),
+            direction * (
+                turningRight
+                    ? innerMagnitude
+                    : outerMagnitude
+            )
         };
     }
 }
