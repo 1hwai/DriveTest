@@ -210,8 +210,8 @@ TireState Tire::CalculateState(
         wheel.GetContactNormal();
 
     Vec3 forward =
-        wheel.GetWorldOrientation() *
-        VehicleCoordinates::Forward();
+        body.GetOrientation() *
+        Vec3(0.0f, 0.0f, 1.0f);
 
     forward -=
         normal * forward.Dot(normal);
@@ -223,6 +223,13 @@ TireState Tire::CalculateState(
     }
 
     forward = forward.Normalized();
+
+    // Positive steering angle follows the vehicle steering convention; the vehicle right axis is -X.
+    forward =
+        Quaternion::FromAxisAngle(
+            normal,
+            wheel.GetSteeringAngle()
+        ) * forward;
 
     // Lateral is the vehicle's right direction.
     // With +Z forward and +Y up, forward × normal gives -X (right).
