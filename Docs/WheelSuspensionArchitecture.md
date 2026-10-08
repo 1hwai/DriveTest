@@ -990,11 +990,11 @@ These geometry properties are represented through the existing concrete suspensi
 #### 4-1 — Tire interface migration
 
 - [x] Connect tire contact to the new hub/wheel state.
-- [x] Preserve the existing tire grip model where appropriate.
-- [x] Remove obsolete steering-angle reconstruction from tire inputs.
+- [x] Preserve the existing tire grip and steering-force basis.
+- [x] Keep tire force behavior unchanged while the new hub state is introduced.
 - [x] Store hub position and hub orientation together in Wheel state.
 - [x] Drive wheel rendering from the solved hub orientation instead of independent steering rotation.
-- [x] Verify tire state against the solved hub orientation with diagnostics.
+- [x] Verify hub state propagation with diagnostics.
 
 **Implementation files:**
 
@@ -1007,7 +1007,8 @@ World/Scene.cpp
 Tests/VehicleDiagnostics.cpp
 ```
 
-**Current status:** implementation and independent diagnostics are complete. Phase 4-2 separately validates contact-point velocity and contact-patch force application.
+**Current status:** interface/state migration is complete and regression-safe. Tire force-basis migration to solved hub orientation is intentionally deferred until the dedicated tire-force work unit.
+
 ### Phase 5 — Vehicle Validation
 
 #### 5-1 — Basic driving
