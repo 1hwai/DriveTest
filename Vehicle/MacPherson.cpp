@@ -121,11 +121,9 @@ void MacPherson::UpdateUpright(
         (chassisOrientation * localOrientation).Normalized();
 
     m_upright.hubPosition =
-        chassisPosition +
-        chassisOrientation * (
-            m_upright.lowerJoint +
-            localOrientation * m_uprightConfig.hubOffset
-        );
+        m_upright.lowerJoint +
+        chassisOrientation *
+            (localOrientation * m_uprightConfig.hubOffset);
 }
 
 float MacPherson::Distance(
