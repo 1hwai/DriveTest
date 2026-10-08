@@ -14,6 +14,60 @@ namespace {
     size_t ToIndex(WheelIndex index) {
         return static_cast<size_t>(index);
     }
+
+    struct AckermannAngles {
+        float left;
+        float right;
+    };
+
+    AckermannAngles CalculateAckermannAngles(
+        float steeringAngle,
+        const std::array<Wheel, WheelCount>& wheels
+    ) {
+        const Vec3& frontLeft = wheels[ToIndex(WheelIndex::FrontLeft)].GetLocalPosition();
+        const Vec3& frontRight = wheels[ToIndex(WheelIndex::FrontRight)].GetLocalPosition();
+        const Vec3& rearLeft = wheels[ToIndex(WheelIndex::RearLeft)].GetLocalPosition();
+        const Vec3& rearRight = wheels[ToIndex(WheelIndex::RearRight)].GetLocalPosition();
+
+        const float wheelbase =
+            0.5f * (
+                (frontLeft.z - rearLeft.z) +
+                (frontRight.z - rearRight.z)
+            );
+        const float trackWidth =
+            0.5f * (
+                (frontLeft.x - frontRight.x) +
+                (rearLeft.x - rearRight.x)
+            );
+
+        if (std::abs(steeringAngle) < 0.000001f ||
+            wheelbase <= 0.000001f ||
+            trackWidth <= 0.000001f) {
+            return { steeringAngle, -steeringAngle };
+        }
+
+        const float centerAngle = std::abs(steeringAngle);
+        const float radius = wheelbase / std::tan(centerAngle);
+        const float innerRadius =
+            std::max(0.000001f, radius - 0.5f * trackWidth);
+        const float outerRadius =
+            radius + 0.5f * trackWidth;
+        const float innerMagnitude =
+            std::atan(wheelbase / innerRadius);
+        const float outerMagnitude =
+            std::atan(wheelbase / outerRadius);
+
+        const bool turningRight = steeringAngle < 0.0f;
+        const float leftMagnitude =
+            turningRight ? outerMagnitude : innerMagnitude;
+        const float rightMagnitude =
+            turningRight ? innerMagnitude : outerMagnitude;
+
+        return {
+            turningRight ? -leftMagnitude : leftMagnitude,
+            turningRight ? rightMagnitude : -rightMagnitude
+        };
+    }
 }
 
 Car::Car()
@@ -195,13 +249,16 @@ void Car::UpdatePhysics(
         );
 
         if (i < 2) {
-            const float steeringAngle =
-                m_wheels[i].GetSteeringAngle();
+            const AckermannAngles angles =
+                CalculateAckermannAngles(
+                    m_wheels[i].GetSteeringAngle(),
+                    m_wheels
+                );
 
             const float geometrySteeringAngle =
                 i == static_cast<size_t>(WheelIndex::FrontLeft)
-                    ? steeringAngle
-                    : -steeringAngle;
+                    ? angles.left
+                    : angles.right;
 
             m_suspensionGeometry[i].ApplySteering(
                 geometrySteeringAngle
