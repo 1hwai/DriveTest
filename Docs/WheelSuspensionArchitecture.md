@@ -949,11 +949,116 @@ Core/Debug/*
 
 #### 3-1 — Steering axis
 
-- [ ] Implement upper/lower steering-axis points.
-- [ ] Derive the steering axis from the suspension geometry.
-- [ ] Rotate the upright/hub around the steering axis.
+**Goal:** define the steering-axis ownership and kinematic operation before changing the concrete suspension implementations.
 
-#### 3-2 — Steering geometry
+The steering axis is a geometric result of the current suspension pose. It is not a fixed world-Y axis and it is not represented by a standalone `SteeringAxis` class.
+
+**Concrete geometry rules:**
+
+Double Wishbone:
+
+```
+upper outer joint
+        ●
+        │
+        │  steering axis
+        │
+        ●
+lower outer joint
+```
+
+The steering axis is the world-space line through the solved upper and lower outer joints.
+
+MacPherson:
+
+```
+upper strut mount
+        ●
+        │
+        │  steering axis
+        │
+        ●
+lower arm outer joint
+```
+
+The steering axis is the world-space line through the solved upper strut mount and lower arm outer joint. This matches the physical steering-axis definition of a MacPherson strut rather than incorrectly using the damper/spring axis. citeturn0search1turn0search30
+
+**Important design decision:** caster and KPI/SAI are not separate steering-axis inputs in 3-1. They emerge from the placement of the steering-axis endpoints in the vehicle coordinate system. The same axis therefore naturally contains both longitudinal inclination (caster) and lateral inclination (KPI/SAI). citeturn0search4turn0search26
+
+**Update flow:**
+
+```
+Chassis pose
+    ↓
+Suspension geometry solve
+    ↓
+Solved steering-axis endpoints
+    ↓
+Steering axis = normalize(axisB - axisA)
+    ↓
+Steering input / angle
+    ↓
+Rotate upright-attached state around that axis
+    ↓
+Hub position + hub orientation
+```
+
+The steering-axis endpoints must be evaluated after the current suspension geometry solve. Suspension travel can therefore change the axis position and orientation naturally.
+
+**Kinematic operation:**
+
+- Double Wishbone upper/lower outer joints lie on the steering axis and remain the axis-defining pivots while the upright/hub rotates.
+- MacPherson uses the chassis-mounted upper strut steering pivot and the lower ball-joint/outer-joint pivot as the axis. Upright-attached state, including the strut lower attachment and hub, rotates around that axis.
+- A point attached to the upright is transformed by an axis-angle rotation around the current world-space steering axis.
+- Hub position must be rotated around the axis, not merely assigned a new steering angle.
+- Hub orientation must receive the same steering rotation so wheel orientation and wheel center remain physically consistent.
+- Zero-length or numerically degenerate axis endpoints must fail the steering solve rather than producing NaN/Inf.
+- The steering-axis solve must not alter suspension travel, spring length, or tire forces directly.
+
+**No new class:** do not introduce `SteeringAxis`, `SteeringKnuckle`, or similar classes merely to hold two points and a direction. The concrete suspension assembly already owns the geometry required to derive the axis. A small shared math helper may be introduced only if the actual implementations demonstrate identical non-trivial logic; duplication alone is not sufficient reason for a new abstraction.
+
+**3-1 implementation scope:**
+
+```
+Vehicle/DoubleWishbone.h
+Vehicle/DoubleWishbone.cpp
+Vehicle/MacPherson.h
+Vehicle/MacPherson.cpp
+Tests/DoubleWishboneDiagnostics.cpp
+Tests/MacPhersonDiagnostics.cpp
+Docs/WheelSuspensionArchitecture.md
+CMakeLists.txt
+```
+
+**Files explicitly out of scope:**
+
+```
+Vehicle/Car.*
+Vehicle/Wheel.*
+Vehicle/Suspension.*
+Vehicle/Tire.*
+Vehicle/VehicleConfig.*
+Assets/Vehicles/TestCar/vehicle.ini
+Core/Debug/DebugUI.cpp
+World/*
+Audio/*
+```
+
+**Verification requirements for the implementation work unit:**
+
+- [ ] Double Wishbone derives a finite, normalized steering axis from its upper/lower outer joints.
+- [ ] MacPherson derives a finite, normalized steering axis from its upper strut mount/lower outer joint.
+- [ ] Zero steering preserves the solved suspension hub state.
+- [ ] Non-zero steering rotates hub position around the steering axis rather than in place around Y.
+- [ ] Hub orientation receives the same steering rotation.
+- [ ] Suspension travel followed by steering produces a valid current steering axis.
+- [ ] Degenerate steering-axis endpoints are rejected without NaN/Inf.
+- [ ] Diagnostics independently verify axis direction and axis-preserving rotation.
+- [ ] No caster/KPI/SAI, steering arm, scrub radius, or Ackermann parameters are introduced in 3-1; those belong to later steering-geometry work.
+
+**Verification command:** fresh Linux configure/build followed by ctest. Completion requires the relevant steering diagnostics to pass; compilation alone is insufficient.
+
+### 3-2 — Steering geometry
 
 - [ ] Add caster.
 - [ ] Add KPI / SAI.
