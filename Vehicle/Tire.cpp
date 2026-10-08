@@ -195,8 +195,7 @@ TireState Tire::CalculateState(
         wheel.GetContactPoint()
     };
 
-    if (!state.grounded ||
-        state.normalLoad <= 0.0f) {
+    if (!state.grounded) {
         m_state = state;
         return state;
     }
@@ -247,6 +246,11 @@ TireState Tire::CalculateState(
 
     state.lateralVelocity =
         contactVelocity.Dot(lateral);
+
+    if (state.normalLoad <= 0.0f) {
+        m_state = state;
+        return state;
+    }
 
     state.wheelSurfaceSpeed =
         wheel.GetAngularVelocity() *
