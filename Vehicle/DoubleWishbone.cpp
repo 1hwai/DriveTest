@@ -122,15 +122,18 @@ void DoubleWishbone::UpdateUpright(
         forward = forward.Normalized();
     }
 
-    const Vec3 right =
-        forward.Cross(uprightUp).Normalized();
+    // VehicleCoordinates uses +X = left, +Z = forward, +Y = up.
+    // Quaternion rotations are right-handed, so the rotation basis must
+    // use the physical +X (left) axis rather than vehicle-right (-X).
+    const Vec3 left =
+        uprightUp.Cross(forward).Normalized();
     const Vec3 correctedForward =
-        uprightUp.Cross(right).Normalized();
+        left.Cross(uprightUp).Normalized();
 
     Mat3 basis = Mat3::Identity();
-    basis.m[0][0] = right.x;
-    basis.m[0][1] = right.y;
-    basis.m[0][2] = right.z;
+    basis.m[0][0] = left.x;
+    basis.m[0][1] = left.y;
+    basis.m[0][2] = left.z;
     basis.m[1][0] = uprightUp.x;
     basis.m[1][1] = uprightUp.y;
     basis.m[1][2] = uprightUp.z;
