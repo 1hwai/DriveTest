@@ -168,6 +168,23 @@ const Vec3& DoubleWishbone::GetSpringMountB() const {
     return m_springMountB;
 }
 
+Vec3 DoubleWishbone::GetSteeringAxisStart() const { return m_upright.upperJoint; }
+Vec3 DoubleWishbone::GetSteeringAxisEnd() const { return m_upright.lowerJoint; }
+
+bool DoubleWishbone::ApplySteering(float angle) {
+    const Vec3 axisDelta = m_upright.lowerJoint - m_upright.upperJoint;
+    const float axisLengthSquared = axisDelta.LengthSquared();
+    if (axisLengthSquared < Epsilon)
+        return false;
+    const Vec3 axis = axisDelta / std::sqrt(axisLengthSquared);
+    const Quaternion rotation = Quaternion::FromAxisAngle(axis, angle);
+    const Vec3 axisPoint = m_upright.lowerJoint;
+    m_upright.hubPosition = axisPoint + rotation * (m_upright.hubPosition - axisPoint);
+    m_upright.hubOrientation = (rotation * m_upright.hubOrientation).Normalized();
+    m_springMountB = axisPoint + rotation * (m_springMountB - axisPoint);
+    return true;
+}
+
 float DoubleWishbone::Distance(
     const Vec3& a,
     const Vec3& b
