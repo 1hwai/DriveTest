@@ -302,3 +302,58 @@ These are proposed priorities only; implementation remains blocked pending revie
 - **Feasible travel is sampled, not solved to a boundary:** Car::ApplyConfig() checks 24 discrete travel samples in each direction and stops at the first failure. The stored limit is resolution-dependent rather than a refined feasibility boundary.
 - **Steering configurability is narrower than the checklist implies:** VehicleConfig defines upper/lower outer joint X and Y but uses wheelZ for both outer-joint Z coordinates; hubOffset is vertical-only. Current config cannot independently set caster through fore-aft steering-axis offset or general lateral/fore-aft hub offset. Ackermann is calculated from wheelbase/track rather than a configured steering arm.
 - **The current CI failure is not localized yet:** the job proves PhysicsDiagnostics fails its total mechanical-energy assertion, but the summarized output alone does not identify which force/state term introduces the increase. Do not attribute this to a specific suspension line until the saved energy snapshots and accounting are inspected.
+
+## Phase 5.7 follow-up — energy test design and baseline correction
+
+**Updated source revision:** 3e303dc21389edf8201209f249c38e1ad157afba  
+**Scope:** Test/diagnostic changes only. No runtime physics implementation was changed.  
+**Execution status:** The updated test has not yet been built or executed in this environment; the existing CI workflow only runs automatically on pushes/PRs to `main` or by manual dispatch. Do not mark this change verified until it runs.
+
+### Evidence-based diagnosis of the previous failure
+
+- `Car::ApplyConfig()` does call `Suspension::UpdateFromMounts(..., 0)`, so the compression scalar is not necessarily uninitialized.
+- However, it initializes the geometry at its baseline travel. On the first regular `Car::UpdatePhysics()`, ground contact selects a different suspension travel and the spring mount distance/compression changes before the rigid-body integration step.
+- `Tests/PhysicsDiagnostics.cpp` previously measured `initialEnergy` before this contact-consistent travel selection. Its initial spring energy therefore represented the baseline geometry, not the geometry that was about to be simulated.
+- The CI artifact shows the first captured frame already has approximately 798.64 J of spring potential energy and reports a first-frame energy exceed. It also reports a first-frame suspension residual of approximately 350.52 W, then later residual around 11.94 W at the peak-energy sample. This supports an initialization/kinematic state-transition issue in the test setup, but does not prove that all later energy residuals are correct.
+- **Revised assessment:** The previous CI failure is valid evidence that the diagnostic failed, but it was not sufficient evidence that the integrator generated energy during normal evolution. The test baseline was not aligned with the contact-selected suspension state.
+
+### Test changes made
+
+1. **Contact-consistent initial state:** `PhysicsDiagnostics` now performs a zero-time vehicle update before measuring initial energy. This lets the contact/travel path establish the suspension mount state without advancing rigid-body time. Accumulated forces from this initialization pass are cleared before the timed simulation begins.
+2. **Absolute + relative tolerance:** The suspension stability guard now uses `max(2.0 J, 0.001 * abs(E0))`. At the current energy scale this is roughly 0.1%, rather than a universal 1 J threshold. This is an initial diagnostic guardrail, not a claim of a mathematically universal accuracy bound.
+3. **Isolated timestep-convergence case:** Added a free-fall test using the existing rigid-body integrator at 1/60 s and 1/120 s. It checks that halving the timestep reduces the absolute mechanical-energy error by a clear margin. This test is not expected to conserve energy exactly: the current semi-implicit Euler update has timestep-dependent energy error.
+4. **Explicit diagnostics:** Logs the free-fall error at each timestep and the suspension test's initial energy/tolerance. The existing peak/first-exceed per-wheel snapshots remain available for localization.
+
+### Test matrix and interpretation
+
+| Case | Active physics | Expected result | Failure points toward |
+|---|---|---|---|
+| Isolated free fall, dt=1/60 | Uniform gravity only; no contact, suspension, tire, or damping | Finite energy error | Integrator/state update or energy-accounting defect |
+| Isolated free fall, dt=1/120 | Same initial state and duration as coarse case | Absolute error materially lower than coarse case | Timestep refinement does not improve the numerical solution |
+| Contact-consistent suspension settle | Flat terrain, tire forces disabled, suspension spring/damper active | No non-finite state; no energy peak above initialized baseline by more than the absolute/relative tolerance; no lateral drift beyond existing bound | Initialization discontinuity, damping/force sign, spring-energy accounting, or geometry/contact coupling |
+| Future: conservative spring/mass oscillator | One degree of freedom, no damping/contact | Bounded energy error that shrinks under timestep refinement | Spring force sign, integration, or spring potential calculation |
+| Future: damper-only decay | One degree of freedom with positive damping | Mechanical energy is non-increasing within numerical tolerance | Damping sign or work/energy bookkeeping |
+| Future: suspension travel sweep | Fixed chassis poses and sampled travel, both geometry families | Link constraints remain within geometric tolerances; no unexpected energy jump when comparing adjacent states | Kinematic solver discontinuity or mount/force coupling |
+
+### Tolerance policy
+
+- Use both absolute and relative tolerance: `tol = max(absTol, relTol * abs(E0))`.
+- Keep the tolerance attached to the named test and its energy scale; do not copy a single threshold across tests with different units or magnitudes.
+- For conservative numerical integration, prefer timestep-refinement/convergence checks in addition to a fixed tolerance. A single passing energy threshold can hide systematic drift.
+- For damped or frictional systems, test the energy balance including dissipated work. Do not assert exact conservation of mechanical energy when non-conservative forces are active.
+- Record total energy, potential/kinetic/spring components, peak energy, timestep, contact state, compression velocity, spring/damper force, suspension power, and residual. These values should be sampled from the same simulation step/state.
+
+### Relevant external references
+
+- [ODE Manual — numerical integration and energy growth](https://www.ode.org/wiki/index.php?title=Manual): describes how integration error and timestep affect rotational stability and energy growth in a rigid-body engine.
+- [ODE Manual — joint error and ERP](https://ode.org/wiki/index.php/Manual): explains that constraint correction is approximate and joint alignment errors can remain; useful context for separating constraint error from energy error.
+- [AscentBench validation — isolated two-body energy test](https://ascentbench.info/validation): illustrates isolating a conservative system, defining a duration/timestep, measuring maximum energy drift, and treating a stated percentage as a project-specific guardrail rather than a universal constant.
+- [Energy-based monitoring of explicit co-simulation, Springer](https://link.springer.com/article/10.1007/s11044-022-09812-5): formulates energy balance as total mechanical energy minus initial energy minus work by non-conservative forces, supporting explicit work/residual tracking rather than checking total energy alone.
+- [Kane, Marsden & Ortiz (1999), CaltechAUTHORS](https://authors.library.caltech.edu/records/hhgqy-wmf82): discusses energy/momentum-preserving variational integrators and shows that conservation properties depend on the numerical integration method.
+
+### Remaining verification work
+
+- Run the updated `DriveTestPhysicsDiagnostics` and inspect whether the new baseline removes the first-frame false exceed.
+- Check the `[EnergyConvergence]` values and confirm the fine-step error is lower than the coarse-step error.
+- If the suspension test still fails, compare `[EnergyPeak]`, `[EnergyFirstExceed]`, and each wheel's `suspensionResidual` after the initialized baseline. Then vary only one factor at a time: damping on/off, timestep, and contact/travel selection.
+- Do not relax the tolerance merely to make CI green. If it fails, classify whether the failure is expected discretization error, a diagnostic accounting defect, or a runtime physics defect before changing the threshold.
