@@ -288,7 +288,9 @@ void Car::UpdatePhysics(
             solvedGeometry.GetHubPosition(),
             solvedGeometry.GetHubOrientation(),
             m_wheels[i].GetRadius(),
-            m_suspensions[i].GetMaxLength() + m_wheels[i].GetRadius()
+            m_suspensions[i].GetRestLength() +
+                m_suspensions[i].GetReboundTravel() +
+                m_wheels[i].GetRadius()
         };
         const WheelContactResult contact = m_contactProvider->Query(
             contactInput, physicsWorld, m_chassis

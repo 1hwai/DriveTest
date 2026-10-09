@@ -111,7 +111,10 @@ void Wheel::Update(
 ) {
     (void)index;
     const Vec3 worldMount = m_worldPosition;
-    const float maxReach = suspension.GetMaxLength() + m_radius;
+    const float maxReach =
+        suspension.GetRestLength() +
+        suspension.GetReboundTravel() +
+        m_radius;
     const WheelContactInput input{
         worldMount,
         m_worldOrientation,

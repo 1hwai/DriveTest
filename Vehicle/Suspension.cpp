@@ -63,7 +63,13 @@ void Suspension::UpdateFromMounts(
     const Vec3& mountB,
     float deltaTime
 ) {
-    UpdateLength((mountB - mountA).Length(), deltaTime);
+    // Wheel travel is constrained by suspension geometry, not spring length.
+    const float previousCompression = m_compression;
+    m_length = std::max(0.0f, (mountB - mountA).Length());
+    m_compression = std::max(0.0f, m_restLength - m_length);
+    m_compressionVelocity = deltaTime > 0.0f
+        ? (m_compression - previousCompression) / deltaTime
+        : 0.0f;
 }
 
 void Suspension::UpdateLength(float length, float deltaTime) {
