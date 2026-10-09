@@ -258,6 +258,11 @@ int main() {
     float integratedPowerAtB = 0.0f;
     float integratedSpringPower = 0.0f;
     float integratedDamperPower = 0.0f;
+    std::array<float, WheelCount> pendingPowerAtA{};
+    std::array<float, WheelCount> pendingPowerAtB{};
+    std::array<float, WheelCount> pendingSpringPower{};
+    std::array<float, WheelCount> pendingDamperPower{};
+    bool hasPendingPowerSample = false;
     float previousTotalEnergy = initialEnergy;
     float maxAbsEnergyStepDelta = 0.0f;
 
@@ -386,14 +391,17 @@ int main() {
             std::max(maxAbsEnergyStepDelta, std::abs(energyStepDelta));
         previousTotalEnergy = totalEnergy;
 
-        // The endpoint velocities and spring/damper powers above describe
-        // the interval ending at this sampled state. Accumulate before logging
-        // so cumulative work and energy use the same time boundary.
-        for (size_t i = 0; i < WheelCount; ++i) {
-            integratedPowerAtA += currentPowerAtA[i] * FixedDeltaTime;
-            integratedPowerAtB += currentPowerAtB[i] * FixedDeltaTime;
-            integratedSpringPower += currentSpringPower[i] * FixedDeltaTime;
-            integratedDamperPower += currentDamperPower[i] * FixedDeltaTime;
+        // The energy sample is at the current pre-step state. Only integrate
+        // powers saved from the previous update: those forces were applied by
+        // the physics step that advanced the system into this sampled state.
+        // Current powers are saved below for the next interval.
+        if (hasPendingPowerSample) {
+            for (size_t i = 0; i < WheelCount; ++i) {
+                integratedPowerAtA += pendingPowerAtA[i] * FixedDeltaTime;
+                integratedPowerAtB += pendingPowerAtB[i] * FixedDeltaTime;
+                integratedSpringPower += pendingSpringPower[i] * FixedDeltaTime;
+                integratedDamperPower += pendingDamperPower[i] * FixedDeltaTime;
+            }
         }
 
         if (step % 60 == 0) {
@@ -504,6 +512,14 @@ int main() {
 
             Logger::Info(log.str());
         }
+
+        // Save this state's powers for the interval that begins when the
+        // following physics step applies the forces queued by car.UpdatePhysics.
+        pendingPowerAtA = currentPowerAtA;
+        pendingPowerAtB = currentPowerAtB;
+        pendingSpringPower = currentSpringPower;
+        pendingDamperPower = currentDamperPower;
+        hasPendingPowerSample = true;
 
         // Advance only after recording the synchronized pre-step state.
         physicsWorld.Step(FixedDeltaTime);
