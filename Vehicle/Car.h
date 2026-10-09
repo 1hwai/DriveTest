@@ -89,6 +89,8 @@ private:
     float m_maxSteeringAngle;
 
     std::array<DoubleWishbone, WheelCount> m_suspensionGeometry;
+    std::array<float, WheelCount> m_minimumSuspensionTravel{};
+    std::array<float, WheelCount> m_maximumSuspensionTravel{};
     std::array<Wheel, WheelCount> m_wheels;
     std::array<Suspension, WheelCount> m_suspensions;
     std::array<Tire, WheelCount> m_tires;

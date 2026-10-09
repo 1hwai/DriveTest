@@ -173,10 +173,30 @@ void Car::ApplyConfig(const VehicleConfig& config) {
         };
 
         m_suspensionGeometry[i].Configure(geometry);
-        m_suspensionGeometry[i].Solve(
-            m_chassis ? m_chassis->GetPosition() : Vec3(),
-            m_chassis ? m_chassis->GetOrientation() : Quaternion::Identity()
-        );
+        const Vec3 chassisPosition =
+            m_chassis ? m_chassis->GetPosition() : Vec3();
+        const Quaternion chassisOrientation =
+            m_chassis ? m_chassis->GetOrientation() : Quaternion::Identity();
+        m_suspensionGeometry[i].Solve(chassisPosition, chassisOrientation);
+
+        m_minimumSuspensionTravel[i] = 0.0f;
+        m_maximumSuspensionTravel[i] = 0.0f;
+        for (int sample = 1; sample <= 24; ++sample) {
+            const float travel = -config.suspensionReboundTravel *
+                static_cast<float>(sample) / 24.0f;
+            DoubleWishbone candidate = m_suspensionGeometry[i];
+            if (!candidate.SolveAtTravel(chassisPosition, chassisOrientation, travel))
+                break;
+            m_minimumSuspensionTravel[i] = travel;
+        }
+        for (int sample = 1; sample <= 24; ++sample) {
+            const float travel = config.suspensionBumpTravel *
+                static_cast<float>(sample) / 24.0f;
+            DoubleWishbone candidate = m_suspensionGeometry[i];
+            if (!candidate.SolveAtTravel(chassisPosition, chassisOrientation, travel))
+                break;
+            m_maximumSuspensionTravel[i] = travel;
+        }
 
         Suspension& suspension = m_suspensions[i];
         suspension.SetRestLength(config.suspensionRestLength);
@@ -296,28 +316,16 @@ void Car::UpdatePhysics(
             contactInput, physicsWorld, m_chassis
         );
 
-        float feasibleLow = 0.0f;
-        float feasibleHigh = 0.0f;
+        const float feasibleLow = m_minimumSuspensionTravel[i];
+        const float feasibleHigh = m_maximumSuspensionTravel[i];
         DoubleWishbone lowGeometry = baseGeometry;
         DoubleWishbone highGeometry = baseGeometry;
-        for (int sample = 1; sample <= 24; ++sample) {
-            const float travel = -m_suspensions[i].GetReboundTravel() *
-                static_cast<float>(sample) / 24.0f;
-            DoubleWishbone candidate = baseGeometry;
-            if (!candidate.SolveAtTravel(chassisPosition, chassisOrientation, travel))
-                break;
-            feasibleLow = travel;
-            lowGeometry = candidate;
-        }
-        for (int sample = 1; sample <= 24; ++sample) {
-            const float travel = m_suspensions[i].GetBumpTravel() *
-                static_cast<float>(sample) / 24.0f;
-            DoubleWishbone candidate = baseGeometry;
-            if (!candidate.SolveAtTravel(chassisPosition, chassisOrientation, travel))
-                break;
-            feasibleHigh = travel;
-            highGeometry = candidate;
-        }
+        if (!lowGeometry.SolveAtTravel(
+                chassisPosition, chassisOrientation, feasibleLow))
+            lowGeometry = solvedGeometry;
+        if (!highGeometry.SolveAtTravel(
+                chassisPosition, chassisOrientation, feasibleHigh))
+            highGeometry = solvedGeometry;
 
         if (contact.HasContact()) {
             const WheelContactSample& sample = contact.samples.front();

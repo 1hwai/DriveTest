@@ -12,6 +12,7 @@
 #include "../Physics/Terrain.h"
 #include "../Vehicle/Car.h"
 #include "../Vehicle/VehicleConfig.h"
+#include "../Vehicle/VehicleConfig.h"
 
 namespace {
     constexpr float FixedDeltaTime = 1.0f / 120.0f;
@@ -63,7 +64,7 @@ int main() {
         Vec3(2.0f, 1.0f, 3.0f)
     );
     chassis->SetPosition(
-        Vec3(0.0f, 5.0f, 0.0f)
+        Vec3(0.0f, 0.42f, 0.0f)
     );
 
     // The gravity-well test isolates suspension forces from chassis-terrain
@@ -108,10 +109,22 @@ int main() {
     float maxAbsZ = 0.0f;
     float minY = chassis->GetPosition().y;
     float maxEnergy = 0.0f;
-    const float initialEnergy =
+    float initialEnergy =
         chassis->GetMass() *
         9.81f *
         chassis->GetPosition().y;
+    for (size_t i = 0; i < WheelCount; ++i) {
+        const DoubleWishbone& geometry =
+            car.GetSuspensionGeometry(static_cast<WheelIndex>(i));
+        const float compression = std::max(
+            0.0f,
+            car.GetSuspension(static_cast<WheelIndex>(i)).GetRestLength() -
+                (geometry.GetSpringMountB() - geometry.GetSpringMountA()).Length()
+        );
+        initialEnergy += 0.5f *
+            car.GetSuspension(static_cast<WheelIndex>(i)).GetSpringRate() *
+            compression * compression;
+    }
 
     Logger::Info("[PhysicsDiagnostics] flat terrain suspension stability test");
 
