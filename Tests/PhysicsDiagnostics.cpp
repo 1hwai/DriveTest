@@ -199,7 +199,7 @@ int main() {
             ++i) {
 
             const float compression =
-                car.GetWheel(
+                car.GetSuspension(
                     static_cast<WheelIndex>(i)
                 ).GetCompression();
 
