@@ -1111,9 +1111,103 @@ Suspension Geometry
 - [x] Derive tire contact forward/lateral basis from solved hub orientation.
 - [x] Prevent steering from being applied twice.
 - [x] Add an independent diagnostic comparing the tire basis with the projected solved hub basis.
-- [ ] Run the full Linux build and vehicle diagnostics after the migration.
+- [x] Run the full Linux build and vehicle diagnostics after the migration.
 
-**Current status:** the solved-hub tire contact basis migration is still in progress. Ackermann steering direction and mirrored cornering load transfer are now corrected. The tire basis is also generated for grounded wheels before the normal-load validity check, so a zero-load grounded state cannot silently fall back to the vehicle default axis. Phase 4-2 remains incomplete until Linux diagnostics confirm the complete regression suite.
+**Current status:** solved-hub tire contact basis migration is complete. The user verified the Linux build and both registered ctest diagnostics pass (PhysicsDiagnostics and VehicleDiagnostics). This confirms the current regression suite, not yet slope/edge/jump-landing contact-query behavior; that is explicitly addressed by Phase 4-3.
+
+### Phase 4-3 — Contact-query architecture review
+
+**Goal:** make ground-contact detection replaceable without forcing Wheel, Suspension, or Tire to depend on a particular query algorithm.
+
+#### Design decision
+
+The contact-query mechanism is an implementation detail behind a stable result contract. Consumers must not know whether contact candidates were produced by one ray, multiple rays, a sphere/shape cast, terrain-specific queries, or a future method.
+
+~~~text
+Wheel pose + tire dimensions + query settings
+                  |
+                  v
+          Wheel Contact Query
+       (replaceable implementation)
+                  |
+                  v
+           Contact Results
+       - grounded/contact state
+       - contact point(s)
+       - contact normal(s)
+       - separation / penetration data, when supported
+       - surface/material identifier, when available
+                  |
+          consumer-specific use
+             /          \\
+            v            v
+        Suspension      Tire
+     spring geometry   contact basis,
+     sets length and   slip, grip and
+     force state       tire forces
+~~~
+
+This diagram expresses the intended dependency boundary, not a claim that every listed result is implemented today. The result type should contain only data consumers need; algorithm-specific data must not leak into Wheel, Suspension, or Tire.
+
+#### Responsibility boundaries
+
+- **Contact-query implementation:** searches the terrain/collision world and returns a stable, documented contact result. It owns ray/shape/sample details, filtering, candidate selection, and query-specific tolerances.
+- **Wheel:** owns wheel/hub state and exposes the contact result through a stable API. It must not contain the algorithm for finding terrain contacts.
+- **Suspension geometry:** determines hub position/orientation and the geometric spring/damper mount positions.
+- **Suspension model:** derives spring length, compression, compression velocity, and spring/damper force from suspension geometry and its state. It must not infer spring length from a terrain ray's hit distance.
+- **Tire:** consumes contact state, point(s), normal(s), surface data, wheel/hub state, and contact-point velocity as needed. It must not perform its own hidden ground query or depend on how the contact was found.
+- **Car / vehicle integration:** coordinates updates and applies suspension/tire forces at the correct physical attachment/contact locations; it must not duplicate query-specific logic.
+
+#### Non-negotiable invariants
+
+- A world-down single ray is not the definition of a tire contact model.
+- Changing the query implementation must not require rewriting Suspension or the tire slip/grip model.
+- Ground-contact distance must not be treated as suspension spring length.
+- Spring length comes from actual spring/damper mount geometry; the contact query determines terrain contact, not suspension kinematics.
+- Contact point and normal must describe the same selected surface contact.
+- A valid grounded contact may have zero normal load; its geometric contact basis must not silently fall back to an unrelated chassis-default basis.
+- No valid contact means no terrain-derived tire force. Airborne suspension behavior must be defined by suspension kinematics and limits, not by inventing a ground hit.
+- Contact-query changes must preserve the established vehicle coordinate convention: +X left, -X right, +Y up, +Z forward.
+- Do not compensate for contact errors by changing spring rates, steering scale/sign, friction, or test thresholds.
+
+#### Query strategy: decision pending
+
+Candidate strategies to compare against the actual terrain-query API:
+
+1. **Single ray / revised ray direction:** cheapest and useful as a baseline, but a ray remains a line sample and cannot represent a tire footprint.
+2. **Multi-ray sampling:** can detect different parts of the footprint and estimate candidate contacts, but needs a documented policy for selecting/combining points and normals.
+3. **Sphere/shape cast:** accounts for volume during a sweep, but a sphere is only an approximation of a tire; support and normal behavior at mesh edges must be validated.
+4. **Tire-shaped or multi-point contact model:** potentially better suited to a rally tire footprint and uneven terrain, but has the greatest implementation and validation cost.
+
+No strategy is selected solely from its name or presumed fidelity. Before choosing, inspect the current terrain representation and collision-query API, then prototype the smallest useful comparison. A multi-point result must not be collapsed into one arbitrary point without documenting how force application and torque are preserved.
+
+#### Validation cases
+
+The contact-query implementation is not accepted based on flat-ground behavior alone. At minimum, validate:
+
+- flat ground and symmetric left/right behavior;
+- uphill/downhill slopes and cross-slope/banked surfaces;
+- convex crests and concave dips;
+- a wheel approaching an edge or discontinuity;
+- chassis airborne with the front tire contacting a sloped surface first;
+- one or more wheels airborne while others remain grounded;
+- contact point, normal, separation/penetration, force application point, and resulting chassis torque;
+- query continuity and stability across adjacent terrain triangles.
+
+#### Scope and next step
+
+This phase records the architecture boundary and open decision; it does not yet implement a new query algorithm or claim that the current runtime has this separation.
+
+Next, inspect the terrain representation and existing raycast/query APIs, then decide on a contact-result contract and compare candidate query strategies. Only after that should implementation be split into small, independently testable work units.
+
+- [x] Record the replaceable contact-query boundary.
+- [x] Separate contact discovery from suspension spring-length calculation in the architecture contract.
+- [x] Record candidate query strategies and regression cases.
+- [ ] Audit the concrete terrain and collision-query API.
+- [ ] Select a first query implementation based on that audit.
+- [ ] Integrate the contact result through Car / Wheel / Tire without leaking query-specific details.
+- [ ] Remove the legacy ray-distance-to-suspension-force coupling and validate the replacement.
+- [ ] Add automated slope, crest, dip, edge, and sloped-landing diagnostics.
 
 ### Phase 5 — Vehicle Validation
 
