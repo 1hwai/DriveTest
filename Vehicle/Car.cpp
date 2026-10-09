@@ -298,8 +298,8 @@ void Car::UpdatePhysics(
 
         float feasibleLow = 0.0f;
         float feasibleHigh = 0.0f;
-        DoubleWishbone lowGeometry = baseGeometry;
-        DoubleWishbone highGeometry = baseGeometry;
+        DoubleWishbone lowGeometry = solvedGeometry;
+        DoubleWishbone highGeometry = solvedGeometry;
         for (int sample = 1; sample <= 24; ++sample) {
             const float travel = -m_suspensions[i].GetReboundTravel() *
                 static_cast<float>(sample) / 24.0f;

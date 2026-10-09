@@ -7,7 +7,7 @@
 
 struct VehicleConfig {
     float mass = 1190.0f;
-    float spawnClearance = 0.78f;
+    float spawnClearance = 0.42f;
     Vec3 colliderHalfExtents = Vec3(0.90f, 0.34f, 2.15f);
     // Vehicle-local coordinates: forward = +Z, right = -X, up = +Y.
     // Therefore left wheels use +X and right wheels use -X.
