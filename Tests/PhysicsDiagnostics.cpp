@@ -153,6 +153,8 @@ int main() {
     }
 
     static const char* wheelNames[WheelCount] = {"FL", "FR", "RL", "RR"};
+    EnergySnapshot peakSnapshot;
+    EnergySnapshot firstExceedSnapshot;
 
     Logger::Info("[PhysicsDiagnostics] flat terrain suspension stability test");
 
@@ -286,8 +288,6 @@ int main() {
             }
         };
 
-        static EnergySnapshot peakSnapshot;
-        static EnergySnapshot firstExceedSnapshot;
         if (!peakSnapshot.valid || totalEnergy > peakSnapshot.total)
             captureEnergySnapshot(peakSnapshot);
         if (!firstExceedSnapshot.valid &&
