@@ -11,24 +11,11 @@
 #include "../Physics/RigidBody.h"
 #include "../Physics/Terrain.h"
 #include "../Vehicle/Car.h"
+#include "../Vehicle/VehicleConfig.h"
 
 namespace {
     constexpr float FixedDeltaTime = 1.0f / 120.0f;
     constexpr int SimulationSteps = 120 * 40;
-
-    void ConfigureWheel(
-        Car& car,
-        WheelIndex index,
-        const Vec3& position
-    ) {
-        car.GetWheel(index).SetLocalPosition(position);
-        car.GetWheel(index).SetRadius(0.5f);
-
-        car.GetSuspension(index).SetRestLength(0.8f);
-        car.GetSuspension(index).SetMaxLength(1.0f);
-        car.GetSuspension(index).SetSpringRate(30000.0f);
-        car.GetSuspension(index).SetDamperRate(4500.0f);
-    }
 
     bool IsFinite(const Vec3& value) {
         return std::isfinite(value.x) &&
@@ -100,26 +87,8 @@ int main() {
     Car car;
     car.SetChassis(chassis);
 
-    ConfigureWheel(
-        car,
-        WheelIndex::FrontLeft,
-        Vec3(-0.9f, -0.2f, 1.1f)
-    );
-    ConfigureWheel(
-        car,
-        WheelIndex::FrontRight,
-        Vec3(0.9f, -0.2f, 1.1f)
-    );
-    ConfigureWheel(
-        car,
-        WheelIndex::RearLeft,
-        Vec3(-0.9f, -0.2f, -1.1f)
-    );
-    ConfigureWheel(
-        car,
-        WheelIndex::RearRight,
-        Vec3(0.9f, -0.2f, -1.1f)
-    );
+    VehicleConfig vehicleConfig;
+    car.ApplyConfig(vehicleConfig);
 
     // This diagnostic is for suspension stability only. Tire forces are
     // tested by VehicleDiagnostics and would otherwise turn the gravity-well

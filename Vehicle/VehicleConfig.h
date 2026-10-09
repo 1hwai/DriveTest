@@ -24,9 +24,9 @@ struct VehicleConfig {
     float lowerArmOuterX = 0.76f, lowerArmOuterY = -0.20f;
     float hubOffsetY = 0.10f;
     // Spring mounts are chassis-local and upright-local respectively.
-    float springChassisMountX = 0.55f, springChassisMountY = 0.10f, springChassisMountZ = -0.18f;
+    float springChassisMountX = 0.55f, springChassisMountY = 0.20f, springChassisMountZ = 0.0f;
     float springUprightMountOffsetX = 0.0f, springUprightMountOffsetY = 0.10f, springUprightMountOffsetZ = 0.0f;
-    float suspensionRestLength = 0.32f, suspensionBumpTravel = 0.16f, suspensionReboundTravel = 0.42f;
+    float suspensionRestLength = 0.46f, suspensionBumpTravel = 0.16f, suspensionReboundTravel = 0.42f;
     float frontSpringRate = 39000.0f, rearSpringRate = 39000.0f;
     float frontCompressionDamping = 2500.0f, frontReboundDamping = 3000.0f;
     float rearCompressionDamping = 2500.0f, rearReboundDamping = 3000.0f;
