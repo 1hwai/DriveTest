@@ -310,37 +310,14 @@ int main() {
                 currentPowerAtA[i] + currentPowerAtB[i] +
                 currentSpringPower[i] + currentDamperPower[i];
 
-            integratedPowerAtA += currentPowerAtA[i] * FixedDeltaTime;
-            integratedPowerAtB += currentPowerAtB[i] * FixedDeltaTime;
-            integratedSpringPower += currentSpringPower[i] * FixedDeltaTime;
-            integratedDamperPower += currentDamperPower[i] * FixedDeltaTime;
             previousMountA[i] = mountA;
             previousMountB[i] = mountB;
         }
 
-        physicsWorld.Step(
-            FixedDeltaTime
-        );
-
-        const Vec3 position =
-            chassis->GetPosition();
-
-        const Vec3 velocity =
-            chassis->GetLinearVelocity();
-
-        if (!IsFinite(position) ||
-            !IsFinite(velocity) ||
-            !std::isfinite(
-                chassis->GetAngularVelocity().LengthSquared()
-            )) {
-
-            std::cerr
-                << "[FAIL] Non-finite chassis state at step "
-                << step << '\n';
-
-            Logger::Shutdown();
-            return 1;
-        }
+        // Measure energy before stepping so chassis state and suspension
+        // geometry/compression describe the same simulation time.
+        const Vec3 position = chassis->GetPosition();
+        const Vec3 velocity = chassis->GetLinearVelocity();
 
         minY =
             std::min(minY, position.y);
@@ -413,7 +390,7 @@ int main() {
             std::ostringstream energyDeltaLog;
             energyDeltaLog << std::fixed << std::setprecision(6)
                 << "[EnergyDelta] step=" << step
-                << " t=" << (step + 1) * FixedDeltaTime
+                << " t=" << step * FixedDeltaTime
                 << " delta=" << energyStepDelta
                 << " integratedPowerA=" << integratedPowerAtA
                 << " integratedPowerB=" << integratedPowerAtB
@@ -425,7 +402,7 @@ int main() {
         auto captureEnergySnapshot = [&](EnergySnapshot& snapshot) {
             snapshot.valid = true;
             snapshot.step = step;
-            snapshot.time = (step + 1) * FixedDeltaTime;
+            snapshot.time = step * FixedDeltaTime;
             snapshot.total = totalEnergy;
             snapshot.potential = potentialEnergy;
             snapshot.linear = linearEnergy;
@@ -504,6 +481,30 @@ int main() {
             }
 
             Logger::Info(log.str());
+        }
+
+        // Advance only after recording the synchronized pre-step state.
+        physicsWorld.Step(FixedDeltaTime);
+
+        const Vec3 steppedPosition = chassis->GetPosition();
+        const Vec3 steppedVelocity = chassis->GetLinearVelocity();
+        if (!IsFinite(steppedPosition) ||
+            !IsFinite(steppedVelocity) ||
+            !std::isfinite(chassis->GetAngularVelocity().LengthSquared())) {
+            std::cerr
+                << "[FAIL] Non-finite chassis state at step "
+                << step << '\n';
+            Logger::Shutdown();
+            return 1;
+        }
+
+        // These powers are sampled at the start of the interval. Accumulate
+        // them after the energy log so work and energy share a time boundary.
+        for (size_t i = 0; i < WheelCount; ++i) {
+            integratedPowerAtA += currentPowerAtA[i] * FixedDeltaTime;
+            integratedPowerAtB += currentPowerAtB[i] * FixedDeltaTime;
+            integratedSpringPower += currentSpringPower[i] * FixedDeltaTime;
+            integratedDamperPower += currentDamperPower[i] * FixedDeltaTime;
         }
     }
 
