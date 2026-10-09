@@ -227,7 +227,7 @@ Responsibilities:
 
 ### Tire
 
-- [ ] Determine ground contact.
+- [ ] Consume ground-contact results from the replaceable contact-query boundary.
 - [ ] Determine contact-point velocity.
 - [ ] Calculate longitudinal/lateral tire forces.
 - [ ] Apply tire forces at the contact patch.
@@ -1115,99 +1115,158 @@ Suspension Geometry
 
 **Current status:** solved-hub tire contact basis migration is complete. The user verified the Linux build and both registered ctest diagnostics pass (PhysicsDiagnostics and VehicleDiagnostics). This confirms the current regression suite, not yet slope/edge/jump-landing contact-query behavior; that is explicitly addressed by Phase 4-3.
 
-### Phase 4-3 — Contact-query architecture review
+### Phase 4-3 — Replaceable Wheel Contact Architecture
 
-**Goal:** make ground-contact detection replaceable without forcing Wheel, Suspension, or Tire to depend on a particular query algorithm.
+**Goal:** make wheel-ground contact discovery a replaceable implementation, not a permanent design choice. Raycast is only one candidate and must not define the interface.
 
-#### Design decision
+This work unit is an architecture specification. It does not select the final contact algorithm and does not claim the runtime has already been refactored.
 
-The contact-query mechanism is an implementation detail behind a stable result contract. Consumers must not know whether contact candidates were produced by one ray, multiple rays, a sphere/shape cast, terrain-specific queries, or a future method.
+#### Non-negotiable design objective
 
-~~~text
-Wheel pose + tire dimensions + query settings
+A developer must be able to add a newly discovered contact algorithm and select it without editing `Wheel`, `Suspension`, `Tire`, or vehicle-force consumers. Algorithm-specific code belongs behind one stable provider boundary. Consumers depend only on the result contract.
+
+Candidate providers include, without preference or commitment:
+
+- Single ray / adjusted ray.
+- Multi-ray or other discrete samples.
+- Sphere cast, shape cast, or swept volume.
+- Tire-shaped or multi-point geometric contact.
+- A node/beam-based or other future tire-contact implementation, if it can be adapted to the agreed contract.
+- Any future algorithm not listed here.
+
+The list is deliberately open-ended. Do not add algorithm-specific branches such as `if (isRaycast)` to consumers.
+
+#### Target dependency structure
+
+```text
+Vehicle / Car composition root
+    └── selects and injects one IWheelContactProvider
                   |
                   v
-          Wheel Contact Query
-       (replaceable implementation)
+Wheel geometry + generic query input
                   |
                   v
-           Contact Results
-       - grounded/contact state
-       - contact point(s)
-       - contact normal(s)
-       - separation / penetration data, when supported
-       - surface/material identifier, when available
+       IWheelContactProvider
+       ├── Raycast provider
+       ├── Multi-sample provider
+       ├── Shape/sweep provider
+       └── future/custom provider
                   |
-          consumer-specific use
-             /          \\
-            v            v
-        Suspension      Tire
-     spring geometry   contact basis,
-     sets length and   slip, grip and
-     force state       tire forces
-~~~
+                  v
+        WheelContactResult
+                  |
+          ┌───────┴────────┐
+          v                v
+     Suspension           Tire
+   uses suspension     uses contact
+   geometry/state      points/normals/
+   for spring length   surface/velocity
+                          /
+                         /
+            Vehicle force orchestration
+```
 
-This diagram expresses the intended dependency boundary, not a claim that every listed result is implemented today. The result type should contain only data consumers need; algorithm-specific data must not leak into Wheel, Suspension, or Tire.
+The diagram describes the intended dependency direction, not current implementation. Concrete provider selection belongs in vehicle/application composition or configuration. `Wheel`, `Suspension`, and `Tire` must not construct, select, or identify a concrete provider.
+
+#### Interface and data contract
+
+The implementation should introduce a provider-neutral interface (names are provisional until the code API review), conceptually:
+
+```cpp
+class IWheelContactProvider {
+public:
+    virtual ~IWheelContactProvider() = default;
+    virtual WheelContactResult Query(
+        const WheelContactInput& input,
+        const IContactQueryWorld& world
+    ) const = 0;
+};
+```
+
+This is illustrative pseudocode, not a mandate to copy these exact names or signatures. During implementation, inspect existing ownership, collision-world APIs, and project conventions before fixing the API.
+
+The contract must meet these requirements:
+
+- **Generic input:** wheel/hub pose and orientation, relevant tire dimensions/shape description, collision filtering, and algorithm-neutral query limits/settings. Do not make a ray, ray direction, or ray hit distance the universal input model.
+- **Stable result:** explicit contact state; zero or more contact samples; each sample's world-space point and corresponding normal; available surface/material identity; and optional separation/penetration or feature metadata when the underlying query can provide it.
+- **Explicit capabilities:** where a strategy cannot supply a field, represent that limitation explicitly rather than inventing values or silently changing semantics. Consumers must not branch on the concrete algorithm type.
+- **Consistent semantics:** point, normal, surface identity, and optional distance/penetration data must describe the same contact sample. Define coordinate space, normal direction, units, validity, ordering, and empty-result behavior.
+- **Multiple contacts:** the result type must be able to represent multiple samples even if the first provider returns one. Do not force all strategies to collapse to one arbitrary point at the interface boundary.
+- **Ownership/lifetime:** result data must remain valid independently of temporary query buffers or provider internals.
+- **No hidden force model:** the provider discovers/describes contact. Tire-force calculation and chassis-force application remain separately owned responsibilities unless a future architecture review explicitly changes that boundary.
+
+Do not expose implementation-specific types such as `RaycastResult`, ray parameters, cast handles, or provider-private buffers through the public wheel/tire contact contract.
 
 #### Responsibility boundaries
 
-- **Contact-query implementation:** searches the terrain/collision world and returns a stable, documented contact result. It owns ray/shape/sample details, filtering, candidate selection, and query-specific tolerances.
-- **Wheel:** owns wheel/hub state and exposes the contact result through a stable API. It must not contain the algorithm for finding terrain contacts.
-- **Suspension geometry:** determines hub position/orientation and the geometric spring/damper mount positions.
-- **Suspension model:** derives spring length, compression, compression velocity, and spring/damper force from suspension geometry and its state. It must not infer spring length from a terrain ray's hit distance.
-- **Tire:** consumes contact state, point(s), normal(s), surface data, wheel/hub state, and contact-point velocity as needed. It must not perform its own hidden ground query or depend on how the contact was found.
-- **Car / vehicle integration:** coordinates updates and applies suspension/tire forces at the correct physical attachment/contact locations; it must not duplicate query-specific logic.
+- **Contact provider:** performs contact discovery and provider-specific candidate filtering/selection. It owns ray/shape/sample details and any algorithm-specific tolerances.
+- **Contact-query world adapter:** exposes the world/collision capabilities providers are allowed to use. Keep this boundary separate from the vehicle consumers. Extend it only when a real candidate algorithm requires a missing world capability.
+- **Wheel / hub:** owns wheel rotational state and exposes the contact result through a stable API. It does not implement ground-search logic.
+- **Suspension geometry:** solves hub position/orientation and actual spring/damper mount positions.
+- **Suspension model:** computes spring length from the actual spring/damper mount points, and computes compression, velocity, and spring/damper forces from its own geometry/state. It must not infer spring length from contact distance.
+- **Tire:** consumes contact state/samples, wheel/hub state, contact-point velocity, and surface data to calculate tire state and forces. It does not query the ground itself and does not know which provider produced the result.
+- **Car / vehicle orchestration:** injects the chosen provider, sequences updates, and applies suspension and tire forces at the appropriate mechanical application points. It does not contain per-algorithm logic.
+- **Diagnostics:** tests provider contracts and vehicle behavior without requiring the consumer code to know which provider is active.
 
-#### Non-negotiable invariants
+#### The replaceability test
 
-- A world-down single ray is not the definition of a tire contact model.
-- Changing the query implementation must not require rewriting Suspension or the tire slip/grip model.
-- Ground-contact distance must not be treated as suspension spring length.
-- Spring length comes from actual spring/damper mount geometry; the contact query determines terrain contact, not suspension kinematics.
-- Contact point and normal must describe the same selected surface contact.
-- A valid grounded contact may have zero normal load; its geometric contact basis must not silently fall back to an unrelated chassis-default basis.
-- No valid contact means no terrain-derived tire force. Airborne suspension behavior must be defined by suspension kinematics and limits, not by inventing a ground hit.
-- Contact-query changes must preserve the established vehicle coordinate convention: +X left, -X right, +Y up, +Z forward.
-- Do not compensate for contact errors by changing spring rates, steering scale/sign, friction, or test thresholds.
+The architecture is not complete merely because an interface exists. It must pass this practical test:
 
-#### Query strategy: decision pending
+1. Add a new provider in its own implementation files.
+2. Register/select it through the composition/configuration boundary.
+3. Run the same consumer-level tests with the old and new providers.
+4. Confirm that `Wheel`, `Suspension`, `Tire`, their public consumer APIs, and force-model code did not need algorithm-specific edits.
 
-Candidate strategies to compare against the actual terrain-query API:
+If adding a provider requires changes to `Wheel`, `Suspension`, or `Tire`, the boundary has leaked implementation details and must be redesigned before adding more algorithms.
 
-1. **Single ray / revised ray direction:** cheapest and useful as a baseline, but a ray remains a line sample and cannot represent a tire footprint.
-2. **Multi-ray sampling:** can detect different parts of the footprint and estimate candidate contacts, but needs a documented policy for selecting/combining points and normals.
-3. **Sphere/shape cast:** accounts for volume during a sweep, but a sphere is only an approximation of a tire; support and normal behavior at mesh edges must be validated.
-4. **Tire-shaped or multi-point contact model:** potentially better suited to a rally tire footprint and uneven terrain, but has the greatest implementation and validation cost.
+There is one honest limit: a provider can be a drop-in implementation only when the engine exposes the world data and operations it needs. If a future method requires a new collision-world capability, add that capability behind the world adapter; do not push the new algorithm into wheel/suspension/tire consumers. A fundamentally different deformable node/beam tire model may also require a separate model-level design, because it changes more than how a contact point is discovered. That possibility must not be used as a reason to couple ordinary contact providers to the consumers.
 
-No strategy is selected solely from its name or presumed fidelity. Before choosing, inspect the current terrain representation and collision-query API, then prototype the smallest useful comparison. A multi-point result must not be collapsed into one arbitrary point without documenting how force application and torque are preserved.
+#### Suspension and tire invariants
 
-#### Validation cases
+- A world-down ray is not the definition of wheel-ground contact.
+- Contact discovery does not determine suspension kinematics.
+- Spring/damper length comes from the real geometry's mount points, never from ray hit distance or a provider-specific distance.
+- A wheel may have geometric contact while its normal load is zero; preserve valid contact geometry/basis without inventing tire force.
+- No valid contact means no terrain-derived tire force.
+- Contact samples must preserve consistent point/normal pairing and must apply resulting forces at the intended contact locations. If samples are aggregated, document how the resulting force and torque are preserved.
+- Keep the vehicle coordinate convention: +X left, -X right, +Y up, +Z forward.
+- Do not mask contact errors by changing spring rate, steering sign/scale, friction, or test thresholds.
+- Changing providers must not silently change units, coordinate spaces, contact-state meaning, or normal orientation.
 
-The contact-query implementation is not accepted based on flat-ground behavior alone. At minimum, validate:
+#### Strategy selection is intentionally deferred
 
-- flat ground and symmetric left/right behavior;
-- uphill/downhill slopes and cross-slope/banked surfaces;
-- convex crests and concave dips;
-- a wheel approaching an edge or discontinuity;
-- chassis airborne with the front tire contacting a sloped surface first;
-- one or more wheels airborne while others remain grounded;
-- contact point, normal, separation/penetration, force application point, and resulting chassis torque;
-- query continuity and stability across adjacent terrain triangles.
+Do not select an algorithm by name, reputation, or assumption. After the boundary and existing world-query capabilities are audited, compare candidates against the same tests. Consider correctness on slopes, banks, crests, dips, triangle boundaries, edges, wheel lift, and jump landing, alongside stability, determinism, performance, and implementation cost.
 
-#### Scope and next step
+Raycast may remain as the first adapter to preserve a baseline and isolate the refactor. That does **not** make Raycast the preferred long-term strategy or allow its semantics to leak into the contract.
 
-This phase records the architecture boundary and open decision; it does not yet implement a new query algorithm or claim that the current runtime has this separation.
+#### Implementation sequence
 
-Next, inspect the terrain representation and existing raycast/query APIs, then decide on a contact-result contract and compare candidate query strategies. Only after that should implementation be split into small, independently testable work units.
+1. **Audit existing APIs:** inspect terrain, road, shape-collision, `PhysicsWorld`, and current `Wheel::Update()` query/force paths.
+2. **Specify the contract:** define input, result, contact-state semantics, multiple samples, optional capabilities, coordinate spaces, units, and empty-result behavior.
+3. **Introduce the boundary:** add the provider interface and world adapter without changing tire grip behavior.
+4. **Wrap the current query:** implement the existing behavior as one provider behind the interface; do not improve its algorithm in the same work unit unless required for correctness.
+5. **Inject the provider:** select it outside `Wheel`, `Suspension`, and `Tire`; remove concrete-query construction and algorithm checks from consumers.
+6. **Decouple suspension:** connect actual suspension geometry/mount-point calculations to the runtime path and remove legacy ray-distance-to-spring-length coupling.
+7. **Add contract tests:** use a deterministic fake provider to test no contact, one contact, multiple contacts, changing normals, and missing optional data.
+8. **Add scene diagnostics:** flat ground and left/right symmetry; slopes and banks; crest/dip; terrain/road edges and triangle transitions; front-wheel-first slope landing; one or more airborne wheels; contact point/normal pairing; force application point and resulting torque.
+9. **Compare providers:** only after the same test harness works, implement and compare alternative candidates. Keep each provider in separate files and selectable without consumer edits.
 
-- [x] Record the replaceable contact-query boundary.
-- [x] Separate contact discovery from suspension spring-length calculation in the architecture contract.
-- [x] Record candidate query strategies and regression cases.
-- [ ] Audit the concrete terrain and collision-query API.
-- [ ] Select a first query implementation based on that audit.
-- [ ] Integrate the contact result through Car / Wheel / Tire without leaking query-specific details.
-- [ ] Remove the legacy ray-distance-to-suspension-force coupling and validate the replacement.
-- [ ] Add automated slope, crest, dip, edge, and sloped-landing diagnostics.
+Each implementation work unit must list exact files before editing, update this checklist only after evidence, and follow the mandatory engineering/verification skills above.
+
+#### Work checklist
+
+- [x] Record the goal that any future contact algorithm must be replaceable behind a provider boundary.
+- [x] Record consumer independence as a hard architecture requirement.
+- [x] Keep strategy selection open, including algorithms discovered in the future.
+- [x] Define the intended provider-neutral contract requirements and replaceability test.
+- [ ] Audit existing terrain/collision/world-query capabilities and actual runtime call paths.
+- [ ] Finalize the concrete interface and result data types after the audit.
+- [ ] Add provider interface and world adapter.
+- [ ] Wrap current contact discovery as one provider.
+- [ ] Inject provider selection outside wheel/suspension/tire consumers.
+- [ ] Remove contact-distance-based spring-length coupling from the runtime path.
+- [ ] Add provider-contract tests and slope/edge/landing diagnostics.
+- [ ] Implement and compare alternative providers without editing consumer algorithms.
 
 ### Phase 5 — Vehicle Validation
 
