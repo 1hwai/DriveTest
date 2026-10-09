@@ -2,8 +2,11 @@
 
 #include <array>
 #include <cstddef>
+#include <memory>
 
 #include "Wheel.h"
+#include "IWheelContactProvider.h"
+#include "DoubleWishbone.h"
 #include "Suspension.h"
 #include "Tire.h"
 #include "Engine.h"
@@ -28,6 +31,7 @@ constexpr size_t WheelCount =
 class Car {
 public:
     Car();
+    explicit Car(std::unique_ptr<IWheelContactProvider> contactProvider);
 
     void SetChassis(RigidBody* chassis);
     void ApplyConfig(const VehicleConfig& config);
@@ -43,6 +47,9 @@ public:
         PhysicsWorld& physicsWorld,
         float deltaTime
     );
+
+    DoubleWishbone& GetSuspensionGeometry(WheelIndex index);
+    const DoubleWishbone& GetSuspensionGeometry(WheelIndex index) const;
 
     Wheel& GetWheel(WheelIndex index);
     const Wheel& GetWheel(WheelIndex index) const;
@@ -69,6 +76,7 @@ public:
     float GetClutch() const;
 
 private:
+    std::unique_ptr<IWheelContactProvider> m_contactProvider;
     RigidBody* m_chassis;
     float m_throttle;
     float m_brake;
@@ -80,6 +88,7 @@ private:
     float m_brakeTorque;
     float m_maxSteeringAngle;
 
+    std::array<DoubleWishbone, WheelCount> m_suspensionGeometry;
     std::array<Wheel, WheelCount> m_wheels;
     std::array<Suspension, WheelCount> m_suspensions;
     std::array<Tire, WheelCount> m_tires;

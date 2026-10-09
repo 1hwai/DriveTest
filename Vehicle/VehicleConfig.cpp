@@ -79,6 +79,17 @@ bool VehicleConfig::Load(const std::string& path, std::string& error) {
     READ("ColliderHalfExtentsZ", colliderHalfExtents.z);
     READ("wheelRadius", wheelRadius);
     READ("wheelInertia", wheelInertia);
+    READ("upperArmInnerX", upperArmInnerX);
+    READ("upperArmInnerY", upperArmInnerY);
+    READ("upperArmInnerZ", upperArmInnerZ);
+    READ("upperArmOuterX", upperArmOuterX);
+    READ("upperArmOuterY", upperArmOuterY);
+    READ("lowerArmInnerX", lowerArmInnerX);
+    READ("lowerArmInnerY", lowerArmInnerY);
+    READ("lowerArmInnerZ", lowerArmInnerZ);
+    READ("lowerArmOuterX", lowerArmOuterX);
+    READ("lowerArmOuterY", lowerArmOuterY);
+    READ("hubOffsetY", hubOffsetY);
     READ("suspensionRestLength", suspensionRestLength);
     READ("suspensionBumpTravel", suspensionBumpTravel);
     READ("suspensionReboundTravel", suspensionReboundTravel);
@@ -111,7 +122,8 @@ bool VehicleConfig::Load(const std::string& path, std::string& error) {
     if (!gears.empty()) gearRatios = gears;
     const char* known[] = {
         "mass","spawnClearance","ColliderHalfExtentsX","ColliderHalfExtentsY","ColliderHalfExtentsZ",
-        "wheelRadius","wheelInertia","suspensionRestLength","suspensionBumpTravel","suspensionReboundTravel",
+        "wheelRadius","wheelInertia","upperArmInnerX","upperArmInnerY","upperArmInnerZ","upperArmOuterX","upperArmOuterY",
+        "lowerArmInnerX","lowerArmInnerY","lowerArmInnerZ","lowerArmOuterX","lowerArmOuterY","hubOffsetY","suspensionRestLength","suspensionBumpTravel","suspensionReboundTravel",
         "frontSpringRate","rearSpringRate","frontCompressionDamping","frontReboundDamping","rearCompressionDamping","rearReboundDamping",
         "staticFriction","dynamicFriction","longitudinalStiffness","lateralStiffness","rollingResistance","brakeTorque","maxSteeringAngle",
         "idleRPM","stallRPM","redlineRPM","peakTorque","engineInertia","reverseRatio","finalDriveRatio",

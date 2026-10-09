@@ -4,7 +4,8 @@
 Suspension::Suspension()
     : m_restLength(0.8f), m_maxLength(1.0f), m_bumpTravel(0.8f),
       m_springRate(30000.0f), m_compressionDamperRate(4500.0f),
-      m_reboundDamperRate(4500.0f) {}
+      m_reboundDamperRate(4500.0f), m_length(0.8f),
+      m_compression(0.0f), m_compressionVelocity(0.0f) {}
 
 void Suspension::SetRestLength(float length) {
     m_restLength = std::max(0.0f, length);
@@ -50,12 +51,62 @@ void Suspension::SetReboundDamperRate(float rate) {
 float Suspension::GetReboundDamperRate() const { return m_reboundDamperRate; }
 
 float Suspension::ClampLength(float length) const {
-    return std::clamp(length, std::max(0.0f, m_restLength - m_bumpTravel), m_maxLength);
+    return std::clamp(
+        length,
+        std::max(0.0f, m_restLength - m_bumpTravel),
+        m_maxLength
+    );
 }
 
-float Suspension::CalculateForce(float compression, float compressionVelocity) const {
-    if (compression <= 0.0f) return 0.0f;
-    const float damperRate = compressionVelocity >= 0.0f
-        ? m_compressionDamperRate : m_reboundDamperRate;
-    return std::max(0.0f, m_springRate * compression + damperRate * compressionVelocity);
+void Suspension::UpdateFromMounts(
+    const Vec3& mountA,
+    const Vec3& mountB,
+    float deltaTime
+) {
+    UpdateLength((mountB - mountA).Length(), deltaTime);
+}
+
+void Suspension::UpdateLength(float length, float deltaTime) {
+    const float previousCompression = m_compression;
+    m_length = ClampLength(length);
+    m_compression = std::max(0.0f, m_restLength - m_length);
+
+    if (deltaTime > 0.0f)
+        m_compressionVelocity =
+            (m_compression - previousCompression) / deltaTime;
+    else
+        m_compressionVelocity = 0.0f;
+}
+
+float Suspension::GetLength() const { return m_length; }
+float Suspension::GetCompression() const { return m_compression; }
+float Suspension::GetCompressionVelocity() const {
+    return m_compressionVelocity;
+}
+
+Vec3 Suspension::CalculateForceVector(
+    const Vec3& mountA,
+    const Vec3& mountB
+) const {
+    const Vec3 delta = mountB - mountA;
+    if (delta.LengthSquared() <= 0.000001f)
+        return Vec3(0.0f, 0.0f, 0.0f);
+
+    return delta.Normalized() * CalculateForce();
+}
+
+float Suspension::CalculateForce() const {
+    if (m_compression <= 0.0f)
+        return 0.0f;
+
+    const float damperRate =
+        m_compressionVelocity >= 0.0f
+            ? m_compressionDamperRate
+            : m_reboundDamperRate;
+
+    return std::max(
+        0.0f,
+        m_springRate * m_compression +
+        damperRate * m_compressionVelocity
+    );
 }

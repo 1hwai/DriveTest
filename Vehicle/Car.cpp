@@ -1,5 +1,6 @@
 #include "Car.h"
 #include "VehicleCoordinates.h"
+#include "IWheelContactProvider.h"
 
 #include "../Physics/PhysicsWorld.h"
 #include "../Physics/RigidBody.h"
@@ -9,15 +10,88 @@
 #include <cmath>
 #include <iomanip>
 #include <sstream>
+#include <utility>
 
 namespace {
     size_t ToIndex(WheelIndex index) {
         return static_cast<size_t>(index);
     }
+
+    struct AckermannAngles {
+        float left;
+        float right;
+    };
+
+    AckermannAngles CalculateAckermannAngles(
+        float steeringAngle,
+        const std::array<Wheel, WheelCount>& wheels
+    ) {
+        const Vec3& frontLeft = wheels[ToIndex(WheelIndex::FrontLeft)].GetLocalPosition();
+        const Vec3& frontRight = wheels[ToIndex(WheelIndex::FrontRight)].GetLocalPosition();
+        const Vec3& rearLeft = wheels[ToIndex(WheelIndex::RearLeft)].GetLocalPosition();
+        const Vec3& rearRight = wheels[ToIndex(WheelIndex::RearRight)].GetLocalPosition();
+
+        const float wheelbase =
+            0.5f * (
+                (frontLeft.z - rearLeft.z) +
+                (frontRight.z - rearRight.z)
+            );
+        const float trackWidth =
+            0.5f * (
+                (frontLeft.x - frontRight.x) +
+                (rearLeft.x - rearRight.x)
+            );
+
+        if (std::abs(steeringAngle) < 0.000001f ||
+            wheelbase <= 0.000001f ||
+            trackWidth <= 0.000001f) {
+            return { 0.0f, 0.0f };
+        }
+
+        const float centerAngle = std::abs(steeringAngle);
+        const float radius = wheelbase / std::tan(centerAngle);
+        const float innerRadius =
+            std::max(0.000001f, radius - 0.5f * trackWidth);
+        const float outerRadius =
+            radius + 0.5f * trackWidth;
+        const float innerMagnitude =
+            std::atan(wheelbase / innerRadius);
+        const float outerMagnitude =
+            std::atan(wheelbase / outerRadius);
+
+        const bool turningRight = steeringAngle < 0.0f;
+        const float direction =
+            turningRight ? 1.0f : -1.0f;
+
+        // DoubleWishbone's solved steering axis points from the upper
+        // outer joint to the lower outer joint. With the current geometry
+        // that axis points toward -Y, so positive geometry rotation is
+        // a right turn for both front wheels.
+        return {
+            direction * (
+                turningRight
+                    ? outerMagnitude
+                    : innerMagnitude
+            ),
+            direction * (
+                turningRight
+                    ? innerMagnitude
+                    : outerMagnitude
+            )
+        };
+    }
 }
 
 Car::Car()
-    : m_chassis(nullptr),
+    : Car(CreateDefaultWheelContactProvider()) {}
+
+Car::Car(std::unique_ptr<IWheelContactProvider> contactProvider)
+    : m_contactProvider(
+        contactProvider
+            ? std::move(contactProvider)
+            : CreateDefaultWheelContactProvider()
+    ),
+    m_chassis(nullptr),
     m_throttle(0.0f),
     m_brake(0.0f),
     m_steering(0.0f),
@@ -40,6 +114,57 @@ void Car::ApplyConfig(const VehicleConfig& config) {
         m_wheels[i].SetLocalPosition(config.wheelPositions[i]);
         m_wheels[i].SetRadius(config.wheelRadius);
         m_wheels[i].SetInertia(config.wheelInertia);
+
+        const float side =
+            config.wheelPositions[i].x >= 0.0f
+                ? 1.0f
+                : -1.0f;
+        const float wheelZ =
+            config.wheelPositions[i].z;
+
+        DoubleWishboneConfig geometry{
+            Vec3(
+                side * config.upperArmInnerX,
+                config.upperArmInnerY,
+                wheelZ - config.upperArmInnerZ
+            ),
+            Vec3(
+                side * config.upperArmInnerX,
+                config.upperArmInnerY,
+                wheelZ + config.upperArmInnerZ
+            ),
+            Vec3(
+                side * config.upperArmOuterX,
+                config.upperArmOuterY,
+                wheelZ
+            ),
+            Vec3(
+                side * config.lowerArmInnerX,
+                config.lowerArmInnerY,
+                wheelZ - config.lowerArmInnerZ
+            ),
+            Vec3(
+                side * config.lowerArmInnerX,
+                config.lowerArmInnerY,
+                wheelZ + config.lowerArmInnerZ
+            ),
+            Vec3(
+                side * config.lowerArmOuterX,
+                config.lowerArmOuterY,
+                wheelZ
+            ),
+            Vec3(
+                0.0f,
+                config.hubOffsetY,
+                0.0f
+            )
+        };
+
+        m_suspensionGeometry[i].Configure(geometry);
+        m_suspensionGeometry[i].Solve(
+            m_chassis ? m_chassis->GetPosition() : Vec3(),
+            m_chassis ? m_chassis->GetOrientation() : Quaternion::Identity()
+        );
 
         Suspension& suspension = m_suspensions[i];
         suspension.SetRestLength(config.suspensionRestLength);
@@ -105,7 +230,6 @@ void Car::UpdatePhysics(
         m_powertrain.GetRightDriveTorque();
 
     // Coordinate convention: vehicle forward = +Z, right = -X, up = +Y.
-    // Steering input and steering angle are both positive to the right.
     // Wheel steering preserves the existing input/angle sign convention.
     const Vec3 velocity = m_chassis->GetLinearVelocity();
     const float horizontalSpeed = std::sqrt(
@@ -139,6 +263,33 @@ void Car::UpdatePhysics(
     );
 
     for (size_t i = 0; i < WheelCount; ++i) {
+        m_suspensionGeometry[i].Solve(
+            m_chassis->GetPosition(),
+            m_chassis->GetOrientation()
+        );
+
+        if (i < 2) {
+            const AckermannAngles angles =
+                CalculateAckermannAngles(
+                    m_wheels[i].GetSteeringAngle(),
+                    m_wheels
+                );
+
+            const float geometrySteeringAngle =
+                i == static_cast<size_t>(WheelIndex::FrontLeft)
+                    ? angles.left
+                    : angles.right;
+
+            m_suspensionGeometry[i].ApplySteering(
+                geometrySteeringAngle
+            );
+        }
+
+        m_wheels[i].SetHubState(
+            m_suspensionGeometry[i].GetHubPosition(),
+            m_suspensionGeometry[i].GetHubOrientation()
+        );
+
         m_wheels[i].SetBrakeTorque(
             m_brake * m_brakeTorque
         );
@@ -148,6 +299,7 @@ void Car::UpdatePhysics(
         m_wheels[i].Update(
             i,
             *m_chassis,
+            *m_contactProvider,
             physicsWorld,
             m_suspensions[i],
             deltaTime
@@ -197,27 +349,13 @@ void Car::UpdatePhysics(
             const Vec3 origin =
                 m_chassis->GetPosition() +
                 m_chassis->GetOrientation() * localPosition;
-            const Vec3 direction = (
-                m_chassis->GetOrientation() *
-                Vec3(0.0f, -1.0f, 0.0f)
-            ).Normalized();
-            const float maxDistance =
-                m_suspensions[i].GetMaxLength() + wheel.GetRadius();
-            const float rayDistance = wheel.GetLastRayDistance();
-            const Vec3 reconstructedPoint =
-                origin + direction * rayDistance;
-            const Vec3 wheelPosition =
-                wheel.GetWorldPosition();
-            const Vec3 mountToWheel =
-                wheelPosition - origin;
+            const Vec3 suspensionAxis(0.0f, -1.0f, 0.0f);
+            const Vec3 wheelPosition = wheel.GetWorldPosition();
+            const Vec3 mountToWheel = wheelPosition - origin;
             const Vec3 expectedMountToWheel =
-                direction * wheel.GetSuspensionLength();
+                suspensionAxis * wheel.GetSuspensionLength();
             const Vec3 positionError =
                 mountToWheel - expectedMountToWheel;
-
-            const float pointError = wheel.IsGrounded()
-                ? (reconstructedPoint - wheel.GetContactPoint()).Length()
-                : 0.0f;
 
             std::ostringstream log;
             log << std::fixed << std::setprecision(3)
@@ -226,15 +364,12 @@ void Car::UpdatePhysics(
                 << " si=" << i
                 << " lp=(" << localPosition.x << "," << localPosition.y << "," << localPosition.z << ")"
                 << " o=(" << origin.x << "," << origin.y << "," << origin.z << ")"
-                << " d=(" << direction.x << "," << direction.y << "," << direction.z << ")"
                 << " wp=(" << wheelPosition.x << "," << wheelPosition.y << "," << wheelPosition.z << ")"
                 << " mw=(" << mountToWheel.x << "," << mountToWheel.y << "," << mountToWheel.z << ")"
                 << " pe2=(" << positionError.x << "," << positionError.y << "," << positionError.z << ")"
-                << " h=" << wheel.IsGrounded()
-                << " md=" << maxDistance
-                << " rd=" << rayDistance
-                << " pe=" << pointError
-                << " sh=" << wheel.GetLastRayShape()
+                << " grounded=" << wheel.IsGrounded()
+                << " contactSamples=" << wheel.GetContactResult().samples.size()
+                << " contactDistance=" << wheel.GetLastContactDistance()
                 << " sl=" << wheel.GetSuspensionLength()
                 << " c=" << wheel.GetCompression()
                 << " cv=" << wheel.GetCompressionVelocity()
@@ -380,6 +515,14 @@ void Car::UpdatePhysics(
 
         m_energyTimer = 0.0f;
     }
+}
+
+DoubleWishbone& Car::GetSuspensionGeometry(WheelIndex index) {
+    return m_suspensionGeometry[ToIndex(index)];
+}
+
+const DoubleWishbone& Car::GetSuspensionGeometry(WheelIndex index) const {
+    return m_suspensionGeometry[ToIndex(index)];
 }
 
 Wheel& Car::GetWheel(WheelIndex index) {

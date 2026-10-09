@@ -18,6 +18,11 @@ struct VehicleConfig {
         VehicleCoordinates::RightWheelPosition(0.76f, -0.10f, -1.25f)
     };
     float wheelRadius = 0.32f, wheelInertia = 1.8f;
+    float upperArmInnerX = 0.55f, upperArmInnerY = 0.15f, upperArmInnerZ = 0.18f;
+    float upperArmOuterX = 0.72f, upperArmOuterY = 0.10f;
+    float lowerArmInnerX = 0.55f, lowerArmInnerY = -0.25f, lowerArmInnerZ = 0.18f;
+    float lowerArmOuterX = 0.76f, lowerArmOuterY = -0.20f;
+    float hubOffsetY = 0.10f;
     float suspensionRestLength = 0.32f, suspensionBumpTravel = 0.16f, suspensionReboundTravel = 0.42f;
     float frontSpringRate = 39000.0f, rearSpringRate = 39000.0f;
     float frontCompressionDamping = 2500.0f, frontReboundDamping = 3000.0f;

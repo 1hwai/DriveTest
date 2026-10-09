@@ -497,16 +497,6 @@ void Scene::Update(
                     static_cast<WheelIndex>(i)
                 ).GetRotationAngle();
 
-            // Use the same steering-angle sign convention as the tire model:
-            // positive = right, negative = left.
-            const Quaternion wheelSteering =
-                Quaternion::FromAxisAngle(
-                    Vec3(0.0f, 1.0f, 0.0f),
-                    m_car.GetWheel(
-                        static_cast<WheelIndex>(i)
-                    ).GetSteeringAngle()
-                );
-
             const Quaternion wheelSpin =
                 Quaternion::FromAxisAngle(
                     Vec3(1.0f, 0.0f, 0.0f),
@@ -514,8 +504,9 @@ void Scene::Update(
                 );
 
             m_wheelObjects[i]->GetTransform().rotation =
-                chassisRotation *
-                wheelSteering *
+                m_car.GetWheel(
+                    static_cast<WheelIndex>(i)
+                ).GetWorldOrientation() *
                 wheelSpin;
 
             const float diameter =
