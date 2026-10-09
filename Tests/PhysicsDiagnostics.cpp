@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
@@ -114,15 +115,11 @@ int main() {
         9.81f *
         chassis->GetPosition().y;
     for (size_t i = 0; i < WheelCount; ++i) {
-        const DoubleWishbone& geometry =
-            car.GetSuspensionGeometry(static_cast<WheelIndex>(i));
-        const float compression = std::max(
-            0.0f,
-            car.GetSuspension(static_cast<WheelIndex>(i)).GetRestLength() -
-                (geometry.GetSpringMountB() - geometry.GetSpringMountA()).Length()
-        );
+        const Suspension& suspension =
+            car.GetSuspension(static_cast<WheelIndex>(i));
+        const float compression = suspension.GetCompression();
         initialEnergy += 0.5f *
-            car.GetSuspension(static_cast<WheelIndex>(i)).GetSpringRate() *
+            suspension.GetSpringRate() *
             compression * compression;
     }
 

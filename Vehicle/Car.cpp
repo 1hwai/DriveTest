@@ -205,6 +205,11 @@ void Car::ApplyConfig(const VehicleConfig& config) {
         suspension.SetSpringRate(i < 2 ? config.frontSpringRate : config.rearSpringRate);
         suspension.SetCompressionDamperRate(i < 2 ? config.frontCompressionDamping : config.rearCompressionDamping);
         suspension.SetReboundDamperRate(i < 2 ? config.frontReboundDamping : config.rearReboundDamping);
+        suspension.UpdateFromMounts(
+            m_suspensionGeometry[i].GetSpringMountA(),
+            m_suspensionGeometry[i].GetSpringMountB(),
+            0.0f
+        );
 
         m_tires[i].SetStaticFriction(config.staticFriction);
         m_tires[i].SetDynamicFriction(config.dynamicFriction);
