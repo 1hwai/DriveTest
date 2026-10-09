@@ -270,3 +270,35 @@ Record the tested revision, environment, exact commands/scenarios, relevant outp
 5. Redesign the Car/Wheel/Suspension responsibility boundary based on the preceding evidence.
 
 These are proposed priorities only; implementation remains blocked pending review and scope agreement.
+
+### Historical work-unit traceability — source-level mapping
+
+| Historical work unit | Source evidence found | Audit assessment on the audited revision |
+|---|---|---|
+| 1-1 Double Wishbone API/data model | DoubleWishbone.h/.cpp define arm, upright, hub, and spring mount state. | Implemented at source/API level; runtime correctness assessed separately. |
+| 1-2 Double Wishbone solver | SolveArmAtHeight and SolveConstraints preserve configured link lengths and upright joint spacing. | Solver exists; independent current-revision run not established. |
+| 1-2-4 Vehicle integration | Car owns DoubleWishbone[4] and sends solved hub state to Wheel. | Partially implemented: Wheel::Update still takes concrete DoubleWishbone and owns suspension/contact work. |
+| 1-3 Travel | Car estimates feasible travel with 24 incremental samples each direction and searches travel by local hub Y. | Partially implemented; full 3D contact residual and boundary accuracy unverified. |
+| 1-4 Double Wishbone validation | Focused test source checks arm lengths, upright distance, symmetry, steering-axis rotation, and finite states. | Test source exists, but current CI does not run it. Its tested scope does not prove all listed edge cases. |
+| 1-M / 1-1 MacPherson API | MacPherson.h/.cpp define lower arm, strut, upright, hub, steering axis, and spring mounts. | Implemented as a standalone geometry class. |
+| 1-M / 1-2 solver | MacPherson solver source and a focused diagnostic source exist. | Current-revision verification not established; diagnostic is not enabled in CI. |
+| 1-M / 1-3 travel | SolveAtTravel changes target strut length and solves lower-arm/strut geometry. | Source exists; continuity/constraint claims require a fresh run and review of diagnostic independence. |
+| 1-M / 1-4 final geometry validation | MacPhersonDiagnostics.cpp contains travel and geometry checks. | Historical checklist says passed, but current CI does not rebuild/run it. MacPherson is not connected to Car. |
+| 2-1 responsibility/data flow | Architecture describes geometry-owned mounts and Suspension-owned scalar force model. | Design specified; active Wheel call path does not respect the intended boundary cleanly. |
+| 2-2 spring/damper model | Suspension tracks mount distance, compression, compression velocity, and force magnitude. | Partially implemented: active UpdateFromMounts path bypasses ClampLength despite the documented contract. |
+| 2-3 geometry/force connection | Wheel passes Double Wishbone spring mounts into Suspension and applies the resulting force to chassis mount A. | Active for Double Wishbone only; MacPherson mount output is not connected to Car. |
+| 2-4 suspension validation | SuspensionDiagnostics.cpp checks scalar limits, damping selection, mount-derived force direction, and degenerate mounts. | Test source exists; current CI does not run it. |
+| 3-1 steering axis | DoubleWishbone derives a world-space axis from upper/lower outer joints; MacPherson has its own axis methods. | Implemented for Double Wishbone runtime; MacPherson not integrated. |
+| 3-2 steering geometry | Hub rotates around the computed axis; Ackermann angles are calculated from wheelbase and track. | Partial: config cannot express separate upper/lower outer-joint Z offsets or a general hub offset, and no physical steering-arm geometry is configured. Thus caster/scrub/steering-arm claims exceed current config expressiveness. |
+| 3-3 steering/runtime link | Car applies front steering to DoubleWishbone geometry and propagates hub state to Wheel. | Implemented for the current Double Wishbone path; Wheel still stores and inverts a separate steering angle, so sign/data ownership remains split across two representations. |
+| 3-4 Ackermann | CalculateAckermannAngles uses wheelbase and track width and applies inner/outer angles; VehicleDiagnostics checks turn direction and angle ordering. | Basic ideal Ackermann calculation implemented; not a mechanically modelled rack/tie-rod/steering-arm system. Vehicle test passed in recorded CI. |
+| 4-1 tire interface | Tire consumes Wheel state and Car applies tire forces at Wheel contact point. | Core path implemented; the full suspension boundary remains coupled through Wheel. |
+| 4-2 contact basis/force basis | Tire basis projects solved hub forward onto contact plane; VehicleDiagnostics checks basis alignment and force direction. | Current vehicle diagnostics passed in recorded CI; slope/edge/multiple-contact accuracy remains unverified. |
+| 4-3 replaceable contact architecture | IWheelContactProvider is injected into Car; raycast provider implements it. | Provider boundary implemented, but current consumers only use the first sample and default query is a single world-down ray. |
+
+### Additional source-level findings
+
+- **Ignored solver failures:** DoubleWishbone::Solve() returns void and discards the result of SolveAtTravel(). Car::UpdatePhysics() also ignores the return from its baseline SolveAtTravel(..., 0). Failed geometry solves can therefore continue through the runtime without an explicit failure state.
+- **Feasible travel is sampled, not solved to a boundary:** Car::ApplyConfig() checks 24 discrete travel samples in each direction and stops at the first failure. The stored limit is resolution-dependent rather than a refined feasibility boundary.
+- **Steering configurability is narrower than the checklist implies:** VehicleConfig defines upper/lower outer joint X and Y but uses wheelZ for both outer-joint Z coordinates; hubOffset is vertical-only. Current config cannot independently set caster through fore-aft steering-axis offset or general lateral/fore-aft hub offset. Ackermann is calculated from wheelbase/track rather than a configured steering arm.
+- **The current CI failure is not localized yet:** the job proves PhysicsDiagnostics fails its total mechanical-energy assertion, but the summarized output alone does not identify which force/state term introduces the increase. Do not attribute this to a specific suspension line until the saved energy snapshots and accounting are inspected.
