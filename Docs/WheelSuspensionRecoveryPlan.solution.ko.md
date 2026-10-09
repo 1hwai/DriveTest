@@ -151,3 +151,122 @@
 - **검증 결과:**
 - **상태:** 미착수 / 진행 중 / 검증됨 / 실패 / 미검증
 - **남은 한계 / 다음 의존 작업:**
+
+
+## 5단계 — 초기 소스 감사 기록
+
+**상태:** 진행 중 — 소스 조사 시작, 종료 조건 미충족.  
+**감사 리비전:** b247b5f2affd639cbaa69bea45f6eee1bb9e251a (suspension-runtime-integration).  
+**감사 날짜:** 2026-10-09.  
+**감사 중 구현 변경:** 없음.
+
+### 5.1 요구사항 추적 — 잠정
+
+- **관찰된 사실:**
+  - 아키텍처 문서에는 미완료 체크 항목이 많이 남아 있는 한편, 여러 구현 하위 단계가 완료로 표시되어 있다.
+  - Double Wishbone과 MacPherson의 기하 클래스 및 개별 진단 소스 파일은 존재한다.
+  - 현재 차량 런타임은 DoubleWishbone 타입에 직접 의존하며, Car.h의 GetSuspensionGeometry()도 DoubleWishbone&를 반환한다.
+  - CMakeLists.txt와 현재 CI 워크플로는 PhysicsDiagnostics와 VehicleDiagnostics를 실행한다. MacPherson, Double Wishbone, Suspension 진단은 별도 선택 빌드 옵션이며 .github/workflows/physics-diagnostics.yml에서 활성화되어 있지 않다.
+- **근거:** Docs/WheelSuspensionArchitecture.md, Vehicle/Car.h, Vehicle/Car.cpp, CMakeLists.txt, .github/workflows/physics-diagnostics.yml, Tests/DoubleWishboneDiagnostics.cpp, Tests/MacPhersonDiagnostics.cpp, Tests/SuspensionDiagnostics.cpp.
+- **판정:** 기존 범위 전체의 구현·검증 상태는 부분 구현 또는 미입증. 기존 체크 표시와 과거 실행 성공 서술은 감사 리비전에서의 최신 증거가 아니다.
+- **제안된 해결책:** 기존 체크 표시를 변경하기 전에 요구사항별 추적표를 만든다. 진단의 타당성을 검토한 뒤 반복 가능한 검증 경로에 집중 진단을 추가한다.
+- **합의된 결정:** 사용자 검토 대기.
+- **영향 파일:** 구현 파일 변경 없음. 감사 기록만 추가.
+- **검증:** 저장소 소스와 감사 리비전의 GitHub Actions 실행 기록을 조사했다.
+
+### 5.2 기구학·기계적 정확성 — 잠정
+
+- **관찰된 사실:**
+  - DoubleWishbone::SolveConstraints()는 각 암의 두 피벗-외측 조인트 거리와 상·하부 업라이트 조인트 사이의 거리를 유지한다. 상부 조인트 Y를 샘플링한 뒤 구간을 좁혀 해를 찾는다.
+  - DoubleWishbone::SolveAtTravel()은 두 외측 조인트의 평균 로컬 Y 목표를 변경해 스트로크를 매개변수화한다. 이것만으로 접촉 조건과 모든 서스펜션 기하가 만족된다고 증명되지는 않는다.
+  - Car::UpdatePhysics()는 접촉점과 법선으로 목표 허브 위치를 계산하지만, 스트로크 후보를 고를 때 목표와 후보 허브 사이의 차이 중 차체 로컬 Y만 비교한다. 전체 3차원 허브-목표 오차를 최소화하거나 검증하지 않는다.
+  - MacPherson 솔버와 별도 진단 코드는 있지만 현재 Car 런타임이 MacPherson 인스턴스를 선택하거나 소유하는 경로는 없다.
+- **근거:** Vehicle/DoubleWishbone.cpp의 SolveAtTravel, SolveConstraints, SolveArmAtHeight; Vehicle/Car.cpp의 접촉 목표·스트로크 탐색; Vehicle/MacPherson.cpp; Vehicle/Car.h.
+- **판정:** Double Wishbone 솔버는 존재하지만 기계적·접촉 정확성은 미검증. MacPherson 기하 코드는 존재하지만 현재 Car 경로에는 런타임 통합되지 않았다.
+- **제안된 해결책:** 전체 3D 접촉 오차, 스트로크 전 구간과 차체 자세별 링크 구속조건, 각 구체 기하의 런타임 선택 여부를 독립적으로 검사한다. 오차와 테스트 결과를 측정하기 전에 최종 수정안을 단정하지 않는다.
+- **합의된 결정:** 사용자 검토 대기.
+- **영향 파일:** 감사 후 결정.
+- **검증:** 현재 CI는 해당 리비전에서 개별 기하 진단을 실행하지 않는다.
+
+### 5.3 스프링·댐퍼 및 힘 전달 경로 — 잠정
+
+- **관찰된 사실:**
+  - Suspension::ClampLength()는 설정된 스칼라 길이 한계를 적용하지만, Suspension::UpdateFromMounts()는 실제 장착점 거리를 계산한 뒤 ClampLength()를 호출하지 않는다.
+  - 런타임 Wheel::Update()는 UpdateFromMounts()를 사용하고, 두 기하 장착점에서 스프링·댐퍼 힘 벡터를 계산한 뒤 반대 방향 벡터를 장착점 A에서 차체에 적용한다.
+  - 활성 런타임의 스프링·댐퍼 연결은 Double Wishbone 장착점을 사용한다. MacPherson의 장착점 출력은 Car에서 소비되지 않는다.
+  - 휠의 보고 하중은 스프링 힘 크기를 접촉 법선에 투영한 값이다. 이는 휠·업라이트의 완전한 힘 평형을 별도로 푼 결과가 아니다.
+  - 차량 진단은 서스펜션 에너지 잔차를 기록하지만, 지표가 존재한다는 사실만으로 에너지 보존이 입증되지는 않는다.
+- **근거:** Vehicle/Suspension.cpp의 ClampLength, UpdateFromMounts, CalculateForceVector, CalculateForce; Vehicle/Wheel.cpp의 Wheel::Update; Vehicle/Car.cpp; Tests/VehicleDiagnostics.cpp.
+- **판정:** 활성 Double Wishbone 경로에서 장착점 기반 길이와 힘 방향 계산은 구현되어 있다. 하지만 실제 장착점 갱신 경로에서 기계적 한계가 적용되는지는 입증되지 않았으며, 문서의 2-1/2-2 계약과 충돌한다. 전체 힘 평형은 미검증이다.
+- **제안된 해결책:** 스트로크 한계가 기하학적 이동, 스프링 길이, 또는 둘 다를 제한하는지 계약을 명확히 정하고, 실제 런타임에서 쓰는 갱신 함수를 대상으로 독립 테스트를 만든다. 힘 방향, 압축 속도 부호, 에너지·일의 일관성도 별도로 검사한다.
+- **합의된 결정:** 사용자 검토 대기.
+- **영향 파일:** 감사 후 결정.
+- **검증:** 현재 CI 실행의 PhysicsDiagnostics 에너지 검사가 실패했다. 5.7 참조.
+
+### 5.4 책임과 데이터 소유권 — 잠정
+
+- **관찰된 사실:**
+  - Car가 기하, 휠, 서스펜션, 타이어의 소유와 갱신 순서를 관리한다.
+  - Wheel::Update()는 Suspension&와 구체 타입인 const DoubleWishbone&를 받으며, 접촉 질의, 서스펜션 장착점 상태 갱신, 스프링·댐퍼 값 계산, 차체 힘 적용까지 수행한다.
+  - 따라서 Wheel은 구체 기하 타입에 의존하고 휠 회전·접촉 상태 이상의 책임을 가진다.
+  - Car.cpp의 디버그 텔레메트리는 현재 허브 위치가 Double Wishbone 기하에서 계산됨에도 고정 (0,-1,0) 축과 서스펜션 길이로 과거식 예상 휠 변위를 계산한다.
+- **근거:** Vehicle/Car.h, Vehicle/Car.cpp, Vehicle/Wheel.h, Vehicle/Wheel.cpp, Vehicle/Suspension.h, Vehicle/Suspension.cpp.
+- **판정:** 문서가 정한 책임 경계와 비교하면 잘못 연결되어 있다. 고정축을 사용하는 오래된 텔레메트리는 현재 기하 모델의 유효한 오차 지표가 아니다.
+- **제안된 해결책:** 감사 후 Car는 조정자, 기하 솔버는 기구학 담당, Suspension은 스칼라 스프링·댐퍼 상태와 힘 계산 담당, Wheel은 휠 상태 및 접촉 결과 소비 담당으로 책임을 좁힌다. 기존 텔레메트리는 실제 기하에 기반한 잔차로 교체한다.
+- **합의된 결정:** 사용자 검토 대기.
+- **영향 파일:** 감사 후 결정.
+- **검증:** 소스에서 확인한 사실이며 구현은 변경하지 않았다.
+
+### 5.5 지면 접촉 경계 — 잠정
+
+- **관찰된 사실:**
+  - IWheelContactProvider는 Car에서 주입할 수 있고 기본 공급자는 레이캐스트 방식이다. 공급자 선택 수준의 교체 경계는 실제로 존재한다.
+  - RaycastWheelContactProvider::Query()는 고정된 월드 하향 방향 (0,-1,0)으로 레이캐스트한다.
+  - Car와 Wheel은 모두 contact.samples.front()만 사용한다. 공급자가 복수 샘플을 반환해도 소비자는 다점 접촉을 처리하지 않는다.
+  - WheelContactSample에는 표면·분리·침투 정보 필드가 있지만 기본 레이캐스트 공급자는 점, 법선, 질의 거리만 채운다.
+  - 공급자 계약 진단은 단일 평면 접촉만 검사하며 경사면, 모서리 전환, 복수 접촉, 전복 동작은 검증하지 않는다.
+- **근거:** Vehicle/IWheelContactProvider.h, Vehicle/WheelContact.h, Vehicle/RaycastWheelContactProvider.cpp, Vehicle/Car.cpp, Vehicle/Wheel.cpp, Tests/VehicleDiagnostics.cpp.
+- **판정:** 공급자 주입은 구현됨. 복수 샘플 소비와 까다로운 접촉 상황은 현재 소비자에서 미구현 또는 미검증이다.
+- **제안된 해결책:** 공급자 경계는 유지하되 단일·복수 샘플의 의미를 명확히 하고 경사면·모서리·공중·전복 상황을 테스트한다. 테스트로 현재 방식의 결함을 확인하기 전에 특정 대체 알고리즘을 확정하지 않는다.
+- **합의된 결정:** 사용자 검토 대기.
+- **영향 파일:** 감사 후 결정.
+- **검증:** 현재 CI의 공급자 계약 진단은 통과했지만 기본 단일 평면 계약만 입증한다.
+
+### 5.6 차량 런타임 통합 — 잠정
+
+- **관찰된 사실:**
+  - Car::UpdatePhysics()에 실제 갱신 순서가 직접 구현되어 있다. 차체 자세 → 기본 기하 계산 → 접촉 질의·스트로크 탐색 → 조향 적용 → 휠 허브 상태 → Wheel 접촉·서스펜션 갱신 → 타이어 상태·힘 → 차체 힘 적용 → 휠 회전 적분 순이다. 강체 월드 적분은 Car 외부에서 수행한다.
+  - 스트로크를 선택하기 위한 접촉 질의와 Wheel::Update() 내부의 접촉 질의가 별도로 실행된다. 두 번째 질의는 조향 적용 이후의 허브 상태를 사용한다.
+  - 첫 질의의 스트로크 선택은 로컬 Y 오차만 사용하지만, 두 번째 질의 결과는 힘·슬립 계산에 사용된다.
+  - Car에는 MacPherson 런타임 선택·설정 경로가 없고, 차량 설정은 Double Wishbone 암과 스프링 장착점의 스칼라 파라미터를 노출한다.
+- **근거:** Vehicle/Car.cpp, Vehicle/Car.h, Vehicle/VehicleConfig.h, Vehicle/Wheel.cpp.
+- **판정:** Double Wishbone은 런타임에 연결되어 있지만 접촉·스트로크 연동은 부분적으로만 일관된다. MacPherson은 차량 런타임에 통합되지 않았다.
+- **제안된 해결책:** 접촉과 스트로크 계산의 단일 기준 계약을 정하고, 서로 다른 허브 자세에서 나온 질의 결과를 암묵적으로 혼합하지 않는다. 기하 선택·설정은 기하 API와 검증 요구사항 합의 후 도입한다.
+- **합의된 결정:** 사용자 검토 대기.
+- **영향 파일:** 감사 후 결정.
+- **검증:** 기록된 CI에서 VehicleDiagnostics는 통과했으나, MacPherson 통합이나 전체 3D 접촉 제약의 정확성을 입증하지 않는다.
+
+### 5.7 검증 수단 조사 — 잠정
+
+- **관찰된 사실:**
+  - 감사 리비전 b247b5f2affd639cbaa69bea45f6eee1bb9e251a에 대한 GitHub Actions 실행에서 PhysicsDiagnostics와 VehicleDiagnostics의 설정·빌드는 성공했다.
+  - VehicleDiagnostics는 종료 코드 0으로 끝나며 [PASS] All vehicle diagnostics passed를 출력했다.
+  - PhysicsDiagnostics는 종료 코드 1로 끝나며 [FAIL] Mechanical energy increased above initial energy를 출력했다.
+  - CI 워크플로는 Double Wishbone, MacPherson, Suspension 진단을 빌드·실행하지 않는다. 해당 CMake 옵션이 워크플로에서 비활성화되어 있다.
+  - 아키텍처 문서에는 과거의 clean build/ctest 성공 기록이 있지만, 감사 리비전의 최신 검증 결과는 아니다.
+- **근거:** https://github.com/1hwai/DriveTest/actions/runs/37930118934, .github/workflows/physics-diagnostics.yml, CMakeLists.txt, 각 진단 소스.
+- **판정:** 감사 리비전의 전체 검증 상태는 실패다. 에너지 회귀는 실제 테스트 실패 근거지만, 원인은 아직 밝혀지지 않았으며 서스펜션 탓으로 곧장 단정하면 안 된다.
+- **제안된 해결책:** 실패 실행을 차단 요인으로 유지하고, 물리 코드를 변경하기 전에 에너지 스냅샷과 에너지 계산 가정을 조사한다. 별도로 감사 리비전에서 개별 기하·서스펜션 진단을 활성화해 실행한다.
+- **합의된 결정:** 사용자 검토 대기.
+- **영향 파일:** 원인 격리 후 결정.
+- **검증:** 감사 리비전에 대한 CI 실행을 확인했다. 근본 원인 조사는 미완료다.
+
+### 초기 감사 우선순위 — 아직 승인 전
+
+1. 코드를 변경하지 않고 에너지 진단 실패를 재현·격리한다.
+2. 현재 리비전에서 Double Wishbone과 MacPherson의 실제 기하 불변조건을 검사한다. 솔버 유효성과 차량 런타임 통합은 별도로 판정한다.
+3. UpdateFromMounts()와 기계적 스트로크 제한 계약의 충돌을 해결한다.
+4. 접촉에서 스트로크를 구하는 의미를 정의하고 비평면 지형에서 전체 3D 오차를 검사한다.
+5. 앞의 근거를 바탕으로 Car/Wheel/Suspension의 책임 경계를 재설계한다.
+
+위 항목은 제안된 우선순위일 뿐이며, 검토와 범위 합의 전까지 구현은 보류한다.
