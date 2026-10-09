@@ -295,7 +295,6 @@ int main() {
             currentMountBVelocity[i] =
                 (mountB - previousMountB[i]) / FixedDeltaTime;
 
-            const Vec3 axis = (mountB - mountA).Normalized();
             const Vec3 forceOnChassis =
                 suspension.CalculateForceVector(mountA, mountB) * -1.0f;
             const Vec3 forceAtB = forceOnChassis * -1.0f;
