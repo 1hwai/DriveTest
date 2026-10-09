@@ -152,6 +152,8 @@ int main() {
             compression * compression;
     }
 
+    static const char* wheelNames[WheelCount] = {"FL", "FR", "RL", "RR"};
+
     Logger::Info("[PhysicsDiagnostics] flat terrain suspension stability test");
 
     for (int step = 0;
@@ -284,7 +286,6 @@ int main() {
             }
         };
 
-        static const char* wheelNames[WheelCount] = {"FL", "FR", "RL", "RR"};
         static EnergySnapshot peakSnapshot;
         static EnergySnapshot firstExceedSnapshot;
         if (!peakSnapshot.valid || totalEnergy > peakSnapshot.total)
