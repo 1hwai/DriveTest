@@ -1178,12 +1178,13 @@ public:
     virtual ~IWheelContactProvider() = default;
     virtual WheelContactResult Query(
         const WheelContactInput& input,
-        const IContactQueryWorld& world
+        const PhysicsWorld& physicsWorld,
+        const RigidBody* ignoredBody
     ) const = 0;
 };
 ```
 
-This is illustrative pseudocode, not a mandate to copy these exact names or signatures. During implementation, inspect existing ownership, collision-world APIs, and project conventions before fixing the API.
+The interface above now matches the first implementation. The provider receives a read-only PhysicsWorld query context and collision-filter target; Wheel only forwards that context and never invokes a concrete query. A separate world adapter is intentionally deferred until an alternative provider demonstrates a concrete missing capability. If that happens, add the capability at this boundary instead of adding algorithm-specific branches to vehicle consumers.
 
 The contract must meet these requirements:
 
@@ -1195,12 +1196,12 @@ The contract must meet these requirements:
 - **Ownership/lifetime:** result data must remain valid independently of temporary query buffers or provider internals.
 - **No hidden force model:** the provider discovers/describes contact. Tire-force calculation and chassis-force application remain separately owned responsibilities unless a future architecture review explicitly changes that boundary.
 
-Do not expose implementation-specific types such as `RaycastResult`, ray parameters, cast handles, or provider-private buffers through the public wheel/tire contact contract.
+Do not expose implementation-specific types such as `RaycastResult`, ray parameters, cast handles, or provider-private buffers through the public wheel/tire contact contract. The current Raycast provider fills one sample; Wheel stores the complete result but the legacy tire-force path still consumes the first sample only. Multi-point force aggregation is not implemented yet. The current suspension length also remains a transitional hub-to-contact geometric estimate, not a true spring-mount length; that decoupling is a separate unfinished step.
 
 #### Responsibility boundaries
 
 - **Contact provider:** performs contact discovery and provider-specific candidate filtering/selection. It owns ray/shape/sample details and any algorithm-specific tolerances.
-- **Contact-query world adapter:** exposes the world/collision capabilities providers are allowed to use. Keep this boundary separate from the vehicle consumers. Extend it only when a real candidate algorithm requires a missing world capability.
+- **Contact-query world access:** the current provider receives `PhysicsWorld` as a read-only query context. `Wheel` forwards it without calling `Raycast` or inspecting collision shapes. If an alternative provider needs a missing world capability, expose it at this boundary (through a neutral adapter or physics-world API) rather than leaking it into `Wheel`, `Suspension`, or `Tire`.
 - **Wheel / hub:** owns wheel rotational state and exposes the contact result through a stable API. It does not implement ground-search logic.
 - **Suspension geometry:** solves hub position/orientation and actual spring/damper mount positions.
 - **Suspension model:** computes spring length from the actual spring/damper mount points, and computes compression, velocity, and spring/damper forces from its own geometry/state. It must not infer spring length from contact distance.
@@ -1243,7 +1244,7 @@ Raycast may remain as the first adapter to preserve a baseline and isolate the r
 
 1. **Audit existing APIs:** inspect terrain, road, shape-collision, `PhysicsWorld`, and current `Wheel::Update()` query/force paths.
 2. **Specify the contract:** define input, result, contact-state semantics, multiple samples, optional capabilities, coordinate spaces, units, and empty-result behavior.
-3. **Introduce the boundary:** add the provider interface and world adapter without changing tire grip behavior.
+3. **Introduce the boundary:** add the provider interface and a provider-neutral contact result without changing tire grip behavior. Defer a separate world adapter until a real alternative provider requires a capability the current PhysicsWorld API cannot supply.
 4. **Wrap the current query:** implement the existing behavior as one provider behind the interface; do not improve its algorithm in the same work unit unless required for correctness.
 5. **Inject the provider:** select it outside `Wheel`, `Suspension`, and `Tire`; remove concrete-query construction and algorithm checks from consumers.
 6. **Decouple suspension:** connect actual suspension geometry/mount-point calculations to the runtime path and remove legacy ray-distance-to-spring-length coupling.
@@ -1259,13 +1260,14 @@ Each implementation work unit must list exact files before editing, update this 
 - [x] Record consumer independence as a hard architecture requirement.
 - [x] Keep strategy selection open, including algorithms discovered in the future.
 - [x] Define the intended provider-neutral contract requirements and replaceability test.
-- [ ] Audit existing terrain/collision/world-query capabilities and actual runtime call paths.
-- [ ] Finalize the concrete interface and result data types after the audit.
-- [ ] Add provider interface and world adapter.
-- [ ] Wrap current contact discovery as one provider.
-- [ ] Inject provider selection outside wheel/suspension/tire consumers.
-- [ ] Remove contact-distance-based spring-length coupling from the runtime path.
-- [ ] Add provider-contract tests and slope/edge/landing diagnostics.
+- [x] Audit the existing query API and the actual Wheel/Car runtime call path.
+- [x] Finalize and implement the provider-neutral input/result contract.
+- [x] Add the provider interface and default Raycast provider; defer a separate world adapter until an alternative needs it.
+- [x] Move the existing contact query behind the provider boundary.
+- [x] Allow Car to receive an injected provider without changing Wheel/Suspension/Tire consumer code.
+- [ ] Remove the transitional contact-geometry-to-spring-length coupling and use real suspension mount-point kinematics.
+- [x] Add the baseline provider-contract diagnostic.
+- [ ] Add slope/edge/landing diagnostics that validate contact behavior independently of the active provider.
 - [ ] Implement and compare alternative providers without editing consumer algorithms.
 
 ### Phase 5 — Vehicle Validation
