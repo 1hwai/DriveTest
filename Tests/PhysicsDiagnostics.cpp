@@ -386,16 +386,30 @@ int main() {
             std::max(maxAbsEnergyStepDelta, std::abs(energyStepDelta));
         previousTotalEnergy = totalEnergy;
 
+        // The endpoint velocities and spring/damper powers above describe
+        // the interval ending at this sampled state. Accumulate before logging
+        // so cumulative work and energy use the same time boundary.
+        for (size_t i = 0; i < WheelCount; ++i) {
+            integratedPowerAtA += currentPowerAtA[i] * FixedDeltaTime;
+            integratedPowerAtB += currentPowerAtB[i] * FixedDeltaTime;
+            integratedSpringPower += currentSpringPower[i] * FixedDeltaTime;
+            integratedDamperPower += currentDamperPower[i] * FixedDeltaTime;
+        }
+
         if (step % 60 == 0) {
             std::ostringstream energyDeltaLog;
             energyDeltaLog << std::fixed << std::setprecision(6)
                 << "[EnergyDelta] step=" << step
                 << " t=" << step * FixedDeltaTime
-                << " delta=" << energyStepDelta
+                << " deltaFromBaseline=" << (totalEnergy - initialEnergy)
+                << " stepDelta=" << energyStepDelta
                 << " integratedPowerA=" << integratedPowerAtA
                 << " integratedPowerB=" << integratedPowerAtB
                 << " integratedSpringPower=" << integratedSpringPower
-                << " integratedDamperPower=" << integratedDamperPower;
+                << " integratedDamperPower=" << integratedDamperPower
+                << " integratedPowerBalanceResidual="
+                << (integratedPowerAtA + integratedPowerAtB +
+                    integratedSpringPower + integratedDamperPower);
             Logger::Info(energyDeltaLog.str());
         }
 
@@ -498,14 +512,6 @@ int main() {
             return 1;
         }
 
-        // These powers are sampled at the start of the interval. Accumulate
-        // them after the energy log so work and energy share a time boundary.
-        for (size_t i = 0; i < WheelCount; ++i) {
-            integratedPowerAtA += currentPowerAtA[i] * FixedDeltaTime;
-            integratedPowerAtB += currentPowerAtB[i] * FixedDeltaTime;
-            integratedSpringPower += currentSpringPower[i] * FixedDeltaTime;
-            integratedDamperPower += currentDamperPower[i] * FixedDeltaTime;
-        }
     }
 
     std::ostringstream summary;
@@ -517,10 +523,15 @@ int main() {
         << " maxEnergy="
         << maxEnergy
         << " maxAbsEnergyStepDelta=" << maxAbsEnergyStepDelta
+        << " finalMeasuredEnergy=" << previousTotalEnergy
+        << " measuredEnergyDelta=" << (previousTotalEnergy - initialEnergy)
         << " integratedPowerA=" << integratedPowerAtA
         << " integratedPowerB=" << integratedPowerAtB
         << " integratedSpringPower=" << integratedSpringPower
         << " integratedDamperPower=" << integratedDamperPower
+        << " integratedPowerBalanceResidual="
+        << (integratedPowerAtA + integratedPowerAtB +
+            integratedSpringPower + integratedDamperPower)
         << " finalY="
         << chassis->GetPosition().y
         << " finalZ="
