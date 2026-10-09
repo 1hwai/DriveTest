@@ -13,7 +13,6 @@
 #include "../Physics/Terrain.h"
 #include "../Vehicle/Car.h"
 #include "../Vehicle/VehicleConfig.h"
-#include "../Vehicle/VehicleConfig.h"
 
 namespace {
     constexpr float FixedDeltaTime = 1.0f / 120.0f;
@@ -30,7 +29,16 @@ namespace {
         bool grounded = false;
         Vec3 mountA;
         Vec3 mountB;
+        Vec3 mountAVelocity;
+        Vec3 mountBVelocity;
+        Vec3 relativeVelocity;
+        Vec3 springAxis;
         Vec3 forceOnChassis;
+        float powerAtA = 0.0f;
+        float powerAtB = 0.0f;
+        float springPower = 0.0f;
+        float damperPower = 0.0f;
+        float powerBalanceResidual = 0.0f;
     };
 
     struct EnergySnapshot {
@@ -237,6 +245,29 @@ int main() {
     EnergySnapshot peakSnapshot;
     EnergySnapshot firstExceedSnapshot;
 
+    std::array<Vec3, WheelCount> previousMountA{};
+    std::array<Vec3, WheelCount> previousMountB{};
+    std::array<Vec3, WheelCount> currentMountAVelocity{};
+    std::array<Vec3, WheelCount> currentMountBVelocity{};
+    std::array<float, WheelCount> currentPowerAtA{};
+    std::array<float, WheelCount> currentPowerAtB{};
+    std::array<float, WheelCount> currentSpringPower{};
+    std::array<float, WheelCount> currentDamperPower{};
+    std::array<float, WheelCount> currentPowerBalanceResidual{};
+    float integratedPowerAtA = 0.0f;
+    float integratedPowerAtB = 0.0f;
+    float integratedSpringPower = 0.0f;
+    float integratedDamperPower = 0.0f;
+    float previousTotalEnergy = initialEnergy;
+    float maxAbsEnergyStepDelta = 0.0f;
+
+    for (size_t i = 0; i < WheelCount; ++i) {
+        const DoubleWishbone& geometry =
+            car.GetSuspensionGeometry(static_cast<WheelIndex>(i));
+        previousMountA[i] = geometry.GetSpringMountA();
+        previousMountB[i] = geometry.GetSpringMountB();
+    }
+
     Logger::Info("[PhysicsDiagnostics] flat terrain suspension stability test");
 
     for (int step = 0;
@@ -247,6 +278,46 @@ int main() {
             physicsWorld,
             FixedDeltaTime
         );
+
+        // The spring endpoints are not both dynamic rigid bodies: mount A is
+        // attached to the chassis and mount B is produced by kinematic
+        // suspension geometry. Estimate endpoint velocities from consecutive
+        // solved mount positions so their work can be accounted for separately.
+        for (size_t i = 0; i < WheelCount; ++i) {
+            const WheelIndex index = static_cast<WheelIndex>(i);
+            const DoubleWishbone& geometry = car.GetSuspensionGeometry(index);
+            const Wheel& wheel = car.GetWheel(index);
+            const Suspension& suspension = car.GetSuspension(index);
+            const Vec3 mountA = geometry.GetSpringMountA();
+            const Vec3 mountB = geometry.GetSpringMountB();
+            currentMountAVelocity[i] =
+                (mountA - previousMountA[i]) / FixedDeltaTime;
+            currentMountBVelocity[i] =
+                (mountB - previousMountB[i]) / FixedDeltaTime;
+
+            const Vec3 axis = (mountB - mountA).Normalized();
+            const Vec3 forceOnChassis =
+                suspension.CalculateForceVector(mountA, mountB) * -1.0f;
+            const Vec3 forceAtB = forceOnChassis * -1.0f;
+            currentPowerAtA[i] =
+                forceOnChassis.Dot(currentMountAVelocity[i]);
+            currentPowerAtB[i] =
+                forceAtB.Dot(currentMountBVelocity[i]);
+            currentSpringPower[i] =
+                wheel.GetSpringForce() * wheel.GetCompressionVelocity();
+            currentDamperPower[i] =
+                wheel.GetDamperForce() * wheel.GetCompressionVelocity();
+            currentPowerBalanceResidual[i] =
+                currentPowerAtA[i] + currentPowerAtB[i] +
+                currentSpringPower[i] + currentDamperPower[i];
+
+            integratedPowerAtA += currentPowerAtA[i] * FixedDeltaTime;
+            integratedPowerAtB += currentPowerAtB[i] * FixedDeltaTime;
+            integratedSpringPower += currentSpringPower[i] * FixedDeltaTime;
+            integratedDamperPower += currentDamperPower[i] * FixedDeltaTime;
+            previousMountA[i] = mountA;
+            previousMountB[i] = mountB;
+        }
 
         physicsWorld.Step(
             FixedDeltaTime
@@ -334,6 +405,23 @@ int main() {
 
         maxEnergy =
             std::max(maxEnergy, totalEnergy);
+        const float energyStepDelta = totalEnergy - previousTotalEnergy;
+        maxAbsEnergyStepDelta =
+            std::max(maxAbsEnergyStepDelta, std::abs(energyStepDelta));
+        previousTotalEnergy = totalEnergy;
+
+        if (step % 60 == 0) {
+            std::ostringstream energyDeltaLog;
+            energyDeltaLog << std::fixed << std::setprecision(6)
+                << "[EnergyDelta] step=" << step
+                << " t=" << (step + 1) * FixedDeltaTime
+                << " delta=" << energyStepDelta
+                << " integratedPowerA=" << integratedPowerAtA
+                << " integratedPowerB=" << integratedPowerAtB
+                << " integratedSpringPower=" << integratedSpringPower
+                << " integratedDamperPower=" << integratedDamperPower;
+            Logger::Info(energyDeltaLog.str());
+        }
 
         auto captureEnergySnapshot = [&](EnergySnapshot& snapshot) {
             snapshot.valid = true;
@@ -364,8 +452,19 @@ int main() {
                 item.grounded = wheel.IsGrounded();
                 item.mountA = geometry.GetSpringMountA();
                 item.mountB = geometry.GetSpringMountB();
+                item.mountAVelocity = currentMountAVelocity[i];
+                item.mountBVelocity = currentMountBVelocity[i];
+                item.relativeVelocity =
+                    item.mountBVelocity - item.mountAVelocity;
+                item.springAxis =
+                    (item.mountB - item.mountA).Normalized();
                 item.forceOnChassis =
                     suspension.CalculateForceVector(item.mountA, item.mountB) * -1.0f;
+                item.powerAtA = currentPowerAtA[i];
+                item.powerAtB = currentPowerAtB[i];
+                item.springPower = currentSpringPower[i];
+                item.damperPower = currentDamperPower[i];
+                item.powerBalanceResidual = currentPowerBalanceResidual[i];
             }
         };
 
@@ -417,6 +516,11 @@ int main() {
         << maxAbsZ
         << " maxEnergy="
         << maxEnergy
+        << " maxAbsEnergyStepDelta=" << maxAbsEnergyStepDelta
+        << " integratedPowerA=" << integratedPowerAtA
+        << " integratedPowerB=" << integratedPowerAtB
+        << " integratedSpringPower=" << integratedSpringPower
+        << " integratedDamperPower=" << integratedDamperPower
         << " finalY="
         << chassis->GetPosition().y
         << " finalZ="
@@ -460,6 +564,15 @@ int main() {
                 << " residual=" << wheel.suspensionResidual
                 << " mountA=(" << wheel.mountA.x << "," << wheel.mountA.y << "," << wheel.mountA.z << ")"
                 << " mountB=(" << wheel.mountB.x << "," << wheel.mountB.y << "," << wheel.mountB.z << ")"
+                << " mountAVel=(" << wheel.mountAVelocity.x << "," << wheel.mountAVelocity.y << "," << wheel.mountAVelocity.z << ")"
+                << " mountBVel=(" << wheel.mountBVelocity.x << "," << wheel.mountBVelocity.y << "," << wheel.mountBVelocity.z << ")"
+                << " relativeVel=(" << wheel.relativeVelocity.x << "," << wheel.relativeVelocity.y << "," << wheel.relativeVelocity.z << ")"
+                << " springAxis=(" << wheel.springAxis.x << "," << wheel.springAxis.y << "," << wheel.springAxis.z << ")"
+                << " powerA=" << wheel.powerAtA
+                << " powerB=" << wheel.powerAtB
+                << " springPower=" << wheel.springPower
+                << " damperPower=" << wheel.damperPower
+                << " powerBalanceResidual=" << wheel.powerBalanceResidual
                 << " force=(" << wheel.forceOnChassis.x << "," << wheel.forceOnChassis.y << "," << wheel.forceOnChassis.z << ")";
             Logger::Info(wheelLog.str());
         }
