@@ -11,6 +11,8 @@
 #include "../Physics/Road.h"
 #include "../Physics/Terrain.h"
 #include "../Vehicle/Car.h"
+#include "../Vehicle/IWheelContactProvider.h"
+#include "../Vehicle/WheelContact.h"
 #include "../Vehicle/VehicleCoordinates.h"
 #include "../Vehicle/VehicleConfig.h"
 
@@ -143,7 +145,7 @@ namespace {
             car.GetTransmission().ShiftDown();
     }
 
-    bool RunRaycastRollGeometryDiagnostics() {
+    bool RunContactRollGeometryDiagnostics() {
         PhysicsWorld planeWorld;
         Collider* plane = planeWorld.CreateCollider();
         plane->SetShape(ColliderShape::Plane);
@@ -673,8 +675,8 @@ namespace {
         float meanLoadDifference = 0.0f;
         float meanLoadAccelerationProduct = 0.0f;
         float meanAbsoluteLateralAcceleration = 0.0f;
-        float meanLeftMinusRightRayDistance = 0.0f;
-        int raySamples = 0;
+        float meanLeftMinusRightContactDistance = 0.0f;
+        int contactDistanceSamples = 0;
         int samples = 0;
     };
 
@@ -953,19 +955,19 @@ namespace {
                 frontRightWheel.IsGrounded() &&
                 rearLeftWheel.IsGrounded() &&
                 rearRightWheel.IsGrounded()) {
-                const float leftRayDistance =
+                const float leftContactDistance =
                     0.5f * (
-                        frontLeftWheel.GetLastRayDistance() +
-                        rearLeftWheel.GetLastRayDistance()
+                        frontLeftWheel.GetLastContactDistance() +
+                        rearLeftWheel.GetLastContactDistance()
                     );
-                const float rightRayDistance =
+                const float rightContactDistance =
                     0.5f * (
-                        frontRightWheel.GetLastRayDistance() +
-                        rearRightWheel.GetLastRayDistance()
+                        frontRightWheel.GetLastContactDistance() +
+                        rearRightWheel.GetLastContactDistance()
                     );
-                metrics.meanLeftMinusRightRayDistance +=
-                    leftRayDistance - rightRayDistance;
-                ++metrics.raySamples;
+                metrics.meanLeftMinusRightContactDistance +=
+                    leftContactDistance - rightContactDistance;
+                ++metrics.contactDistanceSamples;
             }
 
             if (!std::isfinite(lateralAcceleration) ||
@@ -1009,9 +1011,9 @@ namespace {
             loadAccelerationProductSum / metrics.samples;
         metrics.meanAbsoluteLateralAcceleration =
             absoluteLateralAccelerationSum / metrics.samples;
-        if (metrics.raySamples > 0)
-            metrics.meanLeftMinusRightRayDistance /=
-                static_cast<float>(metrics.raySamples);
+        if (metrics.contactDistanceSamples > 0)
+            metrics.meanLeftMinusRightContactDistance /=
+                static_cast<float>(metrics.contactDistanceSamples);
 
         std::ostringstream log;
         log << std::fixed << std::setprecision(3)
@@ -1023,9 +1025,9 @@ namespace {
             << metrics.meanAbsoluteLateralAcceleration
             << " meanLeftMinusRightLoad="
             << metrics.meanLoadDifference
-            << " meanLeftMinusRightRayDistance="
-            << metrics.meanLeftMinusRightRayDistance
-            << " raySamples=" << metrics.raySamples
+            << " meanLeftMinusRightContactDistance="
+            << metrics.meanLeftMinusRightContactDistance
+            << " contactDistanceSamples=" << metrics.contactDistanceSamples
             << " meanLoadAccelerationProduct="
             << metrics.meanLoadAccelerationProduct;
         Logger::Info(log.str());
@@ -1038,11 +1040,11 @@ namespace {
             return false;
         }
 
-        if (metrics.raySamples == 0 ||
-            metrics.meanLeftMinusRightRayDistance * steering >= 0.0f) {
+        if (metrics.contactDistanceSamples == 0 ||
+            metrics.meanLeftMinusRightContactDistance * steering >= 0.0f) {
             Logger::Error(
                 std::string("[FAIL] ") + name +
-                " suspension ray distances do not match outside-wheel geometry"
+                " suspension contact distances do not match outside-wheel geometry"
             );
             return false;
         }
@@ -1350,12 +1352,47 @@ namespace {
     }
 }
 
+bool RunWheelContactProviderDiagnostics() {
+    PhysicsWorld physicsWorld;
+    Collider* ground = physicsWorld.CreateCollider();
+    ground->SetShape(ColliderShape::Plane);
+    ground->SetPlaneHeight(0.0f);
+
+    const std::unique_ptr<IWheelContactProvider> provider =
+        CreateDefaultWheelContactProvider();
+    const WheelContactInput input{
+        Vec3(0.0f, 1.0f, 0.0f),
+        Quaternion::Identity(),
+        0.5f,
+        2.0f
+    };
+    const WheelContactResult result =
+        provider->Query(input, physicsWorld, nullptr);
+
+    const bool passed =
+        result.HasContact() &&
+        result.samples.size() == 1 &&
+        result.samples.front().hasQueryDistance &&
+        std::abs(result.samples.front().queryDistance - 1.0f) < 0.0001f &&
+        std::abs(result.samples.front().point.y) < 0.0001f &&
+        result.samples.front().normal.y > 0.99f &&
+        !result.samples.front().hasSurfaceId;
+
+    if (passed) {
+        Logger::Info("[PASS] Wheel contact provider contract");
+    } else {
+        Logger::Error("[FAIL] Wheel contact provider contract");
+    }
+    return passed;
+}
+
 int main() {
     Logger::Initialize("Logs/vehicle_diagnostics.log");
 
-    bool passed = RunVehicleCoordinateConventionDiagnostics();
+    bool passed = RunWheelContactProviderDiagnostics();
+    passed = RunVehicleCoordinateConventionDiagnostics() && passed;
     passed = RunHubWheelIntegrationDiagnostics() && passed;
-    passed = RunRaycastRollGeometryDiagnostics() && passed;
+    passed = RunContactRollGeometryDiagnostics() && passed;
     passed = RunRaycastSurfaceDiagnostics() && passed;
     passed = RunTireModelDiagnostics() && passed;
 

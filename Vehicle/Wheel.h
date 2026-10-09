@@ -2,8 +2,10 @@
 
 #include "../Core/Math/Quaternion.h"
 #include "../Core/Math/Vec3.h"
+#include "WheelContact.h"
 
 class PhysicsWorld;
+class IWheelContactProvider;
 class RigidBody;
 class Suspension;
 
@@ -35,7 +37,8 @@ public:
     void Update(
         int index,
         RigidBody& body,
-        PhysicsWorld& physicsWorld,
+        const IWheelContactProvider& contactProvider,
+        const PhysicsWorld& physicsWorld,
         const Suspension& suspension,
         float deltaTime
     );
@@ -49,8 +52,8 @@ public:
 
     bool IsGrounded() const;
     float GetSuspensionLength() const;
-    float GetLastRayDistance() const;
-    int GetLastRayShape() const;
+    float GetLastContactDistance() const;
+    const WheelContactResult& GetContactResult() const;
     float GetCompression() const;
     float GetForce() const;
     float GetNormalLoad() const;
@@ -81,8 +84,7 @@ private:
 
     bool m_grounded;
     float m_suspensionLength;
-    float m_lastRayDistance;
-    int m_lastRayShape;
+    float m_lastContactDistance;
     float m_compression;
     float m_previousCompression;
     float m_force;
@@ -98,4 +100,5 @@ private:
     Quaternion m_worldOrientation;
     Vec3 m_contactPoint;
     Vec3 m_contactNormal;
+    WheelContactResult m_contactResult;
 };

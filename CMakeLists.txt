@@ -43,6 +43,7 @@ add_executable(DriveTest
     Vehicle/VehicleConfigWatcher.cpp
     Vehicle/Powertrain.cpp
     Vehicle/Wheel.cpp
+        Vehicle/RaycastWheelContactProvider.cpp
     Vehicle/Suspension.cpp
     Vehicle/Tire.cpp
     Vehicle/Engine.cpp
@@ -135,6 +136,7 @@ if(DRIVETEST_BUILD_PHYSICS_DIAGNOSTICS)
         Vehicle/DoubleWishbone.cpp
         Vehicle/Powertrain.cpp
         Vehicle/Wheel.cpp
+        Vehicle/RaycastWheelContactProvider.cpp
         Vehicle/Suspension.cpp
         Vehicle/Tire.cpp
         Vehicle/Engine.cpp
@@ -195,6 +197,7 @@ if(DRIVETEST_BUILD_VEHICLE_DIAGNOSTICS)
         Vehicle/VehicleConfig.cpp
         Vehicle/Powertrain.cpp
         Vehicle/Wheel.cpp
+        Vehicle/RaycastWheelContactProvider.cpp
         Vehicle/Suspension.cpp
         Vehicle/Tire.cpp
         Vehicle/Engine.cpp

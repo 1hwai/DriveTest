@@ -1,6 +1,7 @@
 #include "Wheel.h"
 
 #include "Suspension.h"
+#include "IWheelContactProvider.h"
 #include "../Physics/PhysicsWorld.h"
 #include "../Physics/RigidBody.h"
 #include "../Core/Debug/Logger.h"
@@ -21,8 +22,7 @@ Wheel::Wheel()
     m_tireReactionTorque(0.0f),
     m_grounded(false),
     m_suspensionLength(0.0f),
-    m_lastRayDistance(0.0f),
-    m_lastRayShape(-1),
+    m_lastContactDistance(0.0f),
     m_compression(0.0f),
     m_previousCompression(0.0f),
     m_force(0.0f),
@@ -102,43 +102,37 @@ float Wheel::GetSteeringAngle() const {
 void Wheel::Update(
     int index,
     RigidBody& body,
-    PhysicsWorld& physicsWorld,
+    const IWheelContactProvider& contactProvider,
+    const PhysicsWorld& physicsWorld,
     const Suspension& suspension,
     float deltaTime
 ) {
+    (void)index;
     const Vec3 worldMount = m_worldPosition;
+    const float maxReach = suspension.GetMaxLength() + m_radius;
+    const WheelContactInput input{
+        worldMount,
+        m_worldOrientation,
+        m_radius,
+        maxReach
+    };
 
-    // Suspension travel is world-vertical. The wheel mount follows the
-    // chassis, but compression itself must not introduce lateral or
-    // longitudinal wheel movement when the body rolls.
-    const Vec3 down(0.0f, -1.0f, 0.0f);
-
-    Ray ray;
-    ray.origin = worldMount;
-    ray.direction = down;
-
-    RaycastResult result;
-
-    const float maxRayDistance =
-        suspension.GetMaxLength() + m_radius;
-
-    if (!physicsWorld.Raycast(
-        ray,
-        result,
-        maxRayDistance,
+    m_contactResult = contactProvider.Query(
+        input,
+        physicsWorld,
         &body
-    )) {
+    );
+
+    if (!m_contactResult.HasContact()) {
         m_grounded = false;
 
         constexpr float FreeReboundSpeed = 4.0f;
         m_suspensionLength =
             std::min(
                 suspension.GetMaxLength(),
-                m_suspensionLength +
-                    FreeReboundSpeed * deltaTime
+                m_suspensionLength + FreeReboundSpeed * deltaTime
             );
-        m_lastRayDistance = maxRayDistance;
-        m_lastRayShape = -1;
+        m_lastContactDistance = maxReach;
         m_compression = 0.0f;
         m_force = 0.0f;
         m_normalLoad = 0.0f;
@@ -148,38 +142,37 @@ void Wheel::Update(
         m_suspensionPower = 0.0f;
         m_suspensionResidual = 0.0f;
         m_hasPreviousCompression = false;
-        m_contactNormal =
-            Vec3(0.0f, 1.0f, 0.0f);
+        m_contactNormal = Vec3(0.0f, 1.0f, 0.0f);
         m_tireReactionTorque = 0.0f;
-
         m_contactPoint = m_worldPosition;
-
         return;
     }
 
-    m_lastRayDistance = result.distance;
+    const WheelContactSample& contact =
+        m_contactResult.samples.front();
+    m_lastContactDistance = contact.hasQueryDistance
+        ? contact.queryDistance
+        : (contact.point - worldMount).Length();
+
+    // Preserve the existing world-vertical suspension behavior for this
+    // provider-boundary work unit. Suspension mount-point kinematics are a
+    // separate follow-up; this value is geometric separation, not a query API.
+    const Vec3 up(0.0f, 1.0f, 0.0f);
+    const Vec3 down(0.0f, -1.0f, 0.0f);
+    const float contactOffset =
+        std::max(0.0f, (worldMount - contact.point).Dot(up));
     const float rawSuspensionLength =
-        result.distance - m_radius;
+        contactOffset - m_radius;
     const float suspensionLength =
         suspension.ClampLength(rawSuspensionLength);
-    m_lastRayShape =
-        result.collider
-        ? static_cast<int>(result.collider->GetShape())
-        : -1;
 
     const float compression =
-        suspension.GetRestLength() -
-        suspensionLength;
-
+        suspension.GetRestLength() - suspensionLength;
     const float denominator =
-        result.normal.Dot(down);
+        contact.normal.Dot(down);
 
-    m_suspensionLength =
-        suspensionLength;
-
-    m_compression =
-        std::max(0.0f, compression);
-
+    m_suspensionLength = suspensionLength;
+    m_compression = std::max(0.0f, compression);
     m_suspensionPower = 0.0f;
     m_suspensionResidual = 0.0f;
     m_force = 0.0f;
@@ -189,85 +182,50 @@ void Wheel::Update(
     m_damperForce = 0.0f;
     m_tireReactionTorque = 0.0f;
 
-    if (m_compression > 0.0f &&
-        denominator < -0.1f) {
+    if (m_compression > 0.0f && denominator < -0.1f) {
         const Vec3 mountVelocity =
             body.GetPointVelocity(worldMount);
-
         const Vec3 suspensionDirectionVelocity =
             body.GetAngularVelocity().Cross(down);
-
-        const Vec3 rayPointVelocity =
+        const Vec3 contactPointVelocity =
             mountVelocity +
-            suspensionDirectionVelocity *
-            result.distance;
-
+            suspensionDirectionVelocity * contactOffset;
         const float projectedVelocity =
-            result.normal.Dot(rayPointVelocity);
+            contact.normal.Dot(contactPointVelocity);
 
         m_compressionVelocity =
             projectedVelocity / denominator;
-
         m_springForce =
-            suspension.GetSpringRate() *
-            m_compression;
+            suspension.GetSpringRate() * m_compression;
 
         const float damperRate = m_compressionVelocity >= 0.0f
             ? suspension.GetCompressionDamperRate()
             : suspension.GetReboundDamperRate();
         m_damperForce = damperRate * m_compressionVelocity;
+        m_force = std::max(0.0f, m_springForce + m_damperForce);
+        m_normalLoad = m_force * -denominator;
 
-        m_force =
-            std::max(
-                0.0f,
-                m_springForce + m_damperForce
-            );
-
-        // The suspension force acts along the suspension axis. Only its
-        // component along the contact normal contributes to normal load.
-        // Since down points into the ground, -dot(normal, down) is the
-        // positive projection factor for a valid suspension contact.
-        m_normalLoad =
-            m_force * -denominator;
-
-        // The suspension transmits force along its own axis.
-        // Keep the contact-normal load for the tire model separate.
         const Vec3 suspensionForce = down * -m_force;
-
         const float springPower =
-            m_springForce *
-            m_compressionVelocity;
-
+            m_springForce * m_compressionVelocity;
         const float damperPower =
             damperRate *
             m_compressionVelocity *
             m_compressionVelocity;
 
         m_suspensionPower =
-            suspensionForce.Dot(
-                body.GetPointVelocity(worldMount)
-            );
-
+            suspensionForce.Dot(body.GetPointVelocity(worldMount));
         m_suspensionResidual =
-            m_suspensionPower +
-            springPower +
-            damperPower;
+            m_suspensionPower + springPower + damperPower;
 
-        body.AddForceAtPoint(
-            suspensionForce,
-            worldMount
-        );
+        body.AddForceAtPoint(suspensionForce, worldMount);
     }
 
     m_grounded = true;
-
     m_previousCompression = m_compression;
     m_hasPreviousCompression = true;
-
-    m_contactPoint = result.point;
-    m_contactNormal = result.normal;
-
-
+    m_contactPoint = contact.point;
+    m_contactNormal = contact.normal;
 }
 
 void Wheel::ApplyTireForce(
@@ -359,12 +317,12 @@ float Wheel::GetSuspensionLength() const {
     return m_suspensionLength;
 }
 
-float Wheel::GetLastRayDistance() const {
-    return m_lastRayDistance;
+float Wheel::GetLastContactDistance() const {
+    return m_lastContactDistance;
 }
 
-int Wheel::GetLastRayShape() const {
-    return m_lastRayShape;
+const WheelContactResult& Wheel::GetContactResult() const {
+    return m_contactResult;
 }
 
 float Wheel::GetCompression() const {

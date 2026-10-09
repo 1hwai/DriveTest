@@ -1,5 +1,6 @@
 #include "Car.h"
 #include "VehicleCoordinates.h"
+#include "IWheelContactProvider.h"
 
 #include "../Physics/PhysicsWorld.h"
 #include "../Physics/RigidBody.h"
@@ -9,6 +10,7 @@
 #include <cmath>
 #include <iomanip>
 #include <sstream>
+#include <utility>
 
 namespace {
     size_t ToIndex(WheelIndex index) {
@@ -81,7 +83,15 @@ namespace {
 }
 
 Car::Car()
-    : m_chassis(nullptr),
+    : Car(CreateDefaultWheelContactProvider()) {}
+
+Car::Car(std::unique_ptr<IWheelContactProvider> contactProvider)
+    : m_contactProvider(
+        contactProvider
+            ? std::move(contactProvider)
+            : CreateDefaultWheelContactProvider()
+    ),
+    m_chassis(nullptr),
     m_throttle(0.0f),
     m_brake(0.0f),
     m_steering(0.0f),
@@ -289,6 +299,7 @@ void Car::UpdatePhysics(
         m_wheels[i].Update(
             i,
             *m_chassis,
+            *m_contactProvider,
             physicsWorld,
             m_suspensions[i],
             deltaTime
@@ -338,27 +349,13 @@ void Car::UpdatePhysics(
             const Vec3 origin =
                 m_chassis->GetPosition() +
                 m_chassis->GetOrientation() * localPosition;
-            const Vec3 direction = (
-                m_chassis->GetOrientation() *
-                Vec3(0.0f, -1.0f, 0.0f)
-            ).Normalized();
-            const float maxDistance =
-                m_suspensions[i].GetMaxLength() + wheel.GetRadius();
-            const float rayDistance = wheel.GetLastRayDistance();
-            const Vec3 reconstructedPoint =
-                origin + direction * rayDistance;
-            const Vec3 wheelPosition =
-                wheel.GetWorldPosition();
-            const Vec3 mountToWheel =
-                wheelPosition - origin;
+            const Vec3 suspensionAxis(0.0f, -1.0f, 0.0f);
+            const Vec3 wheelPosition = wheel.GetWorldPosition();
+            const Vec3 mountToWheel = wheelPosition - origin;
             const Vec3 expectedMountToWheel =
-                direction * wheel.GetSuspensionLength();
+                suspensionAxis * wheel.GetSuspensionLength();
             const Vec3 positionError =
                 mountToWheel - expectedMountToWheel;
-
-            const float pointError = wheel.IsGrounded()
-                ? (reconstructedPoint - wheel.GetContactPoint()).Length()
-                : 0.0f;
 
             std::ostringstream log;
             log << std::fixed << std::setprecision(3)
@@ -367,15 +364,12 @@ void Car::UpdatePhysics(
                 << " si=" << i
                 << " lp=(" << localPosition.x << "," << localPosition.y << "," << localPosition.z << ")"
                 << " o=(" << origin.x << "," << origin.y << "," << origin.z << ")"
-                << " d=(" << direction.x << "," << direction.y << "," << direction.z << ")"
                 << " wp=(" << wheelPosition.x << "," << wheelPosition.y << "," << wheelPosition.z << ")"
                 << " mw=(" << mountToWheel.x << "," << mountToWheel.y << "," << mountToWheel.z << ")"
                 << " pe2=(" << positionError.x << "," << positionError.y << "," << positionError.z << ")"
-                << " h=" << wheel.IsGrounded()
-                << " md=" << maxDistance
-                << " rd=" << rayDistance
-                << " pe=" << pointError
-                << " sh=" << wheel.GetLastRayShape()
+                << " grounded=" << wheel.IsGrounded()
+                << " contactSamples=" << wheel.GetContactResult().samples.size()
+                << " contactDistance=" << wheel.GetLastContactDistance()
                 << " sl=" << wheel.GetSuspensionLength()
                 << " c=" << wheel.GetCompression()
                 << " cv=" << wheel.GetCompressionVelocity()
