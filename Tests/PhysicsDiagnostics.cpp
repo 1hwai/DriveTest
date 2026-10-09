@@ -53,6 +53,41 @@ namespace {
             std::isfinite(value.y) &&
             std::isfinite(value.z);
     }
+
+    float CalculateMechanicalEnergy(
+        const RigidBody& body,
+        float gravityMagnitude
+    ) {
+        const float potential =
+            body.GetMass() * gravityMagnitude * body.GetPosition().y;
+        const float kinetic =
+            0.5f * body.GetMass() *
+            body.GetLinearVelocity().LengthSquared();
+        return potential + kinetic;
+    }
+
+    float MeasureFreeFallEnergyError(float deltaTime) {
+        constexpr float GravityMagnitude = 9.81f;
+        constexpr float Duration = 2.0f;
+        constexpr int InitialHeight = 100;
+
+        RigidBody body;
+        body.SetMass(1.0f);
+        body.SetPosition(Vec3(0.0f, static_cast<float>(InitialHeight), 0.0f));
+
+        const float initialEnergy =
+            CalculateMechanicalEnergy(body, GravityMagnitude);
+        const Vec3 gravity(0.0f, -GravityMagnitude, 0.0f);
+        const int steps = static_cast<int>(std::round(Duration / deltaTime));
+
+        for (int step = 0; step < steps; ++step)
+            body.Integrate(deltaTime, gravity);
+
+        return std::abs(
+            CalculateMechanicalEnergy(body, GravityMagnitude) -
+            initialEnergy
+        );
+    }
 }
 
 int main() {
@@ -134,11 +169,20 @@ int main() {
     }
 
     constexpr float MaxDriftZ = 0.05f;
-    constexpr float EnergyTolerance = 1.0f;
+    constexpr float EnergyAbsoluteTolerance = 2.0f;
+    constexpr float EnergyRelativeTolerance = 0.001f;
+
+    // Establish a contact-consistent suspension state before measuring E0.
+    // ApplyConfig initializes mounts at zero travel; the first normal update
+    // can choose a different travel from ground contact. Counting that
+    // kinematic initialization jump as simulated energy gain gives a false
+    // conservation failure. A zero-dt update sets geometry/contact/compression
+    // without integrating the chassis; clear the forces it queued afterwards.
+    car.UpdatePhysics(physicsWorld, 0.0f);
+    chassis->ClearForces();
 
     float maxAbsZ = 0.0f;
     float minY = chassis->GetPosition().y;
-    float maxEnergy = 0.0f;
     float initialEnergy =
         chassis->GetMass() *
         9.81f *
@@ -150,6 +194,43 @@ int main() {
         initialEnergy += 0.5f *
             suspension.GetSpringRate() *
             compression * compression;
+    }
+    const float energyTolerance = std::max(
+        EnergyAbsoluteTolerance,
+        std::abs(initialEnergy) * EnergyRelativeTolerance
+    );
+    float maxEnergy = initialEnergy;
+
+    const float coarseFreeFallError = MeasureFreeFallEnergyError(1.0f / 60.0f);
+    const float fineFreeFallError = MeasureFreeFallEnergyError(1.0f / 120.0f);
+    {
+        std::ostringstream log;
+        log << std::fixed << std::setprecision(6)
+            << "[EnergyConvergence] dtCoarse=" << (1.0f / 60.0f)
+            << " errorCoarse=" << coarseFreeFallError
+            << " dtFine=" << (1.0f / 120.0f)
+            << " errorFine=" << fineFreeFallError;
+        Logger::Info(log.str());
+    }
+    if (!std::isfinite(coarseFreeFallError) ||
+        !std::isfinite(fineFreeFallError) ||
+        !(fineFreeFallError < coarseFreeFallError * 0.75f)) {
+        Logger::Error(
+            "[FAIL] Free-fall energy error did not decrease with timestep refinement"
+        );
+        Logger::Shutdown();
+        return 1;
+    }
+    Logger::Info("[PASS] Free-fall energy error decreases with timestep refinement");
+
+    {
+        std::ostringstream log;
+        log << std::fixed << std::setprecision(6)
+            << "[EnergyBaseline] total=" << initialEnergy
+            << " tolerance=" << energyTolerance
+            << " absTolerance=" << EnergyAbsoluteTolerance
+            << " relativeTolerance=" << EnergyRelativeTolerance;
+        Logger::Info(log.str());
     }
 
     static const char* wheelNames[WheelCount] = {"FL", "FR", "RL", "RR"};
@@ -291,7 +372,7 @@ int main() {
         if (!peakSnapshot.valid || totalEnergy > peakSnapshot.total)
             captureEnergySnapshot(peakSnapshot);
         if (!firstExceedSnapshot.valid &&
-            totalEnergy > initialEnergy + EnergyTolerance)
+            totalEnergy > initialEnergy + energyTolerance)
             captureEnergySnapshot(firstExceedSnapshot);
 
         if (step % 60 == 0) {
@@ -397,7 +478,7 @@ int main() {
         return 1;
     }
 
-    if (maxEnergy > initialEnergy + EnergyTolerance) {
+    if (maxEnergy > initialEnergy + energyTolerance) {
         Logger::Error(
             "[FAIL] Mechanical energy increased above initial energy"
         );
