@@ -294,63 +294,64 @@ void Car::UpdatePhysics(
             contactInput, physicsWorld, m_chassis
         );
 
+        float feasibleLow = 0.0f;
+        float feasibleHigh = 0.0f;
+        DoubleWishbone lowGeometry = baseGeometry;
+        DoubleWishbone highGeometry = baseGeometry;
+        for (int sample = 1; sample <= 24; ++sample) {
+            const float travel = -m_suspensions[i].GetReboundTravel() *
+                static_cast<float>(sample) / 24.0f;
+            DoubleWishbone candidate = baseGeometry;
+            if (!candidate.SolveAtTravel(chassisPosition, chassisOrientation, travel))
+                break;
+            feasibleLow = travel;
+            lowGeometry = candidate;
+        }
+        for (int sample = 1; sample <= 24; ++sample) {
+            const float travel = m_suspensions[i].GetBumpTravel() *
+                static_cast<float>(sample) / 24.0f;
+            DoubleWishbone candidate = baseGeometry;
+            if (!candidate.SolveAtTravel(chassisPosition, chassisOrientation, travel))
+                break;
+            feasibleHigh = travel;
+            highGeometry = candidate;
+        }
+
         if (contact.HasContact()) {
             const WheelContactSample& sample = contact.samples.front();
             const Vec3 targetHubPosition =
                 sample.point + sample.normal * m_wheels[i].GetRadius();
             const Vec3 targetLocalPosition =
                 inverseChassisOrientation * (targetHubPosition - chassisPosition);
-            float low = -m_suspensions[i].GetReboundTravel();
-            float high = m_suspensions[i].GetBumpTravel();
+            const float lowY = (inverseChassisOrientation *
+                (lowGeometry.GetHubPosition() - chassisPosition)).y;
+            const float highY = (inverseChassisOrientation *
+                (highGeometry.GetHubPosition() - chassisPosition)).y;
 
-            DoubleWishbone lowGeometry = baseGeometry;
-            DoubleWishbone highGeometry = baseGeometry;
-            const bool lowValid = lowGeometry.SolveAtTravel(
-                chassisPosition, chassisOrientation, low
-            );
-            const bool highValid = highGeometry.SolveAtTravel(
-                chassisPosition, chassisOrientation, high
-            );
-
-            if (lowValid && highValid) {
-                const float lowY = (inverseChassisOrientation *
-                    (lowGeometry.GetHubPosition() - chassisPosition)).y;
-                const float highY = (inverseChassisOrientation *
-                    (highGeometry.GetHubPosition() - chassisPosition)).y;
-
-                if (targetLocalPosition.y <= lowY) {
-                    solvedGeometry = lowGeometry;
-                } else if (targetLocalPosition.y >= highY) {
-                    solvedGeometry = highGeometry;
-                } else {
-                    for (int iteration = 0; iteration < 20; ++iteration) {
-                        const float mid = 0.5f * (low + high);
-                        DoubleWishbone candidate = baseGeometry;
-                        if (!candidate.SolveAtTravel(
-                                chassisPosition, chassisOrientation, mid))
-                            break;
-
-                        const Vec3 candidateLocalPosition =
-                            inverseChassisOrientation *
-                            (candidate.GetHubPosition() - chassisPosition);
-                        solvedGeometry = candidate;
-
-                        if (candidateLocalPosition.y < targetLocalPosition.y)
-                            low = mid;
-                        else
-                            high = mid;
-                    }
-                }
-            } else if (highValid) {
-                solvedGeometry = highGeometry;
-            } else if (lowValid) {
+            if (targetLocalPosition.y <= lowY) {
                 solvedGeometry = lowGeometry;
+            } else if (targetLocalPosition.y >= highY) {
+                solvedGeometry = highGeometry;
+            } else {
+                float low = feasibleLow;
+                float high = feasibleHigh;
+                for (int iteration = 0; iteration < 20; ++iteration) {
+                    const float mid = 0.5f * (low + high);
+                    DoubleWishbone candidate = baseGeometry;
+                    if (!candidate.SolveAtTravel(chassisPosition, chassisOrientation, mid))
+                        break;
+                    const Vec3 candidateLocalPosition =
+                        inverseChassisOrientation *
+                        (candidate.GetHubPosition() - chassisPosition);
+                    solvedGeometry = candidate;
+                    if (candidateLocalPosition.y < targetLocalPosition.y)
+                        low = mid;
+                    else
+                        high = mid;
+                }
             }
         } else {
-            solvedGeometry.SolveAtTravel(
-                chassisPosition, chassisOrientation,
-                -m_suspensions[i].GetReboundTravel()
-            );
+            solvedGeometry = lowGeometry;
         }
 
         if (i < 2) {
