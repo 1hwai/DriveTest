@@ -8,6 +8,7 @@ class PhysicsWorld;
 class IWheelContactProvider;
 class RigidBody;
 class Suspension;
+class DoubleWishbone;
 
 class Wheel {
 public:
@@ -39,7 +40,8 @@ public:
         RigidBody& body,
         const IWheelContactProvider& contactProvider,
         const PhysicsWorld& physicsWorld,
-        const Suspension& suspension,
+        Suspension& suspension,
+        const DoubleWishbone& geometry,
         float deltaTime
     );
 

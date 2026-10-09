@@ -90,6 +90,12 @@ bool VehicleConfig::Load(const std::string& path, std::string& error) {
     READ("lowerArmOuterX", lowerArmOuterX);
     READ("lowerArmOuterY", lowerArmOuterY);
     READ("hubOffsetY", hubOffsetY);
+    READ("springChassisMountX", springChassisMountX);
+    READ("springChassisMountY", springChassisMountY);
+    READ("springChassisMountZ", springChassisMountZ);
+    READ("springUprightMountOffsetX", springUprightMountOffsetX);
+    READ("springUprightMountOffsetY", springUprightMountOffsetY);
+    READ("springUprightMountOffsetZ", springUprightMountOffsetZ);
     READ("suspensionRestLength", suspensionRestLength);
     READ("suspensionBumpTravel", suspensionBumpTravel);
     READ("suspensionReboundTravel", suspensionReboundTravel);
@@ -123,7 +129,9 @@ bool VehicleConfig::Load(const std::string& path, std::string& error) {
     const char* known[] = {
         "mass","spawnClearance","ColliderHalfExtentsX","ColliderHalfExtentsY","ColliderHalfExtentsZ",
         "wheelRadius","wheelInertia","upperArmInnerX","upperArmInnerY","upperArmInnerZ","upperArmOuterX","upperArmOuterY",
-        "lowerArmInnerX","lowerArmInnerY","lowerArmInnerZ","lowerArmOuterX","lowerArmOuterY","hubOffsetY","suspensionRestLength","suspensionBumpTravel","suspensionReboundTravel",
+        "lowerArmInnerX","lowerArmInnerY","lowerArmInnerZ","lowerArmOuterX","lowerArmOuterY","hubOffsetY","springChassisMountX","springChassisMountY","springChassisMountZ",
+        "springUprightMountOffsetX","springUprightMountOffsetY","springUprightMountOffsetZ",
+        "suspensionRestLength","suspensionBumpTravel","suspensionReboundTravel",
         "frontSpringRate","rearSpringRate","frontCompressionDamping","frontReboundDamping","rearCompressionDamping","rearReboundDamping",
         "staticFriction","dynamicFriction","longitudinalStiffness","lateralStiffness","rollingResistance","brakeTorque","maxSteeringAngle",
         "idleRPM","stallRPM","redlineRPM","peakTorque","engineInertia","reverseRatio","finalDriveRatio",

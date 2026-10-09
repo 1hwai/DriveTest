@@ -1,6 +1,7 @@
 #include "Wheel.h"
 
 #include "Suspension.h"
+#include "DoubleWishbone.h"
 #include "IWheelContactProvider.h"
 #include "../Physics/PhysicsWorld.h"
 #include "../Physics/RigidBody.h"
@@ -104,7 +105,8 @@ void Wheel::Update(
     RigidBody& body,
     const IWheelContactProvider& contactProvider,
     const PhysicsWorld& physicsWorld,
-    const Suspension& suspension,
+    Suspension& suspension,
+    const DoubleWishbone& geometry,
     float deltaTime
 ) {
     (void)index;
@@ -123,17 +125,17 @@ void Wheel::Update(
         &body
     );
 
+    suspension.UpdateFromMounts(
+        geometry.GetSpringMountA(),
+        geometry.GetSpringMountB(),
+        deltaTime
+    );
+
     if (!m_contactResult.HasContact()) {
         m_grounded = false;
-
-        constexpr float FreeReboundSpeed = 4.0f;
-        m_suspensionLength =
-            std::min(
-                suspension.GetMaxLength(),
-                m_suspensionLength + FreeReboundSpeed * deltaTime
-            );
+        m_suspensionLength = suspension.GetLength();
         m_lastContactDistance = maxReach;
-        m_compression = 0.0f;
+        m_compression = suspension.GetCompression();
         m_force = 0.0f;
         m_normalLoad = 0.0f;
         m_compressionVelocity = 0.0f;
@@ -154,72 +156,32 @@ void Wheel::Update(
         ? contact.queryDistance
         : (contact.point - worldMount).Length();
 
-    // Preserve the existing world-vertical suspension behavior for this
-    // provider-boundary work unit. Suspension mount-point kinematics are a
-    // separate follow-up; this value is geometric separation, not a query API.
-    const Vec3 up(0.0f, 1.0f, 0.0f);
-    const Vec3 down(0.0f, -1.0f, 0.0f);
-    const float contactOffset =
-        std::max(0.0f, (worldMount - contact.point).Dot(up));
-    const float rawSuspensionLength =
-        contactOffset - m_radius;
-    const float suspensionLength =
-        suspension.ClampLength(rawSuspensionLength);
+    const Vec3& mountA = geometry.GetSpringMountA();
+    const Vec3& mountB = geometry.GetSpringMountB();
+    const Vec3 springAxis = (mountB - mountA).Normalized();
+    const Vec3 suspensionForce =
+        suspension.CalculateForceVector(mountA, mountB) * -1.0f;
 
-    const float compression =
-        suspension.GetRestLength() - suspensionLength;
-    const float denominator =
-        contact.normal.Dot(down);
-
-    m_suspensionLength = suspensionLength;
-    m_compression = std::max(0.0f, compression);
-    m_suspensionPower = 0.0f;
-    m_suspensionResidual = 0.0f;
-    m_force = 0.0f;
-    m_normalLoad = 0.0f;
-    m_compressionVelocity = 0.0f;
-    m_springForce = 0.0f;
-    m_damperForce = 0.0f;
+    m_suspensionLength = suspension.GetLength();
+    m_compression = suspension.GetCompression();
+    m_compressionVelocity = suspension.GetCompressionVelocity();
+    m_springForce =
+        suspension.GetSpringRate() * m_compression;
+    m_force = suspension.CalculateForce();
+    m_damperForce = m_force - m_springForce;
+    m_normalLoad =
+        m_force * std::max(0.0f, contact.normal.Dot(-springAxis));
     m_tireReactionTorque = 0.0f;
 
-    if (m_compression > 0.0f && denominator < -0.1f) {
-        const Vec3 mountVelocity =
-            body.GetPointVelocity(worldMount);
-        const Vec3 suspensionDirectionVelocity =
-            body.GetAngularVelocity().Cross(down);
-        const Vec3 contactPointVelocity =
-            mountVelocity +
-            suspensionDirectionVelocity * contactOffset;
-        const float projectedVelocity =
-            contact.normal.Dot(contactPointVelocity);
+    m_suspensionPower =
+        suspensionForce.Dot(body.GetPointVelocity(mountA));
+    m_suspensionResidual =
+        m_suspensionPower +
+        m_springForce * m_compressionVelocity +
+        m_damperForce * m_compressionVelocity;
 
-        m_compressionVelocity =
-            projectedVelocity / denominator;
-        m_springForce =
-            suspension.GetSpringRate() * m_compression;
-
-        const float damperRate = m_compressionVelocity >= 0.0f
-            ? suspension.GetCompressionDamperRate()
-            : suspension.GetReboundDamperRate();
-        m_damperForce = damperRate * m_compressionVelocity;
-        m_force = std::max(0.0f, m_springForce + m_damperForce);
-        m_normalLoad = m_force * -denominator;
-
-        const Vec3 suspensionForce = down * -m_force;
-        const float springPower =
-            m_springForce * m_compressionVelocity;
-        const float damperPower =
-            damperRate *
-            m_compressionVelocity *
-            m_compressionVelocity;
-
-        m_suspensionPower =
-            suspensionForce.Dot(body.GetPointVelocity(worldMount));
-        m_suspensionResidual =
-            m_suspensionPower + springPower + damperPower;
-
-        body.AddForceAtPoint(suspensionForce, worldMount);
-    }
+    if (m_force > 0.0f)
+        body.AddForceAtPoint(suspensionForce, mountA);
 
     m_grounded = true;
     m_previousCompression = m_compression;

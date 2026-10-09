@@ -157,7 +157,19 @@ void Car::ApplyConfig(const VehicleConfig& config) {
                 0.0f,
                 config.hubOffsetY,
                 0.0f
-            )
+            ),
+            {
+                Vec3(
+                    side * config.springChassisMountX,
+                    config.springChassisMountY,
+                    wheelZ + config.springChassisMountZ
+                ),
+                Vec3(
+                    side * config.springUprightMountOffsetX,
+                    config.springUprightMountOffsetY,
+                    config.springUprightMountOffsetZ
+                )
+            }
         };
 
         m_suspensionGeometry[i].Configure(geometry);
@@ -263,36 +275,99 @@ void Car::UpdatePhysics(
     );
 
     for (size_t i = 0; i < WheelCount; ++i) {
-        m_suspensionGeometry[i].Solve(
-            m_chassis->GetPosition(),
-            m_chassis->GetOrientation()
+        const Vec3 chassisPosition = m_chassis->GetPosition();
+        const Quaternion chassisOrientation = m_chassis->GetOrientation();
+        const Quaternion inverseChassisOrientation =
+            chassisOrientation.Conjugate().Normalized();
+        const DoubleWishbone baseGeometry = m_suspensionGeometry[i];
+
+        DoubleWishbone solvedGeometry = baseGeometry;
+        solvedGeometry.SolveAtTravel(chassisPosition, chassisOrientation, 0.0f);
+
+        WheelContactInput contactInput{
+            solvedGeometry.GetHubPosition(),
+            solvedGeometry.GetHubOrientation(),
+            m_wheels[i].GetRadius(),
+            m_suspensions[i].GetMaxLength() + m_wheels[i].GetRadius()
+        };
+        const WheelContactResult contact = m_contactProvider->Query(
+            contactInput, physicsWorld, m_chassis
         );
 
-        if (i < 2) {
-            const AckermannAngles angles =
-                CalculateAckermannAngles(
-                    m_wheels[i].GetSteeringAngle(),
-                    m_wheels
-                );
+        if (contact.HasContact()) {
+            const WheelContactSample& sample = contact.samples.front();
+            const Vec3 targetHubPosition =
+                sample.point + sample.normal * m_wheels[i].GetRadius();
+            const Vec3 targetLocalPosition =
+                inverseChassisOrientation * (targetHubPosition - chassisPosition);
+            float low = -m_suspensions[i].GetReboundTravel();
+            float high = m_suspensions[i].GetBumpTravel();
 
-            const float geometrySteeringAngle =
-                i == static_cast<size_t>(WheelIndex::FrontLeft)
-                    ? angles.left
-                    : angles.right;
+            DoubleWishbone lowGeometry = baseGeometry;
+            DoubleWishbone highGeometry = baseGeometry;
+            const bool lowValid = lowGeometry.SolveAtTravel(
+                chassisPosition, chassisOrientation, low
+            );
+            const bool highValid = highGeometry.SolveAtTravel(
+                chassisPosition, chassisOrientation, high
+            );
 
-            m_suspensionGeometry[i].ApplySteering(
-                geometrySteeringAngle
+            if (lowValid && highValid) {
+                const float lowY = (inverseChassisOrientation *
+                    (lowGeometry.GetHubPosition() - chassisPosition)).y;
+                const float highY = (inverseChassisOrientation *
+                    (highGeometry.GetHubPosition() - chassisPosition)).y;
+
+                if (targetLocalPosition.y <= lowY) {
+                    solvedGeometry = lowGeometry;
+                } else if (targetLocalPosition.y >= highY) {
+                    solvedGeometry = highGeometry;
+                } else {
+                    for (int iteration = 0; iteration < 20; ++iteration) {
+                        const float mid = 0.5f * (low + high);
+                        DoubleWishbone candidate = baseGeometry;
+                        if (!candidate.SolveAtTravel(
+                                chassisPosition, chassisOrientation, mid))
+                            break;
+
+                        const Vec3 candidateLocalPosition =
+                            inverseChassisOrientation *
+                            (candidate.GetHubPosition() - chassisPosition);
+                        solvedGeometry = candidate;
+
+                        if (candidateLocalPosition.y < targetLocalPosition.y)
+                            low = mid;
+                        else
+                            high = mid;
+                    }
+                }
+            } else if (highValid) {
+                solvedGeometry = highGeometry;
+            } else if (lowValid) {
+                solvedGeometry = lowGeometry;
+            }
+        } else {
+            solvedGeometry.SolveAtTravel(
+                chassisPosition, chassisOrientation,
+                -m_suspensions[i].GetReboundTravel()
             );
         }
 
+        if (i < 2) {
+            const AckermannAngles angles =
+                CalculateAckermannAngles(m_wheels[i].GetSteeringAngle(), m_wheels);
+            const float geometrySteeringAngle =
+                i == static_cast<size_t>(WheelIndex::FrontLeft)
+                    ? angles.left : angles.right;
+            solvedGeometry.ApplySteering(geometrySteeringAngle);
+        }
+
+        m_suspensionGeometry[i] = solvedGeometry;
         m_wheels[i].SetHubState(
             m_suspensionGeometry[i].GetHubPosition(),
             m_suspensionGeometry[i].GetHubOrientation()
         );
-
-        m_wheels[i].SetBrakeTorque(
-            m_brake * m_brakeTorque
-        );
+        m_wheels[i].SetBrakeTorque(m_brake * m_brakeTorque);
     }
 
     for (size_t i = 0; i < WheelCount; ++i) {
@@ -302,6 +377,7 @@ void Car::UpdatePhysics(
             *m_contactProvider,
             physicsWorld,
             m_suspensions[i],
+            m_suspensionGeometry[i],
             deltaTime
         );
 
