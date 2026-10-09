@@ -19,6 +19,35 @@ namespace {
     constexpr float FixedDeltaTime = 1.0f / 120.0f;
     constexpr int SimulationSteps = 120 * 40;
 
+    struct WheelEnergySnapshot {
+        float compression = 0.0f;
+        float compressionVelocity = 0.0f;
+        float springForce = 0.0f;
+        float damperForce = 0.0f;
+        float suspensionPower = 0.0f;
+        float suspensionResidual = 0.0f;
+        float suspensionLength = 0.0f;
+        bool grounded = false;
+        Vec3 mountA;
+        Vec3 mountB;
+        Vec3 forceOnChassis;
+    };
+
+    struct EnergySnapshot {
+        bool valid = false;
+        int step = 0;
+        float time = 0.0f;
+        float total = 0.0f;
+        float potential = 0.0f;
+        float linear = 0.0f;
+        float angular = 0.0f;
+        float suspension = 0.0f;
+        Vec3 position;
+        Vec3 velocity;
+        Vec3 angularVelocity;
+        std::array<WheelEnergySnapshot, WheelCount> wheels;
+    };
+
     bool IsFinite(const Vec3& value) {
         return std::isfinite(value.x) &&
             std::isfinite(value.y) &&
@@ -221,6 +250,49 @@ int main() {
         maxEnergy =
             std::max(maxEnergy, totalEnergy);
 
+        auto captureEnergySnapshot = [&](EnergySnapshot& snapshot) {
+            snapshot.valid = true;
+            snapshot.step = step;
+            snapshot.time = (step + 1) * FixedDeltaTime;
+            snapshot.total = totalEnergy;
+            snapshot.potential = potentialEnergy;
+            snapshot.linear = linearEnergy;
+            snapshot.angular = angularEnergy;
+            snapshot.suspension = suspensionEnergy;
+            snapshot.position = position;
+            snapshot.velocity = velocity;
+            snapshot.angularVelocity = angularVelocity;
+
+            for (size_t i = 0; i < WheelCount; ++i) {
+                const WheelIndex index = static_cast<WheelIndex>(i);
+                const Wheel& wheel = car.GetWheel(index);
+                const Suspension& suspension = car.GetSuspension(index);
+                const DoubleWishbone& geometry = car.GetSuspensionGeometry(index);
+                WheelEnergySnapshot& item = snapshot.wheels[i];
+                item.compression = suspension.GetCompression();
+                item.compressionVelocity = suspension.GetCompressionVelocity();
+                item.springForce = wheel.GetSpringForce();
+                item.damperForce = wheel.GetDamperForce();
+                item.suspensionPower = wheel.GetSuspensionPower();
+                item.suspensionResidual = wheel.GetSuspensionResidual();
+                item.suspensionLength = suspension.GetLength();
+                item.grounded = wheel.IsGrounded();
+                item.mountA = geometry.GetSpringMountA();
+                item.mountB = geometry.GetSpringMountB();
+                item.forceOnChassis =
+                    suspension.CalculateForceVector(item.mountA, item.mountB) * -1.0f;
+            }
+        };
+
+        static const char* wheelNames[WheelCount] = {"FL", "FR", "RL", "RR"};
+        static EnergySnapshot peakSnapshot;
+        static EnergySnapshot firstExceedSnapshot;
+        if (!peakSnapshot.valid || totalEnergy > peakSnapshot.total)
+            captureEnergySnapshot(peakSnapshot);
+        if (!firstExceedSnapshot.valid &&
+            totalEnergy > initialEnergy + EnergyTolerance)
+            captureEnergySnapshot(firstExceedSnapshot);
+
         if (step % 60 == 0) {
             std::ostringstream log;
             log << std::fixed << std::setprecision(6)
@@ -269,6 +341,50 @@ int main() {
         << chassis->GetPosition().z;
 
     Logger::Info(summary.str());
+
+    auto logEnergySnapshot = [&](const char* label, const EnergySnapshot& snapshot) {
+        if (!snapshot.valid)
+            return;
+
+        std::ostringstream log;
+        log << std::fixed << std::setprecision(6)
+            << "[" << label << "] step=" << snapshot.step
+            << " t=" << snapshot.time
+            << " total=" << snapshot.total
+            << " potential=" << snapshot.potential
+            << " linear=" << snapshot.linear
+            << " angular=" << snapshot.angular
+            << " spring=" << snapshot.suspension
+            << " y=" << snapshot.position.y
+            << " vy=" << snapshot.velocity.y
+            << " vz=" << snapshot.velocity.z
+            << " wx=" << snapshot.angularVelocity.x
+            << " wy=" << snapshot.angularVelocity.y
+            << " wz=" << snapshot.angularVelocity.z;
+        Logger::Info(log.str());
+
+        for (size_t i = 0; i < WheelCount; ++i) {
+            const WheelEnergySnapshot& wheel = snapshot.wheels[i];
+            std::ostringstream wheelLog;
+            wheelLog << std::fixed << std::setprecision(6)
+                << "[" << label << "Wheel] name=" << wheelNames[i]
+                << " grounded=" << wheel.grounded
+                << " length=" << wheel.suspensionLength
+                << " compression=" << wheel.compression
+                << " compressionVelocity=" << wheel.compressionVelocity
+                << " springForce=" << wheel.springForce
+                << " damperForce=" << wheel.damperForce
+                << " suspensionPower=" << wheel.suspensionPower
+                << " residual=" << wheel.suspensionResidual
+                << " mountA=(" << wheel.mountA.x << "," << wheel.mountA.y << "," << wheel.mountA.z << ")"
+                << " mountB=(" << wheel.mountB.x << "," << wheel.mountB.y << "," << wheel.mountB.z << ")"
+                << " force=(" << wheel.forceOnChassis.x << "," << wheel.forceOnChassis.y << "," << wheel.forceOnChassis.z << ")";
+            Logger::Info(wheelLog.str());
+        }
+    };
+
+    logEnergySnapshot("EnergyPeak", peakSnapshot);
+    logEnergySnapshot("EnergyFirstExceed", firstExceedSnapshot);
 
     if (maxAbsZ > MaxDriftZ) {
         Logger::Error(
