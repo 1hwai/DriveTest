@@ -407,9 +407,17 @@ int main() {
                 << " integratedPowerB=" << integratedPowerAtB
                 << " integratedSpringPower=" << integratedSpringPower
                 << " integratedDamperPower=" << integratedDamperPower
-                << " integratedPowerBalanceResidual="
+                // This closure checks the endpoint-force/spring/damper identity;
+                // it is not the chassis-plus-spring energy conservation error.
+                << " integratedEndpointPowerClosureResidual="
                 << (integratedPowerAtA + integratedPowerAtB +
-                    integratedSpringPower + integratedDamperPower);
+                    integratedSpringPower + integratedDamperPower)
+                << " energyBalanceResidualFromChassisWork="
+                << ((totalEnergy - initialEnergy) -
+                    (integratedPowerAtA + integratedSpringPower))
+                << " energyBalanceResidualFromKinematicWork="
+                << ((totalEnergy - initialEnergy) -
+                    (-integratedPowerAtB - integratedDamperPower));
             Logger::Info(energyDeltaLog.str());
         }
 
@@ -529,9 +537,16 @@ int main() {
         << " integratedPowerB=" << integratedPowerAtB
         << " integratedSpringPower=" << integratedSpringPower
         << " integratedDamperPower=" << integratedDamperPower
-        << " integratedPowerBalanceResidual="
+        // Endpoint closure is an internal power identity, not total energy conservation.
+        << " integratedEndpointPowerClosureResidual="
         << (integratedPowerAtA + integratedPowerAtB +
             integratedSpringPower + integratedDamperPower)
+        << " energyBalanceResidualFromChassisWork="
+        << ((previousTotalEnergy - initialEnergy) -
+            (integratedPowerAtA + integratedSpringPower))
+        << " energyBalanceResidualFromKinematicWork="
+        << ((previousTotalEnergy - initialEnergy) -
+            (-integratedPowerAtB - integratedDamperPower))
         << " finalY="
         << chassis->GetPosition().y
         << " finalZ="
