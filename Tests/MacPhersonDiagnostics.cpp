@@ -160,11 +160,26 @@ int main() {
         std::numeric_limits<float>::quiet_NaN();
     MacPhersonConfig negativeStrutConfig = leftConfig;
     negativeStrutConfig.strut.length = -0.1f;
+    const auto configuredStatePreserved = [&]() {
+        return Near(left.GetStrutLength(), leftConfig.strut.length) &&
+            NearVec(left.GetLowerOuterJoint(), leftConfig.lowerArm.outerJoint) &&
+            NearVec(left.GetSpringMountA(), leftConfig.strut.upperMount) &&
+            NearVec(
+                left.GetSpringMountB(),
+                leftConfig.lowerArm.outerJoint +
+                    leftConfig.strut.lowerMountOffset
+            ) &&
+            NearVec(
+                left.GetHubPosition(),
+                leftConfig.lowerArm.outerJoint +
+                    leftConfig.upright.hubOffset
+            );
+    };
     const bool invalidConfigRejected =
         !left.Configure(nonFiniteConfig) &&
-        Near(left.GetStrutLength(), leftConfig.strut.length) &&
+        configuredStatePreserved() &&
         !left.Configure(negativeStrutConfig) &&
-        Near(left.GetStrutLength(), leftConfig.strut.length);
+        configuredStatePreserved();
 
     const bool solvedLeft =
         left.Solve(chassisPosition, identity);
