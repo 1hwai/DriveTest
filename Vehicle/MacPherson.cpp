@@ -64,6 +64,11 @@ bool MacPherson::SolveAtTravel(
     if (!std::isfinite(travel))
         return false;
 
+    // Keep the last valid geometry if this solve cannot be completed.
+    const LowerArmState previousLowerArm = m_lowerArm;
+    const StrutState previousStrut = m_strut;
+    const UprightState previousUpright = m_upright;
+
     m_lowerArm.innerPivotA =
         chassisPosition +
         chassisOrientation * m_lowerArmConfig.innerPivotA;
@@ -80,14 +85,21 @@ bool MacPherson::SolveAtTravel(
 
     const float strutLength =
         m_strut.length - travel;
-    if (strutLength <= Epsilon)
+    if (strutLength <= Epsilon) {
+        m_lowerArm = previousLowerArm;
+        m_strut = previousStrut;
+        m_upright = previousUpright;
         return false;
+    }
 
     if (!SolveConstraints(
             m_lowerArm,
             m_strut.upperMount,
             strutLength + m_strutLowerOffsetLength
         )) {
+        m_lowerArm = previousLowerArm;
+        m_strut = previousStrut;
+        m_upright = previousUpright;
         return false;
     }
 
