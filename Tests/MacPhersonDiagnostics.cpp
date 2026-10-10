@@ -351,17 +351,22 @@ int main() {
     bool travel = true;
     float maxHubStep = 0.0f;
     float maxHorizontalDrift = 0.0f;
+
+    // Establish an unsteered reference at zero travel before sweeping.
+    if (!left.SolveAtTravel(chassisPosition, identity, 0.0f))
+        travel = false;
     const Vec3 staticLeftHub = left.GetHubPosition();
+
     Vec3 previousLeftHub;
     bool hasPrevious = false;
 
-    const float travels[] = {
-        -0.075f, -0.05f, -0.025f,
-        0.0f,
-        0.025f, 0.05f, 0.075f
-    };
+    // Dense, deterministic sample grid over the currently tested travel range.
+    constexpr int TravelSteps = 30;
+    constexpr float TravelStep = 0.005f;
 
-    for (float value : travels) {
+    for (int i = 0; i <= TravelSteps; ++i) {
+        const float value =
+            -0.075f + static_cast<float>(i) * TravelStep;
         const bool solvedAtTravelLeft =
             left.SolveAtTravel(
                 chassisPosition,
@@ -626,7 +631,7 @@ int main() {
     }
 
     const bool continuity =
-        maxHubStep < 0.05f &&
+        maxHubStep < 0.01f &&
         maxHorizontalDrift < 0.20f;
 
     const bool orientation =
