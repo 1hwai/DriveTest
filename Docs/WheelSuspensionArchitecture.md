@@ -1305,6 +1305,16 @@ Each implementation work unit must list exact files before editing, update this 
 
 The search brackets the transition between a known accepted travel of `+0.075` and a known rejected travel of `+0.30`, using 24 bisection iterations. The bracket width must be below `0.000001`. This characterizes only this synthetic configuration and the current solver's acceptance boundary; it is not a real vehicle travel limit or proof of all singular configurations. Once this diagnostic passes, stop adding routine MacPherson kinematics tests and proceed to configuration validation / runtime integration as planned.
 
+### MacPherson Configuration Validation — MP-CONFIG-01
+
+- [x] Validate every configured vector component and the configured strut length for finiteness.
+- [x] Reject negative strut lengths; exactly zero retains the existing automatic-length behavior.
+- [x] Reject degenerate lower-arm lengths, coincident lower-arm pivots, and a non-positive effective strut length.
+- [x] Validate before mutating configuration or geometry state; invalid configurations return `false`.
+- [ ] Local build and diagnostic execution pending.
+
+The automatic strut length remains the distance from the configured upper mount to the configured lower mount (`outerJoint + lowerMountOffset`). A positive value remains an explicit length. This work validates configuration inputs; it does not guarantee every travel value is geometrically reachable. The focused diagnostic reports `invalidConfigRejected=1` when non-finite and negative-length configurations are rejected without replacing the previously accepted setup.
+
 ## 13. Non-Goals
 
 The following are not required for the first implementation:
