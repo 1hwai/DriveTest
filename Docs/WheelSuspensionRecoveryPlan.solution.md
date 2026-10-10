@@ -504,3 +504,14 @@ These are proposed priorities only; implementation remains blocked pending revie
 - **Verification commands:** `git pull --rebase origin suspension-runtime-integration`; `cmake --build build --target DriveTestMacPhersonDiagnostics`; `./build/DriveTestMacPhersonDiagnostics`.
 - **Verification status:** Awaiting the user's local build/run output after commit. No build or execution was performed during this documentation update.
 - **Limits and next step:** This covers one deliberately infeasible case for the synthetic test configuration. Next, inspect assembly-branch selection between the two intersection candidates and continuity near singular configurations.
+
+
+## 2026-10-10 — MP-KIN-08: assembly-branch consistency across forward and reverse travel sweeps
+
+- **Observed facts:** `SolveConstraints()` selects the candidate intersection nearest to the `lowerArm.outerJoint` reference point. Each `SolveAtTravel()` call resets that reference to the configured chassis-local `outerJoint` transformed into world space before solving. Thus candidate selection currently uses a configured reference, rather than directly tracking the previous solve result.
+- **Question:** Do identical travel samples produce identical geometry when solved in ascending versus descending order?
+- **Change:** The diagnostic stores lower outer-joint and hub positions for all 31 forward samples, then solves the same samples in reverse order and compares left/right joints and hubs. The result is exposed as `branchSelectionStable` and fails the executable if false.
+- **Scope:** Uses only the existing travel range `[-0.075, +0.075]`. The solver algorithm and vehicle runtime are unchanged.
+- **Verification commands:** `git pull --rebase origin suspension-runtime-integration`; `cmake --build build --target DriveTestMacPhersonDiagnostics`; `./build/DriveTestMacPhersonDiagnostics`.
+- **Verification status:** Awaiting the user's local build/run output after commit. No build or execution was performed during this update.
+- **Limits and next step:** This detects call-order-dependent branch changes only over the current test range. It does not test near-tangent singularities, configuration boundaries, or the valid travel range of a real vehicle. Next, analyze the valid/invalid boundary near a singular configuration.
