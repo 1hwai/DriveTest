@@ -29,6 +29,7 @@ struct MacPhersonConfig {
 class MacPherson : public ISuspensionGeometry {
 public:
     MacPherson();
+    std::unique_ptr<ISuspensionGeometry> Clone() const override;
 
     bool Configure(const MacPhersonConfig& config);
     bool Solve(
