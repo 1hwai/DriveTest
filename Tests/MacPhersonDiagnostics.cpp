@@ -297,22 +297,46 @@ int main() {
         (rightSpringB - rightSpringA).Length() > 0.0001f;
 
     const Vec3 hubBeforeInvalidTravel = left.GetHubPosition();
+    const Vec3 lowerJointBeforeInvalidTravel = left.GetLowerOuterJoint();
+    const Vec3 springMountABeforeInvalidTravel = left.GetSpringMountA();
+    const Vec3 springMountBBeforeInvalidTravel = left.GetSpringMountB();
+    const Quaternion orientationBeforeInvalidTravel = left.GetHubOrientation();
+    const auto geometryUnchangedAfterRejectedTravel = [&]() {
+        const Quaternion orientation = left.GetHubOrientation();
+        return NearVec(left.GetHubPosition(), hubBeforeInvalidTravel) &&
+            NearVec(left.GetLowerOuterJoint(), lowerJointBeforeInvalidTravel) &&
+            NearVec(left.GetSpringMountA(), springMountABeforeInvalidTravel) &&
+            NearVec(left.GetSpringMountB(), springMountBBeforeInvalidTravel) &&
+            Near(orientation.w, orientationBeforeInvalidTravel.w) &&
+            Near(orientation.x, orientationBeforeInvalidTravel.x) &&
+            Near(orientation.y, orientationBeforeInvalidTravel.y) &&
+            Near(orientation.z, orientationBeforeInvalidTravel.z);
+    };
     const bool nanTravelRejected =
         !left.SolveAtTravel(
             chassisPosition,
             identity,
             std::numeric_limits<float>::quiet_NaN()
         ) &&
-        NearVec(left.GetHubPosition(), hubBeforeInvalidTravel);
+        geometryUnchangedAfterRejectedTravel();
     const bool infiniteTravelRejected =
         !left.SolveAtTravel(
             chassisPosition,
             identity,
             std::numeric_limits<float>::infinity()
         ) &&
-        NearVec(left.GetHubPosition(), hubBeforeInvalidTravel);
+        geometryUnchangedAfterRejectedTravel();
+    const bool impossibleFiniteTravelRejected =
+        !left.SolveAtTravel(
+            chassisPosition,
+            identity,
+            left.GetStrutLength()
+        ) &&
+        geometryUnchangedAfterRejectedTravel();
     const bool invalidTravelRejected =
-        nanTravelRejected && infiniteTravelRejected;
+        nanTravelRejected &&
+        infiniteTravelRejected &&
+        impossibleFiniteTravelRejected;
 
     const bool finite =
         solvedLeft &&
