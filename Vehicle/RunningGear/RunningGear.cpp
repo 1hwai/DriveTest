@@ -1,6 +1,8 @@
 #include "RunningGear.h"
 
 #include "RaycastWheelContactProvider.h"
+#include "DoubleWishbone.h"
+#include "MacPherson.h"
 #include "../VehicleConfig.h"
 #include "../VehicleCoordinates.h"
 #include "../../Physics/PhysicsWorld.h"
@@ -171,28 +173,67 @@ void RunningGear::ApplyConfig(const VehicleConfig& config) {
             }
         };
 
-        m_suspensionGeometry[i].Configure(geometry);
+        if (config.suspensionLayout == SuspensionLayout::MacPherson) {
+            MacPhersonConfig macPhersonConfig{
+                {
+                    Vec3(
+                        side * config.macPhersonLowerArmInnerX,
+                        config.macPhersonLowerArmInnerY,
+                        wheelZ - config.macPhersonLowerArmInnerZ
+                    ),
+                    Vec3(
+                        side * config.macPhersonLowerArmInnerX,
+                        config.macPhersonLowerArmInnerY,
+                        wheelZ + config.macPhersonLowerArmInnerZ
+                    ),
+                    Vec3(
+                        side * config.macPhersonLowerArmOuterX,
+                        config.macPhersonLowerArmOuterY,
+                        wheelZ
+                    )
+                },
+                {
+                    Vec3(
+                        side * config.macPhersonStrutUpperMountX,
+                        config.macPhersonStrutUpperMountY,
+                        wheelZ + config.springChassisMountZ
+                    ),
+                    Vec3(0.0f, config.macPhersonStrutLowerMountOffsetY, 0.0f),
+                    config.macPhersonStrutLength
+                },
+                { Vec3(0.0f, config.hubOffsetY, 0.0f) }
+            };
+            auto geometryInstance = std::make_unique<MacPherson>();
+            if (!geometryInstance->Configure(macPhersonConfig))
+                continue;
+            m_suspensionGeometry[i] = std::move(geometryInstance);
+        } else {
+            auto geometryInstance = std::make_unique<DoubleWishbone>();
+            geometryInstance->Configure(geometry);
+            m_suspensionGeometry[i] = std::move(geometryInstance);
+        }
+
         const Vec3 chassisPosition =
             m_chassis ? m_chassis->GetPosition() : Vec3();
         const Quaternion chassisOrientation =
             m_chassis ? m_chassis->GetOrientation() : Quaternion::Identity();
-        m_suspensionGeometry[i].Solve(chassisPosition, chassisOrientation);
+        m_suspensionGeometry[i]->SolveAtTravel(chassisPosition, chassisOrientation, 0.0f);
 
         m_minimumSuspensionTravel[i] = 0.0f;
         m_maximumSuspensionTravel[i] = 0.0f;
         for (int sample = 1; sample <= 24; ++sample) {
             const float travel = -config.suspensionReboundTravel *
                 static_cast<float>(sample) / 24.0f;
-            DoubleWishbone candidate = m_suspensionGeometry[i];
-            if (!candidate.SolveAtTravel(chassisPosition, chassisOrientation, travel))
+            auto candidate = m_suspensionGeometry[i]->Clone();
+            if (!candidate->SolveAtTravel(chassisPosition, chassisOrientation, travel))
                 break;
             m_minimumSuspensionTravel[i] = travel;
         }
         for (int sample = 1; sample <= 24; ++sample) {
             const float travel = config.suspensionBumpTravel *
                 static_cast<float>(sample) / 24.0f;
-            DoubleWishbone candidate = m_suspensionGeometry[i];
-            if (!candidate.SolveAtTravel(chassisPosition, chassisOrientation, travel))
+            auto candidate = m_suspensionGeometry[i]->Clone();
+            if (!candidate->SolveAtTravel(chassisPosition, chassisOrientation, travel))
                 break;
             m_maximumSuspensionTravel[i] = travel;
         }
@@ -205,8 +246,8 @@ void RunningGear::ApplyConfig(const VehicleConfig& config) {
         suspension.SetCompressionDamperRate(i < 2 ? config.frontCompressionDamping : config.rearCompressionDamping);
         suspension.SetReboundDamperRate(i < 2 ? config.frontReboundDamping : config.rearReboundDamping);
         suspension.UpdateFromMounts(
-            m_suspensionGeometry[i].GetSpringMountA(),
-            m_suspensionGeometry[i].GetSpringMountB(),
+            m_suspensionGeometry[i]->GetSpringMountA(),
+            m_suspensionGeometry[i]->GetSpringMountB(),
             0.0f
         );
 
@@ -276,14 +317,14 @@ void RunningGear::UpdatePhysics(
         const Quaternion chassisOrientation = m_chassis->GetOrientation();
         const Quaternion inverseChassisOrientation =
             chassisOrientation.Conjugate().Normalized();
-        const DoubleWishbone baseGeometry = m_suspensionGeometry[i];
+        const auto baseGeometry = m_suspensionGeometry[i]->Clone();
 
-        DoubleWishbone solvedGeometry = baseGeometry;
-        solvedGeometry.SolveAtTravel(chassisPosition, chassisOrientation, 0.0f);
+        auto solvedGeometry = baseGeometry->Clone();
+        solvedGeometry->SolveAtTravel(chassisPosition, chassisOrientation, 0.0f);
 
         WheelContactInput contactInput{
-            solvedGeometry.GetHubPosition(),
-            solvedGeometry.GetHubOrientation(),
+            solvedGeometry->GetHubPosition(),
+            solvedGeometry->GetHubOrientation(),
             m_wheels[i].GetRadius(),
             m_suspensions[i].GetRestLength() +
                 m_suspensions[i].GetReboundTravel() +
@@ -295,14 +336,14 @@ void RunningGear::UpdatePhysics(
 
         const float feasibleLow = m_minimumSuspensionTravel[i];
         const float feasibleHigh = m_maximumSuspensionTravel[i];
-        DoubleWishbone lowGeometry = baseGeometry;
-        DoubleWishbone highGeometry = baseGeometry;
-        if (!lowGeometry.SolveAtTravel(
+        auto lowGeometry = baseGeometry->Clone();
+        auto highGeometry = baseGeometry->Clone();
+        if (!lowGeometry->SolveAtTravel(
                 chassisPosition, chassisOrientation, feasibleLow))
-            lowGeometry = solvedGeometry;
-        if (!highGeometry.SolveAtTravel(
+            lowGeometry = solvedGeometry->Clone();
+        if (!highGeometry->SolveAtTravel(
                 chassisPosition, chassisOrientation, feasibleHigh))
-            highGeometry = solvedGeometry;
+            highGeometry = solvedGeometry->Clone();
 
         if (contact.HasContact()) {
             const WheelContactSample& sample = contact.samples.front();
@@ -311,26 +352,26 @@ void RunningGear::UpdatePhysics(
             const Vec3 targetLocalPosition =
                 inverseChassisOrientation * (targetHubPosition - chassisPosition);
             const float lowY = (inverseChassisOrientation *
-                (lowGeometry.GetHubPosition() - chassisPosition)).y;
+                (lowGeometry->GetHubPosition() - chassisPosition)).y;
             const float highY = (inverseChassisOrientation *
-                (highGeometry.GetHubPosition() - chassisPosition)).y;
+                (highGeometry->GetHubPosition() - chassisPosition)).y;
 
             if (targetLocalPosition.y <= lowY) {
-                solvedGeometry = lowGeometry;
+                solvedGeometry = lowGeometry->Clone();
             } else if (targetLocalPosition.y >= highY) {
-                solvedGeometry = highGeometry;
+                solvedGeometry = highGeometry->Clone();
             } else {
                 float low = feasibleLow;
                 float high = feasibleHigh;
                 for (int iteration = 0; iteration < 20; ++iteration) {
                     const float mid = 0.5f * (low + high);
-                    DoubleWishbone candidate = baseGeometry;
-                    if (!candidate.SolveAtTravel(chassisPosition, chassisOrientation, mid))
+                    auto candidate = baseGeometry->Clone();
+                    if (!candidate->SolveAtTravel(chassisPosition, chassisOrientation, mid))
                         break;
                     const Vec3 candidateLocalPosition =
                         inverseChassisOrientation *
-                        (candidate.GetHubPosition() - chassisPosition);
-                    solvedGeometry = candidate;
+                        (candidate->GetHubPosition() - chassisPosition);
+                    solvedGeometry = std::move(candidate);
                     if (candidateLocalPosition.y < targetLocalPosition.y)
                         low = mid;
                     else
@@ -347,13 +388,13 @@ void RunningGear::UpdatePhysics(
             const float geometrySteeringAngle =
                 i == static_cast<size_t>(WheelIndex::FrontLeft)
                     ? angles.left : angles.right;
-            solvedGeometry.ApplySteering(geometrySteeringAngle);
+            solvedGeometry->ApplySteering(geometrySteeringAngle);
         }
 
-        m_suspensionGeometry[i] = solvedGeometry;
+        m_suspensionGeometry[i] = std::move(solvedGeometry);
         m_wheels[i].SetHubState(
-            m_suspensionGeometry[i].GetHubPosition(),
-            m_suspensionGeometry[i].GetHubOrientation()
+            m_suspensionGeometry[i]->GetHubPosition(),
+            m_suspensionGeometry[i]->GetHubOrientation()
         );
         m_wheels[i].SetBrakeTorque(brakeInput * m_brakeTorque);
     }
@@ -588,11 +629,11 @@ void RunningGear::UpdatePhysics(
     }
 }
 
-DoubleWishbone& RunningGear::GetSuspensionGeometry(WheelIndex index) {
-    return m_suspensionGeometry[ToIndex(index)];
+ISuspensionGeometry& RunningGear::GetSuspensionGeometry(WheelIndex index) {
+    return *m_suspensionGeometry[ToIndex(index)];
 }
 
-const DoubleWishbone& RunningGear::GetSuspensionGeometry(WheelIndex index) const {
+const ISuspensionGeometry& RunningGear::GetSuspensionGeometry(WheelIndex index) const {
     return m_suspensionGeometry[ToIndex(index)];
 }
 
