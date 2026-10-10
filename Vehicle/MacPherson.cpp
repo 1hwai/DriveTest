@@ -38,7 +38,49 @@ MacPherson::MacPherson()
     m_upright.hubOrientation = Quaternion::Identity();
 }
 
-void MacPherson::Configure(const MacPhersonConfig& config) {
+bool MacPherson::Configure(const MacPhersonConfig& config) {
+    // Validate the complete configuration before mutating the current setup.
+    if (!IsFinite(config.lowerArm.innerPivotA) ||
+        !IsFinite(config.lowerArm.innerPivotB) ||
+        !IsFinite(config.lowerArm.outerJoint) ||
+        !IsFinite(config.strut.upperMount) ||
+        !IsFinite(config.strut.lowerMountOffset) ||
+        !IsFinite(config.upright.hubOffset) ||
+        !std::isfinite(config.strut.length) ||
+        config.strut.length < 0.0f) {
+        return false;
+    }
+
+    const float armLengthA =
+        Distance(config.lowerArm.innerPivotA, config.lowerArm.outerJoint);
+    const float armLengthB =
+        Distance(config.lowerArm.innerPivotB, config.lowerArm.outerJoint);
+    const float pivotSeparation =
+        Distance(config.lowerArm.innerPivotA, config.lowerArm.innerPivotB);
+    const float lowerMountOffsetLength =
+        config.strut.lowerMountOffset.Length();
+    const Vec3 configuredLowerMount =
+        config.lowerArm.outerJoint + config.strut.lowerMountOffset;
+    const float derivedStrutLength =
+        Distance(config.strut.upperMount, configuredLowerMount);
+    const float effectiveStrutLength =
+        config.strut.length > 0.0f
+            ? config.strut.length
+            : derivedStrutLength;
+
+    if (!std::isfinite(armLengthA) ||
+        !std::isfinite(armLengthB) ||
+        !std::isfinite(pivotSeparation) ||
+        !std::isfinite(lowerMountOffsetLength) ||
+        !std::isfinite(derivedStrutLength) ||
+        !std::isfinite(effectiveStrutLength) ||
+        armLengthA <= Epsilon ||
+        armLengthB <= Epsilon ||
+        pivotSeparation <= Epsilon ||
+        effectiveStrutLength <= Epsilon) {
+        return false;
+    }
+
     m_lowerArmConfig = config.lowerArm;
     m_strutConfig = config.strut;
     m_uprightConfig = config.upright;
@@ -46,21 +88,13 @@ void MacPherson::Configure(const MacPhersonConfig& config) {
     m_lowerArm.innerPivotA = config.lowerArm.innerPivotA;
     m_lowerArm.innerPivotB = config.lowerArm.innerPivotB;
     m_lowerArm.outerJoint = config.lowerArm.outerJoint;
-    m_lowerArm.innerToOuterLengthA =
-        Distance(config.lowerArm.innerPivotA, config.lowerArm.outerJoint);
-    m_lowerArm.innerToOuterLengthB =
-        Distance(config.lowerArm.innerPivotB, config.lowerArm.outerJoint);
+    m_lowerArm.innerToOuterLengthA = armLengthA;
+    m_lowerArm.innerToOuterLengthB = armLengthB;
 
     m_strut.upperMount = config.strut.upperMount;
-    m_strut.lowerMount =
-        config.lowerArm.outerJoint +
-        config.strut.lowerMountOffset;
-    m_strutLowerOffsetLength =
-        config.strut.lowerMountOffset.Length();
-    m_strut.length =
-        config.strut.length > 0.0f
-            ? config.strut.length
-            : Distance(m_strut.upperMount, m_strut.lowerMount);
+    m_strut.lowerMount = configuredLowerMount;
+    m_strutLowerOffsetLength = lowerMountOffsetLength;
+    m_strut.length = effectiveStrutLength;
 
     m_upright.lowerJoint = config.lowerArm.outerJoint;
     m_upright.strutLowerJoint = m_strut.lowerMount;
@@ -68,6 +102,8 @@ void MacPherson::Configure(const MacPhersonConfig& config) {
         config.lowerArm.outerJoint +
         config.upright.hubOffset;
     m_upright.hubOrientation = Quaternion::Identity();
+
+    return true;
 }
 
 bool MacPherson::Solve(
