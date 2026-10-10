@@ -513,3 +513,12 @@
 - **검증 상태:** 소스 변경 커밋됨. 사용자의 로컬 빌드·실행 결과 대기 중이며 아직 통과로 판정하지 않는다.
 - **남은 한계:** 현재 복원 경로는 `SolveAtTravel()`의 스트럿 길이 및 기하 구속조건 실패를 다룬다. `Configure()`의 잘못된 설정값 검증이나 차량 런타임 통합은 포함하지 않는다.
 - **검증 명령어:** `git pull --rebase origin suspension-runtime-integration`; `cmake --build build --target DriveTestMacPhersonDiagnostics`; `./build/DriveTestMacPhersonDiagnostics`.
+
+
+### MP-KIN-03 실행 결과 — 2026-10-10
+
+- **사용자 제공 실행 결과:** `DriveTestMacPhersonDiagnostics` 빌드 링크 완료. 출력에 `invalidTravelRejected=1`을 포함해 모든 진단 플래그가 `1`이었고, 마지막에 `[PASS] MacPherson travel diagnostics`가 출력됐다.
+- **판정:** NaN, 양의 무한대, 유한하지만 불가능한 스트로크 입력의 거부 및 거부 후 검사 대상 기하 상태 보존 검사가 통과했다.
+- **검증 범위:** 허브 위치, 하부 외측 조인트, 스프링 장착점 A/B, 허브 방향의 유지 여부를 확인했다. 전체 스트로크 연속성, `Configure()`의 모든 설정값 검증, 차량 런타임 통합을 입증하지는 않는다.
+- **환경 증거 한계:** 실행 출력은 사용자가 제공했다. 이 기록 갱신에서 별도 빌드나 실행을 수행하지 않았다.
+- **상태:** MP-KIN-03 검증됨(범위 한정).
