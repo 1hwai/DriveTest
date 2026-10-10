@@ -2,6 +2,7 @@
 
 #include "../Core/Math/Quaternion.h"
 #include "../Core/Math/Vec3.h"
+#include "ISuspensionGeometry.h"
 
 struct DoubleWishboneArmConfig {
     Vec3 innerPivotA;
@@ -25,7 +26,7 @@ struct DoubleWishboneConfig {
     DoubleWishboneSpringMountConfig spring;
 };
 
-class DoubleWishbone {
+class DoubleWishbone : public ISuspensionGeometry {
 public:
     DoubleWishbone();
 
@@ -35,17 +36,17 @@ public:
         const Vec3& chassisPosition,
         const Quaternion& chassisOrientation,
         float travel
-    );
+    ) override;
 
     const Vec3& GetUpperOuterJoint() const;
     const Vec3& GetLowerOuterJoint() const;
-    const Vec3& GetHubPosition() const;
-    const Quaternion& GetHubOrientation() const;
-    const Vec3& GetSpringMountA() const;
-    const Vec3& GetSpringMountB() const;
-    Vec3 GetSteeringAxisStart() const;
-    Vec3 GetSteeringAxisEnd() const;
-    bool ApplySteering(float angle);
+    const Vec3& GetHubPosition() const override;
+    const Quaternion& GetHubOrientation() const override;
+    const Vec3& GetSpringMountA() const override;
+    const Vec3& GetSpringMountB() const override;
+    Vec3 GetSteeringAxisStart() const override;
+    Vec3 GetSteeringAxisEnd() const override;
+    bool ApplySteering(float angle) override;
 
 private:
     struct ArmState {
