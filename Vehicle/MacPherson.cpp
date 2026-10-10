@@ -5,6 +5,31 @@
 
 namespace {
     constexpr float Epsilon = 0.000001f;
+    constexpr float UnitQuaternionTolerance = 0.001f;
+
+    bool IsFinite(const Vec3& value) {
+        return std::isfinite(value.x) &&
+            std::isfinite(value.y) &&
+            std::isfinite(value.z);
+    }
+
+    bool IsValidOrientation(const Quaternion& value) {
+        if (!std::isfinite(value.w) ||
+            !std::isfinite(value.x) ||
+            !std::isfinite(value.y) ||
+            !std::isfinite(value.z)) {
+            return false;
+        }
+
+        const float lengthSquared =
+            value.w * value.w +
+            value.x * value.x +
+            value.y * value.y +
+            value.z * value.z;
+
+        return std::isfinite(lengthSquared) &&
+            std::abs(lengthSquared - 1.0f) <= UnitQuaternionTolerance;
+    }
 }
 
 MacPherson::MacPherson()
@@ -61,8 +86,12 @@ bool MacPherson::SolveAtTravel(
     const Quaternion& chassisOrientation,
     float travel
 ) {
-    if (!std::isfinite(travel))
+    // Reject invalid pose inputs before any geometry state is mutated.
+    if (!IsFinite(chassisPosition) ||
+        !IsValidOrientation(chassisOrientation) ||
+        !std::isfinite(travel)) {
         return false;
+    }
 
     // Keep the last valid geometry if this solve cannot be completed.
     const LowerArmState previousLowerArm = m_lowerArm;
