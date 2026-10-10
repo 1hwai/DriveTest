@@ -32,6 +32,10 @@ namespace {
     }
 }
 
+std::unique_ptr<ISuspensionGeometry> MacPherson::Clone() const {
+    return std::make_unique<MacPherson>(*this);
+}
+
 MacPherson::MacPherson()
     : m_strutLowerOffsetLength(0.0f) {
     m_upright.hubPosition = Vec3(0.0f, 0.0f, 0.0f);
