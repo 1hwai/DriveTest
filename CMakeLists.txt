@@ -39,6 +39,7 @@ add_executable(DriveTest
 
     Vehicle/Car.cpp
     Vehicle/DoubleWishbone.cpp
+    Vehicle/MacPherson.cpp
     Vehicle/VehicleConfig.cpp
     Vehicle/VehicleConfigWatcher.cpp
     Vehicle/Powertrain.cpp
@@ -194,6 +195,7 @@ if(DRIVETEST_BUILD_VEHICLE_DIAGNOSTICS)
 
         Vehicle/Car.cpp
         Vehicle/DoubleWishbone.cpp
+        Vehicle/MacPherson.cpp
         Vehicle/VehicleConfig.cpp
         Vehicle/Powertrain.cpp
         Vehicle/Wheel.cpp
