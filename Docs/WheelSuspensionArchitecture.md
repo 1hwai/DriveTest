@@ -1334,6 +1334,35 @@ The automatic strut length remains the distance from the configured upper mount 
 
 This is the first consumer-boundary step; it does not yet make MacPherson selectable or active in `Car`. `Wheel` no longer names a concrete suspension type, but it still accepts the geometry and suspension model together, while `Car` owns concrete `DoubleWishbone` storage and performs geometry-specific travel solving. Runtime selection remains the next separate task.
 
+### Phase 7-2 — Runtime geometry selection boundary (design)
+
+**Scope:** establish the configuration and creation contract before changing the per-frame physics path. This step must not alter suspension geometry, travel limits, steering signs, tire forces, or AWD torque distribution.
+
+- [ ] Add an explicit suspension-layout choice to `VehicleConfig`, defaulting to Double Wishbone so existing vehicle configs retain their behavior.
+- [ ] Keep layout-specific geometry parameters in typed configuration records rather than exposing concrete solver types through `Car`.
+- [ ] Define one creation boundary that builds a configured `ISuspensionGeometry` for each wheel corner from the selected layout and that corner's mirrored parameters.
+- [ ] Ensure the selected geometry supports independent candidate solves during travel-range discovery; do not assume every implementation is copyable through the interface.
+- [ ] Keep spring/damper parameters in the existing `Suspension` model, separate from geometry-layout selection.
+- [ ] Preserve the current config-file behavior when the layout key is absent; reject unknown layout values with a useful validation error.
+- [ ] Only after this contract is implemented, generalize `RunningGear` storage and its travel/contact search to `ISuspensionGeometry`.
+
+**Selection contract:**
+
+```text
+VehicleConfig
+  ├─ common chassis / wheel / tire / powertrain settings
+  └─ suspension layout + layout-specific geometry settings
+                    ↓
+          geometry creation boundary
+                    ↓
+       one ISuspensionGeometry per corner
+                    ↓
+      existing travel/contact/steering flow
+```
+
+The factory/creation boundary owns concrete-type construction and configuration. `RunningGear` owns the resulting per-corner geometry objects and may call only the shared interface during runtime. Layout-specific setup belongs in the creation boundary, not in the per-frame update loop. Double Wishbone remains the default until MacPherson runtime configuration is explicitly selected and validated.
+
+
 ## 13. Non-Goals
 
 The following are not required for the first implementation:
