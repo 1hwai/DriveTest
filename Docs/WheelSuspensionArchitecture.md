@@ -1317,6 +1317,17 @@ Execution result: `invalidConfigRejected=1`; all existing MacPherson diagnostic 
 
 The automatic strut length remains the distance from the configured upper mount to the configured lower mount (`outerJoint + lowerMountOffset`). A positive value remains an explicit length. This work validates configuration inputs; it does not guarantee every travel value is geometrically reachable. The focused diagnostic reports `invalidConfigRejected=1` when non-finite and negative-length configurations are rejected without replacing the previously accepted setup.
 
+### Phase 7-1 — Suspension Geometry Consumer Interface
+
+- [x] Define the shared `ISuspensionGeometry` contract for travel solving, hub transform, spring mounts, steering axis, and steering application.
+- [x] Implement the contract in `DoubleWishbone` and `MacPherson`.
+- [x] Make `Wheel` depend on the interface instead of concrete `DoubleWishbone`.
+- [x] Add `MacPherson.cpp` to the application and vehicle-diagnostics build targets.
+- [ ] Verify compilation and regression behavior with the local build and vehicle diagnostics.
+- [ ] Replace `Car`'s concrete geometry array and setup path with selectable runtime configuration.
+
+This is the first consumer-boundary step; it does not yet make MacPherson selectable or active in `Car`. Runtime integration proceeds after the interface boundary is build-verified.
+
 ## 13. Non-Goals
 
 The following are not required for the first implementation:
