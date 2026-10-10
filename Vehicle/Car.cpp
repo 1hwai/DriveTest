@@ -399,6 +399,8 @@ void Car::UpdatePhysics(
             *m_contactProvider,
             physicsWorld,
             m_suspensions[i],
+            m_suspensionGeometry[i].GetSpringMountA(),
+            m_suspensionGeometry[i].GetSpringMountB(),
             deltaTime
         );
 
