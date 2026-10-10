@@ -584,3 +584,12 @@
 - **Verification commands:** `git pull --rebase origin suspension-runtime-integration`; `cmake --build build --target DriveTestMacPhersonDiagnostics`; `./build/DriveTestMacPhersonDiagnostics`.
 - **Verification status:** **Pending user build/run output.** The source update is committed, but this work did not build or execute the diagnostic. Do not mark the expanded pose sweep as passing until the output is inspected.
 - **Limits:** This adds combined-pose samples, not exhaustive coverage of every travel value, configuration, solver failure boundary, or assembly branch. It does not integrate MacPherson into the vehicle runtime.
+
+
+### MP-KIN-06 실행 결과 — 2026-10-10
+
+- **사용자 제공 실행 결과:** 모든 기존 진단 플래그와 `poseSweep=1`, `poseConstraints=1`이 통과했고 최종 `[PASS] MacPherson travel diagnostics`가 출력됐다. `maxHubStep=0.00539565`, `maxHorizontalDrift=0.0213085`.
+- **판정:** 이동한 차체 위치, 롤·피치 자세, 세 가지 스트로크 표본 조합에서 진단이 통과했다.
+- **해석 주의:** `maxHorizontalDrift`는 스트로크 기준 허브 위치 대비 x/z 각 좌표 편차의 최댓값이며, 수평 변위 벡터의 크기나 순수 수치 오차가 아니다. 허용 기준은 0.20m로, 이번 결과만으로 실제 차량의 기하 정확성이 입증되지는 않는다.
+- **환경 증거 한계:** 빌드·실행 결과는 사용자가 제공했다. 이 문서 갱신에서 별도 빌드나 실행을 수행하지 않았다.
+- **상태:** MP-KIN-06 검증됨(진단 범위 한정).
