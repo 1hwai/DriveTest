@@ -1295,6 +1295,15 @@ Each implementation work unit must list exact files before editing, update this 
 - [ ] Add tire/hub integration diagnostics.
 - [ ] Ensure all vehicle diagnostics pass.
 
+### MacPherson Kinematics Diagnostic — MP-KIN-09
+
+- [x] Add one bounded search for the upper feasible-travel boundary using the existing synthetic diagnostic configuration.
+- [x] Check that the final lower bracket endpoint is accepted and the upper endpoint is rejected.
+- [x] Check that rejection at the upper endpoint preserves the last valid geometry.
+- [ ] Local execution result pending.
+
+The search brackets the transition between a known accepted travel of `+0.075` and a known rejected travel of `+0.30`, using 24 bisection iterations. The bracket width must be below `0.000001`. This characterizes only this synthetic configuration and the current solver's acceptance boundary; it is not a real vehicle travel limit or proof of all singular configurations. Once this diagnostic passes, stop adding routine MacPherson kinematics tests and proceed to configuration validation / runtime integration as planned.
+
 ## 13. Non-Goals
 
 The following are not required for the first implementation:
