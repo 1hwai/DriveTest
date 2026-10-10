@@ -239,10 +239,31 @@ void RunningGear::ApplyConfig(const VehicleConfig& config) {
         }
 
         Suspension& suspension = m_suspensions[i];
-        suspension.SetRestLength(config.suspensionRestLength);
+        const float springRate =
+            i < 2 ? config.frontSpringRate : config.rearSpringRate;
+        const float configuredSpringLength =
+            (m_suspensionGeometry[i]->GetSpringMountB() -
+             m_suspensionGeometry[i]->GetSpringMountA()).Length();
+
+        // Double-wishbone uses the configured spring rest length directly.
+        // For MacPherson, the strut mounts are defined by its own kinematic
+        // geometry and are not the same length as the legacy wishbone spring
+        // mounts. Preload the spring by the static per-wheel load so the car
+        // has suspension support from its first physics step.
+        const float staticSpringDeflection =
+            springRate > 0.0f
+                ? (config.mass * 9.81f / static_cast<float>(WheelCount)) /
+                    springRate
+                : 0.0f;
+        const float restLength =
+            config.suspensionLayout == SuspensionLayout::MacPherson
+                ? configuredSpringLength + staticSpringDeflection
+                : config.suspensionRestLength;
+
+        suspension.SetRestLength(restLength);
         suspension.SetBumpTravel(config.suspensionBumpTravel);
         suspension.SetReboundTravel(config.suspensionReboundTravel);
-        suspension.SetSpringRate(i < 2 ? config.frontSpringRate : config.rearSpringRate);
+        suspension.SetSpringRate(springRate);
         suspension.SetCompressionDamperRate(i < 2 ? config.frontCompressionDamping : config.rearCompressionDamping);
         suspension.SetReboundDamperRate(i < 2 ? config.frontReboundDamping : config.rearReboundDamping);
         suspension.UpdateFromMounts(
