@@ -1311,7 +1311,9 @@ The search brackets the transition between a known accepted travel of `+0.075` a
 - [x] Reject negative strut lengths; exactly zero retains the existing automatic-length behavior.
 - [x] Reject degenerate lower-arm lengths, coincident lower-arm pivots, and a non-positive effective strut length.
 - [x] Validate before mutating configuration or geometry state; invalid configurations return `false`.
-- [ ] Local build and diagnostic execution pending.
+- [x] Local build and diagnostic execution passed (user-reported).
+
+Execution result: `invalidConfigRejected=1`; all existing MacPherson diagnostic flags remained `1`, and the program reported `[PASS] MacPherson travel diagnostics` (user-reported). The travel boundary values remain synthetic-configuration diagnostics, not real vehicle travel limits.
 
 The automatic strut length remains the distance from the configured upper mount to the configured lower mount (`outerJoint + lowerMountOffset`). A positive value remains an explicit length. This work validates configuration inputs; it does not guarantee every travel value is geometrically reachable. The focused diagnostic reports `invalidConfigRejected=1` when non-finite and negative-length configurations are rejected without replacing the previously accepted setup.
 
