@@ -392,3 +392,12 @@ These are proposed priorities only; implementation remains blocked pending revie
 - Change revisions: `12803ae27eb2f2c78cc783af18e93a7400e4a9b7` (diagnostic), `668036988150ee3fd73f0188edbbb02627151441` (solver).
 - Verification status: source changes are committed; build and execution are pending. Passing status has not yet been confirmed.
 - Limit: this change validates only the `travel` argument; it does not validate every geometry configuration value.
+
+
+### MP-KIN-02 execution result — 2026-10-10
+
+- **User-provided output:** The build linked `DriveTestMacPhersonDiagnostics`. The diagnostic output included `invalidTravelRejected=1`, all reported flags were `1`, and the final line was `[PASS] MacPherson travel diagnostics`.
+- **Assessment:** The checks rejecting NaN and positive-infinity travel inputs, while preserving the prior hub position, passed.
+- **Scope:** This is based on the supplied local build/run output. It establishes handling of non-finite `travel` input only; it does not establish validation of all configuration values, full-stroke continuity, or vehicle runtime integration.
+- **Evidence limitation:** The user supplied the execution output; no separate build or execution was performed during this documentation update.
+- **Status:** MP-KIN-02 verified (scope-limited).
