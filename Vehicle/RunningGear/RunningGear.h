@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <memory>
 
-#include "DoubleWishbone.h"
+#include "ISuspensionGeometry.h"
 #include "IWheelContactProvider.h"
 #include "Suspension.h"
 #include "Tire.h"
@@ -36,8 +36,8 @@ public:
 
     float GetAverageWheelAngularVelocity() const;
 
-    DoubleWishbone& GetSuspensionGeometry(WheelIndex index);
-    const DoubleWishbone& GetSuspensionGeometry(WheelIndex index) const;
+    ISuspensionGeometry& GetSuspensionGeometry(WheelIndex index);
+    const ISuspensionGeometry& GetSuspensionGeometry(WheelIndex index) const;
     Wheel& GetWheel(WheelIndex index);
     const Wheel& GetWheel(WheelIndex index) const;
     Suspension& GetSuspension(WheelIndex index);
@@ -54,7 +54,7 @@ private:
     float m_brakeTorque = 2500.0f;
     float m_maxSteeringAngle = 0.5f;
 
-    std::array<DoubleWishbone, WheelCount> m_suspensionGeometry;
+    std::array<std::unique_ptr<ISuspensionGeometry>, WheelCount> m_suspensionGeometry;
     std::array<float, WheelCount> m_minimumSuspensionTravel{};
     std::array<float, WheelCount> m_maximumSuspensionTravel{};
     std::array<Wheel, WheelCount> m_wheels;
