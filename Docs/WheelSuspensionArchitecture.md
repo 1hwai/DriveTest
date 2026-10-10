@@ -1363,6 +1363,80 @@ VehicleConfig
 The factory/creation boundary owns concrete-type construction and configuration. `RunningGear` owns the resulting per-corner geometry objects and may call only the shared interface during runtime. Layout-specific setup belongs in the creation boundary, not in the per-frame update loop. Double Wishbone remains the default until MacPherson runtime configuration is explicitly selected and validated.
 
 
+### Phase 7-3 — Runtime application integration and observation
+
+**Goal:** make the selected suspension geometry observable in the running DriveTest application, then verify that the geometry, wheel state, ground contact, and spring/damper state are connected through the real application update path.
+
+**Integration audit:** the current source already connects the runtime path:
+
+```text
+Assets/Vehicles/TestCar/vehicle.ini
+        ↓ VehicleConfig::Load
+Scene::Initialize → Car::ApplyConfig
+        ↓
+RunningGear creates one configured geometry per wheel
+        ↓ each physics step
+geometry solve → contact query → suspension mounts/model
+        ↓
+Wheel hub state + tire/contact state → chassis forces
+        ↓
+Scene updates the rendered wheel transforms from Wheel hub state
+```
+
+The configured vehicle currently selects `MacPherson`. This audit establishes that the call path exists in source; it does **not** establish that the application builds or behaves correctly at runtime.
+
+**This work unit's scope:**
+
+```
+Core/Debug/DebugUI.cpp
+Docs/WheelSuspensionArchitecture.md
+```
+
+**Explicitly out of scope:**
+
+```
+Vehicle/RunningGear/*
+Vehicle/Car.*
+Vehicle/VehicleConfig.*
+Assets/Vehicles/TestCar/vehicle.ini
+Physics/*
+Vehicle/RunningGear/Tire.*
+```
+
+No suspension solver, contact algorithm, tire-force model, steering behavior, or powertrain behavior should change in this work unit.
+
+**Runtime observation:** the `Suspension Runtime (7-3)` debug window displays, per wheel corner:
+
+- Contact state and contact sample count.
+- Solved hub position and the position difference between geometry and Wheel state.
+- Actual spring-mount distance alongside the Suspension model's current length.
+- Suspension compression, spring force, and wheel normal load.
+- Contact point and normal when contact exists.
+
+These values are observations, not assertions that the current transitional contact/spring coupling is physically correct. In particular, a difference between actual mount distance and model length must be investigated rather than hidden by changing thresholds.
+
+**Verification sequence:**
+
+1. Configure and build the SDL/OpenGL application and diagnostics on Linux.
+2. Run the registered CTest suite; record any disabled or separately failing diagnostic instead of describing the entire suite as passing.
+3. Launch `DriveTest` and confirm the runtime window shows finite values for all four corners.
+4. On the initial flat test area, compare left/right hub positions, contact states, spring-mount lengths, compression, and loads. Investigate unexplained asymmetry or non-finite values.
+5. Enter chase-camera driving mode and check that front hub orientation responds to steering and rendered wheels continue to follow the solved hub state.
+6. Record any runtime discrepancy before changing physics code. Fix only the demonstrated defect and repeat the relevant checks.
+
+**Completion checklist:**
+
+- [x] Audit the source path from vehicle configuration through geometry selection and rendered wheel transforms.
+- [x] Add per-corner runtime telemetry to the application debug UI.
+- [ ] Build the application and diagnostics after the telemetry change.
+- [ ] Run the registered CTest suite and report disabled/failing diagnostics accurately.
+- [ ] Launch the application and inspect all four corners on the initial flat test area.
+- [ ] Verify wheel visuals follow the solved hub state during steering.
+- [ ] Record observed mismatches and only then decide whether a physics correction is required.
+
+**Current status:** source integration and telemetry UI are present. Build, automated-test, and interactive runtime verification remain pending; Phase 7-3 is not complete until those checks have evidence.
+
+
 ## 13. Non-Goals
 
 The following are not required for the first implementation:
