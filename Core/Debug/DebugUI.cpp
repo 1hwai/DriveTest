@@ -10,6 +10,10 @@
 #include "../../Physics/Collider.h"
 #include "../../Physics/Material.h"
 #include "../../World/Scene.h"
+#include "../../Vehicle/RunningGear/Wheel.h"
+#include "../../Vehicle/RunningGear/Tire.h"
+#include "../../Vehicle/Powertrain/Engine.h"
+#include "../../Vehicle/Powertrain/Transmission.h"
 #include "../../World/SceneSerializer.h"
 
 #include <imgui.h>

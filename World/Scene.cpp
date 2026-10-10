@@ -2,6 +2,9 @@
 #include "TestTrack.h"
 #include "StageSerializer.h"
 #include "../Physics/Terrain.h"
+#include "../Vehicle/RunningGear/Wheel.h"
+#include "../Vehicle/Powertrain/Engine.h"
+#include "../Vehicle/Powertrain/Transmission.h"
 
 #include "../Core/Debug/Logger.h"
 

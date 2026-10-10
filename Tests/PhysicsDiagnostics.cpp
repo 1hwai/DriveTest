@@ -12,6 +12,9 @@
 #include "../Physics/RigidBody.h"
 #include "../Physics/Terrain.h"
 #include "../Vehicle/Car.h"
+#include "../Vehicle/RunningGear/Wheel.h"
+#include "../Vehicle/RunningGear/Suspension.h"
+#include "../Vehicle/RunningGear/Tire.h"
 #include "../Vehicle/VehicleConfig.h"
 
 namespace {

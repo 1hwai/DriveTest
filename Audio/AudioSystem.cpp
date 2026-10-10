@@ -6,6 +6,9 @@
 
 #include "../Core/Debug/Logger.h"
 #include "../Vehicle/Car.h"
+#include "../Vehicle/RunningGear/Wheel.h"
+#include "../Vehicle/RunningGear/Tire.h"
+#include "../Vehicle/Powertrain/Engine.h"
 
 #include <algorithm>
 #include <array>
