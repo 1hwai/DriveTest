@@ -433,3 +433,12 @@ These are proposed priorities only; implementation remains blocked pending revie
 - **Verification status:** Source change committed; awaiting the user's local build/run output.
 - **Limit:** 31 samples provide a continuity metric over the specified `[-0.075, +0.075]` range, not a mathematical proof for every intermediate state or exhaustive exploration of solver-failure boundaries.
 - **Verification commands:** `git pull --rebase origin suspension-runtime-integration`; `cmake --build build --target DriveTestMacPhersonDiagnostics`; `./build/DriveTestMacPhersonDiagnostics`.
+
+
+### MP-KIN-04 execution result — 2026-10-10
+
+- **User-provided output:** The `DriveTestMacPhersonDiagnostics` output showed all diagnostic flags as `1`, with `maxHubStep=0.00539565`, `maxHorizontalDrift=0.0213085`, and the final line `[PASS] MacPherson travel diagnostics`.
+- **Assessment:** The tightened travel-continuity threshold (`maxHubStep < 0.01`) passed. The observed maximum adjacent hub step was approximately `0.00540`.
+- **Scope:** 31 samples over the specified `[-0.075, +0.075]` travel interval. This does not guarantee continuity at every intermediate state or across other vehicle configurations.
+- **Evidence limitation:** The user supplied the execution output; no separate build or execution was performed during this documentation update.
+- **Status:** MP-KIN-04 verified (scope-limited).
