@@ -1,0 +1,621 @@
+#include "RunningGear.h"
+
+#include "RaycastWheelContactProvider.h"
+#include "../VehicleConfig.h"
+#include "../VehicleCoordinates.h"
+#include "../../Physics/PhysicsWorld.h"
+#include "../../Physics/RigidBody.h"
+#include "../../Core/Debug/Logger.h"
+
+#include <algorithm>
+#include <cmath>
+#include <iomanip>
+#include <sstream>
+#include <utility>
+
+namespace {
+    size_t ToIndex(WheelIndex index) {
+        return static_cast<size_t>(index);
+    }
+
+    struct AckermannAngles {
+        float left;
+        float right;
+    };
+
+    AckermannAngles CalculateAckermannAngles(
+        float steeringAngle,
+        const std::array<Wheel, WheelCount>& wheels
+    ) {
+        const Vec3& frontLeft = wheels[ToIndex(WheelIndex::FrontLeft)].GetLocalPosition();
+        const Vec3& frontRight = wheels[ToIndex(WheelIndex::FrontRight)].GetLocalPosition();
+        const Vec3& rearLeft = wheels[ToIndex(WheelIndex::RearLeft)].GetLocalPosition();
+        const Vec3& rearRight = wheels[ToIndex(WheelIndex::RearRight)].GetLocalPosition();
+
+        const float wheelbase =
+            0.5f * (
+                (frontLeft.z - rearLeft.z) +
+                (frontRight.z - rearRight.z)
+            );
+        const float trackWidth =
+            0.5f * (
+                (frontLeft.x - frontRight.x) +
+                (rearLeft.x - rearRight.x)
+            );
+
+        if (std::abs(steeringAngle) < 0.000001f ||
+            wheelbase <= 0.000001f ||
+            trackWidth <= 0.000001f) {
+            return { 0.0f, 0.0f };
+        }
+
+        const float centerAngle = std::abs(steeringAngle);
+        const float radius = wheelbase / std::tan(centerAngle);
+        const float innerRadius =
+            std::max(0.000001f, radius - 0.5f * trackWidth);
+        const float outerRadius =
+            radius + 0.5f * trackWidth;
+        const float innerMagnitude =
+            std::atan(wheelbase / innerRadius);
+        const float outerMagnitude =
+            std::atan(wheelbase / outerRadius);
+
+        const bool turningRight = steeringAngle < 0.0f;
+        const float direction =
+            turningRight ? 1.0f : -1.0f;
+
+        // DoubleWishbone's solved steering axis points from the upper
+        // outer joint to the lower outer joint. With the current geometry
+        // that axis points toward -Y, so positive geometry rotation is
+        // a right turn for both front wheels.
+        return {
+            direction * (
+                turningRight
+                    ? outerMagnitude
+                    : innerMagnitude
+            ),
+            direction * (
+                turningRight
+                    ? innerMagnitude
+                    : outerMagnitude
+            )
+        };
+    }
+}
+
+RunningGear::RunningGear()
+    : RunningGear(CreateDefaultWheelContactProvider()) {}
+
+RunningGear::RunningGear(std::unique_ptr<IWheelContactProvider> contactProvider)
+    : m_contactProvider(
+        contactProvider
+            ? std::move(contactProvider)
+            : CreateDefaultWheelContactProvider()
+    ) {}
+
+void RunningGear::SetChassis(RigidBody* chassis) {
+    m_chassis = chassis;
+}
+
+RigidBody* RunningGear::GetChassis() {
+    return m_chassis;
+}
+
+const RigidBody* RunningGear::GetChassis() const {
+    return m_chassis;
+}
+
+void RunningGear::ApplyConfig(const VehicleConfig& config) {
+    m_brakeTorque = config.brakeTorque;
+    m_maxSteeringAngle = config.maxSteeringAngle;
+
+    for (size_t i = 0; i < WheelCount; ++i) {
+        m_wheels[i].SetLocalPosition(config.wheelPositions[i]);
+        m_wheels[i].SetRadius(config.wheelRadius);
+        m_wheels[i].SetInertia(config.wheelInertia);
+
+        const float side =
+            config.wheelPositions[i].x >= 0.0f
+                ? 1.0f
+                : -1.0f;
+        const float wheelZ =
+            config.wheelPositions[i].z;
+
+        DoubleWishboneConfig geometry{
+            Vec3(
+                side * config.upperArmInnerX,
+                config.upperArmInnerY,
+                wheelZ - config.upperArmInnerZ
+            ),
+            Vec3(
+                side * config.upperArmInnerX,
+                config.upperArmInnerY,
+                wheelZ + config.upperArmInnerZ
+            ),
+            Vec3(
+                side * config.upperArmOuterX,
+                config.upperArmOuterY,
+                wheelZ
+            ),
+            Vec3(
+                side * config.lowerArmInnerX,
+                config.lowerArmInnerY,
+                wheelZ - config.lowerArmInnerZ
+            ),
+            Vec3(
+                side * config.lowerArmInnerX,
+                config.lowerArmInnerY,
+                wheelZ + config.lowerArmInnerZ
+            ),
+            Vec3(
+                side * config.lowerArmOuterX,
+                config.lowerArmOuterY,
+                wheelZ
+            ),
+            Vec3(
+                0.0f,
+                config.hubOffsetY,
+                0.0f
+            ),
+            {
+                Vec3(
+                    side * config.springChassisMountX,
+                    config.springChassisMountY,
+                    wheelZ + config.springChassisMountZ
+                ),
+                Vec3(
+                    side * config.springUprightMountOffsetX,
+                    config.springUprightMountOffsetY,
+                    config.springUprightMountOffsetZ
+                )
+            }
+        };
+
+        m_suspensionGeometry[i].Configure(geometry);
+        const Vec3 chassisPosition =
+            m_chassis ? m_chassis->GetPosition() : Vec3();
+        const Quaternion chassisOrientation =
+            m_chassis ? m_chassis->GetOrientation() : Quaternion::Identity();
+        m_suspensionGeometry[i].Solve(chassisPosition, chassisOrientation);
+
+        m_minimumSuspensionTravel[i] = 0.0f;
+        m_maximumSuspensionTravel[i] = 0.0f;
+        for (int sample = 1; sample <= 24; ++sample) {
+            const float travel = -config.suspensionReboundTravel *
+                static_cast<float>(sample) / 24.0f;
+            DoubleWishbone candidate = m_suspensionGeometry[i];
+            if (!candidate.SolveAtTravel(chassisPosition, chassisOrientation, travel))
+                break;
+            m_minimumSuspensionTravel[i] = travel;
+        }
+        for (int sample = 1; sample <= 24; ++sample) {
+            const float travel = config.suspensionBumpTravel *
+                static_cast<float>(sample) / 24.0f;
+            DoubleWishbone candidate = m_suspensionGeometry[i];
+            if (!candidate.SolveAtTravel(chassisPosition, chassisOrientation, travel))
+                break;
+            m_maximumSuspensionTravel[i] = travel;
+        }
+
+        Suspension& suspension = m_suspensions[i];
+        suspension.SetRestLength(config.suspensionRestLength);
+        suspension.SetBumpTravel(config.suspensionBumpTravel);
+        suspension.SetReboundTravel(config.suspensionReboundTravel);
+        suspension.SetSpringRate(i < 2 ? config.frontSpringRate : config.rearSpringRate);
+        suspension.SetCompressionDamperRate(i < 2 ? config.frontCompressionDamping : config.rearCompressionDamping);
+        suspension.SetReboundDamperRate(i < 2 ? config.frontReboundDamping : config.rearReboundDamping);
+        suspension.UpdateFromMounts(
+            m_suspensionGeometry[i].GetSpringMountA(),
+            m_suspensionGeometry[i].GetSpringMountB(),
+            0.0f
+        );
+
+        m_tires[i].SetStaticFriction(config.staticFriction);
+        m_tires[i].SetDynamicFriction(config.dynamicFriction);
+        m_tires[i].SetLongitudinalStiffness(config.longitudinalStiffness);
+        m_tires[i].SetLateralStiffness(config.lateralStiffness);
+        m_tires[i].SetRollingResistance(config.rollingResistance);
+    }
+}
+
+float RunningGear::GetAverageWheelAngularVelocity() const {
+    return 0.25f * (
+        m_wheels[ToIndex(WheelIndex::FrontLeft)].GetAngularVelocity() +
+        m_wheels[ToIndex(WheelIndex::FrontRight)].GetAngularVelocity() +
+        m_wheels[ToIndex(WheelIndex::RearLeft)].GetAngularVelocity() +
+        m_wheels[ToIndex(WheelIndex::RearRight)].GetAngularVelocity()
+    );
+}
+
+void RunningGear::UpdatePhysics(
+    PhysicsWorld& physicsWorld,
+    float steeringInput,
+    float brakeInput,
+    float leftDriveTorque,
+    float rightDriveTorque,
+    float deltaTime
+) {
+    if (!m_chassis)
+        return;
+
+    // Coordinate convention: vehicle forward = +Z, right = -X, up = +Y.
+    // Wheel steering preserves the existing input/angle sign convention.
+    const Vec3 velocity = m_chassis->GetLinearVelocity();
+    const float horizontalSpeed = std::sqrt(
+        velocity.x * velocity.x +
+        velocity.z * velocity.z
+    );
+    const float steeringScale =
+        1.0f / (1.0f + 0.25f * horizontalSpeed);
+    const float steeringAngle =
+        steeringInput * m_maxSteeringAngle * steeringScale;
+    m_wheels[ToIndex(WheelIndex::FrontLeft)].SetSteeringAngle(
+        steeringAngle
+    );
+    m_wheels[ToIndex(WheelIndex::FrontRight)].SetSteeringAngle(
+        steeringAngle
+    );
+
+    // AWD center differential: split the available torque evenly
+    // between the front and rear axles, then between left and right wheels.
+    m_wheels[ToIndex(WheelIndex::FrontLeft)].SetDriveTorque(
+        leftDriveTorque * 0.5f
+    );
+    m_wheels[ToIndex(WheelIndex::FrontRight)].SetDriveTorque(
+        rightDriveTorque * 0.5f
+    );
+    m_wheels[ToIndex(WheelIndex::RearLeft)].SetDriveTorque(
+        leftDriveTorque * 0.5f
+    );
+    m_wheels[ToIndex(WheelIndex::RearRight)].SetDriveTorque(
+        rightDriveTorque * 0.5f
+    );
+
+    for (size_t i = 0; i < WheelCount; ++i) {
+        const Vec3 chassisPosition = m_chassis->GetPosition();
+        const Quaternion chassisOrientation = m_chassis->GetOrientation();
+        const Quaternion inverseChassisOrientation =
+            chassisOrientation.Conjugate().Normalized();
+        const DoubleWishbone baseGeometry = m_suspensionGeometry[i];
+
+        DoubleWishbone solvedGeometry = baseGeometry;
+        solvedGeometry.SolveAtTravel(chassisPosition, chassisOrientation, 0.0f);
+
+        WheelContactInput contactInput{
+            solvedGeometry.GetHubPosition(),
+            solvedGeometry.GetHubOrientation(),
+            m_wheels[i].GetRadius(),
+            m_suspensions[i].GetRestLength() +
+                m_suspensions[i].GetReboundTravel() +
+                m_wheels[i].GetRadius()
+        };
+        const WheelContactResult contact = m_contactProvider->Query(
+            contactInput, physicsWorld, m_chassis
+        );
+
+        const float feasibleLow = m_minimumSuspensionTravel[i];
+        const float feasibleHigh = m_maximumSuspensionTravel[i];
+        DoubleWishbone lowGeometry = baseGeometry;
+        DoubleWishbone highGeometry = baseGeometry;
+        if (!lowGeometry.SolveAtTravel(
+                chassisPosition, chassisOrientation, feasibleLow))
+            lowGeometry = solvedGeometry;
+        if (!highGeometry.SolveAtTravel(
+                chassisPosition, chassisOrientation, feasibleHigh))
+            highGeometry = solvedGeometry;
+
+        if (contact.HasContact()) {
+            const WheelContactSample& sample = contact.samples.front();
+            const Vec3 targetHubPosition =
+                sample.point + sample.normal * m_wheels[i].GetRadius();
+            const Vec3 targetLocalPosition =
+                inverseChassisOrientation * (targetHubPosition - chassisPosition);
+            const float lowY = (inverseChassisOrientation *
+                (lowGeometry.GetHubPosition() - chassisPosition)).y;
+            const float highY = (inverseChassisOrientation *
+                (highGeometry.GetHubPosition() - chassisPosition)).y;
+
+            if (targetLocalPosition.y <= lowY) {
+                solvedGeometry = lowGeometry;
+            } else if (targetLocalPosition.y >= highY) {
+                solvedGeometry = highGeometry;
+            } else {
+                float low = feasibleLow;
+                float high = feasibleHigh;
+                for (int iteration = 0; iteration < 20; ++iteration) {
+                    const float mid = 0.5f * (low + high);
+                    DoubleWishbone candidate = baseGeometry;
+                    if (!candidate.SolveAtTravel(chassisPosition, chassisOrientation, mid))
+                        break;
+                    const Vec3 candidateLocalPosition =
+                        inverseChassisOrientation *
+                        (candidate.GetHubPosition() - chassisPosition);
+                    solvedGeometry = candidate;
+                    if (candidateLocalPosition.y < targetLocalPosition.y)
+                        low = mid;
+                    else
+                        high = mid;
+                }
+            }
+        } else {
+            solvedGeometry = lowGeometry;
+        }
+
+        if (i < 2) {
+            const AckermannAngles angles =
+                CalculateAckermannAngles(m_wheels[i].GetSteeringAngle(), m_wheels);
+            const float geometrySteeringAngle =
+                i == static_cast<size_t>(WheelIndex::FrontLeft)
+                    ? angles.left : angles.right;
+            solvedGeometry.ApplySteering(geometrySteeringAngle);
+        }
+
+        m_suspensionGeometry[i] = solvedGeometry;
+        m_wheels[i].SetHubState(
+            m_suspensionGeometry[i].GetHubPosition(),
+            m_suspensionGeometry[i].GetHubOrientation()
+        );
+        m_wheels[i].SetBrakeTorque(brakeInput * m_brakeTorque);
+    }
+
+    for (size_t i = 0; i < WheelCount; ++i) {
+        m_suspensions[i].UpdateFromMounts(
+            m_suspensionGeometry[i].GetSpringMountA(),
+            m_suspensionGeometry[i].GetSpringMountB(),
+            deltaTime
+        );
+
+        m_wheels[i].Update(
+            i,
+            *m_chassis,
+            *m_contactProvider,
+            physicsWorld,
+            m_suspensions[i],
+            m_suspensionGeometry[i].GetSpringMountA(),
+            m_suspensionGeometry[i].GetSpringMountB(),
+            deltaTime
+        );
+
+        const TireState tireState =
+            m_tires[i].CalculateState(
+                *m_chassis,
+                m_wheels[i]
+            );
+
+        const Vec3 tireForce =
+            m_tires[i].CalculateForce(
+                tireState
+            );
+
+        if (tireForce.LengthSquared() > 0.0f) {
+            m_chassis->AddForceAtPoint(
+                tireForce,
+                m_wheels[i].GetContactPoint()
+            );
+
+            m_wheels[i].ApplyTireForce(
+                *m_chassis,
+                tireForce
+            );
+        }
+
+        m_wheels[i].IntegrateRotation(
+            deltaTime
+        );
+    }
+
+    m_energyTimer += deltaTime;
+    m_brakeTimer += deltaTime;
+    m_tireTimer += deltaTime;
+
+    if (m_tireTimer >= 0.1f) {
+        const char* names[WheelCount] = {
+            "FL", "FR", "RL", "RR"
+        };
+
+        for (size_t i = 0; i < WheelCount; ++i) {
+            const Wheel& wheel = m_wheels[i];
+            const Tire& tire = m_tires[i];
+            const Vec3& localPosition = wheel.GetLocalPosition();
+            const Vec3 origin =
+                m_chassis->GetPosition() +
+                m_chassis->GetOrientation() * localPosition;
+            const Vec3 suspensionAxis(0.0f, -1.0f, 0.0f);
+            const Vec3 wheelPosition = wheel.GetWorldPosition();
+            const Vec3 mountToWheel = wheelPosition - origin;
+            const Vec3 expectedMountToWheel =
+                suspensionAxis * wheel.GetSuspensionLength();
+            const Vec3 positionError =
+                mountToWheel - expectedMountToWheel;
+
+            std::ostringstream log;
+            log << std::fixed << std::setprecision(3)
+                << "[W] i=" << i
+                << " w=" << names[i]
+                << " si=" << i
+                << " lp=(" << localPosition.x << "," << localPosition.y << "," << localPosition.z << ")"
+                << " o=(" << origin.x << "," << origin.y << "," << origin.z << ")"
+                << " wp=(" << wheelPosition.x << "," << wheelPosition.y << "," << wheelPosition.z << ")"
+                << " mw=(" << mountToWheel.x << "," << mountToWheel.y << "," << mountToWheel.z << ")"
+                << " pe2=(" << positionError.x << "," << positionError.y << "," << positionError.z << ")"
+                << " grounded=" << wheel.IsGrounded()
+                << " contactSamples=" << wheel.GetContactResult().samples.size()
+                << " contactDistance=" << wheel.GetLastContactDistance()
+                << " sl=" << wheel.GetSuspensionLength()
+                << " c=" << wheel.GetCompression()
+                << " cv=" << wheel.GetCompressionVelocity()
+                << " sf=" << wheel.GetSpringForce()
+                << " df=" << wheel.GetDamperForce()
+                << " af=" << wheel.GetForce()
+                << " Fz=" << tire.GetNormalLoad()
+                << " Fx=" << tire.GetLongitudinalForce()
+                << " Fy=" << tire.GetLateralForce()
+                << " k=" << tire.GetSlipRatio()
+                << " a=" << tire.GetSlipAngle();
+
+            if (wheel.IsGrounded()) {
+                const Vec3& point = wheel.GetContactPoint();
+                const Vec3& normal = wheel.GetContactNormal();
+                log << " p=(" << point.x << "," << point.y << "," << point.z << ")"
+                    << " n=(" << normal.x << "," << normal.y << "," << normal.z << ")";
+            }
+
+            Logger::Debug(log.str());
+        }
+
+        const Vec3 angularVelocity = m_chassis->GetAngularVelocity();
+        const float leftLoad =
+            m_tires[ToIndex(WheelIndex::FrontLeft)].GetNormalLoad() +
+            m_tires[ToIndex(WheelIndex::RearLeft)].GetNormalLoad();
+        const float rightLoad =
+            m_tires[ToIndex(WheelIndex::FrontRight)].GetNormalLoad() +
+            m_tires[ToIndex(WheelIndex::RearRight)].GetNormalLoad();
+
+        std::ostringstream corneringLog;
+        corneringLog << std::fixed << std::setprecision(3)
+            << "[Cornering]"
+            << " steerInput=" << steeringInput
+            << " frontSteerAngle=" << m_wheels[ToIndex(WheelIndex::FrontLeft)].GetSteeringAngle()
+            << " yawRateY=" << angularVelocity.y
+            << " rollRateZ=" << angularVelocity.z
+            << " leftLoad=" << leftLoad
+            << " rightLoad=" << rightLoad
+            << " leftMinusRight=" << leftLoad - rightLoad;
+        Logger::Debug(corneringLog.str());
+
+        m_tireTimer = 0.0f;
+    }
+
+    if (m_energyTimer >= 0.5f) {
+        const float mass =
+            m_chassis->GetMass();
+
+        const float height =
+            m_chassis->GetPosition().y;
+
+        const Vec3 position =
+            m_chassis->GetPosition();
+
+        const Vec3 velocity =
+            m_chassis->GetLinearVelocity();
+
+        const Vec3 angularVelocity =
+            m_chassis->GetAngularVelocity();
+
+        const Mat3 rotation =
+            m_chassis->GetOrientation().ToMat3();
+
+        const Mat3 inertiaWorld =
+            rotation *
+            m_chassis->GetInertiaTensor() *
+            rotation.Transposed();
+
+        const float potentialEnergy =
+            mass *
+            std::abs(physicsWorld.GetGravity().y) *
+            height;
+
+        const float linearEnergy =
+            0.5f *
+            mass *
+            velocity.LengthSquared();
+
+        const float angularEnergy =
+            0.5f *
+            angularVelocity.Dot(
+                inertiaWorld *
+                angularVelocity
+            );
+
+        float wheelEnergy = 0.0f;
+        float suspensionEnergy = 0.0f;
+        float suspensionPower = 0.0f;
+        float suspensionResidual = 0.0f;
+
+        for (size_t i = 0; i < WheelCount; ++i) {
+            const float wheelVelocity =
+                m_wheels[i].GetAngularVelocity();
+
+            wheelEnergy +=
+                0.5f *
+                m_wheels[i].GetInertia() *
+                wheelVelocity *
+                wheelVelocity;
+
+            const float compression =
+                m_wheels[i].GetCompression();
+
+            suspensionEnergy +=
+                0.5f *
+                m_suspensions[i].GetSpringRate() *
+                compression *
+                compression;
+
+            suspensionPower +=
+                m_wheels[i].GetSuspensionPower();
+
+            suspensionResidual +=
+                m_wheels[i].GetSuspensionResidual();
+        }
+
+        const float totalEnergy =
+            potentialEnergy +
+            linearEnergy +
+            angularEnergy +
+            wheelEnergy +
+            suspensionEnergy;
+
+        std::ostringstream log;
+        log << std::fixed << std::setprecision(3)
+            << "[Energy] x=" << position.x
+            << " y=" << position.y
+            << " z=" << position.z
+            << " vx=" << velocity.x
+            << " vy=" << velocity.y
+            << " vz=" << velocity.z
+            << " total=" << totalEnergy
+            << " potential=" << potentialEnergy
+            << " linear=" << linearEnergy
+            << " angular=" << angularEnergy
+            << " wheels=" << wheelEnergy
+            << " suspension=" << suspensionEnergy
+            << " suspensionPower=" << suspensionPower
+            << " suspensionResidual=" << suspensionResidual;
+
+        Logger::Debug(log.str());
+
+        m_energyTimer = 0.0f;
+    }
+}
+
+DoubleWishbone& RunningGear::GetSuspensionGeometry(WheelIndex index) {
+    return m_suspensionGeometry[ToIndex(index)];
+}
+
+const DoubleWishbone& RunningGear::GetSuspensionGeometry(WheelIndex index) const {
+    return m_suspensionGeometry[ToIndex(index)];
+}
+
+Wheel& RunningGear::GetWheel(WheelIndex index) {
+    return m_wheels[ToIndex(index)];
+}
+
+const Wheel& RunningGear::GetWheel(WheelIndex index) const {
+    return m_wheels[ToIndex(index)];
+}
+
+Suspension& RunningGear::GetSuspension(WheelIndex index) {
+    return m_suspensions[ToIndex(index)];
+}
+
+const Suspension& RunningGear::GetSuspension(WheelIndex index) const {
+    return m_suspensions[ToIndex(index)];
+}
+
+Tire& RunningGear::GetTire(WheelIndex index) {
+    return m_tires[ToIndex(index)];
+}
+
+const Tire& RunningGear::GetTire(WheelIndex index) const {
+    return m_tires[ToIndex(index)];
+}

@@ -38,6 +38,8 @@ add_executable(DriveTest
     Physics/Material.cpp
 
     Vehicle/Car.cpp
+
+    Vehicle/RunningGear/RunningGear.cpp
     Vehicle/RunningGear/DoubleWishbone.cpp
     Vehicle/RunningGear/MacPherson.cpp
     Vehicle/VehicleConfig.cpp
@@ -134,6 +136,8 @@ if(DRIVETEST_BUILD_PHYSICS_DIAGNOSTICS)
         Physics/Material.cpp
 
         Vehicle/Car.cpp
+
+        Vehicle/RunningGear/RunningGear.cpp
         Vehicle/RunningGear/DoubleWishbone.cpp
         Vehicle/Powertrain/Powertrain.cpp
         Vehicle/RunningGear/Wheel.cpp
@@ -194,6 +198,8 @@ if(DRIVETEST_BUILD_VEHICLE_DIAGNOSTICS)
         Physics/Material.cpp
 
         Vehicle/Car.cpp
+
+        Vehicle/RunningGear/RunningGear.cpp
         Vehicle/RunningGear/DoubleWishbone.cpp
         Vehicle/RunningGear/MacPherson.cpp
         Vehicle/VehicleConfig.cpp
