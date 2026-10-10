@@ -29,6 +29,7 @@ struct DoubleWishboneConfig {
 class DoubleWishbone : public ISuspensionGeometry {
 public:
     DoubleWishbone();
+    std::unique_ptr<ISuspensionGeometry> Clone() const override;
 
     void Configure(const DoubleWishboneConfig& config);
     void Solve(const Vec3& chassisPosition, const Quaternion& chassisOrientation);
