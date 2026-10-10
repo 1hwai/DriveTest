@@ -6,6 +6,10 @@ namespace {
     constexpr float Epsilon = 0.000001f;
 }
 
+std::unique_ptr<ISuspensionGeometry> DoubleWishbone::Clone() const {
+    return std::make_unique<DoubleWishbone>(*this);
+}
+
 DoubleWishbone::DoubleWishbone()
     : m_uprightJointDistance(0.0f),
     m_restOuterAverageY(0.0f) {
