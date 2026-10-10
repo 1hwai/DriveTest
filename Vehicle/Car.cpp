@@ -2,7 +2,7 @@
 
 #include "RunningGear/RunningGear.h"
 #include "RunningGear/IWheelContactProvider.h"
-#include "RunningGear/DoubleWishbone.h"
+#include "RunningGear/ISuspensionGeometry.h"
 #include "RunningGear/Wheel.h"
 #include "RunningGear/Suspension.h"
 #include "RunningGear/Tire.h"
@@ -72,10 +72,10 @@ void Car::UpdatePhysics(PhysicsWorld& physicsWorld, float deltaTime) {
     );
 }
 
-DoubleWishbone& Car::GetSuspensionGeometry(WheelIndex index) {
+ISuspensionGeometry& Car::GetSuspensionGeometry(WheelIndex index) {
     return m_runningGear->GetSuspensionGeometry(index);
 }
-const DoubleWishbone& Car::GetSuspensionGeometry(WheelIndex index) const {
+const ISuspensionGeometry& Car::GetSuspensionGeometry(WheelIndex index) const {
     return m_runningGear->GetSuspensionGeometry(index);
 }
 Wheel& Car::GetWheel(WheelIndex index) { return m_runningGear->GetWheel(index); }
