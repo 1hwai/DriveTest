@@ -470,3 +470,16 @@ These are proposed priorities only; implementation remains blocked pending revie
 - **Scope:** Limited to the invalid input cases explicitly included in the diagnostic. This does not validate every `Configure()` value or vehicle runtime integration.
 - **Evidence limitation:** The user supplied the execution output; no separate build or execution was performed during this documentation update.
 - **Status:** MP-KIN-05 verified (scope-limited).
+
+
+## 2026-10-10 — MP-KIN-06: test constraints across translated chassis poses and nonzero travel
+
+- **Problem / evidence:** The existing pose sweep checked roll/pitch only at zero travel and zero chassis position. The separate travel sweep covered `[-0.075, +0.075]` only with identity chassis orientation. Combined nonzero chassis translation, rotation, and suspension travel were therefore not covered.
+- **Agreed scope:** Extend `Tests/MacPhersonDiagnostics.cpp` only. Leave the solver, configuration, Double Wishbone, spring-force model, and runtime integration unchanged.
+- **Change:** The pose sweep now uses a nonzero chassis position `(3, -2, 4)`, the existing roll/pitch grid, and travel samples `-0.05, 0, +0.05`. For each successful left/right solve, it checks both lower-arm link lengths, expected strut length (`configured length - travel`), lower-mount and hub offsets, finite/unit hub orientation, and mirrored left/right hub positions in chassis-local space.
+- **Expected result:** Every sampled combination solves and satisfies the geometric invariants within diagnostic tolerance.
+- **Allowed / changed files:** `Tests/MacPhersonDiagnostics.cpp` only.
+- **Change revision:** `ffb1692e7e2d2822dbf21e32b20ae1a744c1076a`.
+- **Verification commands:** `git pull --rebase origin suspension-runtime-integration`; `cmake --build build --target DriveTestMacPhersonDiagnostics`; `./build/DriveTestMacPhersonDiagnostics`.
+- **Verification status:** **Pending user build/run output.** The source update is committed, but the diagnostic was not built or executed during this work. Do not mark the expanded pose sweep as passing until its output is inspected.
+- **Limits:** This adds combined-pose samples; it is not exhaustive coverage of every travel value, configuration, solver failure boundary, or assembly branch. It does not integrate MacPherson into vehicle runtime.
