@@ -492,3 +492,15 @@ These are proposed priorities only; implementation remains blocked pending revie
 - **Interpretation note:** `maxHorizontalDrift` is the maximum absolute x/z coordinate deviation from the reference hub position over the travel sweep; it is neither the magnitude of the horizontal displacement vector nor pure numerical error. Its threshold is 0.20m, and this result alone does not establish geometric accuracy against a real vehicle.
 - **Evidence limitation:** The user supplied the build/run output; no separate build or execution was performed during this documentation update.
 - **Status:** MP-KIN-06 verified (diagnostic scope only).
+
+
+## 2026-10-10 — MP-KIN-07: test geometric-constraint failure and rollback
+
+- **Observed facts:** Existing failure diagnostics covered NaN/infinite inputs and the early invalid-strut-length guard, but did not directly exercise a finite travel value with a positive target strut length for which the lower-arm/strut geometric intersection is infeasible.
+- **Evidence:** In `Vehicle/MacPherson.cpp`, `SolveAtTravel()` checks strut length before calling `SolveConstraints()`; an infeasible intersection returns `false` and restores the saved state. For the diagnostic configuration, `travel = 0.30f` was selected to keep the target length positive while placing the target outside the feasible intersection range.
+- **Interpretation:** This checks the geometric-constraint failure path and state rollback. It does not cover every singularity or every configuration.
+- **Agreed scope:** Add a regression check to `Tests/MacPhersonDiagnostics.cpp`. Do not change the solver algorithm, configuration API, Double Wishbone, or vehicle runtime.
+- **Change:** `unreachableConstraintRejected` verifies rejection and preservation of hub position, lower outer joint, spring mounts A/B, and hub orientation; failure causes the diagnostic executable to fail.
+- **Verification commands:** `git pull --rebase origin suspension-runtime-integration`; `cmake --build build --target DriveTestMacPhersonDiagnostics`; `./build/DriveTestMacPhersonDiagnostics`.
+- **Verification status:** Awaiting the user's local build/run output after commit. No build or execution was performed during this documentation update.
+- **Limits and next step:** This covers one deliberately infeasible case for the synthetic test configuration. Next, inspect assembly-branch selection between the two intersection candidates and continuity near singular configurations.
