@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <limits>
 
 #include "../Vehicle/MacPherson.h"
 
@@ -294,6 +295,24 @@ int main() {
         Near(leftSpringB.z, rightSpringB.z) &&
         (leftSpringB - leftSpringA).Length() > 0.0001f &&
         (rightSpringB - rightSpringA).Length() > 0.0001f;
+
+    const Vec3 hubBeforeInvalidTravel = left.GetHubPosition();
+    const bool nanTravelRejected =
+        !left.SolveAtTravel(
+            chassisPosition,
+            identity,
+            std::numeric_limits<float>::quiet_NaN()
+        ) &&
+        NearVec(left.GetHubPosition(), hubBeforeInvalidTravel);
+    const bool infiniteTravelRejected =
+        !left.SolveAtTravel(
+            chassisPosition,
+            identity,
+            std::numeric_limits<float>::infinity()
+        ) &&
+        NearVec(left.GetHubPosition(), hubBeforeInvalidTravel);
+    const bool invalidTravelRejected =
+        nanTravelRejected && infiniteTravelRejected;
 
     const bool finite =
         solvedLeft &&
@@ -601,6 +620,7 @@ int main() {
         << " zeroSteering=" << zeroSteering
         << " steeringRotation=" << steeringRotation
         << " finite=" << finite
+        << " invalidTravelRejected=" << invalidTravelRejected
         << " travel=" << travel
         << " endpoints=" << endpoints
         << " poseSweep=" << poseSweep
@@ -611,6 +631,7 @@ int main() {
         << '\n';
 
     if (!finite ||
+        !invalidTravelRejected ||
         !armLengths ||
         !strutConstraint ||
         !symmetry ||
