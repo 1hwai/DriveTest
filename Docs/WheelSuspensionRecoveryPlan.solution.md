@@ -421,3 +421,15 @@ These are proposed priorities only; implementation remains blocked pending revie
 - **Scope:** The diagnostic checks preservation of hub position, lower outer joint, spring mounts A/B, and hub orientation. It does not establish full-stroke continuity, validation of all `Configure()` inputs, or vehicle runtime integration.
 - **Evidence limitation:** The user supplied the execution output; no separate build or execution was performed during this documentation update.
 - **Status:** MP-KIN-03 verified (scope-limited).
+
+
+## 2026-10-10 — MP-KIN-04: increase travel-continuity sample density
+
+- **Rationale:** The existing diagnostic compared adjacent hub positions at only seven samples from `-0.075` to `+0.075`. That spacing can miss local discontinuities, so the sample density is increased within the currently tested range.
+- **Change:** The travel sweep in `Tests/MacPhersonDiagnostics.cpp` now uses 31 samples at 0.005 intervals. The horizontal-drift reference is captured from an unsteered zero-travel solve. The maximum adjacent hub-step continuity threshold is tightened to `0.01`.
+- **Allowed file:** `Tests/MacPhersonDiagnostics.cpp` only.
+- **Excluded:** Solver implementation, geometry configuration, Double Wishbone, runtime integration, and expansion of the tested travel range.
+- **Change revision:** `c4b96318a04b268ff7edc26ada693fc880739607`.
+- **Verification status:** Source change committed; awaiting the user's local build/run output.
+- **Limit:** 31 samples provide a continuity metric over the specified `[-0.075, +0.075]` range, not a mathematical proof for every intermediate state or exhaustive exploration of solver-failure boundaries.
+- **Verification commands:** `git pull --rebase origin suspension-runtime-integration`; `cmake --build build --target DriveTestMacPhersonDiagnostics`; `./build/DriveTestMacPhersonDiagnostics`.
