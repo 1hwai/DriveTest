@@ -1300,7 +1300,8 @@ Each implementation work unit must list exact files before editing, update this 
 - [x] Add one bounded search for the upper feasible-travel boundary using the existing synthetic diagnostic configuration.
 - [x] Check that the final lower bracket endpoint is accepted and the upper endpoint is rejected.
 - [x] Check that rejection at the upper endpoint preserves the last valid geometry.
-- [ ] Local execution result pending.
+- [x] Local execution passed: `travelBoundaryBracket=1`; valid endpoint `0.243311`, invalid endpoint `0.243311` (difference below displayed precision), bracket width `1.49012e-08`; failure preserved the last valid geometry. The complete MacPherson diagnostic reported `[PASS]`.
+
 
 The search brackets the transition between a known accepted travel of `+0.075` and a known rejected travel of `+0.30`, using 24 bisection iterations. The bracket width must be below `0.000001`. This characterizes only this synthetic configuration and the current solver's acceptance boundary; it is not a real vehicle travel limit or proof of all singular configurations. Once this diagnostic passes, stop adding routine MacPherson kinematics tests and proceed to configuration validation / runtime integration as planned.
 
