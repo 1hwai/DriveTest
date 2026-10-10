@@ -2,7 +2,7 @@
 #include <iostream>
 #include <algorithm>
 
-#include "../Vehicle/DoubleWishbone.h"
+#include "../Vehicle/RunningGear/DoubleWishbone.h"
 
 namespace {
     constexpr float Tolerance = 0.0001f;

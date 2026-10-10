@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Core/Math/Quaternion.h"
-#include "../Core/Math/Vec3.h"
+#include "../../Core/Math/Quaternion.h"
+#include "../../Core/Math/Vec3.h"
 
 // Consumer-facing kinematics contract shared by concrete suspension layouts.
 // Configuration remains specific to each implementation.

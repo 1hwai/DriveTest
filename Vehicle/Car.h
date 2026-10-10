@@ -4,14 +4,14 @@
 #include <cstddef>
 #include <memory>
 
-#include "Wheel.h"
-#include "IWheelContactProvider.h"
-#include "DoubleWishbone.h"
-#include "Suspension.h"
-#include "Tire.h"
-#include "Engine.h"
-#include "Transmission.h"
-#include "Powertrain.h"
+#include "RunningGear/Wheel.h"
+#include "RunningGear/IWheelContactProvider.h"
+#include "RunningGear/DoubleWishbone.h"
+#include "RunningGear/Suspension.h"
+#include "RunningGear/Tire.h"
+#include "Powertrain/Engine.h"
+#include "Powertrain/Transmission.h"
+#include "Powertrain/Powertrain.h"
 #include "VehicleConfig.h"
 
 class RigidBody;

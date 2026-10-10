@@ -1,7 +1,7 @@
 #include <cmath>
 #include <iostream>
 
-#include "../Vehicle/Suspension.h"
+#include "../Vehicle/RunningGear/Suspension.h"
 
 namespace {
 bool Near(float actual, float expected, float tolerance = 0.0001f) {

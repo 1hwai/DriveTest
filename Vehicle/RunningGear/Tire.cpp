@@ -1,9 +1,9 @@
 #include "Tire.h"
 
 #include "Wheel.h"
-#include "VehicleCoordinates.h"
-#include "../Physics/RigidBody.h"
-#include "../Core/Math/Quaternion.h"
+#include "../VehicleCoordinates.h"
+#include "../../Physics/RigidBody.h"
+#include "../../Core/Math/Quaternion.h"
 
 #include <algorithm>
 #include <cmath>

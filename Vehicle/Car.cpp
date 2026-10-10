@@ -1,6 +1,6 @@
 #include "Car.h"
 #include "VehicleCoordinates.h"
-#include "IWheelContactProvider.h"
+#include "RunningGear/IWheelContactProvider.h"
 
 #include "../Physics/PhysicsWorld.h"
 #include "../Physics/RigidBody.h"

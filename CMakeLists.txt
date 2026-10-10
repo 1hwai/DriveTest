@@ -38,18 +38,18 @@ add_executable(DriveTest
     Physics/Material.cpp
 
     Vehicle/Car.cpp
-    Vehicle/DoubleWishbone.cpp
-    Vehicle/MacPherson.cpp
+    Vehicle/RunningGear/DoubleWishbone.cpp
+    Vehicle/RunningGear/MacPherson.cpp
     Vehicle/VehicleConfig.cpp
     Vehicle/VehicleConfigWatcher.cpp
-    Vehicle/Powertrain.cpp
-    Vehicle/Wheel.cpp
-        Vehicle/RaycastWheelContactProvider.cpp
-    Vehicle/Suspension.cpp
-    Vehicle/Tire.cpp
-    Vehicle/Engine.cpp
-    Vehicle/Transmission.cpp
-    Vehicle/Differential.cpp
+    Vehicle/Powertrain/Powertrain.cpp
+    Vehicle/RunningGear/Wheel.cpp
+        Vehicle/RunningGear/RaycastWheelContactProvider.cpp
+    Vehicle/RunningGear/Suspension.cpp
+    Vehicle/RunningGear/Tire.cpp
+    Vehicle/Powertrain/Engine.cpp
+    Vehicle/Powertrain/Transmission.cpp
+    Vehicle/Powertrain/Differential.cpp
 
     Rendering/Renderer.cpp
     Rendering/Camera.cpp
@@ -134,15 +134,15 @@ if(DRIVETEST_BUILD_PHYSICS_DIAGNOSTICS)
         Physics/Material.cpp
 
         Vehicle/Car.cpp
-        Vehicle/DoubleWishbone.cpp
-        Vehicle/Powertrain.cpp
-        Vehicle/Wheel.cpp
-        Vehicle/RaycastWheelContactProvider.cpp
-        Vehicle/Suspension.cpp
-        Vehicle/Tire.cpp
-        Vehicle/Engine.cpp
-        Vehicle/Transmission.cpp
-        Vehicle/Differential.cpp
+        Vehicle/RunningGear/DoubleWishbone.cpp
+        Vehicle/Powertrain/Powertrain.cpp
+        Vehicle/RunningGear/Wheel.cpp
+        Vehicle/RunningGear/RaycastWheelContactProvider.cpp
+        Vehicle/RunningGear/Suspension.cpp
+        Vehicle/RunningGear/Tire.cpp
+        Vehicle/Powertrain/Engine.cpp
+        Vehicle/Powertrain/Transmission.cpp
+        Vehicle/Powertrain/Differential.cpp
 
         Core/Math/Vec3.cpp
         Core/Math/Mat3.cpp
@@ -194,17 +194,17 @@ if(DRIVETEST_BUILD_VEHICLE_DIAGNOSTICS)
         Physics/Material.cpp
 
         Vehicle/Car.cpp
-        Vehicle/DoubleWishbone.cpp
-        Vehicle/MacPherson.cpp
+        Vehicle/RunningGear/DoubleWishbone.cpp
+        Vehicle/RunningGear/MacPherson.cpp
         Vehicle/VehicleConfig.cpp
-        Vehicle/Powertrain.cpp
-        Vehicle/Wheel.cpp
-        Vehicle/RaycastWheelContactProvider.cpp
-        Vehicle/Suspension.cpp
-        Vehicle/Tire.cpp
-        Vehicle/Engine.cpp
-        Vehicle/Transmission.cpp
-        Vehicle/Differential.cpp
+        Vehicle/Powertrain/Powertrain.cpp
+        Vehicle/RunningGear/Wheel.cpp
+        Vehicle/RunningGear/RaycastWheelContactProvider.cpp
+        Vehicle/RunningGear/Suspension.cpp
+        Vehicle/RunningGear/Tire.cpp
+        Vehicle/Powertrain/Engine.cpp
+        Vehicle/Powertrain/Transmission.cpp
+        Vehicle/Powertrain/Differential.cpp
 
         Core/Math/Vec3.cpp
         Core/Math/Mat3.cpp
@@ -254,7 +254,7 @@ option(
 if(DRIVETEST_BUILD_MACPHERSON_DIAGNOSTICS)
     add_executable(DriveTestMacPhersonDiagnostics
         Tests/MacPhersonDiagnostics.cpp
-        Vehicle/MacPherson.cpp
+        Vehicle/RunningGear/MacPherson.cpp
         Core/Math/Vec3.cpp
         Core/Math/Mat3.cpp
         Core/Math/Quaternion.cpp
@@ -284,7 +284,7 @@ option(
 if(DRIVETEST_BUILD_SUSPENSION_DIAGNOSTICS)
     add_executable(DriveTestSuspensionDiagnostics
         Tests/SuspensionDiagnostics.cpp
-        Vehicle/Suspension.cpp
+        Vehicle/RunningGear/Suspension.cpp
         Core/Math/Vec3.cpp
     )
 
@@ -313,7 +313,7 @@ option(
 if(DRIVETEST_BUILD_DOUBLE_WISHBONE_DIAGNOSTICS)
     add_executable(DriveTestDoubleWishboneDiagnostics
         Tests/DoubleWishboneDiagnostics.cpp
-        Vehicle/DoubleWishbone.cpp
+        Vehicle/RunningGear/DoubleWishbone.cpp
         Core/Math/Vec3.cpp
         Core/Math/Mat3.cpp
         Core/Math/Quaternion.cpp

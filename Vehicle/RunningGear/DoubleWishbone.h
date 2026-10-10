@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Core/Math/Quaternion.h"
-#include "../Core/Math/Vec3.h"
+#include "../../Core/Math/Quaternion.h"
+#include "../../Core/Math/Vec3.h"
 #include "ISuspensionGeometry.h"
 
 struct DoubleWishboneArmConfig {

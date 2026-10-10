@@ -11,8 +11,8 @@
 #include "../Physics/Road.h"
 #include "../Physics/Terrain.h"
 #include "../Vehicle/Car.h"
-#include "../Vehicle/IWheelContactProvider.h"
-#include "../Vehicle/WheelContact.h"
+#include "../Vehicle/RunningGear/IWheelContactProvider.h"
+#include "../Vehicle/RunningGear/WheelContact.h"
 #include "../Vehicle/VehicleCoordinates.h"
 #include "../Vehicle/VehicleConfig.h"
 
