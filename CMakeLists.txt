@@ -139,6 +139,7 @@ if(DRIVETEST_BUILD_PHYSICS_DIAGNOSTICS)
 
         Vehicle/RunningGear/RunningGear.cpp
         Vehicle/RunningGear/DoubleWishbone.cpp
+        Vehicle/RunningGear/MacPherson.cpp
         Vehicle/Powertrain/Powertrain.cpp
         Vehicle/RunningGear/Wheel.cpp
         Vehicle/RunningGear/RaycastWheelContactProvider.cpp
