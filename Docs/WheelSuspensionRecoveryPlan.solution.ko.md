@@ -476,3 +476,11 @@
 - **상태:** 테스트 코드 변경됨 / 실행 검증 대기.
 - **리비전:** `dc4b08465b9f5ce63a183beb1f4279b6c03ff5d6`.
 - **남은 한계 / 다음 의존 작업:** 이 테스트는 기존에 선택된 유한 롤·피치 각도와 스트로크 0에서의 구속조건만 추가로 검사한다. 스트로크 전 구간의 연속성, 실패 경계, 조립 분기, 런타임 통합을 입증하지 않는다. 다음으로 이 리비전에서 진단을 빌드·실행하고 결과를 확인한다.
+
+
+### MP-KIN-01 실행 결과 — 2026-10-10
+
+- **사용자 제공 실행 결과:** `[MacPherson] solved=1 armLengths=1 strutConstraint=1 symmetry=1 hubPosition=1 steeringAxis=1 zeroSteering=1 steeringRotation=1 finite=1 travel=1 endpoints=1 poseSweep=1 poseConstraints=1 continuity=1 maxHubStep=0.0265927 maxHorizontalDrift=0.0213085`; 종료 문구 `[PASS] MacPherson travel diagnostics`.
+- **판정:** MP-KIN-01의 새 자세 스윕 길이 구속조건 검사는 통과했다. 해당 실행에서 기존 진단의 모든 출력 플래그도 1이었다.
+- **검증 범위:** 현재 진단에 포함된 유한한 롤·피치 자세 표본 및 스트로크 표본. 전체 스트로크의 연속성, 실패 경계, 모든 조립 분기 또는 차량 런타임 통합을 입증하지 않는다.
+- **환경 증거 한계:** 사용자가 제공한 터미널 출력에 근거한 결과이며, 이 기록 작업에서 별도 빌드나 실행을 수행한 것은 아니다.
