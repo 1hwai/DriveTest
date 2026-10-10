@@ -412,3 +412,12 @@ These are proposed priorities only; implementation remains blocked pending revie
 - **Verification status:** Source changes are committed. Awaiting the user's local build/run output; not yet marked as passing.
 - **Remaining limits:** The rollback covers strut-length and geometric-constraint failures in `SolveAtTravel()`. Validation of invalid values passed to `Configure()` and vehicle runtime integration are outside this work unit.
 - **Verification commands:** `git pull --rebase origin suspension-runtime-integration`; `cmake --build build --target DriveTestMacPhersonDiagnostics`; `./build/DriveTestMacPhersonDiagnostics`.
+
+
+### MP-KIN-03 execution result — 2026-10-10
+
+- **User-provided output:** `DriveTestMacPhersonDiagnostics` linked successfully. The output included `invalidTravelRejected=1`, every reported diagnostic flag was `1`, and the final line was `[PASS] MacPherson travel diagnostics`.
+- **Assessment:** Rejection of NaN, positive infinity, and finite but impossible travel values passed, as did preservation of the checked geometry state after rejection.
+- **Scope:** The diagnostic checks preservation of hub position, lower outer joint, spring mounts A/B, and hub orientation. It does not establish full-stroke continuity, validation of all `Configure()` inputs, or vehicle runtime integration.
+- **Evidence limitation:** The user supplied the execution output; no separate build or execution was performed during this documentation update.
+- **Status:** MP-KIN-03 verified (scope-limited).
