@@ -442,3 +442,11 @@ These are proposed priorities only; implementation remains blocked pending revie
 - **Scope:** 31 samples over the specified `[-0.075, +0.075]` travel interval. This does not guarantee continuity at every intermediate state or across other vehicle configurations.
 - **Evidence limitation:** The user supplied the execution output; no separate build or execution was performed during this documentation update.
 - **Status:** MP-KIN-04 verified (scope-limited).
+
+
+### MP-KIN-04 execution result — 2026-10-10
+
+- **User-provided output:** All diagnostic flags were `1`; `maxHubStep=0.00539565`, `maxHorizontalDrift=0.0213085`; final line `[PASS] MacPherson travel diagnostics`.
+- **Assessment:** The tightened `maxHubStep < 0.01` threshold passed across 31 travel samples.
+- **Limit:** Samples cover only `[-0.075, +0.075]`; they do not guarantee every intermediate state or other configurations. Output was supplied by the user; no separate execution was performed during this documentation update.
+- **Status:** MP-KIN-04 verified (scope-limited).
