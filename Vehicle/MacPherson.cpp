@@ -61,6 +61,9 @@ bool MacPherson::SolveAtTravel(
     const Quaternion& chassisOrientation,
     float travel
 ) {
+    if (!std::isfinite(travel))
+        return false;
+
     m_lowerArm.innerPivotA =
         chassisPosition +
         chassisOrientation * m_lowerArmConfig.innerPivotA;
