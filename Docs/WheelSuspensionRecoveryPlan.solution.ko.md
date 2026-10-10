@@ -534,3 +534,12 @@
 - **검증 상태:** 코드 변경 커밋됨. 사용자 로컬 빌드·실행 결과 대기 중.
 - **한계:** 31개 표본은 지정된 `[-0.075, +0.075]` 범위에서의 연속성 지표일 뿐, 모든 중간 상태에 대한 수학적 증명이나 솔버 실패 경계의 완전한 탐색이 아니다.
 - **검증 명령어:** `git pull --rebase origin suspension-runtime-integration`; `cmake --build build --target DriveTestMacPhersonDiagnostics`; `./build/DriveTestMacPhersonDiagnostics`.
+
+
+### MP-KIN-04 실행 결과 — 2026-10-10
+
+- **사용자 제공 실행 결과:** `DriveTestMacPhersonDiagnostics` 출력에서 모든 진단 플래그가 `1`이었고, `maxHubStep=0.00539565`, `maxHorizontalDrift=0.0213085`, 마지막에 `[PASS] MacPherson travel diagnostics`가 출력됐다.
+- **판정:** 강화한 스트로크 연속성 기준(`maxHubStep < 0.01`)을 통과했다. 관측된 최대 인접 허브 이동은 약 `0.00540`이다.
+- **검증 범위:** 지정된 `[-0.075, +0.075]` 스트로크 구간의 31개 표본. 표본 사이 모든 상태의 연속성이나 다른 차량 설정을 보증하지 않는다.
+- **환경 증거 한계:** 실행 출력은 사용자가 제공했다. 이 기록 갱신에서 별도 빌드나 실행을 수행하지 않았다.
+- **상태:** MP-KIN-04 검증됨(범위 한정).
