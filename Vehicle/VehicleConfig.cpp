@@ -57,6 +57,10 @@ bool VehicleConfig::Load(const std::string& path, std::string& error) {
             suspensionLayoutValue = value;
             continue;
         }
+        if (key.rfind("SuspensionLayout", 0) == 0) {
+            error = "Invalid suspension layout key on line " + std::to_string(lineNumber);
+            return false;
+        }
         if (key == "GearRatios") {
             std::stringstream stream(value);
             std::string token;
