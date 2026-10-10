@@ -3,12 +3,12 @@
 #include "../Core/Math/Quaternion.h"
 #include "../Core/Math/Vec3.h"
 #include "WheelContact.h"
+#include "ISuspensionGeometry.h"
 
 class PhysicsWorld;
 class IWheelContactProvider;
 class RigidBody;
 class Suspension;
-class DoubleWishbone;
 
 class Wheel {
 public:
@@ -41,7 +41,7 @@ public:
         const IWheelContactProvider& contactProvider,
         const PhysicsWorld& physicsWorld,
         Suspension& suspension,
-        const DoubleWishbone& geometry,
+        const ISuspensionGeometry& geometry,
         float deltaTime
     );
 
