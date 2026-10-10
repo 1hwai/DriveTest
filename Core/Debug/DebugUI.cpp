@@ -11,6 +11,9 @@
 #include "../../Physics/Material.h"
 #include "../../World/Scene.h"
 #include "../../Vehicle/RunningGear/Wheel.h"
+#include "../../Vehicle/RunningGear/WheelIndex.h"
+#include "../../Vehicle/RunningGear/ISuspensionGeometry.h"
+#include "../../Vehicle/RunningGear/Suspension.h"
 #include "../../Vehicle/RunningGear/Tire.h"
 #include "../../Vehicle/Powertrain/Engine.h"
 #include "../../Vehicle/Powertrain/Transmission.h"
@@ -1083,6 +1086,71 @@ void DebugUI::Render() {
             "Fixed Step: %.6f s",
             1.0f / 120.0f
         );
+
+        ImGui::End();
+    }
+
+    {
+        const Car& car = m_scene->GetCar();
+        constexpr const char* wheelNames[WheelCount] = {
+            "FL", "FR", "RL", "RR"
+        };
+
+        ImGui::SetNextWindowSize(
+            ImVec2(460.0f, 310.0f),
+            ImGuiCond_FirstUseEver
+        );
+        ImGui::Begin("Suspension Runtime (7-3)");
+
+        ImGui::TextUnformatted(
+            "Live values from the active vehicle physics path"
+        );
+        ImGui::Separator();
+
+        for (size_t i = 0; i < WheelCount; ++i) {
+            const WheelIndex index = static_cast<WheelIndex>(i);
+            const Wheel& wheel = car.GetWheel(index);
+            const Suspension& suspension = car.GetSuspension(index);
+            const ISuspensionGeometry& geometry =
+                car.GetSuspensionGeometry(index);
+
+            const Vec3& hub = geometry.GetHubPosition();
+            const float mountLength =
+                (geometry.GetSpringMountB() -
+                 geometry.GetSpringMountA()).Length();
+            const float hubStateError =
+                (wheel.GetWorldPosition() - hub).Length();
+
+            ImGui::Text(
+                "%s  contact=%s samples=%zu",
+                wheelNames[i],
+                wheel.IsGrounded() ? "yes" : "no",
+                wheel.GetContactResult().samples.size()
+            );
+            ImGui::Text(
+                "  hub=(%.2f, %.2f, %.2f) stateError=%.4f m",
+                hub.x, hub.y, hub.z, hubStateError
+            );
+            ImGui::Text(
+                "  spring mount/model=%.3f / %.3f m  compression=%.3f m",
+                mountLength, suspension.GetLength(),
+                suspension.GetCompression()
+            );
+            ImGui::Text(
+                "  spring force=%.1f N  wheel load=%.1f N",
+                wheel.GetSpringForce(), wheel.GetNormalLoad()
+            );
+            if (wheel.IsGrounded()) {
+                const Vec3& point = wheel.GetContactPoint();
+                const Vec3& normal = wheel.GetContactNormal();
+                ImGui::Text(
+                    "  contact=(%.2f, %.2f, %.2f) normal=(%.2f, %.2f, %.2f)",
+                    point.x, point.y, point.z,
+                    normal.x, normal.y, normal.z
+                );
+            }
+            ImGui::Separator();
+        }
 
         ImGui::End();
     }
