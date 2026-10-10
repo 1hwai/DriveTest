@@ -375,3 +375,11 @@ These are proposed priorities only; implementation remains blocked pending revie
 - **Status:** Test code changed / execution verification pending.
 - **Revision:** `dc4b08465b9f5ce63a183beb1f4279b6c03ff5d6`.
 - **Remaining limits / dependency:** The new checks cover only the existing finite set of roll/pitch angles at zero travel. They do not prove continuity over the full stroke, behavior at failure boundaries, assembly-branch uniqueness, or vehicle runtime integration. Next, build and run the diagnostic at this revision and record the result.
+
+
+### MP-KIN-01 execution result — 2026-10-10
+
+- **User-provided output:** `[MacPherson] solved=1 armLengths=1 strutConstraint=1 symmetry=1 hubPosition=1 steeringAxis=1 zeroSteering=1 steeringRotation=1 finite=1 travel=1 endpoints=1 poseSweep=1 poseConstraints=1 continuity=1 maxHubStep=0.0265927 maxHorizontalDrift=0.0213085`; final status `[PASS] MacPherson travel diagnostics`.
+- **Assessment:** The new pose-sweep length-constraint checks in MP-KIN-01 passed. Every existing diagnostic flag was also 1 in this run.
+- **Scope:** The finite roll/pitch pose samples and travel samples currently included in the diagnostic. This does not establish continuity over the full stroke, behavior at failure boundaries, uniqueness of all assembly branches, or vehicle runtime integration.
+- **Evidence limitation:** This result is based on terminal output supplied by the user; no separate build or execution was performed during this documentation update.
