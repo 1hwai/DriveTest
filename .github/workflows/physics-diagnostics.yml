@@ -56,7 +56,7 @@ jobs:
           echo "===== PhysicsDiagnostics key output ====="
           grep -E "\\[(FAIL|PASS|RaycastRollSummary|RaycastSurfaceTest)\\]" physics_run.log | tail -n 200 || true
           echo "===== VehicleDiagnostics key output ====="
-          grep -E "\\[(FAIL|PASS|RaycastRollSummary|RaycastSurfaceTest|CorneringSummary|SteeringForce)\\]" vehicle_run.log | tail -n 300 || true
+          grep -E "\\[(FAIL|PASS|RaycastRollSummary|RaycastSurfaceTest|CorneringSummary|SteeringForce|WheelSuspensionAxis)\\]" vehicle_run.log | tail -n 300 || true
           echo "===== PhysicsDiagnostics file log summary ====="
           if [ -f ../Logs/physics_diagnostics.log ]; then
             grep -E "\\[(FAIL|PASS|RaycastRollSummary|RaycastSurfaceTest)\\]" ../Logs/physics_diagnostics.log | tail -n 200 || true
@@ -65,7 +65,7 @@ jobs:
           fi
           echo "===== VehicleDiagnostics file log summary ====="
           if [ -f ../Logs/vehicle_diagnostics.log ]; then
-            grep -E "\\[(FAIL|PASS|RaycastRollSummary|RaycastSurfaceTest|CorneringSummary|SteeringForce)\\]" ../Logs/vehicle_diagnostics.log | tail -n 300 || true
+            grep -E "\\[(FAIL|PASS|RaycastRollSummary|RaycastSurfaceTest|CorneringSummary|SteeringForce|WheelSuspensionAxis)\\]" ../Logs/vehicle_diagnostics.log | tail -n 300 || true
           else
             echo "Missing expected log: Logs/vehicle_diagnostics.log"
           fi

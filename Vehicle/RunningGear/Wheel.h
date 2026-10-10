@@ -1,8 +1,11 @@
 #pragma once
 
-#include "../Core/Math/Vec3.h"
+#include "../../Core/Math/Quaternion.h"
+#include "../../Core/Math/Vec3.h"
+#include "WheelContact.h"
 
 class PhysicsWorld;
+class IWheelContactProvider;
 class RigidBody;
 class Suspension;
 
@@ -12,6 +15,9 @@ public:
 
     void SetLocalPosition(const Vec3& position);
     const Vec3& GetLocalPosition() const;
+
+    void SetHubPosition(const Vec3& position);
+    void SetHubState(const Vec3& position, const Quaternion& orientation);
 
     void SetRadius(float radius);
     float GetRadius() const;
@@ -31,8 +37,11 @@ public:
     void Update(
         int index,
         RigidBody& body,
-        PhysicsWorld& physicsWorld,
-        const Suspension& suspension,
+        const IWheelContactProvider& contactProvider,
+        const PhysicsWorld& physicsWorld,
+        Suspension& suspension,
+        const Vec3& springMountA,
+        const Vec3& springMountB,
         float deltaTime
     );
 
@@ -45,8 +54,8 @@ public:
 
     bool IsGrounded() const;
     float GetSuspensionLength() const;
-    float GetLastRayDistance() const;
-    int GetLastRayShape() const;
+    float GetLastContactDistance() const;
+    const WheelContactResult& GetContactResult() const;
     float GetCompression() const;
     float GetForce() const;
     float GetNormalLoad() const;
@@ -59,6 +68,7 @@ public:
     float GetRotationAngle() const;
     float GetTireReactionTorque() const;
     const Vec3& GetWorldPosition() const;
+    const Quaternion& GetWorldOrientation() const;
     const Vec3& GetContactPoint() const;
     const Vec3& GetContactNormal() const;
 
@@ -76,8 +86,7 @@ private:
 
     bool m_grounded;
     float m_suspensionLength;
-    float m_lastRayDistance;
-    int m_lastRayShape;
+    float m_lastContactDistance;
     float m_compression;
     float m_previousCompression;
     float m_force;
@@ -90,6 +99,8 @@ private:
     bool m_hasPreviousCompression;
 
     Vec3 m_worldPosition;
+    Quaternion m_worldOrientation;
     Vec3 m_contactPoint;
     Vec3 m_contactNormal;
+    WheelContactResult m_contactResult;
 };

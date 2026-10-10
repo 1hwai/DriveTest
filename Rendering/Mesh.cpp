@@ -690,7 +690,17 @@ bool Mesh::LoadFromFile(const std::string& path, bool wheelOnly) {
 
     aiVector3D minimum(FLT_MAX, FLT_MAX, FLT_MAX);
     aiVector3D maximum(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+    bool hasBounds = false;
+
     for (const NodeMesh& item : sourceMeshes) {
+        const bool includeMesh =
+            wheelOnly
+                ? IsWheelMesh(item.mesh)
+                : !IsWheelMesh(item.mesh);
+
+        if (!includeMesh)
+            continue;
+
         for (unsigned int i = 0; i < item.mesh->mNumVertices; ++i) {
             const aiVector3D p = item.transform * item.mesh->mVertices[i];
             minimum.x = std::min(minimum.x, p.x);
@@ -699,8 +709,13 @@ bool Mesh::LoadFromFile(const std::string& path, bool wheelOnly) {
             maximum.x = std::max(maximum.x, p.x);
             maximum.y = std::max(maximum.y, p.y);
             maximum.z = std::max(maximum.z, p.z);
+            hasBounds = true;
         }
     }
+
+    if (!hasBounds)
+        return false;
+
     const float horizontalLength = std::max(maximum.x - minimum.x, maximum.z - minimum.z);
     if (horizontalLength <= 0.001f || maximum.y - minimum.y <= 0.001f)
         return false;

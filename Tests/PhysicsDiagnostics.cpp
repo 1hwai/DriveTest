@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
@@ -11,29 +12,93 @@
 #include "../Physics/RigidBody.h"
 #include "../Physics/Terrain.h"
 #include "../Vehicle/Car.h"
+#include "../Vehicle/RunningGear/ISuspensionGeometry.h"
+#include "../Vehicle/RunningGear/Wheel.h"
+#include "../Vehicle/RunningGear/Suspension.h"
+#include "../Vehicle/RunningGear/Tire.h"
+#include "../Vehicle/VehicleConfig.h"
 
 namespace {
     constexpr float FixedDeltaTime = 1.0f / 120.0f;
     constexpr int SimulationSteps = 120 * 40;
 
-    void ConfigureWheel(
-        Car& car,
-        WheelIndex index,
-        const Vec3& position
-    ) {
-        car.GetWheel(index).SetLocalPosition(position);
-        car.GetWheel(index).SetRadius(0.5f);
+    struct WheelEnergySnapshot {
+        float compression = 0.0f;
+        float compressionVelocity = 0.0f;
+        float springForce = 0.0f;
+        float damperForce = 0.0f;
+        float suspensionPower = 0.0f;
+        float suspensionResidual = 0.0f;
+        float suspensionLength = 0.0f;
+        bool grounded = false;
+        Vec3 mountA;
+        Vec3 mountB;
+        Vec3 mountAVelocity;
+        Vec3 mountBVelocity;
+        Vec3 relativeVelocity;
+        Vec3 springAxis;
+        Vec3 forceOnChassis;
+        float powerAtA = 0.0f;
+        float powerAtB = 0.0f;
+        float springPower = 0.0f;
+        float damperPower = 0.0f;
+        float powerBalanceResidual = 0.0f;
+    };
 
-        car.GetSuspension(index).SetRestLength(0.8f);
-        car.GetSuspension(index).SetMaxLength(1.0f);
-        car.GetSuspension(index).SetSpringRate(30000.0f);
-        car.GetSuspension(index).SetDamperRate(4500.0f);
-    }
+    struct EnergySnapshot {
+        bool valid = false;
+        int step = 0;
+        float time = 0.0f;
+        float total = 0.0f;
+        float potential = 0.0f;
+        float linear = 0.0f;
+        float angular = 0.0f;
+        float suspension = 0.0f;
+        Vec3 position;
+        Vec3 velocity;
+        Vec3 angularVelocity;
+        std::array<WheelEnergySnapshot, WheelCount> wheels;
+    };
 
     bool IsFinite(const Vec3& value) {
         return std::isfinite(value.x) &&
             std::isfinite(value.y) &&
             std::isfinite(value.z);
+    }
+
+    float CalculateMechanicalEnergy(
+        const RigidBody& body,
+        float gravityMagnitude
+    ) {
+        const float potential =
+            body.GetMass() * gravityMagnitude * body.GetPosition().y;
+        const float kinetic =
+            0.5f * body.GetMass() *
+            body.GetLinearVelocity().LengthSquared();
+        return potential + kinetic;
+    }
+
+    float MeasureFreeFallEnergyError(float deltaTime) {
+        constexpr float GravityMagnitude = 9.81f;
+        constexpr float Duration = 2.0f;
+        constexpr int InitialHeight = 100;
+
+        RigidBody body;
+        body.SetMass(1.0f);
+        body.SetPosition(Vec3(0.0f, static_cast<float>(InitialHeight), 0.0f));
+
+        const float initialEnergy =
+            CalculateMechanicalEnergy(body, GravityMagnitude);
+        const Vec3 gravity(0.0f, -GravityMagnitude, 0.0f);
+        const int steps = static_cast<int>(std::round(Duration / deltaTime));
+
+        for (int step = 0; step < steps; ++step)
+            body.Integrate(deltaTime, gravity);
+
+        return std::abs(
+            CalculateMechanicalEnergy(body, GravityMagnitude) -
+            initialEnergy
+        );
     }
 }
 
@@ -76,7 +141,7 @@ int main() {
         Vec3(2.0f, 1.0f, 3.0f)
     );
     chassis->SetPosition(
-        Vec3(0.0f, 5.0f, 0.0f)
+        Vec3(0.0f, 0.42f, 0.0f)
     );
 
     // The gravity-well test isolates suspension forces from chassis-terrain
@@ -100,26 +165,8 @@ int main() {
     Car car;
     car.SetChassis(chassis);
 
-    ConfigureWheel(
-        car,
-        WheelIndex::FrontLeft,
-        Vec3(-0.9f, -0.2f, 1.1f)
-    );
-    ConfigureWheel(
-        car,
-        WheelIndex::FrontRight,
-        Vec3(0.9f, -0.2f, 1.1f)
-    );
-    ConfigureWheel(
-        car,
-        WheelIndex::RearLeft,
-        Vec3(-0.9f, -0.2f, -1.1f)
-    );
-    ConfigureWheel(
-        car,
-        WheelIndex::RearRight,
-        Vec3(0.9f, -0.2f, -1.1f)
-    );
+    VehicleConfig vehicleConfig;
+    car.ApplyConfig(vehicleConfig);
 
     // This diagnostic is for suspension stability only. Tire forces are
     // tested by VehicleDiagnostics and would otherwise turn the gravity-well
@@ -134,15 +181,101 @@ int main() {
     }
 
     constexpr float MaxDriftZ = 0.05f;
-    constexpr float EnergyTolerance = 1.0f;
+    constexpr float EnergyAbsoluteTolerance = 2.0f;
+    constexpr float EnergyRelativeTolerance = 0.001f;
+
+    // Establish a contact-consistent suspension state before measuring E0.
+    // ApplyConfig initializes mounts at zero travel; the first normal update
+    // can choose a different travel from ground contact. Counting that
+    // kinematic initialization jump as simulated energy gain gives a false
+    // conservation failure. A zero-dt update sets geometry/contact/compression
+    // without integrating the chassis; clear the forces it queued afterwards.
+    car.UpdatePhysics(physicsWorld, 0.0f);
+    chassis->ClearForces();
 
     float maxAbsZ = 0.0f;
     float minY = chassis->GetPosition().y;
-    float maxEnergy = 0.0f;
-    const float initialEnergy =
+    float initialEnergy =
         chassis->GetMass() *
         9.81f *
         chassis->GetPosition().y;
+    for (size_t i = 0; i < WheelCount; ++i) {
+        const Suspension& suspension =
+            car.GetSuspension(static_cast<WheelIndex>(i));
+        const float compression = suspension.GetCompression();
+        initialEnergy += 0.5f *
+            suspension.GetSpringRate() *
+            compression * compression;
+    }
+    const float energyTolerance = std::max(
+        EnergyAbsoluteTolerance,
+        std::abs(initialEnergy) * EnergyRelativeTolerance
+    );
+    float maxEnergy = initialEnergy;
+
+    const float coarseFreeFallError = MeasureFreeFallEnergyError(1.0f / 60.0f);
+    const float fineFreeFallError = MeasureFreeFallEnergyError(1.0f / 120.0f);
+    {
+        std::ostringstream log;
+        log << std::fixed << std::setprecision(6)
+            << "[EnergyConvergence] dtCoarse=" << (1.0f / 60.0f)
+            << " errorCoarse=" << coarseFreeFallError
+            << " dtFine=" << (1.0f / 120.0f)
+            << " errorFine=" << fineFreeFallError;
+        Logger::Info(log.str());
+    }
+    if (!std::isfinite(coarseFreeFallError) ||
+        !std::isfinite(fineFreeFallError) ||
+        !(fineFreeFallError < coarseFreeFallError * 0.75f)) {
+        Logger::Error(
+            "[FAIL] Free-fall energy error did not decrease with timestep refinement"
+        );
+        Logger::Shutdown();
+        return 1;
+    }
+    Logger::Info("[PASS] Free-fall energy error decreases with timestep refinement");
+
+    {
+        std::ostringstream log;
+        log << std::fixed << std::setprecision(6)
+            << "[EnergyBaseline] total=" << initialEnergy
+            << " tolerance=" << energyTolerance
+            << " absTolerance=" << EnergyAbsoluteTolerance
+            << " relativeTolerance=" << EnergyRelativeTolerance;
+        Logger::Info(log.str());
+    }
+
+    static const char* wheelNames[WheelCount] = {"FL", "FR", "RL", "RR"};
+    EnergySnapshot peakSnapshot;
+    EnergySnapshot firstExceedSnapshot;
+
+    std::array<Vec3, WheelCount> previousMountA{};
+    std::array<Vec3, WheelCount> previousMountB{};
+    std::array<Vec3, WheelCount> currentMountAVelocity{};
+    std::array<Vec3, WheelCount> currentMountBVelocity{};
+    std::array<float, WheelCount> currentPowerAtA{};
+    std::array<float, WheelCount> currentPowerAtB{};
+    std::array<float, WheelCount> currentSpringPower{};
+    std::array<float, WheelCount> currentDamperPower{};
+    std::array<float, WheelCount> currentPowerBalanceResidual{};
+    float integratedPowerAtA = 0.0f;
+    float integratedPowerAtB = 0.0f;
+    float integratedSpringPower = 0.0f;
+    float integratedDamperPower = 0.0f;
+    std::array<float, WheelCount> pendingPowerAtA{};
+    std::array<float, WheelCount> pendingPowerAtB{};
+    std::array<float, WheelCount> pendingSpringPower{};
+    std::array<float, WheelCount> pendingDamperPower{};
+    bool hasPendingPowerSample = false;
+    float previousTotalEnergy = initialEnergy;
+    float maxAbsEnergyStepDelta = 0.0f;
+
+    for (size_t i = 0; i < WheelCount; ++i) {
+        const ISuspensionGeometry& geometry =
+            car.GetSuspensionGeometry(static_cast<WheelIndex>(i));
+        previousMountA[i] = geometry.GetSpringMountA();
+        previousMountB[i] = geometry.GetSpringMountB();
+    }
 
     Logger::Info("[PhysicsDiagnostics] flat terrain suspension stability test");
 
@@ -155,29 +288,45 @@ int main() {
             FixedDeltaTime
         );
 
-        physicsWorld.Step(
-            FixedDeltaTime
-        );
+        // The spring endpoints are not both dynamic rigid bodies: mount A is
+        // attached to the chassis and mount B is produced by kinematic
+        // suspension geometry. Estimate endpoint velocities from consecutive
+        // solved mount positions so their work can be accounted for separately.
+        for (size_t i = 0; i < WheelCount; ++i) {
+            const WheelIndex index = static_cast<WheelIndex>(i);
+            const ISuspensionGeometry& geometry = car.GetSuspensionGeometry(index);
+            const Wheel& wheel = car.GetWheel(index);
+            const Suspension& suspension = car.GetSuspension(index);
+            const Vec3 mountA = geometry.GetSpringMountA();
+            const Vec3 mountB = geometry.GetSpringMountB();
+            currentMountAVelocity[i] =
+                (mountA - previousMountA[i]) / FixedDeltaTime;
+            currentMountBVelocity[i] =
+                (mountB - previousMountB[i]) / FixedDeltaTime;
 
-        const Vec3 position =
-            chassis->GetPosition();
+            const Vec3 forceOnChassis =
+                suspension.CalculateForceVector(mountA, mountB) * -1.0f;
+            const Vec3 forceAtB = forceOnChassis * -1.0f;
+            currentPowerAtA[i] =
+                forceOnChassis.Dot(currentMountAVelocity[i]);
+            currentPowerAtB[i] =
+                forceAtB.Dot(currentMountBVelocity[i]);
+            currentSpringPower[i] =
+                wheel.GetSpringForce() * wheel.GetCompressionVelocity();
+            currentDamperPower[i] =
+                wheel.GetDamperForce() * wheel.GetCompressionVelocity();
+            currentPowerBalanceResidual[i] =
+                currentPowerAtA[i] + currentPowerAtB[i] +
+                currentSpringPower[i] + currentDamperPower[i];
 
-        const Vec3 velocity =
-            chassis->GetLinearVelocity();
-
-        if (!IsFinite(position) ||
-            !IsFinite(velocity) ||
-            !std::isfinite(
-                chassis->GetAngularVelocity().LengthSquared()
-            )) {
-
-            std::cerr
-                << "[FAIL] Non-finite chassis state at step "
-                << step << '\n';
-
-            Logger::Shutdown();
-            return 1;
+            previousMountA[i] = mountA;
+            previousMountB[i] = mountB;
         }
+
+        // Measure energy before stepping so chassis state and suspension
+        // geometry/compression describe the same simulation time.
+        const Vec3 position = chassis->GetPosition();
+        const Vec3 velocity = chassis->GetLinearVelocity();
 
         minY =
             std::min(minY, position.y);
@@ -220,7 +369,7 @@ int main() {
             ++i) {
 
             const float compression =
-                car.GetWheel(
+                car.GetSuspension(
                     static_cast<WheelIndex>(i)
                 ).GetCompression();
 
@@ -241,6 +390,99 @@ int main() {
 
         maxEnergy =
             std::max(maxEnergy, totalEnergy);
+        const float energyStepDelta = totalEnergy - previousTotalEnergy;
+        maxAbsEnergyStepDelta =
+            std::max(maxAbsEnergyStepDelta, std::abs(energyStepDelta));
+        previousTotalEnergy = totalEnergy;
+
+        // The energy sample is at the current pre-step state. Only integrate
+        // powers saved from the previous update: those forces were applied by
+        // the physics step that advanced the system into this sampled state.
+        // Current powers are saved below for the next interval.
+        if (hasPendingPowerSample) {
+            for (size_t i = 0; i < WheelCount; ++i) {
+                integratedPowerAtA += pendingPowerAtA[i] * FixedDeltaTime;
+                integratedPowerAtB += pendingPowerAtB[i] * FixedDeltaTime;
+                integratedSpringPower += pendingSpringPower[i] * FixedDeltaTime;
+                integratedDamperPower += pendingDamperPower[i] * FixedDeltaTime;
+            }
+        }
+
+        if (step % 60 == 0) {
+            std::ostringstream energyDeltaLog;
+            energyDeltaLog << std::fixed << std::setprecision(6)
+                << "[EnergyDelta] step=" << step
+                << " t=" << step * FixedDeltaTime
+                << " deltaFromBaseline=" << (totalEnergy - initialEnergy)
+                << " stepDelta=" << energyStepDelta
+                << " integratedPowerA=" << integratedPowerAtA
+                << " integratedPowerB=" << integratedPowerAtB
+                << " integratedSpringPower=" << integratedSpringPower
+                << " integratedDamperPower=" << integratedDamperPower
+                // This closure checks the endpoint-force/spring/damper identity;
+                // it is not the chassis-plus-spring energy conservation error.
+                << " integratedEndpointPowerClosureResidual="
+                << (integratedPowerAtA + integratedPowerAtB +
+                    integratedSpringPower + integratedDamperPower)
+                << " energyBalanceResidualFromChassisWork="
+                << ((totalEnergy - initialEnergy) -
+                    (integratedPowerAtA + integratedSpringPower))
+                << " energyBalanceResidualFromKinematicWork="
+                << ((totalEnergy - initialEnergy) -
+                    (-integratedPowerAtB - integratedDamperPower));
+            Logger::Info(energyDeltaLog.str());
+        }
+
+        auto captureEnergySnapshot = [&](EnergySnapshot& snapshot) {
+            snapshot.valid = true;
+            snapshot.step = step;
+            snapshot.time = step * FixedDeltaTime;
+            snapshot.total = totalEnergy;
+            snapshot.potential = potentialEnergy;
+            snapshot.linear = linearEnergy;
+            snapshot.angular = angularEnergy;
+            snapshot.suspension = suspensionEnergy;
+            snapshot.position = position;
+            snapshot.velocity = velocity;
+            snapshot.angularVelocity = angularVelocity;
+
+            for (size_t i = 0; i < WheelCount; ++i) {
+                const WheelIndex index = static_cast<WheelIndex>(i);
+                const Wheel& wheel = car.GetWheel(index);
+                const Suspension& suspension = car.GetSuspension(index);
+                const ISuspensionGeometry& geometry = car.GetSuspensionGeometry(index);
+                WheelEnergySnapshot& item = snapshot.wheels[i];
+                item.compression = suspension.GetCompression();
+                item.compressionVelocity = suspension.GetCompressionVelocity();
+                item.springForce = wheel.GetSpringForce();
+                item.damperForce = wheel.GetDamperForce();
+                item.suspensionPower = wheel.GetSuspensionPower();
+                item.suspensionResidual = wheel.GetSuspensionResidual();
+                item.suspensionLength = suspension.GetLength();
+                item.grounded = wheel.IsGrounded();
+                item.mountA = geometry.GetSpringMountA();
+                item.mountB = geometry.GetSpringMountB();
+                item.mountAVelocity = currentMountAVelocity[i];
+                item.mountBVelocity = currentMountBVelocity[i];
+                item.relativeVelocity =
+                    item.mountBVelocity - item.mountAVelocity;
+                item.springAxis =
+                    (item.mountB - item.mountA).Normalized();
+                item.forceOnChassis =
+                    suspension.CalculateForceVector(item.mountA, item.mountB) * -1.0f;
+                item.powerAtA = currentPowerAtA[i];
+                item.powerAtB = currentPowerAtB[i];
+                item.springPower = currentSpringPower[i];
+                item.damperPower = currentDamperPower[i];
+                item.powerBalanceResidual = currentPowerBalanceResidual[i];
+            }
+        };
+
+        if (!peakSnapshot.valid || totalEnergy > peakSnapshot.total)
+            captureEnergySnapshot(peakSnapshot);
+        if (!firstExceedSnapshot.valid &&
+            totalEnergy > initialEnergy + energyTolerance)
+            captureEnergySnapshot(firstExceedSnapshot);
 
         if (step % 60 == 0) {
             std::ostringstream log;
@@ -274,6 +516,30 @@ int main() {
 
             Logger::Info(log.str());
         }
+
+        // Save this state's powers for the interval that begins when the
+        // following physics step applies the forces queued by car.UpdatePhysics.
+        pendingPowerAtA = currentPowerAtA;
+        pendingPowerAtB = currentPowerAtB;
+        pendingSpringPower = currentSpringPower;
+        pendingDamperPower = currentDamperPower;
+        hasPendingPowerSample = true;
+
+        // Advance only after recording the synchronized pre-step state.
+        physicsWorld.Step(FixedDeltaTime);
+
+        const Vec3 steppedPosition = chassis->GetPosition();
+        const Vec3 steppedVelocity = chassis->GetLinearVelocity();
+        if (!IsFinite(steppedPosition) ||
+            !IsFinite(steppedVelocity) ||
+            !std::isfinite(chassis->GetAngularVelocity().LengthSquared())) {
+            std::cerr
+                << "[FAIL] Non-finite chassis state at step "
+                << step << '\n';
+            Logger::Shutdown();
+            return 1;
+        }
+
     }
 
     std::ostringstream summary;
@@ -284,12 +550,82 @@ int main() {
         << maxAbsZ
         << " maxEnergy="
         << maxEnergy
+        << " maxAbsEnergyStepDelta=" << maxAbsEnergyStepDelta
+        << " finalMeasuredEnergy=" << previousTotalEnergy
+        << " measuredEnergyDelta=" << (previousTotalEnergy - initialEnergy)
+        << " integratedPowerA=" << integratedPowerAtA
+        << " integratedPowerB=" << integratedPowerAtB
+        << " integratedSpringPower=" << integratedSpringPower
+        << " integratedDamperPower=" << integratedDamperPower
+        // Endpoint closure is an internal power identity, not total energy conservation.
+        << " integratedEndpointPowerClosureResidual="
+        << (integratedPowerAtA + integratedPowerAtB +
+            integratedSpringPower + integratedDamperPower)
+        << " energyBalanceResidualFromChassisWork="
+        << ((previousTotalEnergy - initialEnergy) -
+            (integratedPowerAtA + integratedSpringPower))
+        << " energyBalanceResidualFromKinematicWork="
+        << ((previousTotalEnergy - initialEnergy) -
+            (-integratedPowerAtB - integratedDamperPower))
         << " finalY="
         << chassis->GetPosition().y
         << " finalZ="
         << chassis->GetPosition().z;
 
     Logger::Info(summary.str());
+
+    auto logEnergySnapshot = [&](const char* label, const EnergySnapshot& snapshot) {
+        if (!snapshot.valid)
+            return;
+
+        std::ostringstream log;
+        log << std::fixed << std::setprecision(6)
+            << "[" << label << "] step=" << snapshot.step
+            << " t=" << snapshot.time
+            << " total=" << snapshot.total
+            << " potential=" << snapshot.potential
+            << " linear=" << snapshot.linear
+            << " angular=" << snapshot.angular
+            << " spring=" << snapshot.suspension
+            << " y=" << snapshot.position.y
+            << " vy=" << snapshot.velocity.y
+            << " vz=" << snapshot.velocity.z
+            << " wx=" << snapshot.angularVelocity.x
+            << " wy=" << snapshot.angularVelocity.y
+            << " wz=" << snapshot.angularVelocity.z;
+        Logger::Info(log.str());
+
+        for (size_t i = 0; i < WheelCount; ++i) {
+            const WheelEnergySnapshot& wheel = snapshot.wheels[i];
+            std::ostringstream wheelLog;
+            wheelLog << std::fixed << std::setprecision(6)
+                << "[" << label << "Wheel] name=" << wheelNames[i]
+                << " grounded=" << wheel.grounded
+                << " length=" << wheel.suspensionLength
+                << " compression=" << wheel.compression
+                << " compressionVelocity=" << wheel.compressionVelocity
+                << " springForce=" << wheel.springForce
+                << " damperForce=" << wheel.damperForce
+                << " suspensionPower=" << wheel.suspensionPower
+                << " residual=" << wheel.suspensionResidual
+                << " mountA=(" << wheel.mountA.x << "," << wheel.mountA.y << "," << wheel.mountA.z << ")"
+                << " mountB=(" << wheel.mountB.x << "," << wheel.mountB.y << "," << wheel.mountB.z << ")"
+                << " mountAVel=(" << wheel.mountAVelocity.x << "," << wheel.mountAVelocity.y << "," << wheel.mountAVelocity.z << ")"
+                << " mountBVel=(" << wheel.mountBVelocity.x << "," << wheel.mountBVelocity.y << "," << wheel.mountBVelocity.z << ")"
+                << " relativeVel=(" << wheel.relativeVelocity.x << "," << wheel.relativeVelocity.y << "," << wheel.relativeVelocity.z << ")"
+                << " springAxis=(" << wheel.springAxis.x << "," << wheel.springAxis.y << "," << wheel.springAxis.z << ")"
+                << " powerA=" << wheel.powerAtA
+                << " powerB=" << wheel.powerAtB
+                << " springPower=" << wheel.springPower
+                << " damperPower=" << wheel.damperPower
+                << " powerBalanceResidual=" << wheel.powerBalanceResidual
+                << " force=(" << wheel.forceOnChassis.x << "," << wheel.forceOnChassis.y << "," << wheel.forceOnChassis.z << ")";
+            Logger::Info(wheelLog.str());
+        }
+    };
+
+    logEnergySnapshot("EnergyPeak", peakSnapshot);
+    logEnergySnapshot("EnergyFirstExceed", firstExceedSnapshot);
 
     if (maxAbsZ > MaxDriftZ) {
         Logger::Error(
@@ -301,7 +637,7 @@ int main() {
         return 1;
     }
 
-    if (maxEnergy > initialEnergy + EnergyTolerance) {
+    if (maxEnergy > initialEnergy + energyTolerance) {
         Logger::Error(
             "[FAIL] Mechanical energy increased above initial energy"
         );

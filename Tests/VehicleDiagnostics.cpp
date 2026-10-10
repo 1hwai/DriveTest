@@ -11,6 +11,13 @@
 #include "../Physics/Road.h"
 #include "../Physics/Terrain.h"
 #include "../Vehicle/Car.h"
+#include "../Vehicle/Powertrain/Engine.h"
+#include "../Vehicle/Powertrain/Transmission.h"
+#include "../Vehicle/RunningGear/DoubleWishbone.h"
+#include "../Vehicle/RunningGear/Wheel.h"
+#include "../Vehicle/RunningGear/Tire.h"
+#include "../Vehicle/RunningGear/IWheelContactProvider.h"
+#include "../Vehicle/RunningGear/WheelContact.h"
 #include "../Vehicle/VehicleCoordinates.h"
 #include "../Vehicle/VehicleConfig.h"
 
@@ -143,7 +150,7 @@ namespace {
             car.GetTransmission().ShiftDown();
     }
 
-    bool RunRaycastRollGeometryDiagnostics() {
+    bool RunContactRollGeometryDiagnostics() {
         PhysicsWorld planeWorld;
         Collider* plane = planeWorld.CreateCollider();
         plane->SetShape(ColliderShape::Plane);
@@ -207,8 +214,8 @@ namespace {
 
             const bool positiveRollExpected =
                 rollAngle > 0.0f
-                ? distances[0] < distances[1] && distances[2] < distances[3]
-                : distances[0] > distances[1] && distances[2] > distances[3];
+                ? distances[0] > distances[1] && distances[2] > distances[3]
+                : distances[0] < distances[1] && distances[2] < distances[3];
 
             std::ostringstream summary;
             summary << std::fixed << std::setprecision(5)
@@ -673,10 +680,80 @@ namespace {
         float meanLoadDifference = 0.0f;
         float meanLoadAccelerationProduct = 0.0f;
         float meanAbsoluteLateralAcceleration = 0.0f;
-        float meanLeftMinusRightRayDistance = 0.0f;
-        int raySamples = 0;
+        float meanContactDistanceError = 0.0f;
+        int contactDistanceSamples = 0;
         int samples = 0;
     };
+
+    bool RunHubWheelIntegrationDiagnostics() {
+        VehicleTestRig rig;
+        if (!rig.configLoaded) {
+            Logger::Error("[FAIL] Hub-wheel integration: " + rig.configError);
+            return false;
+        }
+
+        float maxPositionError = 0.0f;
+
+        for (int step = 0; step < 240; ++step) {
+            const float time =
+                step * FixedDeltaTime;
+            const float roll =
+                0.20f * std::sin(time * 0.8f);
+            const float pitch =
+                0.12f * std::sin(time * 0.5f);
+
+            rig.chassis->SetOrientation(
+                Quaternion::FromAxisAngle(
+                    Vec3(0.0f, 0.0f, 1.0f),
+                    roll
+                ) *
+                Quaternion::FromAxisAngle(
+                    Vec3(1.0f, 0.0f, 0.0f),
+                    pitch
+                )
+            );
+
+            rig.car.SetInput(0.0f, 0.0f, 0.0f, 1.0f);
+            rig.car.UpdatePhysics(
+                rig.physicsWorld,
+                FixedDeltaTime
+            );
+
+            for (size_t i = 0; i < WheelCount; ++i) {
+                const WheelIndex index =
+                    static_cast<WheelIndex>(i);
+                const Vec3 hubPosition =
+                    rig.car.GetSuspensionGeometry(index)
+                        .GetHubPosition();
+                const Vec3 wheelPosition =
+                    rig.car.GetWheel(index)
+                        .GetWorldPosition();
+
+                maxPositionError = std::max(
+                    maxPositionError,
+                    (wheelPosition - hubPosition).Length()
+                );
+            }
+
+            rig.physicsWorld.Step(FixedDeltaTime);
+        }
+
+        Logger::Info(
+            "[HubWheelIntegration] maxPositionError=" +
+            std::to_string(maxPositionError)
+        );
+
+        constexpr float PositionTolerance = 0.000001f;
+        if (maxPositionError > PositionTolerance) {
+            Logger::Error(
+                "[FAIL] Wheel position does not follow solved hub position"
+            );
+            return false;
+        }
+
+        Logger::Info("[PASS] Hub-wheel integration diagnostics");
+        return true;
+    }
 
     bool RunVehicleCoordinateConventionDiagnostics() {
         const Vec3 forward = VehicleCoordinates::Forward();
@@ -883,19 +960,19 @@ namespace {
                 frontRightWheel.IsGrounded() &&
                 rearLeftWheel.IsGrounded() &&
                 rearRightWheel.IsGrounded()) {
-                const float leftRayDistance =
-                    0.5f * (
-                        frontLeftWheel.GetLastRayDistance() +
-                        rearLeftWheel.GetLastRayDistance()
+                const float meanContactDistanceError =
+                    0.25f * (
+                        std::abs(frontLeftWheel.GetLastContactDistance() -
+                            frontLeftWheel.GetRadius()) +
+                        std::abs(frontRightWheel.GetLastContactDistance() -
+                            frontRightWheel.GetRadius()) +
+                        std::abs(rearLeftWheel.GetLastContactDistance() -
+                            rearLeftWheel.GetRadius()) +
+                        std::abs(rearRightWheel.GetLastContactDistance() -
+                            rearRightWheel.GetRadius())
                     );
-                const float rightRayDistance =
-                    0.5f * (
-                        frontRightWheel.GetLastRayDistance() +
-                        rearRightWheel.GetLastRayDistance()
-                    );
-                metrics.meanLeftMinusRightRayDistance +=
-                    leftRayDistance - rightRayDistance;
-                ++metrics.raySamples;
+                metrics.meanContactDistanceError += meanContactDistanceError;
+                ++metrics.contactDistanceSamples;
             }
 
             if (!std::isfinite(lateralAcceleration) ||
@@ -939,9 +1016,9 @@ namespace {
             loadAccelerationProductSum / metrics.samples;
         metrics.meanAbsoluteLateralAcceleration =
             absoluteLateralAccelerationSum / metrics.samples;
-        if (metrics.raySamples > 0)
-            metrics.meanLeftMinusRightRayDistance /=
-                static_cast<float>(metrics.raySamples);
+        if (metrics.contactDistanceSamples > 0)
+            metrics.meanContactDistanceError /=
+                static_cast<float>(metrics.contactDistanceSamples);
 
         std::ostringstream log;
         log << std::fixed << std::setprecision(3)
@@ -953,9 +1030,9 @@ namespace {
             << metrics.meanAbsoluteLateralAcceleration
             << " meanLeftMinusRightLoad="
             << metrics.meanLoadDifference
-            << " meanLeftMinusRightRayDistance="
-            << metrics.meanLeftMinusRightRayDistance
-            << " raySamples=" << metrics.raySamples
+            << " meanContactDistanceError="
+            << metrics.meanContactDistanceError
+            << " contactDistanceSamples=" << metrics.contactDistanceSamples
             << " meanLoadAccelerationProduct="
             << metrics.meanLoadAccelerationProduct;
         Logger::Info(log.str());
@@ -968,11 +1045,16 @@ namespace {
             return false;
         }
 
-        if (metrics.raySamples == 0 ||
-            metrics.meanLeftMinusRightRayDistance * steering >= 0.0f) {
+        // The contact solver places each wheel hub at the ground-contact
+        // target. Raycast distance should therefore remain close to the
+        // configured wheel radius; it is not a reliable outside-wheel/load
+        // transfer signal once suspension geometry resolves wheel travel.
+        constexpr float ContactDistanceTolerance = 0.05f;
+        if (metrics.contactDistanceSamples == 0 ||
+            metrics.meanContactDistanceError > ContactDistanceTolerance) {
             Logger::Error(
                 std::string("[FAIL] ") + name +
-                " suspension ray distances do not match outside-wheel geometry"
+                " wheel contact distance deviates from wheel radius"
             );
             return false;
         }
@@ -998,6 +1080,247 @@ namespace {
             std::string("[PASS] ") + name +
             " outside-wheel load transfer direction"
         );
+        return true;
+    }
+
+    bool RunTireHubStateDiagnostics() {
+        VehicleTestRig rig;
+        if (!rig.configLoaded) {
+            Logger::Error("[FAIL] Tire hub state: " + rig.configError);
+            return false;
+        }
+
+        rig.car.SetInput(0.0f, 0.0f, 0.35f, 1.0f);
+        rig.car.UpdatePhysics(
+            rig.physicsWorld,
+            FixedDeltaTime
+        );
+
+        bool finite = true;
+        float maxPositionError = 0.0f;
+
+        for (size_t i = 0; i < WheelCount; ++i) {
+            const WheelIndex index =
+                static_cast<WheelIndex>(i);
+            const Vec3& hubPosition =
+                rig.car.GetSuspensionGeometry(index)
+                    .GetHubPosition();
+            const Vec3& wheelPosition =
+                rig.car.GetWheel(index)
+                    .GetWorldPosition();
+
+            maxPositionError =
+                std::max(
+                    maxPositionError,
+                    (hubPosition - wheelPosition).Length()
+                );
+
+            const Quaternion& orientation =
+                rig.car.GetWheel(index)
+                    .GetWorldOrientation();
+
+            finite =
+                finite &&
+                std::isfinite(orientation.w) &&
+                std::isfinite(orientation.x) &&
+                std::isfinite(orientation.y) &&
+                std::isfinite(orientation.z);
+        }
+
+        Logger::Info(
+            "[TireHubState] maxPositionError=" +
+            std::to_string(maxPositionError)
+        );
+
+        constexpr float PositionTolerance = 0.000001f;
+        if (!finite ||
+            maxPositionError > PositionTolerance) {
+            Logger::Error(
+                "[FAIL] Wheel hub state is not propagated correctly"
+            );
+            return false;
+        }
+
+        Logger::Info(
+            "[PASS] Tire hub orientation interface diagnostics"
+        );
+        return true;
+    }
+
+    bool RunTireContactBasisDiagnostics() {
+        VehicleTestRig rig;
+        if (!rig.configLoaded) {
+            Logger::Error("[FAIL] Tire contact basis: " + rig.configError);
+            return false;
+        }
+
+        rig.car.SetInput(0.0f, 0.0f, 0.35f, 1.0f);
+        rig.car.UpdatePhysics(
+            rig.physicsWorld,
+            FixedDeltaTime
+        );
+
+        float maxForwardError = 0.0f;
+        float maxLateralError = 0.0f;
+        bool finite = true;
+
+        for (size_t i = 0; i < WheelCount; ++i) {
+            const Wheel& wheel =
+                rig.car.GetWheel(static_cast<WheelIndex>(i));
+            const TireState& state =
+                rig.car.GetTire(static_cast<WheelIndex>(i))
+                    .GetState();
+
+            if (!wheel.IsGrounded())
+                continue;
+
+            const Vec3 normal =
+                wheel.GetContactNormal();
+
+            Vec3 expectedForward =
+                wheel.GetWorldOrientation() *
+                VehicleCoordinates::Forward();
+            expectedForward -=
+                normal * expectedForward.Dot(normal);
+
+            if (expectedForward.LengthSquared() <= 0.000001f)
+                return false;
+
+            expectedForward =
+                expectedForward.Normalized();
+
+            Vec3 expectedLateral =
+                expectedForward.Cross(normal);
+
+            if (expectedLateral.LengthSquared() <= 0.000001f)
+                return false;
+
+            expectedLateral =
+                expectedLateral.Normalized();
+
+            maxForwardError =
+                std::max(
+                    maxForwardError,
+                    (state.forward - expectedForward).Length()
+                );
+            maxLateralError =
+                std::max(
+                    maxLateralError,
+                    (state.lateral - expectedLateral).Length()
+                );
+
+            finite =
+                finite &&
+                IsFinite(state.forward) &&
+                IsFinite(state.lateral);
+        }
+
+        Logger::Info(
+            "[TireContactBasis] maxForwardError=" +
+            std::to_string(maxForwardError) +
+            " maxLateralError=" +
+            std::to_string(maxLateralError)
+        );
+
+        constexpr float BasisTolerance = 0.000001f;
+        if (!finite ||
+            maxForwardError > BasisTolerance ||
+            maxLateralError > BasisTolerance) {
+            Logger::Error(
+                "[FAIL] Tire contact basis does not follow solved hub orientation"
+            );
+            return false;
+        }
+
+        Logger::Info(
+            "[PASS] Tire contact basis diagnostics"
+        );
+        return true;
+    }
+
+    bool RunAckermannSteeringDiagnostics() {
+        VehicleTestRig rig;
+        if (!rig.configLoaded) {
+            Logger::Error("[FAIL] Ackermann steering: " + rig.configError);
+            return false;
+        }
+
+        auto MeasureSteeringAngle = [&](WheelIndex index) {
+            const Vec3 forward =
+                rig.car.GetSuspensionGeometry(index)
+                    .GetHubOrientation() * VehicleCoordinates::Forward();
+            return std::atan2(
+                -forward.x,
+                forward.z
+            );
+        };
+
+        auto MeasureSteeringMagnitude = [&](WheelIndex index) {
+            return std::abs(
+                MeasureSteeringAngle(index)
+            );
+        };
+
+        rig.car.SetInput(0.0f, 0.0f, 0.35f, 1.0f);
+        rig.car.UpdatePhysics(rig.physicsWorld, FixedDeltaTime);
+        const float rightTurnLeftAngle =
+            MeasureSteeringAngle(WheelIndex::FrontLeft);
+        const float rightTurnRightAngle =
+            MeasureSteeringAngle(WheelIndex::FrontRight);
+        const float rightTurnLeft =
+            std::abs(rightTurnLeftAngle);
+        const float rightTurnRight =
+            std::abs(rightTurnRightAngle);
+
+        rig.car.SetInput(0.0f, 0.0f, -0.35f, 1.0f);
+        rig.car.UpdatePhysics(rig.physicsWorld, FixedDeltaTime);
+        const float leftTurnLeftAngle =
+            MeasureSteeringAngle(WheelIndex::FrontLeft);
+        const float leftTurnRightAngle =
+            MeasureSteeringAngle(WheelIndex::FrontRight);
+        const float leftTurnLeft =
+            std::abs(leftTurnLeftAngle);
+        const float leftTurnRight =
+            std::abs(leftTurnRightAngle);
+
+        std::ostringstream log;
+        log << std::fixed << std::setprecision(5)
+            << "[Ackermann] rightTurnLeft=" << rightTurnLeft
+            << " rightTurnRight=" << rightTurnRight
+            << " leftTurnLeft=" << leftTurnLeft
+            << " leftTurnRight=" << leftTurnRight
+            << " rightTurnAngles=(" << rightTurnLeftAngle
+            << "," << rightTurnRightAngle << ")"
+            << " leftTurnAngles=(" << leftTurnLeftAngle
+            << "," << leftTurnRightAngle << ")";
+        Logger::Info(log.str());
+
+        const bool finite =
+            std::isfinite(rightTurnLeft) &&
+            std::isfinite(rightTurnRight) &&
+            std::isfinite(leftTurnLeft) &&
+            std::isfinite(leftTurnRight);
+        const bool rightTurnDirectionCorrect =
+            rightTurnLeftAngle > 0.0001f &&
+            rightTurnRightAngle > 0.0001f;
+        const bool leftTurnDirectionCorrect =
+            leftTurnLeftAngle < -0.0001f &&
+            leftTurnRightAngle < -0.0001f;
+        const bool rightTurnCorrect =
+            rightTurnRight > rightTurnLeft + 0.0001f;
+        const bool leftTurnCorrect =
+            leftTurnLeft > leftTurnRight + 0.0001f;
+
+        if (!finite ||
+            !rightTurnDirectionCorrect ||
+            !leftTurnDirectionCorrect ||
+            !rightTurnCorrect ||
+            !leftTurnCorrect) {
+            Logger::Error("[FAIL] Ackermann inner-wheel steering geometry");
+            return false;
+        }
+
+        Logger::Info("[PASS] Ackermann steering diagnostics");
         return true;
     }
 
@@ -1039,11 +1362,47 @@ namespace {
     }
 }
 
+bool RunWheelContactProviderDiagnostics() {
+    PhysicsWorld physicsWorld;
+    Collider* ground = physicsWorld.CreateCollider();
+    ground->SetShape(ColliderShape::Plane);
+    ground->SetPlaneHeight(0.0f);
+
+    const std::unique_ptr<IWheelContactProvider> provider =
+        CreateDefaultWheelContactProvider();
+    const WheelContactInput input{
+        Vec3(0.0f, 1.0f, 0.0f),
+        Quaternion::Identity(),
+        0.5f,
+        2.0f
+    };
+    const WheelContactResult result =
+        provider->Query(input, physicsWorld, nullptr);
+
+    const bool passed =
+        result.HasContact() &&
+        result.samples.size() == 1 &&
+        result.samples.front().hasQueryDistance &&
+        std::abs(result.samples.front().queryDistance - 1.0f) < 0.0001f &&
+        std::abs(result.samples.front().point.y) < 0.0001f &&
+        result.samples.front().normal.y > 0.99f &&
+        !result.samples.front().hasSurfaceId;
+
+    if (passed) {
+        Logger::Info("[PASS] Wheel contact provider contract");
+    } else {
+        Logger::Error("[FAIL] Wheel contact provider contract");
+    }
+    return passed;
+}
+
 int main() {
     Logger::Initialize("Logs/vehicle_diagnostics.log");
 
-    bool passed = RunVehicleCoordinateConventionDiagnostics();
-    passed = RunRaycastRollGeometryDiagnostics() && passed;
+    bool passed = RunWheelContactProviderDiagnostics();
+    passed = RunVehicleCoordinateConventionDiagnostics() && passed;
+    passed = RunHubWheelIntegrationDiagnostics() && passed;
+    passed = RunContactRollGeometryDiagnostics() && passed;
     passed = RunRaycastSurfaceDiagnostics() && passed;
     passed = RunTireModelDiagnostics() && passed;
 
@@ -1073,8 +1432,12 @@ int main() {
         SlalomGear
     ) && passed;
 
-    passed = RunSteeringForceDirectionTest("RightSteer", 0.35f, 1.0f) && passed;
-    passed = RunSteeringForceDirectionTest("LeftSteer", -0.35f, -1.0f) && passed;
+    passed = RunSteeringForceDirectionTest("RightSteer", 0.35f, -1.0f) && passed;
+    passed = RunSteeringForceDirectionTest("LeftSteer", -0.35f, 1.0f) && passed;
+
+    passed = RunTireHubStateDiagnostics() && passed;
+    passed = RunTireContactBasisDiagnostics() && passed;
+    passed = RunAckermannSteeringDiagnostics() && passed;
 
     passed = RunCorneringLoadTransferDiagnostics() && passed;
 

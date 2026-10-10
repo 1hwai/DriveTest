@@ -1,9 +1,9 @@
 #include "Tire.h"
 
 #include "Wheel.h"
-#include "VehicleCoordinates.h"
-#include "../Physics/RigidBody.h"
-#include "../Core/Math/Quaternion.h"
+#include "../VehicleCoordinates.h"
+#include "../../Physics/RigidBody.h"
+#include "../../Core/Math/Quaternion.h"
 
 #include <algorithm>
 #include <cmath>
@@ -195,8 +195,7 @@ TireState Tire::CalculateState(
         wheel.GetContactPoint()
     };
 
-    if (!state.grounded ||
-        state.normalLoad <= 0.0f) {
+    if (!state.grounded) {
         m_state = state;
         return state;
     }
@@ -210,8 +209,8 @@ TireState Tire::CalculateState(
         wheel.GetContactNormal();
 
     Vec3 forward =
-        body.GetOrientation() *
-        Vec3(0.0f, 0.0f, 1.0f);
+        wheel.GetWorldOrientation() *
+        VehicleCoordinates::Forward();
 
     forward -=
         normal * forward.Dot(normal);
@@ -224,13 +223,8 @@ TireState Tire::CalculateState(
 
     forward = forward.Normalized();
 
-    // Positive steering angle follows the vehicle steering convention; the vehicle right axis is -X.
-    forward =
-        Quaternion::FromAxisAngle(
-            normal,
-            wheel.GetSteeringAngle()
-        ) * forward;
-
+    // The solved hub orientation already contains steering and suspension
+    // camber. Do not apply the steering angle a second time.
     // Lateral is the vehicle's right direction.
     // With +Z forward and +Y up, forward × normal gives -X (right).
     Vec3 lateral =
@@ -252,6 +246,11 @@ TireState Tire::CalculateState(
 
     state.lateralVelocity =
         contactVelocity.Dot(lateral);
+
+    if (state.normalLoad <= 0.0f) {
+        m_state = state;
+        return state;
+    }
 
     state.wheelSurfaceSpeed =
         wheel.GetAngularVelocity() *
