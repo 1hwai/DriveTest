@@ -537,6 +537,54 @@ int main() {
             branchSelectionStable;
     }
 
+    // MP-KIN-09: locate the upper feasible-travel boundary for this
+    // synthetic configuration. This is a bounded diagnostic, not a claim
+    // that the boundary matches a real vehicle's travel limits.
+    float lastKnownValidTravel = 0.075f;
+    float firstKnownInvalidTravel = 0.30f;
+    bool boundarySearchInputsValid =
+        left.SolveAtTravel(chassisPosition, identity, lastKnownValidTravel) &&
+        !left.SolveAtTravel(chassisPosition, identity, firstKnownInvalidTravel);
+
+    for (int i = 0; i < 24 && boundarySearchInputsValid; ++i) {
+        const float midpoint =
+            0.5f * (lastKnownValidTravel + firstKnownInvalidTravel);
+        if (left.SolveAtTravel(chassisPosition, identity, midpoint))
+            lastKnownValidTravel = midpoint;
+        else
+            firstKnownInvalidTravel = midpoint;
+    }
+
+    const bool boundaryLowSolved =
+        boundarySearchInputsValid &&
+        left.SolveAtTravel(chassisPosition, identity, lastKnownValidTravel);
+    const Vec3 boundaryHubBeforeReject = left.GetHubPosition();
+    const Vec3 boundaryJointBeforeReject = left.GetLowerOuterJoint();
+    const Vec3 boundarySpringABeforeReject = left.GetSpringMountA();
+    const Vec3 boundarySpringBBeforeReject = left.GetSpringMountB();
+    const Quaternion boundaryOrientationBeforeReject = left.GetHubOrientation();
+
+    const bool boundaryHighRejected =
+        !left.SolveAtTravel(chassisPosition, identity, firstKnownInvalidTravel);
+    const Quaternion boundaryOrientationAfterReject = left.GetHubOrientation();
+    const bool boundaryFailurePreservesState =
+        NearVec(left.GetHubPosition(), boundaryHubBeforeReject) &&
+        NearVec(left.GetLowerOuterJoint(), boundaryJointBeforeReject) &&
+        NearVec(left.GetSpringMountA(), boundarySpringABeforeReject) &&
+        NearVec(left.GetSpringMountB(), boundarySpringBBeforeReject) &&
+        Near(boundaryOrientationAfterReject.w, boundaryOrientationBeforeReject.w) &&
+        Near(boundaryOrientationAfterReject.x, boundaryOrientationBeforeReject.x) &&
+        Near(boundaryOrientationAfterReject.y, boundaryOrientationBeforeReject.y) &&
+        Near(boundaryOrientationAfterReject.z, boundaryOrientationBeforeReject.z);
+    const float boundaryBracketWidth =
+        firstKnownInvalidTravel - lastKnownValidTravel;
+    const bool travelBoundaryBracket =
+        boundaryLowSolved &&
+        boundaryHighRejected &&
+        boundaryFailurePreservesState &&
+        boundaryBracketWidth > 0.0f &&
+        boundaryBracketWidth < 0.000001f;
+
     const bool endpoints =
         left.SolveAtTravel(
             chassisPosition,
@@ -745,6 +793,10 @@ int main() {
         << " poseConstraints=" << poseConstraints
         << " continuity=" << continuity
         << " branchSelectionStable=" << branchSelectionStable
+        << " travelBoundaryBracket=" << travelBoundaryBracket
+        << " boundaryValidTravel=" << lastKnownValidTravel
+        << " boundaryInvalidTravel=" << firstKnownInvalidTravel
+        << " boundaryBracketWidth=" << boundaryBracketWidth
         << " maxHubStep=" << maxHubStep
         << " maxHorizontalDrift=" << maxHorizontalDrift
         << '\n';
@@ -766,7 +818,8 @@ int main() {
         !poseConstraints ||
         !orientation ||
         !continuity ||
-        !branchSelectionStable) {
+        !branchSelectionStable ||
+        !travelBoundaryBracket) {
         std::cerr
             << "[FAIL] MacPherson travel diagnostics";
         return 1;
