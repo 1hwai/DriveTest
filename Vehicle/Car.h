@@ -14,7 +14,7 @@ class Suspension;
 class Tire;
 class Engine;
 class Transmission;
-class DoubleWishbone;
+class ISuspensionGeometry;
 struct VehicleConfig;
 
 class Car {
@@ -28,8 +28,8 @@ public:
     void SetInput(float throttle, float brake, float steerInput, float clutch);
     void UpdatePhysics(PhysicsWorld& physicsWorld, float deltaTime);
 
-    DoubleWishbone& GetSuspensionGeometry(WheelIndex index);
-    const DoubleWishbone& GetSuspensionGeometry(WheelIndex index) const;
+    ISuspensionGeometry& GetSuspensionGeometry(WheelIndex index);
+    const ISuspensionGeometry& GetSuspensionGeometry(WheelIndex index) const;
     Wheel& GetWheel(WheelIndex index);
     const Wheel& GetWheel(WheelIndex index) const;
     Suspension& GetSuspension(WheelIndex index);
