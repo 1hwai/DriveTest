@@ -160,7 +160,10 @@ bool VehicleConfig::Load(const std::string& path, std::string& error) {
     const char* known[] = {
         "mass","spawnClearance","ColliderHalfExtentsX","ColliderHalfExtentsY","ColliderHalfExtentsZ",
         "wheelRadius","wheelInertia","upperArmInnerX","upperArmInnerY","upperArmInnerZ","upperArmOuterX","upperArmOuterY",
-        "lowerArmInnerX","lowerArmInnerY","lowerArmInnerZ","lowerArmOuterX","lowerArmOuterY","hubOffsetY",\n        "macPhersonLowerArmInnerX","macPhersonLowerArmInnerY","macPhersonLowerArmInnerZ","macPhersonLowerArmOuterX","macPhersonLowerArmOuterY",\n        "macPhersonStrutUpperMountX","macPhersonStrutUpperMountY","macPhersonStrutLowerMountOffsetY","macPhersonStrutLength","springChassisMountX","springChassisMountY","springChassisMountZ",
+        "lowerArmInnerX","lowerArmInnerY","lowerArmInnerZ","lowerArmOuterX","lowerArmOuterY","hubOffsetY",
+        "macPhersonLowerArmInnerX","macPhersonLowerArmInnerY","macPhersonLowerArmInnerZ","macPhersonLowerArmOuterX","macPhersonLowerArmOuterY",
+        "macPhersonStrutUpperMountX","macPhersonStrutUpperMountY","macPhersonStrutLowerMountOffsetY","macPhersonStrutLength",
+        "springChassisMountX","springChassisMountY","springChassisMountZ",
         "springUprightMountOffsetX","springUprightMountOffsetY","springUprightMountOffsetZ",
         "suspensionRestLength","suspensionBumpTravel","suspensionReboundTravel",
         "frontSpringRate","rearSpringRate","frontCompressionDamping","frontReboundDamping","rearCompressionDamping","rearReboundDamping",
