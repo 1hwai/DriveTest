@@ -383,3 +383,12 @@ These are proposed priorities only; implementation remains blocked pending revie
 - **Assessment:** The new pose-sweep length-constraint checks in MP-KIN-01 passed. Every existing diagnostic flag was also 1 in this run.
 - **Scope:** The finite roll/pitch pose samples and travel samples currently included in the diagnostic. This does not establish continuity over the full stroke, behavior at failure boundaries, uniqueness of all assembly branches, or vehicle runtime integration.
 - **Evidence limitation:** This result is based on terminal output supplied by the user; no separate build or execution was performed during this documentation update.
+
+
+## 2026-10-10 — MP-KIN-02: reject non-finite travel input
+
+- `MacPherson::SolveAtTravel()` now checks whether `travel` is finite and rejects NaN or infinity before updating geometric state.
+- `MacPhersonDiagnostics` checks that NaN and positive infinity return `false` and leave the previous hub position unchanged.
+- Change revisions: `12803ae27eb2f2c78cc783af18e93a7400e4a9b7` (diagnostic), `668036988150ee3fd73f0188edbbb02627151441` (solver).
+- Verification status: source changes are committed; build and execution are pending. Passing status has not yet been confirmed.
+- Limit: this change validates only the `travel` argument; it does not validate every geometry configuration value.
