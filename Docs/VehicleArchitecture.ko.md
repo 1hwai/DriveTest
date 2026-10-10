@@ -208,11 +208,11 @@ PhysicsWorld / RigidBody
 
 현재 브랜치에 반영된 변경:
 
-- [x] 하체 구성 파일을 `Vehicle/RunningGear/`로 이동.
-- [x] 엔진·변속기·디퍼렌셜·파워트레인 파일을 `Vehicle/Powertrain/`로 이동.
-- [x] 이동에 맞춰 CMake 소스 경로와 관련 include를 갱신.
-- [x] `RunningGear` 클래스를 추가해 휠·서스펜션·타이어·기하·접촉 제공자 소유권을 이동.
-- [x] `Car`가 하체의 평균 휠 회전 속도를 읽고, 파워트레인을 갱신한 뒤 하체 업데이트를 호출하도록 변경.
+- 구현됨(검증 대기): 하체 구성 파일을 `Vehicle/RunningGear/`로 이동.
+- 구현됨(검증 대기): 엔진·변속기·디퍼렌셜·파워트레인 파일을 `Vehicle/Powertrain/`로 이동.
+- 구현됨(검증 대기): 이동에 맞춰 CMake 소스 경로와 관련 include를 갱신.
+- 구현됨(검증 대기): `RunningGear` 클래스를 추가해 휠·서스펜션·타이어·기하·접촉 제공자 소유권을 이동.
+- 구현됨(검증 대기): `Car`가 하체의 평균 휠 회전 속도를 읽고, 파워트레인을 갱신한 뒤 하체 업데이트를 호출하도록 변경.
 - [ ] 로컬 빌드 및 활성 진단 재실행으로 변경 검증. 현재 이 작업 환경에서는 저장소를 내려받아 빌드할 수 없어 아직 검증되지 않았다.
 - [ ] `Car::GetSuspensionGeometry()`가 구체 `DoubleWishbone`을 반환하는 공개 API 제거 또는 대체.
 - [ ] AWD 차축 토크 분배 책임을 검토한다. 기존 계산은 동작 보존을 위해 현재 `RunningGear` 안에 남아 있으며, 추후 `Powertrain`의 구동 토크 출력 계약과 함께 정리할 대상이다.
@@ -292,6 +292,7 @@ sequenceDiagram
 - [BeamNG — JBeam 소개](https://documentation.beamng.com/modding/vehicle/intro_jbeam/): 차량을 관련 구성 요소와 데이터 단위로 정의하는 방식. BeamNG의 노드-빔 물리는 DriveTest의 강체 기반 모델과 다르므로 물리 구현 자체는 이식 대상이 아니다.
 - [Assetto Corsa EVO — Car Physics 문서](https://docs.assetto.cn/en/evo/car/physics/): 차량 설정에서 서스펜션·엔진·기어박스·디퍼렌셜·타이어 등을 별도 데이터 단위로 연결하는 사례. 이는 커뮤니티 문서이며, Kunos 내부 C++ 클래스 설계를 증명하는 자료는 아니다.
 - [Assetto Corsa Physics Pipeline — 커뮤니티 문서](https://github.com/archibaldmilton/Girellu/wiki/Physics-Pipeline/686faddc31d1ae226258ba28a0cdc1be11f2e4a2): 차량 물리 설정의 구성 단위를 이해하기 위한 보조 자료.
-- DiRT Rally 계열은 이번 조사에서 위 자료들만큼 상세한 공개 차량-물리 아키텍처 문서를 확인하지 못했다. 따라서 내부 클래스 이름이나 계층을 추측해 설계 근거로 삼지 않는다.
+- [DiRT Rally 개발자 인터뷰](https://pcper.com/2015/06/dirt-rally-chatting-with-paul-coleman-about-the-latest-codemasters-creation/2/): 개발자는 물리 엔진과 상위 차량 핸들링 모델을 구분하고, 핸들링 모델이 물리 엔진과 독립적이라고 설명한다. 이는 `Car`가 모든 물리 책임을 직접 소유하지 않도록 나누는 설계 원칙과 맞닿아 있지만, 내부 C++ 클래스 계층을 공개한 자료는 아니므로 실제 클래스 구조를 추정하지 않는다.
+- [Codemasters EGO 엔진 구성 요소 개요](https://www.codemasters.com/wp-content/uploads/2018/05/Admission-Document.pdf): 차량 동역학, 오디오, AI, 분석 도구 등을 별도 엔진 구성 요소로 설명한다. 이를 특정 차량 클래스 구조의 증거가 아니라 엔진 수준의 모듈화 참고 자료로만 사용한다.
 
 이 비교에서 DriveTest에 적용할 공통점은 특정 게임의 내부 클래스 구조가 아니라 **차량 조립 계층과 물리 하위 시스템을 분리하고, 각 하위 시스템의 설정·계산·관측 책임을 한곳에 모으는 것**이다.
