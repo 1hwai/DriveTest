@@ -5,7 +5,13 @@
 #include "../Core/Math/Vec3.h"
 #include "VehicleCoordinates.h"
 
+enum class SuspensionLayout {
+    MacPherson,
+    DoubleWishbone
+};
+
 struct VehicleConfig {
+    SuspensionLayout suspensionLayout = SuspensionLayout::MacPherson;
     float mass = 1190.0f;
     float spawnClearance = 0.42f;
     Vec3 colliderHalfExtents = Vec3(0.90f, 0.34f, 2.15f);
@@ -23,6 +29,15 @@ struct VehicleConfig {
     float lowerArmInnerX = 0.55f, lowerArmInnerY = -0.25f, lowerArmInnerZ = 0.18f;
     float lowerArmOuterX = 0.76f, lowerArmOuterY = -0.20f;
     float hubOffsetY = 0.10f;
+    float macPhersonLowerArmInnerX = 0.52f;
+    float macPhersonLowerArmInnerY = -0.22f;
+    float macPhersonLowerArmInnerZ = 0.22f;
+    float macPhersonLowerArmOuterX = 0.76f;
+    float macPhersonLowerArmOuterY = -0.18f;
+    float macPhersonStrutUpperMountX = 0.52f;
+    float macPhersonStrutUpperMountY = 0.68f;
+    float macPhersonStrutLowerMountOffsetY = 0.26f;
+    float macPhersonStrutLength = 0.64f;
     // Spring mounts are chassis-local and upright-local respectively.
     float springChassisMountX = 0.55f, springChassisMountY = 0.20f, springChassisMountZ = 0.0f;
     float springUprightMountOffsetX = 0.0f, springUprightMountOffsetY = 0.10f, springUprightMountOffsetZ = 0.0f;
