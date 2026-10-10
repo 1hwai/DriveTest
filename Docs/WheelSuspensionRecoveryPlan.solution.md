@@ -357,3 +357,21 @@ These are proposed priorities only; implementation remains blocked pending revie
 - Check the `[EnergyConvergence]` values and confirm the fine-step error is lower than the coarse-step error.
 - If the suspension test still fails, compare `[EnergyPeak]`, `[EnergyFirstExceed]`, and each wheel's `suspensionResidual` after the initialized baseline. Then vary only one factor at a time: damping on/off, timestep, and contact/travel selection.
 - Do not relax the tolerance merely to make CI green. If it fails, classify whether the failure is expected discretization error, a diagnostic accounting defect, or a runtime physics defect before changing the threshold.
+
+
+## 2026-10-10 — Phase 6 work unit MP-KIN-01: constraint checks during chassis pose sweep
+
+- **Work unit ID:** MP-KIN-01
+- **Problem / observed facts:** The existing roll/pitch pose sweep in `Tests/MacPhersonDiagnostics.cpp` checks hub-offset magnitude, left/right symmetry, and finite state, but does not directly verify the lower-arm link lengths and strut length in rotated chassis poses. The file already defines a `ToWorld()` helper, but it was not used for these constraint checks.
+- **Evidence:** The `poseSweep` loop and `ToWorld()` in `Tests/MacPhersonDiagnostics.cpp`; related implementation in `Vehicle/MacPherson.cpp` (`SolveAtTravel()`, `SolveConstraints()`, `UpdateUpright()`).
+- **Interpretation / confidence:** Missing checks for core length invariants in rotated poses are a test-coverage gap. This alone does not establish that the solver implementation is incorrect.
+- **Proposed remedy:** For each successful sample in the existing roll/pitch sweep, transform local pivots and the upper strut mount into world space and verify both lower-arm link lengths and the distance from the upper mount to the lower strut mount against their configured lengths.
+- **Agreed decision:** Narrowly address this diagnostic gap within the MacPherson-first scope. Do not modify Double Wishbone, vehicle runtime, or spring-force behavior in this work unit.
+- **Allowed files:** `Tests/MacPhersonDiagnostics.cpp`.
+- **Actual files changed:** `Tests/MacPhersonDiagnostics.cpp`.
+- **Expected result / invariants:** At every successful sampled roll/pitch pose, both arm lengths and the strut length must remain within tolerance. A violation must cause the diagnostic to return a non-zero exit code.
+- **Verification commands:** `cmake -S . -B build -DDRIVETEST_BUILD_APP=OFF -DDRIVETEST_BUILD_MACPHERSON_DIAGNOSTICS=ON`; `cmake --build build --target DriveTestMacPhersonDiagnostics`; `./build/DriveTestMacPhersonDiagnostics`.
+- **Verification result:** **Unverified.** The source change was committed, but this work did not build or execute the diagnostic. Do not report a passing result until command output is available.
+- **Status:** Test code changed / execution verification pending.
+- **Revision:** `dc4b08465b9f5ce63a183beb1f4279b6c03ff5d6`.
+- **Remaining limits / dependency:** The new checks cover only the existing finite set of roll/pitch angles at zero travel. They do not prove continuity over the full stroke, behavior at failure boundaries, assembly-branch uniqueness, or vehicle runtime integration. Next, build and run the diagnostic at this revision and record the result.
