@@ -29,7 +29,7 @@ class MacPherson {
 public:
     MacPherson();
 
-    void Configure(const MacPhersonConfig& config);
+    bool Configure(const MacPhersonConfig& config);
     bool Solve(
         const Vec3& chassisPosition,
         const Quaternion& chassisOrientation
