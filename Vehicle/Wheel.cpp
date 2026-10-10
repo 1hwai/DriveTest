@@ -1,7 +1,6 @@
 #include "Wheel.h"
 
 #include "Suspension.h"
-#include "ISuspensionGeometry.h"
 #include "IWheelContactProvider.h"
 #include "../Physics/PhysicsWorld.h"
 #include "../Physics/RigidBody.h"
@@ -106,7 +105,6 @@ void Wheel::Update(
     const IWheelContactProvider& contactProvider,
     const PhysicsWorld& physicsWorld,
     Suspension& suspension,
-    const ISuspensionGeometry& geometry,
     float deltaTime
 ) {
     (void)index;
@@ -126,12 +124,6 @@ void Wheel::Update(
         input,
         physicsWorld,
         &body
-    );
-
-    suspension.UpdateFromMounts(
-        geometry.GetSpringMountA(),
-        geometry.GetSpringMountB(),
-        deltaTime
     );
 
     if (!m_contactResult.HasContact()) {
