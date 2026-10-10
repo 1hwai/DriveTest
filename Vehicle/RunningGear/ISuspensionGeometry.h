@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "../../Core/Math/Quaternion.h"
 #include "../../Core/Math/Vec3.h"
 
@@ -8,6 +10,7 @@
 class ISuspensionGeometry {
 public:
     virtual ~ISuspensionGeometry() = default;
+    virtual std::unique_ptr<ISuspensionGeometry> Clone() const = 0;
 
     virtual bool SolveAtTravel(
         const Vec3& chassisPosition,
