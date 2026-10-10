@@ -28,6 +28,8 @@ bool VehicleConfig::Load(const std::string& path, std::string& error) {
 
     std::unordered_map<std::string, float> values;
     std::vector<float> gears;
+    std::string suspensionLayoutValue;
+    bool suspensionLayoutSeen = false;
     std::string line;
     int lineNumber = 0;
     while (std::getline(file, line)) {
@@ -45,6 +47,15 @@ bool VehicleConfig::Load(const std::string& path, std::string& error) {
         if (key.empty() || value.empty()) {
             error = "Empty key or value on line " + std::to_string(lineNumber);
             return false;
+        }
+        if (key == "SuspensionLayout") {
+            if (suspensionLayoutSeen) {
+                error = "Duplicate config key: " + key;
+                return false;
+            }
+            suspensionLayoutSeen = true;
+            suspensionLayoutValue = value;
+            continue;
         }
         if (key == "GearRatios") {
             std::stringstream stream(value);
@@ -90,6 +101,15 @@ bool VehicleConfig::Load(const std::string& path, std::string& error) {
     READ("lowerArmOuterX", lowerArmOuterX);
     READ("lowerArmOuterY", lowerArmOuterY);
     READ("hubOffsetY", hubOffsetY);
+    READ("macPhersonLowerArmInnerX", macPhersonLowerArmInnerX);
+    READ("macPhersonLowerArmInnerY", macPhersonLowerArmInnerY);
+    READ("macPhersonLowerArmInnerZ", macPhersonLowerArmInnerZ);
+    READ("macPhersonLowerArmOuterX", macPhersonLowerArmOuterX);
+    READ("macPhersonLowerArmOuterY", macPhersonLowerArmOuterY);
+    READ("macPhersonStrutUpperMountX", macPhersonStrutUpperMountX);
+    READ("macPhersonStrutUpperMountY", macPhersonStrutUpperMountY);
+    READ("macPhersonStrutLowerMountOffsetY", macPhersonStrutLowerMountOffsetY);
+    READ("macPhersonStrutLength", macPhersonStrutLength);
     READ("springChassisMountX", springChassisMountX);
     READ("springChassisMountY", springChassisMountY);
     READ("springChassisMountZ", springChassisMountZ);
@@ -125,11 +145,22 @@ bool VehicleConfig::Load(const std::string& path, std::string& error) {
     READ("RearRightX", wheelPositions[3].x); READ("RearRightY", wheelPositions[3].y); READ("RearRightZ", wheelPositions[3].z);
 #undef READ
 
+    if (suspensionLayoutSeen) {
+        if (suspensionLayoutValue == "MacPherson") {
+            suspensionLayout = SuspensionLayout::MacPherson;
+        } else if (suspensionLayoutValue == "DoubleWishbone") {
+            suspensionLayout = SuspensionLayout::DoubleWishbone;
+        } else {
+            error = "Invalid SuspensionLayout: " + suspensionLayoutValue;
+            return false;
+        }
+    }
+
     if (!gears.empty()) gearRatios = gears;
     const char* known[] = {
         "mass","spawnClearance","ColliderHalfExtentsX","ColliderHalfExtentsY","ColliderHalfExtentsZ",
         "wheelRadius","wheelInertia","upperArmInnerX","upperArmInnerY","upperArmInnerZ","upperArmOuterX","upperArmOuterY",
-        "lowerArmInnerX","lowerArmInnerY","lowerArmInnerZ","lowerArmOuterX","lowerArmOuterY","hubOffsetY","springChassisMountX","springChassisMountY","springChassisMountZ",
+        "lowerArmInnerX","lowerArmInnerY","lowerArmInnerZ","lowerArmOuterX","lowerArmOuterY","hubOffsetY",\n        "macPhersonLowerArmInnerX","macPhersonLowerArmInnerY","macPhersonLowerArmInnerZ","macPhersonLowerArmOuterX","macPhersonLowerArmOuterY",\n        "macPhersonStrutUpperMountX","macPhersonStrutUpperMountY","macPhersonStrutLowerMountOffsetY","macPhersonStrutLength","springChassisMountX","springChassisMountY","springChassisMountZ",
         "springUprightMountOffsetX","springUprightMountOffsetY","springUprightMountOffsetZ",
         "suspensionRestLength","suspensionBumpTravel","suspensionReboundTravel",
         "frontSpringRate","rearSpringRate","frontCompressionDamping","frontReboundDamping","rearCompressionDamping","rearReboundDamping",
@@ -147,6 +178,11 @@ bool VehicleConfig::Load(const std::string& path, std::string& error) {
 }
 
 bool VehicleConfig::Validate(std::string& error) const {
+    if (suspensionLayout != SuspensionLayout::MacPherson &&
+        suspensionLayout != SuspensionLayout::DoubleWishbone) {
+        error = "Invalid suspension layout";
+        return false;
+    }
     if (mass <= 0.0f || spawnClearance <= 0.0f ||
         colliderHalfExtents.x <= 0.0f || colliderHalfExtents.y <= 0.0f || colliderHalfExtents.z <= 0.0f ||
         wheelRadius <= 0.0f || wheelInertia <= 0.0f) {
@@ -158,6 +194,13 @@ bool VehicleConfig::Validate(std::string& error) const {
         frontCompressionDamping < 0.0f || frontReboundDamping < 0.0f ||
         rearCompressionDamping < 0.0f || rearReboundDamping < 0.0f) {
         error = "Invalid suspension lengths, spring rates or damping";
+        return false;
+    }
+    if (macPhersonLowerArmInnerX <= 0.0f ||
+        macPhersonLowerArmInnerZ <= 0.0f ||
+        macPhersonLowerArmOuterX <= 0.0f ||
+        macPhersonStrutLength <= 0.0f) {
+        error = "Invalid MacPherson geometry dimensions";
         return false;
     }
     if (staticFriction < 0.0f || dynamicFriction < 0.0f ||
