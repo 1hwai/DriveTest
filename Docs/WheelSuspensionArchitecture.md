@@ -1323,10 +1323,14 @@ The automatic strut length remains the distance from the configured upper mount 
 - [x] Implement the contract in `DoubleWishbone` and `MacPherson`.
 - [x] Make `Wheel` depend on the interface instead of concrete `DoubleWishbone`.
 - [x] Add `MacPherson.cpp` to the application and vehicle-diagnostics build targets.
-- [ ] Verify compilation and regression behavior with the local build and vehicle diagnostics.
+- [x] Verify the Linux application and diagnostics compile; user-run `DriveTest` build completed successfully.
+- [x] Verify `VehicleDiagnostics` and the Physics, MacPherson, and Suspension diagnostics pass.
+- [ ] Investigate `DoubleWishboneDiagnostics` separately; it currently fails the `hubPosition` check and is explicitly deferred from this work.
 - [ ] Replace `Car`'s concrete geometry array and setup path with selectable runtime configuration.
 
-This is the first consumer-boundary step; it does not yet make MacPherson selectable or active in `Car`. Runtime integration proceeds after the interface boundary is build-verified.
+**Verification evidence (user-run):** `DriveTest` and all five diagnostic targets built. Four of five CTest cases passed: `PhysicsDiagnostics`, `VehicleDiagnostics`, `MacPhersonDiagnostics`, and `SuspensionDiagnostics`. `DoubleWishboneDiagnostics` failed with `hubPosition=0`; its investigation is out of scope for this phase. The result verifies compilation and the listed passing diagnostics, not a clean full CTest run.
+
+This is the first consumer-boundary step; it does not yet make MacPherson selectable or active in `Car`. `Wheel` no longer names a concrete suspension type, but it still accepts the geometry and suspension model together, while `Car` owns concrete `DoubleWishbone` storage and performs geometry-specific travel solving. Runtime selection remains the next separate task.
 
 ## 13. Non-Goals
 
