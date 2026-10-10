@@ -40,6 +40,8 @@ public:
         const IWheelContactProvider& contactProvider,
         const PhysicsWorld& physicsWorld,
         Suspension& suspension,
+        const Vec3& springMountA,
+        const Vec3& springMountB,
         float deltaTime
     );
 
