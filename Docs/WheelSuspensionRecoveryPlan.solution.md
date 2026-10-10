@@ -483,3 +483,12 @@ These are proposed priorities only; implementation remains blocked pending revie
 - **Verification commands:** `git pull --rebase origin suspension-runtime-integration`; `cmake --build build --target DriveTestMacPhersonDiagnostics`; `./build/DriveTestMacPhersonDiagnostics`.
 - **Verification status:** **Pending user build/run output.** The source update is committed, but the diagnostic was not built or executed during this work. Do not mark the expanded pose sweep as passing until its output is inspected.
 - **Limits:** This adds combined-pose samples; it is not exhaustive coverage of every travel value, configuration, solver failure boundary, or assembly branch. It does not integrate MacPherson into vehicle runtime.
+
+
+### MP-KIN-06 execution result — 2026-10-10
+
+- **User-provided output:** All existing diagnostic flags, `poseSweep=1`, and `poseConstraints=1` passed; final output was `[PASS] MacPherson travel diagnostics`. `maxHubStep=0.00539565`, `maxHorizontalDrift=0.0213085`.
+- **Assessment:** The diagnostic passed for the translated chassis position, roll/pitch poses, and three travel samples.
+- **Interpretation note:** `maxHorizontalDrift` is the maximum absolute x/z coordinate deviation from the reference hub position over the travel sweep; it is neither the magnitude of the horizontal displacement vector nor pure numerical error. Its threshold is 0.20m, and this result alone does not establish geometric accuracy against a real vehicle.
+- **Evidence limitation:** The user supplied the build/run output; no separate build or execution was performed during this documentation update.
+- **Status:** MP-KIN-06 verified (diagnostic scope only).
