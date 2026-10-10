@@ -12,7 +12,7 @@
 #include "../Physics/RigidBody.h"
 #include "../Physics/Terrain.h"
 #include "../Vehicle/Car.h"
-#include "../Vehicle/RunningGear/DoubleWishbone.h"
+#include "../Vehicle/RunningGear/ISuspensionGeometry.h"
 #include "../Vehicle/RunningGear/Wheel.h"
 #include "../Vehicle/RunningGear/Suspension.h"
 #include "../Vehicle/RunningGear/Tire.h"
@@ -271,7 +271,7 @@ int main() {
     float maxAbsEnergyStepDelta = 0.0f;
 
     for (size_t i = 0; i < WheelCount; ++i) {
-        const DoubleWishbone& geometry =
+        const ISuspensionGeometry& geometry =
             car.GetSuspensionGeometry(static_cast<WheelIndex>(i));
         previousMountA[i] = geometry.GetSpringMountA();
         previousMountB[i] = geometry.GetSpringMountB();
