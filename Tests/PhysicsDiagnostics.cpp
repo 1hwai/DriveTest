@@ -294,7 +294,7 @@ int main() {
         // solved mount positions so their work can be accounted for separately.
         for (size_t i = 0; i < WheelCount; ++i) {
             const WheelIndex index = static_cast<WheelIndex>(i);
-            const DoubleWishbone& geometry = car.GetSuspensionGeometry(index);
+            const ISuspensionGeometry& geometry = car.GetSuspensionGeometry(index);
             const Wheel& wheel = car.GetWheel(index);
             const Suspension& suspension = car.GetSuspension(index);
             const Vec3 mountA = geometry.GetSpringMountA();
@@ -450,7 +450,7 @@ int main() {
                 const WheelIndex index = static_cast<WheelIndex>(i);
                 const Wheel& wheel = car.GetWheel(index);
                 const Suspension& suspension = car.GetSuspension(index);
-                const DoubleWishbone& geometry = car.GetSuspensionGeometry(index);
+                const ISuspensionGeometry& geometry = car.GetSuspensionGeometry(index);
                 WheelEnergySnapshot& item = snapshot.wheels[i];
                 item.compression = suspension.GetCompression();
                 item.compressionVelocity = suspension.GetCompressionVelocity();
