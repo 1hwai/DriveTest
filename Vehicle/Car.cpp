@@ -387,13 +387,18 @@ void Car::UpdatePhysics(
     }
 
     for (size_t i = 0; i < WheelCount; ++i) {
+        m_suspensions[i].UpdateFromMounts(
+            m_suspensionGeometry[i].GetSpringMountA(),
+            m_suspensionGeometry[i].GetSpringMountB(),
+            deltaTime
+        );
+
         m_wheels[i].Update(
             i,
             *m_chassis,
             *m_contactProvider,
             physicsWorld,
             m_suspensions[i],
-            m_suspensionGeometry[i],
             deltaTime
         );
 
