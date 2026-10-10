@@ -338,6 +338,17 @@ int main() {
         infiniteTravelRejected &&
         impossibleFiniteTravelRejected;
 
+    // Exercise the geometric-constraint failure path, not only the
+    // early invalid-strut-length guard. The requested distance is outside
+    // the arm/strut intersection range for this diagnostic configuration.
+    const bool unreachableConstraintRejected =
+        !left.SolveAtTravel(
+            chassisPosition,
+            identity,
+            0.30f
+        ) &&
+        geometryUnchangedAfterRejectedTravel();
+
     const auto rejectedPosePreservesGeometry = [&](
         const Vec3& position,
         const Quaternion& orientation
@@ -695,6 +706,7 @@ int main() {
         << " steeringRotation=" << steeringRotation
         << " finite=" << finite
         << " invalidTravelRejected=" << invalidTravelRejected
+        << " unreachableConstraintRejected=" << unreachableConstraintRejected
         << " nonFinitePositionRejected=" << nonFinitePositionRejected
         << " invalidOrientationRejected=" << invalidOrientationRejected
         << " invalidChassisPoseRejected=" << invalidChassisPoseRejected
@@ -709,6 +721,7 @@ int main() {
 
     if (!finite ||
         !invalidTravelRejected ||
+        !unreachableConstraintRejected ||
         !invalidChassisPoseRejected ||
         !armLengths ||
         !strutConstraint ||
