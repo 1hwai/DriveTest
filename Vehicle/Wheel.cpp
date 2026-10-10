@@ -1,7 +1,7 @@
 #include "Wheel.h"
 
 #include "Suspension.h"
-#include "DoubleWishbone.h"
+#include "ISuspensionGeometry.h"
 #include "IWheelContactProvider.h"
 #include "../Physics/PhysicsWorld.h"
 #include "../Physics/RigidBody.h"
@@ -106,7 +106,7 @@ void Wheel::Update(
     const IWheelContactProvider& contactProvider,
     const PhysicsWorld& physicsWorld,
     Suspension& suspension,
-    const DoubleWishbone& geometry,
+    const ISuspensionGeometry& geometry,
     float deltaTime
 ) {
     (void)index;
