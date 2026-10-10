@@ -571,3 +571,16 @@
 - **검증 범위:** 테스트에서 지정한 잘못된 입력 사례에 한정된다. `Configure()`의 모든 설정값이나 런타임 차량 통합을 검증한 것은 아니다.
 - **환경 증거 한계:** 실행 결과는 사용자가 제공했다. 이 기록 갱신에서 별도 빌드나 실행을 수행하지 않았다.
 - **상태:** MP-KIN-05 검증됨(범위 한정).
+
+
+## 2026-10-10 — MP-KIN-06: test constraints across translated chassis poses and nonzero travel
+
+- **Problem / evidence:** The existing pose sweep checked roll/pitch only at zero travel and at a zero chassis position. The separate travel sweep covered `[-0.075, +0.075]` only at identity chassis orientation. This left combined nonzero chassis translation, chassis rotation, and suspension travel untested.
+- **Agreed scope:** Extend `Tests/MacPhersonDiagnostics.cpp` only. Keep the solver, configuration, Double Wishbone, spring-force model, and runtime integration unchanged.
+- **Change:** The pose sweep now uses a nonzero chassis position `(3, -2, 4)`, the existing roll/pitch grid, and travel samples `-0.05, 0, +0.05`. At each successful left/right solve, it checks both lower-arm link lengths, the expected strut length (`configured length - travel`), lower-mount and hub offsets, finite/unit hub orientation, and mirrored left/right hub positions in chassis-local space.
+- **Expected result:** All sampled combinations solve successfully and satisfy the stated geometric invariants within the diagnostic tolerance.
+- **Allowed / changed files:** `Tests/MacPhersonDiagnostics.cpp` only.
+- **Change revision:** `ffb1692e7e2d2822dbf21e32b20ae1a744c1076a`.
+- **Verification commands:** `git pull --rebase origin suspension-runtime-integration`; `cmake --build build --target DriveTestMacPhersonDiagnostics`; `./build/DriveTestMacPhersonDiagnostics`.
+- **Verification status:** **Pending user build/run output.** The source update is committed, but this work did not build or execute the diagnostic. Do not mark the expanded pose sweep as passing until the output is inspected.
+- **Limits:** This adds combined-pose samples, not exhaustive coverage of every travel value, configuration, solver failure boundary, or assembly branch. It does not integrate MacPherson into the vehicle runtime.
