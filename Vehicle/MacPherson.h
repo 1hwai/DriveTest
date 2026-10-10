@@ -2,6 +2,7 @@
 
 #include "../Core/Math/Quaternion.h"
 #include "../Core/Math/Vec3.h"
+#include "ISuspensionGeometry.h"
 
 struct MacPhersonArmConfig {
     Vec3 innerPivotA;
@@ -25,7 +26,7 @@ struct MacPhersonConfig {
     MacPhersonUprightConfig upright;
 };
 
-class MacPherson {
+class MacPherson : public ISuspensionGeometry {
 public:
     MacPherson();
 
@@ -39,17 +40,17 @@ public:
         const Vec3& chassisPosition,
         const Quaternion& chassisOrientation,
         float travel
-    );
+    ) override;
 
     const Vec3& GetLowerOuterJoint() const;
     const Vec3& GetStrutLowerMount() const;
-    const Vec3& GetSpringMountA() const;
-    const Vec3& GetSpringMountB() const;
-    Vec3 GetSteeringAxisStart() const;
-    Vec3 GetSteeringAxisEnd() const;
-    bool ApplySteering(float angle);
-    const Vec3& GetHubPosition() const;
-    const Quaternion& GetHubOrientation() const;
+    const Vec3& GetSpringMountA() const override;
+    const Vec3& GetSpringMountB() const override;
+    Vec3 GetSteeringAxisStart() const override;
+    Vec3 GetSteeringAxisEnd() const override;
+    bool ApplySteering(float angle) override;
+    const Vec3& GetHubPosition() const override;
+    const Quaternion& GetHubOrientation() const override;
     float GetLowerArmLengthA() const;
     float GetLowerArmLengthB() const;
     float GetStrutLength() const;
