@@ -2,6 +2,8 @@
 
 #include <memory>
 
+#include "RunningGear/WheelIndex.h"
+
 class RigidBody;
 class PhysicsWorld;
 class IWheelContactProvider;
@@ -14,7 +16,6 @@ class Engine;
 class Transmission;
 class DoubleWishbone;
 struct VehicleConfig;
-enum class WheelIndex;
 
 class Car {
 public:

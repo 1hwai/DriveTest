@@ -9,21 +9,11 @@
 #include "Suspension.h"
 #include "Tire.h"
 #include "Wheel.h"
+#include "WheelIndex.h"
 
 class RigidBody;
 class PhysicsWorld;
 struct VehicleConfig;
-
-enum class WheelIndex {
-    FrontLeft,
-    FrontRight,
-    RearLeft,
-    RearRight,
-    Count
-};
-
-constexpr size_t WheelCount =
-    static_cast<size_t>(WheelIndex::Count);
 
 class RunningGear {
 public:
