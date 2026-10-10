@@ -155,6 +155,17 @@ int main() {
     const Vec3 chassisPosition(0.0f, 0.0f, 0.0f);
     const Quaternion identity = Quaternion::Identity();
 
+    MacPhersonConfig nonFiniteConfig = leftConfig;
+    nonFiniteConfig.upright.hubOffset.x =
+        std::numeric_limits<float>::quiet_NaN();
+    MacPhersonConfig negativeStrutConfig = leftConfig;
+    negativeStrutConfig.strut.length = -0.1f;
+    const bool invalidConfigRejected =
+        !left.Configure(nonFiniteConfig) &&
+        Near(left.GetStrutLength(), leftConfig.strut.length) &&
+        !left.Configure(negativeStrutConfig) &&
+        Near(left.GetStrutLength(), leftConfig.strut.length);
+
     const bool solvedLeft =
         left.Solve(chassisPosition, identity);
     const bool solvedRight =
@@ -783,6 +794,7 @@ int main() {
         << " steeringRotation=" << steeringRotation
         << " finite=" << finite
         << " invalidTravelRejected=" << invalidTravelRejected
+        << " invalidConfigRejected=" << invalidConfigRejected
         << " unreachableConstraintRejected=" << unreachableConstraintRejected
         << " nonFinitePositionRejected=" << nonFinitePositionRejected
         << " invalidOrientationRejected=" << invalidOrientationRejected
@@ -803,6 +815,7 @@ int main() {
 
     if (!finite ||
         !invalidTravelRejected ||
+        !invalidConfigRejected ||
         !unreachableConstraintRejected ||
         !invalidChassisPoseRejected ||
         !armLengths ||
