@@ -407,9 +407,14 @@ int main() {
     Vec3 previousLeftHub;
     bool hasPrevious = false;
 
-    // Dense, deterministic sample grid over the currently tested travel range.
+    // Save the forward sweep so the reverse sweep can verify that branch
+    // selection depends on the configured reference, not solve call order.
     constexpr int TravelSteps = 30;
     constexpr float TravelStep = 0.005f;
+    Vec3 forwardLeftJoints[TravelSteps + 1];
+    Vec3 forwardRightJoints[TravelSteps + 1];
+    Vec3 forwardLeftHubs[TravelSteps + 1];
+    Vec3 forwardRightHubs[TravelSteps + 1];
 
     for (int i = 0; i <= TravelSteps; ++i) {
         const float value =
@@ -440,6 +445,11 @@ int main() {
             left.GetHubPosition();
         const Vec3 rightHubAtTravel =
             right.GetHubPosition();
+
+        forwardLeftJoints[i] = leftAtTravel;
+        forwardRightJoints[i] = rightAtTravel;
+        forwardLeftHubs[i] = leftHubAtTravel;
+        forwardRightHubs[i] = rightHubAtTravel;
 
         const float expectedStrutLength =
             left.GetStrutLength() - value;
@@ -506,6 +516,25 @@ int main() {
 
         previousLeftHub = leftHubAtTravel;
         hasPrevious = true;
+    }
+
+    bool branchSelectionStable = true;
+    for (int i = TravelSteps; i >= 0; --i) {
+        const float value =
+            -0.075f + static_cast<float>(i) * TravelStep;
+        const bool solvedLeftReverse =
+            left.SolveAtTravel(chassisPosition, identity, value);
+        const bool solvedRightReverse =
+            right.SolveAtTravel(chassisPosition, identity, value);
+
+        branchSelectionStable =
+            solvedLeftReverse &&
+            solvedRightReverse &&
+            NearVec(left.GetLowerOuterJoint(), forwardLeftJoints[i]) &&
+            NearVec(right.GetLowerOuterJoint(), forwardRightJoints[i]) &&
+            NearVec(left.GetHubPosition(), forwardLeftHubs[i]) &&
+            NearVec(right.GetHubPosition(), forwardRightHubs[i]) &&
+            branchSelectionStable;
     }
 
     const bool endpoints =
@@ -715,6 +744,7 @@ int main() {
         << " poseSweep=" << poseSweep
         << " poseConstraints=" << poseConstraints
         << " continuity=" << continuity
+        << " branchSelectionStable=" << branchSelectionStable
         << " maxHubStep=" << maxHubStep
         << " maxHorizontalDrift=" << maxHorizontalDrift
         << '\n';
@@ -735,7 +765,8 @@ int main() {
         !poseSweep ||
         !poseConstraints ||
         !orientation ||
-        !continuity) {
+        !continuity ||
+        !branchSelectionStable) {
         std::cerr
             << "[FAIL] MacPherson travel diagnostics";
         return 1;
