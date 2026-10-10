@@ -1328,7 +1328,9 @@ The automatic strut length remains the distance from the configured upper mount 
 - [ ] Investigate `DoubleWishboneDiagnostics` separately; it currently fails the `hubPosition` check and is explicitly deferred from this work.
 - [ ] Replace `Car`'s concrete geometry array and setup path with selectable runtime configuration.
 
-**Verification evidence (user-run):** `DriveTest` and all five diagnostic targets built. Four of five CTest cases passed: `PhysicsDiagnostics`, `VehicleDiagnostics`, `MacPhersonDiagnostics`, and `SuspensionDiagnostics`. `DoubleWishboneDiagnostics` failed with `hubPosition=0`; its investigation is out of scope for this phase. The result verifies compilation and the listed passing diagnostics, not a clean full CTest run.
+**Verification evidence (user-run):** After the Linux build, CTest passed `PhysicsDiagnostics`, `VehicleDiagnostics`, `MacPhersonDiagnostics`, and `SuspensionDiagnostics`. `DoubleWishboneDiagnostics` failed with `hubPosition=0`. The test is temporarily disabled in CTest pending a separate investigation; its executable remains buildable. This does not mean the full diagnostic suite passed.
+
+`Car` dependency audit: `Car.h` directly includes `DoubleWishbone.h`, stores a concrete array, and exposes concrete getters. `Car.cpp` directly constructs `DoubleWishboneConfig`, calls `Configure`/`Solve`, uses copied concrete candidates for travel search, and calls `ApplySteering`. `VehicleConfig` currently contains only Double Wishbone parameters, so replacing the array element type with `ISuspensionGeometry` alone would not enable runtime MacPherson selection. The next step is to design the geometry creation/selection boundary and configuration data before generalizing the Car update path.
 
 This is the first consumer-boundary step; it does not yet make MacPherson selectable or active in `Car`. `Wheel` no longer names a concrete suspension type, but it still accepts the geometry and suspension model together, while `Car` owns concrete `DoubleWishbone` storage and performs geometry-specific travel solving. Runtime selection remains the next separate task.
 
