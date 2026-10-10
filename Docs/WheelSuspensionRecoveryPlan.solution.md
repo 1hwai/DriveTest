@@ -461,3 +461,12 @@ These are proposed priorities only; implementation remains blocked pending revie
 - **Verification status:** Source and diagnostic changes committed. Awaiting local build/run output; not yet marked passing.
 - **Limit:** This validates the chassis pose passed to SolveAtTravel() only. Validation of all Configure() values, quaternion construction paths, and vehicle runtime integration are out of scope.
 - **Verification commands:** git pull --rebase origin suspension-runtime-integration; cmake --build build --target DriveTestMacPhersonDiagnostics; ./build/DriveTestMacPhersonDiagnostics.
+
+
+### MP-KIN-05 execution result — 2026-10-10
+
+- **User-provided output:** `nonFinitePositionRejected=1`, `invalidOrientationRejected=1`, `invalidChassisPoseRejected=1`, and all existing diagnostic flags were `1`; final line `[PASS] MacPherson travel diagnostics`.
+- **Assessment:** Rejection of non-finite chassis positions and invalid orientation quaternions, plus preservation of the checked geometry state after rejection, passed.
+- **Scope:** Limited to the invalid input cases explicitly included in the diagnostic. This does not validate every `Configure()` value or vehicle runtime integration.
+- **Evidence limitation:** The user supplied the execution output; no separate build or execution was performed during this documentation update.
+- **Status:** MP-KIN-05 verified (scope-limited).
