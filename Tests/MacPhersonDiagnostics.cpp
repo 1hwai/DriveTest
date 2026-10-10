@@ -338,6 +338,42 @@ int main() {
         infiniteTravelRejected &&
         impossibleFiniteTravelRejected;
 
+    const auto rejectedPosePreservesGeometry = [&](
+        const Vec3& position,
+        const Quaternion& orientation
+    ) {
+        return !left.SolveAtTravel(position, orientation, 0.0f) &&
+            geometryUnchangedAfterRejectedTravel();
+    };
+    const float nan = std::numeric_limits<float>::quiet_NaN();
+    const float infinity = std::numeric_limits<float>::infinity();
+    const bool nonFinitePositionRejected =
+        rejectedPosePreservesGeometry(
+            Vec3(nan, 0.0f, 0.0f), identity
+        ) &&
+        rejectedPosePreservesGeometry(
+            Vec3(0.0f, infinity, 0.0f), identity
+        );
+    const bool invalidOrientationRejected =
+        rejectedPosePreservesGeometry(
+            chassisPosition,
+            Quaternion(nan, 0.0f, 0.0f, 1.0f)
+        ) &&
+        rejectedPosePreservesGeometry(
+            chassisPosition,
+            Quaternion(1.0f, 0.0f, infinity, 0.0f)
+        ) &&
+        rejectedPosePreservesGeometry(
+            chassisPosition,
+            Quaternion(0.0f, 0.0f, 0.0f, 0.0f)
+        ) &&
+        rejectedPosePreservesGeometry(
+            chassisPosition,
+            Quaternion(2.0f, 0.0f, 0.0f, 0.0f)
+        );
+    const bool invalidChassisPoseRejected =
+        nonFinitePositionRejected && invalidOrientationRejected;
+
     const bool finite =
         solvedLeft &&
         solvedRight &&
@@ -650,6 +686,9 @@ int main() {
         << " steeringRotation=" << steeringRotation
         << " finite=" << finite
         << " invalidTravelRejected=" << invalidTravelRejected
+        << " nonFinitePositionRejected=" << nonFinitePositionRejected
+        << " invalidOrientationRejected=" << invalidOrientationRejected
+        << " invalidChassisPoseRejected=" << invalidChassisPoseRejected
         << " travel=" << travel
         << " endpoints=" << endpoints
         << " poseSweep=" << poseSweep
@@ -661,6 +700,7 @@ int main() {
 
     if (!finite ||
         !invalidTravelRejected ||
+        !invalidChassisPoseRejected ||
         !armLengths ||
         !strutConstraint ||
         !symmetry ||
