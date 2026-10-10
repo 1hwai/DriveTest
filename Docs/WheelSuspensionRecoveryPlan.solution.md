@@ -401,3 +401,14 @@ These are proposed priorities only; implementation remains blocked pending revie
 - **Scope:** This is based on the supplied local build/run output. It establishes handling of non-finite `travel` input only; it does not establish validation of all configuration values, full-stroke continuity, or vehicle runtime integration.
 - **Evidence limitation:** The user supplied the execution output; no separate build or execution was performed during this documentation update.
 - **Status:** MP-KIN-02 verified (scope-limited).
+
+
+## 2026-10-10 — MP-KIN-03: preserve geometry when a solver call fails
+
+- **Observed issue:** MP-KIN-02 rejects NaN and infinity before changing state, but a finite travel value can still fail because the target strut length is invalid or the geometric constraints cannot be solved. Previously, `SolveAtTravel()` updated pivots and mounts before those failure checks, potentially leaving partially updated geometry even though it returned `false`.
+- **Change:** `SolveAtTravel()` snapshots the lower-arm, strut, and upright states and restores all three if the strut-length check or `SolveConstraints()` fails.
+- **Diagnostic:** Tests rejection of NaN, positive infinity, and a finite but impossible travel (`travel == GetStrutLength()`). After each rejection, it checks that hub position, lower outer joint, spring mounts A/B, and hub orientation remain unchanged.
+- **Change revisions:** `157bf2a3d33a3c643711fcb97c967e4ad8f046db` (solver), `6ee56ccb07ad1e2b14688ac7fa7ac5419064c9d5` (diagnostic).
+- **Verification status:** Source changes are committed. Awaiting the user's local build/run output; not yet marked as passing.
+- **Remaining limits:** The rollback covers strut-length and geometric-constraint failures in `SolveAtTravel()`. Validation of invalid values passed to `Configure()` and vehicle runtime integration are outside this work unit.
+- **Verification commands:** `git pull --rebase origin suspension-runtime-integration`; `cmake --build build --target DriveTestMacPhersonDiagnostics`; `./build/DriveTestMacPhersonDiagnostics`.
