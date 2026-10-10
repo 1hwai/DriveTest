@@ -379,7 +379,7 @@ void RunningGear::UpdatePhysics(
                 }
             }
         } else {
-            solvedGeometry = lowGeometry;
+            solvedGeometry = lowGeometry->Clone();
         }
 
         if (i < 2) {
@@ -401,8 +401,8 @@ void RunningGear::UpdatePhysics(
 
     for (size_t i = 0; i < WheelCount; ++i) {
         m_suspensions[i].UpdateFromMounts(
-            m_suspensionGeometry[i].GetSpringMountA(),
-            m_suspensionGeometry[i].GetSpringMountB(),
+            m_suspensionGeometry[i]->GetSpringMountA(),
+            m_suspensionGeometry[i]->GetSpringMountB(),
             deltaTime
         );
 
@@ -634,7 +634,7 @@ ISuspensionGeometry& RunningGear::GetSuspensionGeometry(WheelIndex index) {
 }
 
 const ISuspensionGeometry& RunningGear::GetSuspensionGeometry(WheelIndex index) const {
-    return m_suspensionGeometry[ToIndex(index)];
+    return *m_suspensionGeometry[ToIndex(index)];
 }
 
 Wheel& RunningGear::GetWheel(WheelIndex index) {
