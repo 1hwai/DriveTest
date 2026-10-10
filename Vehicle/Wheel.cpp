@@ -105,6 +105,8 @@ void Wheel::Update(
     const IWheelContactProvider& contactProvider,
     const PhysicsWorld& physicsWorld,
     Suspension& suspension,
+    const Vec3& springMountA,
+    const Vec3& springMountB,
     float deltaTime
 ) {
     (void)index;
@@ -151,11 +153,9 @@ void Wheel::Update(
         ? contact.queryDistance
         : (contact.point - worldMount).Length();
 
-    const Vec3& mountA = geometry.GetSpringMountA();
-    const Vec3& mountB = geometry.GetSpringMountB();
-    const Vec3 springAxis = (mountB - mountA).Normalized();
+    const Vec3 springAxis = (springMountB - springMountA).Normalized();
     const Vec3 suspensionForce =
-        suspension.CalculateForceVector(mountA, mountB) * -1.0f;
+        suspension.CalculateForceVector(springMountA, springMountB) * -1.0f;
 
     m_suspensionLength = suspension.GetLength();
     m_compression = suspension.GetCompression();
@@ -169,14 +169,14 @@ void Wheel::Update(
     m_tireReactionTorque = 0.0f;
 
     m_suspensionPower =
-        suspensionForce.Dot(body.GetPointVelocity(mountA));
+        suspensionForce.Dot(body.GetPointVelocity(springMountA));
     m_suspensionResidual =
         m_suspensionPower +
         m_springForce * m_compressionVelocity +
         m_damperForce * m_compressionVelocity;
 
     if (m_force > 0.0f)
-        body.AddForceAtPoint(suspensionForce, mountA);
+        body.AddForceAtPoint(suspensionForce, springMountA);
 
     m_grounded = true;
     m_previousCompression = m_compression;
