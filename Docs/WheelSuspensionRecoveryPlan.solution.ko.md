@@ -605,3 +605,14 @@
 - **검증 명령어:** `git pull --rebase origin suspension-runtime-integration`; `cmake --build build --target DriveTestMacPhersonDiagnostics`; `./build/DriveTestMacPhersonDiagnostics`.
 - **검증 상태:** 커밋 후 사용자의 로컬 빌드·실행 결과 대기. 이 기록 갱신에서는 빌드나 실행을 수행하지 않았다.
 - **한계 및 다음 단계:** 테스트용 설정에서 선택한 한 가지 기하 불가능 사례만 다룬다. 다음에는 후보 교차점 두 개 사이의 조립 분기 선택 및 특이점 인접 연속성을 별도로 조사한다.
+
+
+## 2026-10-10 — MP-KIN-08: 스트로크 순방향·역방향 솔브의 조립 분기 일관성
+
+- **관찰된 사실:** `SolveConstraints()`는 두 후보 교차점 중 `lowerArm.outerJoint` 참조점에 더 가까운 후보를 선택한다. `SolveAtTravel()`은 솔브마다 이 참조점을 설정된 차체 로컬 `outerJoint` 위치로 다시 설정한 뒤 제약조건을 푼다. 따라서 현재 구현의 후보 선택은 직전 솔브 결과를 직접 추적하는 방식이 아니라 설정된 기준점에 대한 선택이다.
+- **검증 질문:** 동일한 스트로크 표본을 증가 순서와 감소 순서로 솔브했을 때 동일한 기하 상태가 나오는가?
+- **변경:** 진단에서 31개 표본의 하부 외측 조인트와 허브 위치를 순방향으로 저장한 뒤, 동일 표본을 역순으로 다시 솔브하고 좌우 조인트·허브 위치가 각각 일치하는지 검사한다. `branchSelectionStable`가 결과에 출력되며 실패 시 프로그램이 실패한다.
+- **범위:** 기존 스트로크 범위 `[-0.075, +0.075]`만 사용한다. 솔버 알고리즘과 차량 런타임은 변경하지 않는다.
+- **검증 명령어:** `git pull --rebase origin suspension-runtime-integration`; `cmake --build build --target DriveTestMacPhersonDiagnostics`; `./build/DriveTestMacPhersonDiagnostics`.
+- **검증 상태:** 커밋 후 사용자 로컬 빌드·실행 결과 대기. 이 기록 갱신에서는 빌드나 실행을 수행하지 않았다.
+- **한계 및 다음 단계:** 이 검사는 현재 테스트 구간에서 호출 순서에 따른 분기 변화만 감지한다. 접선 교차에 가까운 특이점, 설정값 경계, 실제 차량의 유효 스트로크 범위를 검증하지 않는다. 다음에는 특이점 인접 유효/무효 경계를 분석한다.
