@@ -562,3 +562,12 @@
 - **검증 상태:** 소스와 진단 커밋 완료. 로컬 빌드·실행 결과 대기 중이며 아직 통과로 판정하지 않는다.
 - **한계:** 이 검사는 SolveAtTravel()에 전달된 차체 자세만 검증한다. Configure() 설정값 전체의 유효성, 쿼터니언 생성 경로, 차량 런타임 통합은 범위 밖이다.
 - **검증 명령어:** git pull --rebase origin suspension-runtime-integration; cmake --build build --target DriveTestMacPhersonDiagnostics; ./build/DriveTestMacPhersonDiagnostics.
+
+
+### MP-KIN-05 실행 결과 — 2026-10-10
+
+- **사용자 제공 실행 결과:** `nonFinitePositionRejected=1`, `invalidOrientationRejected=1`, `invalidChassisPoseRejected=1` 및 기존 진단 플래그가 모두 `1`; 최종 `[PASS] MacPherson travel diagnostics`.
+- **판정:** 비유한 차체 위치와 잘못된 방향 쿼터니언 거부, 거부 시 검사 대상 기하 상태 보존 검사가 통과했다.
+- **검증 범위:** 테스트에서 지정한 잘못된 입력 사례에 한정된다. `Configure()`의 모든 설정값이나 런타임 차량 통합을 검증한 것은 아니다.
+- **환경 증거 한계:** 실행 결과는 사용자가 제공했다. 이 기록 갱신에서 별도 빌드나 실행을 수행하지 않았다.
+- **상태:** MP-KIN-05 검증됨(범위 한정).
