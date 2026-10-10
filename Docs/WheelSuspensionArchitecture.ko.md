@@ -765,7 +765,9 @@ public:
 - [ ] `DoubleWishboneDiagnostics`는 별도 조사 대상으로 보류한다. 현재 `hubPosition` 검사에서 실패하며 이번 작업 범위에서는 수정하지 않는다.
 - [ ] `Car`의 구체 기하 배열 및 설정 생성 경로를 교체 가능한 런타임 구성으로 전환.
 
-**검증 근거(사용자 실행 결과):** `DriveTest`와 진단 타깃 5개가 빌드됐다. CTest 5개 중 `PhysicsDiagnostics`, `VehicleDiagnostics`, `MacPhersonDiagnostics`, `SuspensionDiagnostics` 4개가 통과했다. `DoubleWishboneDiagnostics`는 `hubPosition=0`으로 실패했으며, 원인 조사는 이 단계에서 보류한다. 따라서 컴파일과 명시된 진단 4개의 통과는 확인됐지만 전체 CTest가 통과한 것은 아니다.
+**검증 근거(사용자 실행 결과):** Linux 빌드 후 CTest에서 `PhysicsDiagnostics`, `VehicleDiagnostics`, `MacPhersonDiagnostics`, `SuspensionDiagnostics`가 통과했다. `DoubleWishboneDiagnostics`는 `hubPosition=0`으로 실패했다. 이 테스트는 원인 조사 전까지 CTest에서 임시 비활성화했으며, 실행 파일 빌드는 유지된다. 따라서 전체 진단이 통과한 것은 아니다.
+
+`Car` 의존성 조사 결과: `Car.h`가 `DoubleWishbone.h`를 직접 포함하고 배열 및 getter를 구체 타입으로 노출한다. `Car.cpp`도 `DoubleWishboneConfig` 구성, `Configure`/`Solve`, 복사 후보를 이용한 스트로크 탐색, `ApplySteering`에 직접 의존한다. 현재 `VehicleConfig`에는 Double Wishbone 파라미터만 있으므로, `ISuspensionGeometry`를 배열 타입으로 바꾸는 것만으로는 MacPherson 런타임 선택이 가능해지지 않는다. 다음 작업은 기하 구현 선택/생성과 설정 데이터의 경계를 설계한 뒤 Car 업데이트 경로를 일반화하는 것이다.
 
 이 변경은 소비자 경계를 정하는 첫 단계이며, 아직 `Car`에서 MacPherson을 선택하거나 실행할 수 있게 만든 것은 아니다. `Wheel`은 더 이상 구체 서스펜션 클래스를 직접 참조하지 않지만, 여전히 기하 인터페이스와 서스펜션 모델을 함께 받는다. 또한 `Car`는 구체 `DoubleWishbone` 배열과 해당 기하에 특화된 스트로크 탐색을 소유한다. 런타임 교체는 별도의 다음 작업이다.
 
