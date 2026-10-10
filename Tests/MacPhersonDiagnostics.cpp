@@ -528,6 +528,11 @@ int main() {
         -0.20f, 0.0f, 0.20f
     };
 
+    const Vec3 poseChassisPosition(3.0f, -2.0f, 4.0f);
+    const float poseTravels[] = {
+        -0.05f, 0.0f, 0.05f
+    };
+
     for (float roll : rollAngles) {
         for (float pitch : pitchAngles) {
             const Quaternion orientation =
@@ -542,127 +547,131 @@ int main() {
                     )
                 ).Normalized();
 
-            const bool solvedPoseLeft =
-                left.SolveAtTravel(
-                    chassisPosition,
-                    orientation,
-                    0.0f
-                );
-            const bool solvedPoseRight =
-                right.SolveAtTravel(
-                    chassisPosition,
-                    orientation,
-                    0.0f
-                );
+            for (float poseTravel : poseTravels) {
+                const bool solvedPoseLeft =
+                    left.SolveAtTravel(
+                        poseChassisPosition,
+                        orientation,
+                        poseTravel
+                    );
+                const bool solvedPoseRight =
+                    right.SolveAtTravel(
+                        poseChassisPosition,
+                        orientation,
+                        poseTravel
+                    );
 
-            if (!solvedPoseLeft || !solvedPoseRight) {
-                poseSweep = false;
-                continue;
+                if (!solvedPoseLeft || !solvedPoseRight) {
+                    poseSweep = false;
+                    continue;
+                }
+
+                const Vec3 leftPivotA =
+                    ToWorld(
+                        poseChassisPosition,
+                        orientation,
+                        leftConfig.lowerArm.innerPivotA
+                    );
+                const Vec3 leftPivotB =
+                    ToWorld(
+                        poseChassisPosition,
+                        orientation,
+                        leftConfig.lowerArm.innerPivotB
+                    );
+                const Vec3 rightPivotA =
+                    ToWorld(
+                        poseChassisPosition,
+                        orientation,
+                        rightConfig.lowerArm.innerPivotA
+                    );
+                const Vec3 rightPivotB =
+                    ToWorld(
+                        poseChassisPosition,
+                        orientation,
+                        rightConfig.lowerArm.innerPivotB
+                    );
+                const Vec3 leftUpperMount =
+                    ToWorld(
+                        poseChassisPosition,
+                        orientation,
+                        leftConfig.strut.upperMount
+                    );
+                const Vec3 rightUpperMount =
+                    ToWorld(
+                        poseChassisPosition,
+                        orientation,
+                        rightConfig.strut.upperMount
+                    );
+
+                const float expectedStrutLength =
+                    left.GetStrutLength() - poseTravel;
+                const bool currentPoseConstraints =
+                    Near(
+                        (left.GetLowerOuterJoint() - leftPivotA).Length(),
+                        left.GetLowerArmLengthA()
+                    ) &&
+                    Near(
+                        (left.GetLowerOuterJoint() - leftPivotB).Length(),
+                        left.GetLowerArmLengthB()
+                    ) &&
+                    Near(
+                        (right.GetLowerOuterJoint() - rightPivotA).Length(),
+                        right.GetLowerArmLengthA()
+                    ) &&
+                    Near(
+                        (right.GetLowerOuterJoint() - rightPivotB).Length(),
+                        right.GetLowerArmLengthB()
+                    ) &&
+                    Near(
+                        (leftUpperMount - left.GetStrutLowerMount()).Length(),
+                        expectedStrutLength
+                    ) &&
+                    Near(
+                        (rightUpperMount - right.GetStrutLowerMount()).Length(),
+                        expectedStrutLength
+                    );
+                poseConstraints =
+                    currentPoseConstraints && poseConstraints;
+
+                const bool hubOffsetInvariant =
+                    Near(
+                        (left.GetHubPosition() - left.GetLowerOuterJoint()).Length(),
+                        leftConfig.upright.hubOffset.Length()
+                    ) &&
+                    Near(
+                        (right.GetHubPosition() - right.GetLowerOuterJoint()).Length(),
+                        rightConfig.upright.hubOffset.Length()
+                    ) &&
+                    Near(
+                        (left.GetStrutLowerMount() - left.GetLowerOuterJoint()).Length(),
+                        leftConfig.strut.lowerMountOffset.Length()
+                    ) &&
+                    Near(
+                        (right.GetStrutLowerMount() - right.GetLowerOuterJoint()).Length(),
+                        rightConfig.strut.lowerMountOffset.Length()
+                    );
+
+                const Vec3 leftLocalHub =
+                    orientation.Conjugate() *
+                    (left.GetHubPosition() - poseChassisPosition);
+                const Vec3 rightLocalHub =
+                    orientation.Conjugate() *
+                    (right.GetHubPosition() - poseChassisPosition);
+
+                poseSweep =
+                    hubOffsetInvariant &&
+                    currentPoseConstraints &&
+                    Finite(leftLocalHub) &&
+                    Finite(rightLocalHub) &&
+                    Finite(left.GetHubOrientation()) &&
+                    Finite(right.GetHubOrientation()) &&
+                    UnitQuaternion(left.GetHubOrientation()) &&
+                    UnitQuaternion(right.GetHubOrientation()) &&
+                    Near(leftLocalHub.x, -rightLocalHub.x) &&
+                    Near(leftLocalHub.y, rightLocalHub.y) &&
+                    Near(leftLocalHub.z, rightLocalHub.z) &&
+                    poseSweep;
             }
-
-            const Vec3 leftPivotA =
-                ToWorld(
-                    chassisPosition,
-                    orientation,
-                    leftConfig.lowerArm.innerPivotA
-                );
-            const Vec3 leftPivotB =
-                ToWorld(
-                    chassisPosition,
-                    orientation,
-                    leftConfig.lowerArm.innerPivotB
-                );
-            const Vec3 rightPivotA =
-                ToWorld(
-                    chassisPosition,
-                    orientation,
-                    rightConfig.lowerArm.innerPivotA
-                );
-            const Vec3 rightPivotB =
-                ToWorld(
-                    chassisPosition,
-                    orientation,
-                    rightConfig.lowerArm.innerPivotB
-                );
-            const Vec3 leftUpperMount =
-                ToWorld(
-                    chassisPosition,
-                    orientation,
-                    leftConfig.strut.upperMount
-                );
-            const Vec3 rightUpperMount =
-                ToWorld(
-                    chassisPosition,
-                    orientation,
-                    rightConfig.strut.upperMount
-                );
-
-            const bool currentPoseConstraints =
-                Near(
-                    (left.GetLowerOuterJoint() - leftPivotA).Length(),
-                    left.GetLowerArmLengthA()
-                ) &&
-                Near(
-                    (left.GetLowerOuterJoint() - leftPivotB).Length(),
-                    left.GetLowerArmLengthB()
-                ) &&
-                Near(
-                    (right.GetLowerOuterJoint() - rightPivotA).Length(),
-                    right.GetLowerArmLengthA()
-                ) &&
-                Near(
-                    (right.GetLowerOuterJoint() - rightPivotB).Length(),
-                    right.GetLowerArmLengthB()
-                ) &&
-                Near(
-                    (leftUpperMount - left.GetStrutLowerMount()).Length(),
-                    left.GetStrutLength()
-                ) &&
-                Near(
-                    (rightUpperMount - right.GetStrutLowerMount()).Length(),
-                    right.GetStrutLength()
-                );
-            poseConstraints =
-                currentPoseConstraints && poseConstraints;
-
-            const Vec3 leftLocalHub =
-                orientation.Conjugate() *
-                (left.GetHubPosition() - chassisPosition);
-            const Vec3 rightLocalHub =
-                orientation.Conjugate() *
-                (right.GetHubPosition() - chassisPosition);
-
-            const bool hubOffsetInvariant =
-                Near(
-                    (left.GetHubPosition() - left.GetLowerOuterJoint()).Length(),
-                    leftConfig.upright.hubOffset.Length()
-                ) &&
-                Near(
-                    (right.GetHubPosition() - right.GetLowerOuterJoint()).Length(),
-                    rightConfig.upright.hubOffset.Length()
-                ) &&
-                Near(
-                    (left.GetStrutLowerMount() - left.GetLowerOuterJoint()).Length(),
-                    leftConfig.strut.lowerMountOffset.Length()
-                ) &&
-                Near(
-                    (right.GetStrutLowerMount() - right.GetLowerOuterJoint()).Length(),
-                    rightConfig.strut.lowerMountOffset.Length()
-                );
-
-            poseSweep =
-                hubOffsetInvariant &&
-                currentPoseConstraints &&
-                Finite(leftLocalHub) &&
-                Finite(rightLocalHub) &&
-                Finite(left.GetHubOrientation()) &&
-                Finite(right.GetHubOrientation()) &&
-                UnitQuaternion(left.GetHubOrientation()) &&
-                UnitQuaternion(right.GetHubOrientation()) &&
-                Near(leftLocalHub.x, -rightLocalHub.x) &&
-                Near(leftLocalHub.y, rightLocalHub.y) &&
-                Near(leftLocalHub.z, rightLocalHub.z) &&
-                poseSweep;
         }
     }
 
