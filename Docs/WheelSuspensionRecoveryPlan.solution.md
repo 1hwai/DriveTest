@@ -450,3 +450,14 @@ These are proposed priorities only; implementation remains blocked pending revie
 - **Assessment:** The tightened `maxHubStep < 0.01` threshold passed across 31 travel samples.
 - **Limit:** Samples cover only `[-0.075, +0.075]`; they do not guarantee every intermediate state or other configurations. Output was supplied by the user; no separate execution was performed during this documentation update.
 - **Status:** MP-KIN-04 verified (scope-limited).
+
+
+## 2026-10-10 — MP-KIN-05: validate chassis position and orientation inputs
+
+- **Problem:** MacPherson::SolveAtTravel() validated only travel finiteness. A non-finite chassis position or a non-finite, zero, or non-unit orientation quaternion could propagate invalid values into geometry calculations.
+- **Change:** Before mutating geometry, validate that all chassis position components are finite and that all quaternion components and its squared norm are finite. The quaternion squared norm must be within 0.001 of 1. Invalid inputs return false; the input quaternion is not silently normalized.
+- **Diagnostic:** Reject NaN/infinite position components, NaN/infinite quaternion components, a zero quaternion, and a non-unit quaternion. Verify rejection preserves hub position, lower outer joint, spring mounts A/B, and hub orientation.
+- **Change revisions:** solver b247a861d1085077dfaf70b32019420404811679; diagnostic ed8440441ff77df51104cf401b8afbcda010c98a.
+- **Verification status:** Source and diagnostic changes committed. Awaiting local build/run output; not yet marked passing.
+- **Limit:** This validates the chassis pose passed to SolveAtTravel() only. Validation of all Configure() values, quaternion construction paths, and vehicle runtime integration are out of scope.
+- **Verification commands:** git pull --rebase origin suspension-runtime-integration; cmake --build build --target DriveTestMacPhersonDiagnostics; ./build/DriveTestMacPhersonDiagnostics.
