@@ -436,6 +436,7 @@ int main() {
         );
 
     bool poseSweep = true;
+    bool poseConstraints = true;
     const float rollAngles[] = {
         -0.35f, -0.175f, 0.0f, 0.175f, 0.35f
     };
@@ -475,6 +476,71 @@ int main() {
                 continue;
             }
 
+            const Vec3 leftPivotA =
+                ToWorld(
+                    chassisPosition,
+                    orientation,
+                    leftConfig.lowerArm.innerPivotA
+                );
+            const Vec3 leftPivotB =
+                ToWorld(
+                    chassisPosition,
+                    orientation,
+                    leftConfig.lowerArm.innerPivotB
+                );
+            const Vec3 rightPivotA =
+                ToWorld(
+                    chassisPosition,
+                    orientation,
+                    rightConfig.lowerArm.innerPivotA
+                );
+            const Vec3 rightPivotB =
+                ToWorld(
+                    chassisPosition,
+                    orientation,
+                    rightConfig.lowerArm.innerPivotB
+                );
+            const Vec3 leftUpperMount =
+                ToWorld(
+                    chassisPosition,
+                    orientation,
+                    leftConfig.strut.upperMount
+                );
+            const Vec3 rightUpperMount =
+                ToWorld(
+                    chassisPosition,
+                    orientation,
+                    rightConfig.strut.upperMount
+                );
+
+            const bool currentPoseConstraints =
+                Near(
+                    (left.GetLowerOuterJoint() - leftPivotA).Length(),
+                    left.GetLowerArmLengthA()
+                ) &&
+                Near(
+                    (left.GetLowerOuterJoint() - leftPivotB).Length(),
+                    left.GetLowerArmLengthB()
+                ) &&
+                Near(
+                    (right.GetLowerOuterJoint() - rightPivotA).Length(),
+                    right.GetLowerArmLengthA()
+                ) &&
+                Near(
+                    (right.GetLowerOuterJoint() - rightPivotB).Length(),
+                    right.GetLowerArmLengthB()
+                ) &&
+                Near(
+                    (leftUpperMount - left.GetStrutLowerMount()).Length(),
+                    left.GetStrutLength()
+                ) &&
+                Near(
+                    (rightUpperMount - right.GetStrutLowerMount()).Length(),
+                    right.GetStrutLength()
+                );
+            poseConstraints =
+                currentPoseConstraints && poseConstraints;
+
             const Vec3 leftLocalHub =
                 orientation.Conjugate() *
                 (left.GetHubPosition() - chassisPosition);
@@ -502,6 +568,7 @@ int main() {
 
             poseSweep =
                 hubOffsetInvariant &&
+                currentPoseConstraints &&
                 Finite(leftLocalHub) &&
                 Finite(rightLocalHub) &&
                 Finite(left.GetHubOrientation()) &&
@@ -537,6 +604,7 @@ int main() {
         << " travel=" << travel
         << " endpoints=" << endpoints
         << " poseSweep=" << poseSweep
+        << " poseConstraints=" << poseConstraints
         << " continuity=" << continuity
         << " maxHubStep=" << maxHubStep
         << " maxHorizontalDrift=" << maxHorizontalDrift
@@ -553,6 +621,7 @@ int main() {
         !travel ||
         !endpoints ||
         !poseSweep ||
+        !poseConstraints ||
         !orientation ||
         !continuity) {
         std::cerr
